@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Contacto — Los Tres Hermanos</title>
+  <link rel="stylesheet" href="global.css">
+  <style>
+    body { background: var(--gris-claro); }
+    .page-header { background: var(--grad-hero); padding: 5rem 2rem 3rem; position: relative; overflow: hidden; }
+    .page-header::before { content:''; position:absolute; top:-40%; right:-5%; width:500px; height:500px; border-radius:50%; background:rgba(255,255,255,0.04); pointer-events:none; }
+    .page-header-inner { max-width:1280px; margin:0 auto; position:relative; z-index:1; }
+    .breadcrumb { display:flex; align-items:center; gap:0.5rem; font-size:0.82rem; color:rgba(255,255,255,0.6); margin-bottom:1.25rem; }
+    .breadcrumb a { color:rgba(255,255,255,0.6); transition:color var(--trans); }
+    .breadcrumb a:hover { color:white; }
+    .breadcrumb span { color:rgba(255,255,255,0.9); }
+    .page-header h1 { font-family:var(--font-titulo); font-size:clamp(2rem,4vw,3rem); font-weight:800; color:white; letter-spacing:-0.03em; margin-bottom:0.5rem; }
+    .page-header p { color:rgba(255,255,255,0.72); font-size:1rem; }
+
+    .contacto-main {
+      max-width: 1280px; margin: 0 auto; padding: 3rem 2rem 5rem;
+      display: grid; grid-template-columns: 1fr 1.4fr; gap: 2rem; align-items: start;
+    }
+
+    /* Columna izquierda — info */
+    .contacto-info { display: flex; flex-direction: column; gap: 1.25rem; }
+
+    .info-card {
+      background: white; border-radius: var(--radio-lg);
+      padding: 1.75rem; border: 1px solid var(--gris-medio);
+      display: flex; align-items: flex-start; gap: 1.25rem;
+      transition: transform var(--trans), box-shadow var(--trans);
+      text-decoration: none; color: inherit;
+    }
+    .info-card:hover { transform: translateY(-3px); box-shadow: var(--sombra-md); }
+
+    .info-icono {
+      width: 50px; height: 50px; border-radius: var(--radio);
+      background: var(--grad-card); display: grid; place-items: center; flex-shrink: 0;
+    }
+    .info-icono svg { width: 22px; height: 22px; color: white; }
+    .info-icono.rojo { background: var(--grad-rojo); }
+
+    .info-texto label { display: block; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--gris-texto); margin-bottom: 0.3rem; }
+    .info-texto strong { display: block; font-family: var(--font-titulo); font-size: 1rem; font-weight: 700; color: var(--negro-suave); line-height: 1.3; }
+    .info-texto span { font-size: 0.82rem; color: var(--gris-texto); margin-top: 0.2rem; display: block; }
+
+    /* Botones de acción grandes */
+    .acciones-grid { display: flex; flex-direction: column; gap: 0.75rem; }
+
+    .btn-accion {
+      display: flex; align-items: center; gap: 1rem;
+      background: white; border: 1.5px solid var(--gris-medio);
+      border-radius: var(--radio-lg); padding: 1.1rem 1.5rem;
+      font-family: var(--font-cuerpo); font-size: 0.95rem; font-weight: 600;
+      color: var(--negro-suave); cursor: pointer; text-decoration: none;
+      transition: all var(--trans);
+    }
+    .btn-accion:hover { border-color: var(--azul); color: var(--azul); transform: translateX(4px); }
+    .btn-accion.verde:hover { border-color: #16a34a; color: #16a34a; }
+    .btn-accion.rojo-btn:hover { border-color: var(--rojo); color: var(--rojo); }
+
+    .btn-accion-icono {
+      width: 40px; height: 40px; border-radius: 10px;
+      display: grid; place-items: center; flex-shrink: 0;
+    }
+    .btn-accion-icono svg { width: 20px; height: 20px; }
+    .btn-accion-icono.azul-bg { background: rgba(27,42,107,0.1); color: var(--azul); }
+    .btn-accion-icono.verde-bg { background: rgba(22,163,74,0.1); color: #16a34a; }
+    .btn-accion-icono.rojo-bg  { background: rgba(192,16,42,0.1);  color: var(--rojo); }
+    .btn-accion span.flecha { margin-left: auto; font-size: 1.1rem; transition: transform var(--trans); }
+    .btn-accion:hover span.flecha { transform: translateX(4px); }
+
+    /* Mapa */
+    .mapa-card {
+      background: white; border-radius: var(--radio-xl);
+      border: 1px solid var(--gris-medio); overflow: hidden;
+      box-shadow: var(--sombra-sm);
+    }
+    .mapa-header {
+      padding: 1.5rem 1.75rem; border-bottom: 1px solid var(--gris-medio);
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .mapa-header h2 { font-family: var(--font-titulo); font-size: 1.1rem; font-weight: 700; color: var(--azul); }
+    .mapa-header span { font-size: 0.82rem; color: var(--gris-texto); }
+    .mapa-frame { position: relative; }
+    .mapa-frame iframe { width: 100%; height: 380px; border: none; display: block; }
+    .mapa-overlay-btn {
+      position: absolute; bottom: 1.25rem; right: 1.25rem;
+      background: white; border-radius: var(--radio);
+      padding: 0.65rem 1.1rem; font-size: 0.82rem; font-weight: 600;
+      color: var(--azul); box-shadow: var(--sombra-md);
+      text-decoration: none; display: flex; align-items: center; gap: 0.4rem;
+      transition: transform var(--trans), box-shadow var(--trans);
+    }
+    .mapa-overlay-btn:hover { transform: translateY(-2px); box-shadow: var(--sombra-lg); }
+    .mapa-overlay-btn svg { width: 14px; height: 14px; }
+
+    @media (max-width: 900px) {
+      .contacto-main { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <nav class="navbar">
+    <div class="navbar-inner">
+      <a href="../index.html" class="navbar-logo">
+        <img src="logo3.jpeg" alt="Logo">
+        <span>Los <em>Tres</em> Hermanos</span>
+      </a>
+      <div class="navbar-nav" id="nav-menu">
+        <a href="../index.html"             class="nav-link">Inicio</a>
+        <a href="explorador-drogueria.html" class="nav-link">Medicamentos</a>
+        <a href="variedades.html"           class="nav-link">Variedades</a>
+        <a href="servicios.html"            class="nav-link">Servicios</a>
+        <a href="somos-nosotros.html"       class="nav-link">Nosotros</a>
+        <a href="contacto-drogueria.html"   class="nav-link active">Contacto</a>
+      </div>
+      <div class="navbar-actions">
+        <a href="login-cliente.html" id="btn-mi-cuenta" class="btn-secundario" style="font-size:0.82rem;padding:0.45rem 1rem;" aria-label="Mi cuenta">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/>
+          </svg>
+          Mi cuenta
+        </a>
+
+        <button class="btn-menu" id="btn-menu" aria-label="Menú" aria-expanded="false" aria-controls="nav-menu">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <line x1="4" y1="6" x2="20" y2="6"/>
+            <line x1="4" y1="12" x2="20" y2="12"/>
+            <line x1="4" y1="18" x2="20" y2="18"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <div class="page-header">
+    <div class="page-header-inner">
+      <div class="breadcrumb">
+        <a href="../index.html">Inicio</a>
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+        <span>Contacto</span>
+      </div>
+      <h1>Contáctanos</h1>
+      <p>Estamos en Arjona, Bolívar — siempre listos para atenderte</p>
+    </div>
+  </div>
+
+  <main class="contacto-main">
+
+    <!-- Columna izquierda -->
+    <div class="contacto-info">
+
+      <!-- Info básica -->
+      <a href="tel:+573225065554" class="info-card animar animar-delay-1">
+        <div class="info-icono">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.81a19.79 19.79 0 01-3.07-8.67A2 2 0 012 0h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.09 7.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/>
+          </svg>
+        </div>
+        <div class="info-texto">
+          <label>Teléfono</label>
+          <strong>+57 322 506 5554</strong>
+          <span>Toca para llamar directamente</span>
+        </div>
+      </a>
+
+      <a href="mailto:diazpajaro1208@gmail.com" class="info-card animar animar-delay-2">
+        <div class="info-icono rojo">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+            <polyline points="22,6 12,13 2,6"/>
+          </svg>
+        </div>
+        <div class="info-texto">
+          <label>Correo Electrónico</label>
+          <strong>diazpajaro1208@gmail.com</strong>
+          <span>Respuesta en menos de 24 horas</span>
+        </div>
+      </a>
+
+      <div class="info-card animar animar-delay-3" style="cursor:default">
+        <div class="info-icono">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/>
+            <circle cx="12" cy="10" r="3"/>
+          </svg>
+        </div>
+        <div class="info-texto">
+          <label>Dirección</label>
+          <strong>Diagonal 52 50A-755</strong>
+          <span>Arjona, Bolívar, Colombia</span>
+        </div>
+      </div>
+
+      <!-- Acciones rápidas -->
+      <div class="acciones-grid animar animar-delay-4">
+        <a href="tel:+573225065554" class="btn-accion">
+          <div class="btn-accion-icono azul-bg">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.81a19.79 19.79 0 01-3.07-8.67A2 2 0 012 0h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L6.09 7.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 16.92z"/>
+            </svg>
+          </div>
+          Llamar ahora
+          <span class="flecha">→</span>
+        </a>
+        <a href="https://wa.me/573225065554" target="_blank" rel="noopener" class="btn-accion verde" id="btn-whatsapp-directo">
+          <div class="btn-accion-icono verde-bg">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z"/>
+            </svg>
+          </div>
+          WhatsApp
+          <span class="flecha">→</span>
+        </a>
+        <a href="https://www.google.com/maps/search/?api=1&query=Diagonal+52+50A-755+Arjona+Bolivar+Colombia" target="_blank" rel="noopener" class="btn-accion rojo-btn">
+          <div class="btn-accion-icono rojo-bg">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/>
+              <circle cx="12" cy="10" r="3"/>
+            </svg>
+          </div>
+          Cómo llegar
+          <span class="flecha">→</span>
+        </a>
+      </div>
+
+    </div>
+
+    <!-- Columna derecha — mapa -->
+    <div class="mapa-card animar animar-delay-2">
+      <div class="mapa-header">
+        <h2>Nuestra Ubicación</h2>
+        <span>Arjona, Bolívar</span>
+      </div>
+      <div class="mapa-frame">
+        <iframe
+          src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3930.123456!2d-75.3494!3d10.2531!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMTDCsDE1JzExLjIiTiA3NcKwMjAnNTcuOCJX!5e0!3m2!1ses!2sco!4v1234567890!5m2!1ses!2sco&q=Diagonal+52+50A-755+Arjona+Bolivar+Colombia"
+          width="100%" height="380" style="border:0;display:block;" allowfullscreen="" loading="lazy"
+          referrerpolicy="no-referrer-when-downgrade"
+          title="Droguería Los Tres Hermanos — Diagonal 52 50A-755, Arjona, Bolívar">
+        </iframe>
+        <a href="https://www.google.com/maps/search/?api=1&query=Diagonal+52+50A-755+Arjona+Bolivar+Colombia" target="_blank" rel="noopener" class="mapa-overlay-btn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/>
+            <circle cx="12" cy="10" r="3"/>
+          </svg>
+          Ver en Google Maps
+        </a>
+      </div>
+
+      <!-- Formulario de contacto -->
+      <div style="padding:2rem;border-top:1px solid var(--gris-medio);">
+        <h3 style="font-family:var(--font-titulo);font-size:1.05rem;font-weight:700;color:var(--azul);margin-bottom:1.25rem;">
+          Envíanos un Mensaje
+        </h3>
+        <form id="form-contacto" style="display:flex;flex-direction:column;gap:1rem;">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
+            <div>
+              <label for="f-nombre" style="display:block;font-size:0.78rem;font-weight:600;color:var(--gris-texto);margin-bottom:0.4rem;text-transform:uppercase;letter-spacing:0.06em;">Tu nombre *</label>
+              <input id="f-nombre" type="text" placeholder="Ej: María González" required
+                style="width:100%;padding:0.7rem 1rem;border:1.5px solid var(--gris-medio);border-radius:var(--radio);font-family:var(--font-cuerpo);font-size:0.92rem;outline:none;transition:border-color 0.2s;"
+                onfocus="this.style.borderColor='var(--azul-claro)'"
+                onblur="this.style.borderColor='var(--gris-medio)'">
+            </div>
+            <div>
+              <label for="f-asunto" style="display:block;font-size:0.78rem;font-weight:600;color:var(--gris-texto);margin-bottom:0.4rem;text-transform:uppercase;letter-spacing:0.06em;">Asunto</label>
+              <input id="f-asunto" type="text" placeholder="Ej: Consulta de medicamento"
+                style="width:100%;padding:0.7rem 1rem;border:1.5px solid var(--gris-medio);border-radius:var(--radio);font-family:var(--font-cuerpo);font-size:0.92rem;outline:none;transition:border-color 0.2s;"
+                onfocus="this.style.borderColor='var(--azul-claro)'"
+                onblur="this.style.borderColor='var(--gris-medio)'">
+            </div>
+          </div>
+          <div>
+            <label for="f-mensaje" style="display:block;font-size:0.78rem;font-weight:600;color:var(--gris-texto);margin-bottom:0.4rem;text-transform:uppercase;letter-spacing:0.06em;">Mensaje *</label>
+            <textarea id="f-mensaje" rows="4" placeholder="Escribe tu consulta aquí..." required
+              style="width:100%;padding:0.7rem 1rem;border:1.5px solid var(--gris-medio);border-radius:var(--radio);font-family:var(--font-cuerpo);font-size:0.92rem;outline:none;resize:vertical;transition:border-color 0.2s;"
+              onfocus="this.style.borderColor='var(--azul-claro)'"
+              onblur="this.style.borderColor='var(--gris-medio)'"></textarea>
+          </div>
+          <button type="submit" class="btn-primario" style="align-self:flex-start;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z"/>
+            </svg>
+            Enviar por WhatsApp
+          </button>
+        </form>
+      </div>
+    </div>
+
+  </main>
+
+  <footer class="footer-global">
+    <div class="footer-inner">
+      <div class="footer-grid">
+        <div class="footer-marca">
+          <h3>Droguería y Variedades Los Tres Hermanos</h3>
+          <p>Tu farmacia de confianza en Arjona, Bolívar.</p>
+        </div>
+        <div class="footer-col">
+          <h4>Páginas</h4>
+          <ul>
+            <li><a href="explorador-drogueria.html">Medicamentos</a></li>
+            <li><a href="variedades.html">Variedades</a></li>
+            <li><a href="servicios.html">Servicios</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Contacto</h4>
+          <ul>
+            <li>
+              <div class="footer-contacto-fila">
+                <a href="https://wa.me/573225065554" target="_blank" rel="noopener" class="btn-contacto whatsapp" title="WhatsApp" aria-label="WhatsApp">
+                  <span class="btn-sign">
+                    <svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" style="fill:white;width:20px;height:20px;">
+                      <path d="M13.601 2.326A7.854 7.854 0 0 0 7.994 0C3.627 0 .068 3.558.064 7.926c0 1.399.366 2.76 1.057 3.965L0 16l4.204-1.102a7.933 7.933 0 0 0 3.79.965h.004c4.368 0 7.926-3.558 7.93-7.93A7.898 7.898 0 0 0 13.6 2.326zM7.994 14.521a6.573 6.573 0 0 1-3.356-.92l-.24-.144-2.494.654.666-2.433-.156-.251a6.56 6.56 0 0 1-1.007-3.505c0-3.626 2.957-6.584 6.591-6.584a6.56 6.56 0 0 1 4.66 1.931 6.557 6.557 0 0 1 1.928 4.66c-.004 3.639-2.961 6.592-6.592 6.592zm3.615-4.934c-.197-.099-1.17-.578-1.353-.646-.182-.065-.315-.099-.445.099-.133.197-.513.646-.627.775-.114.133-.232.148-.43.05-.197-.1-.836-.308-1.592-.985-.59-.525-.985-1.175-1.103-1.372-.114-.198-.011-.304.088-.403.087-.088.197-.232.296-.346.1-.114.133-.198.198-.33.065-.134.034-.248-.015-.347-.05-.099-.445-1.076-.612-1.47-.16-.389-.323-.335-.445-.34-.114-.007-.247-.007-.38-.007a.729.729 0 0 0-.529.247c-.182.198-.691.677-.691 1.654 0 .977.71 1.916.81 2.049.098.133 1.394 2.132 3.383 2.992.47.205.84.326 1.129.418.475.152.904.129 1.246.08.38-.058 1.171-.48 1.338-.943.164-.464.164-.86.114-.943-.049-.084-.182-.133-.38-.232z"/>
+                    </svg>
+                  </span>
+                  <span class="btn-label">WhatsApp</span>
+                </a>
+                <a href="tel:+573225065554" class="footer-contacto-texto">+57 322 506 5554</a>
+              </div>
+            </li>
+            <li>
+              <div class="footer-contacto-fila">
+                <a href="mailto:diazpajaro1208@gmail.com" class="btn-contacto gmail" title="Gmail" aria-label="Gmail">
+                  <span class="btn-sign">
+                    <svg viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg" width="22" height="22">
+                      <path fill="#EA4335" d="M6 40h6V22.8L4 17v21c0 1.1.9 2 2 2z"/>
+                      <path fill="#34A853" d="M36 40h6c1.1 0 2-.9 2-2V17l-8 5.8z"/>
+                      <path fill="#FBBC04" d="M36 10v12.8l8-5.8V11c0-2.5-2.8-3.9-4.8-2.4z"/>
+                      <path fill="#4285F4" d="M12 22.8V10l12 8.7 12-8.7v12.8L24 31.5z"/>
+                      <path fill="#C5221F" d="M4 11v6l8 5.8V10L9.8 8.6C7.8 7.1 4 8.5 4 11z"/>
+                    </svg>
+                  </span>
+                  <span class="btn-label">Gmail</span>
+                </a>
+                <a href="mailto:diazpajaro1208@gmail.com" class="footer-contacto-texto">diazpajaro1208@gmail.com</a>
+              </div>
+            </li>
+            <li>
+              <div class="footer-contacto-fila">
+                <a href="https://www.google.com/maps/search/?api=1&query=Diagonal+52+50A-755+Arjona+Bolivar+Colombia" target="_blank" rel="noopener" class="btn-contacto ubicacion" title="Ver en Maps" aria-label="Diagonal 52 50A-755">
+                  <span class="btn-sign">
+                    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" style="fill:white;width:20px;height:20px;">
+                      <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
+                    </svg>
+                  </span>
+                  <span class="btn-label">Ubicación</span>
+                </a>
+                <a href="contacto-drogueria.html" class="footer-contacto-texto">Diagonal 52 50A-755</a>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <span>© 2024 Droguería y Variedades Los Tres Hermanos</span>
+      </div>
+    </div>
+  </footer>
+
+  <script src="global.js"></script>
+  <script>
+    const btnMenu = document.getElementById('btn-menu');
+    const navMenu = document.getElementById('nav-menu');
+    btnMenu?.addEventListener('click', () => {
+      const ab = navMenu.classList.toggle('abierto');
+      btnMenu.setAttribute('aria-expanded', ab);
+    });
+
+    // ── WhatsApp con mensaje prellenado ───────────────────────
+    document.getElementById('btn-whatsapp-directo')?.addEventListener('click', () => {
+      const msg = '¡Hola! Me comunico desde la página web de la Droguería Los Tres Hermanos. Quisiera hacerles una consulta.';
+      window.open(`https://wa.me/573225065554?text=${encodeURIComponent(msg)}`, '_blank');
+    });
+
+    // ── Formulario de contacto ────────────────────────────────
+    document.getElementById('form-contacto')?.addEventListener('submit', function(e) {
+      e.preventDefault();
+      const nombre  = document.getElementById('f-nombre').value.trim();
+      const mensaje = document.getElementById('f-mensaje').value.trim();
+      const asunto  = document.getElementById('f-asunto').value.trim();
+
+      if (!nombre || !mensaje) {
+        Toast.mostrar('⚠️ Por favor completa todos los campos.');
+        return;
+      }
+
+      const msg =
+        `📩 *MENSAJE DESDE LA WEB*\n` +
+        `👤 Nombre: *${nombre}*\n` +
+        `📋 Asunto: ${asunto || 'Sin asunto'}\n\n` +
+        `💬 Mensaje:\n${mensaje}`;
+
+      window.open(`https://wa.me/573225065554?text=${encodeURIComponent(msg)}`, '_blank');
+      this.reset();
+      Toast.mostrar('✅ Mensaje enviado por WhatsApp');
+    });
+
+    // Avatar
+    document.addEventListener('DOMContentLoaded', () => {
+      initAvatar({ perfilUrl: 'perfil-cliente.html', logoutUrl: '../index.html' });
+    });
+  </script>
+</body>
+</html>

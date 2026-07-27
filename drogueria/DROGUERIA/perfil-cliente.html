@@ -1,0 +1,906 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mi Cuenta — Los Tres Hermanos</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --azul:#1B2A6B;--azul-medio:#2D3E9E;--azul-claro:#4A5FD4;
+      --rojo:#C0102A;--rojo-vivo:#E8122F;--verde:#16a34a;--amarillo:#d97706;
+      --gris-claro:#F4F5F9;--gris-medio:#DDE0EC;--gris-texto:#6B7280;--negro:#111827;
+      --grad-hero:linear-gradient(135deg,#1B2A6B 0%,#2D3E9E 50%,#C0102A 100%);
+      --grad-rojo:linear-gradient(135deg,#C0102A,#E8122F);
+      --font-titulo:'Syne',sans-serif;--font-cuerpo:'DM Sans',sans-serif;
+      --trans:0.25s cubic-bezier(0.4,0,0.2,1);
+      --sombra-sm:0 2px 8px rgba(0,0,0,0.08);--sombra-md:0 8px 24px rgba(0,0,0,0.12);
+    }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    body{font-family:var(--font-cuerpo);background:var(--gris-claro);color:var(--negro);min-height:100vh;}
+    button{cursor:pointer;border:none;font-family:var(--font-cuerpo);}
+    a{text-decoration:none;color:inherit;}
+
+    /* NAVBAR */
+    .navbar{position:sticky;top:0;z-index:100;background:rgba(255,255,255,0.95);backdrop-filter:blur(16px);border-bottom:1px solid var(--gris-medio);box-shadow:var(--sombra-sm);}
+    .navbar-inner{max-width:1100px;margin:0 auto;padding:0 2rem;height:64px;display:flex;align-items:center;justify-content:space-between;gap:1rem;}
+    .navbar-logo{display:flex;align-items:center;gap:0.75rem;font-family:var(--font-titulo);font-weight:800;font-size:1rem;color:var(--azul);}
+    .navbar-logo img{width:38px;height:38px;border-radius:50%;object-fit:cover;border:2px solid var(--gris-medio);}
+    .navbar-logo em{color:var(--rojo);font-style:normal;}
+    .navbar-actions{display:flex;align-items:center;gap:0.75rem;}
+    .btn-salir{display:flex;align-items:center;gap:0.4rem;background:var(--gris-claro);border:1.5px solid var(--gris-medio);color:var(--gris-texto);font-size:0.82rem;font-weight:600;padding:0.45rem 0.9rem;border-radius:99px;transition:all var(--trans);}
+    .btn-salir:hover{background:var(--rojo);color:white;border-color:var(--rojo);}
+    .btn-salir svg{width:14px;height:14px;}
+
+    /* HERO PERFIL */
+    .perfil-hero{background:var(--grad-hero);padding:2.5rem 2rem;position:relative;overflow:hidden;}
+    .perfil-hero::before{content:'';position:absolute;top:-40%;right:-5%;width:400px;height:400px;border-radius:50%;background:rgba(255,255,255,0.04);pointer-events:none;}
+    .perfil-hero-inner{max-width:1100px;margin:0 auto;display:flex;align-items:center;gap:1.5rem;position:relative;z-index:1;}
+    .avatar-grande{width:72px;height:72px;border-radius:50%;background:rgba(255,255,255,0.15);border:3px solid rgba(255,255,255,0.3);display:grid;place-items:center;flex-shrink:0;font-family:var(--font-titulo);font-size:1.6rem;font-weight:800;color:white;}
+    .perfil-info h1{font-family:var(--font-titulo);font-size:1.5rem;font-weight:800;color:white;letter-spacing:-0.02em;}
+    .perfil-info p{color:rgba(255,255,255,0.65);font-size:0.85rem;margin-top:0.2rem;}
+    .perfil-badge{display:inline-flex;align-items:center;gap:0.4rem;background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.2);border-radius:99px;padding:0.3rem 0.75rem;font-size:0.72rem;color:rgba(255,255,255,0.85);font-weight:600;margin-top:0.5rem;}
+    .punto-verde{width:6px;height:6px;border-radius:50%;background:#4ade80;animation:parpadeo 1.5s infinite;}
+    @keyframes parpadeo{0%,100%{opacity:1}50%{opacity:0.3}}
+
+    /* TABS */
+    .tabs-wrap{background:white;border-bottom:1px solid var(--gris-medio);position:sticky;top:64px;z-index:50;}
+    .tabs-inner{max-width:1100px;margin:0 auto;padding:0 2rem;display:flex;gap:0.25rem;}
+    .tab{padding:1rem 1.1rem;font-size:0.88rem;font-weight:600;color:var(--gris-texto);background:none;border:none;border-bottom:3px solid transparent;cursor:pointer;transition:all var(--trans);white-space:nowrap;}
+    .tab:hover{color:var(--azul);}
+    .tab.activo{color:var(--azul);border-bottom-color:var(--rojo);}
+
+    /* CONTENIDO */
+    .content{max-width:1100px;margin:0 auto;padding:2rem;}
+    .seccion{display:none;}
+    .seccion.activa{display:block;}
+
+    /* PANEL */
+    .panel{background:white;border-radius:16px;border:1px solid var(--gris-medio);overflow:hidden;margin-bottom:1.5rem;}
+    .panel-header{padding:1.25rem 1.5rem;border-bottom:1px solid var(--gris-claro);display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap;}
+    .panel-titulo{font-family:var(--font-titulo);font-weight:700;font-size:1rem;color:var(--azul);}
+    .panel-body{padding:1.5rem;}
+
+    /* PERFIL FORM */
+    .perfil-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;}
+    .form-grupo{display:flex;flex-direction:column;gap:0.4rem;}
+    .form-grupo.full{grid-column:1/-1;}
+    label{font-size:0.75rem;font-weight:600;color:var(--gris-texto);text-transform:uppercase;letter-spacing:0.06em;}
+    input,select{padding:0.65rem 1rem;border:1.5px solid var(--gris-medio);border-radius:10px;font-family:var(--font-cuerpo);font-size:0.92rem;outline:none;transition:border-color var(--trans);width:100%;}
+    input:focus,select:focus{border-color:var(--azul-claro);}
+    input:disabled{background:var(--gris-claro);color:var(--gris-texto);}
+
+    .btn-guardar{display:inline-flex;align-items:center;gap:0.4rem;background:var(--grad-rojo);color:white;font-size:0.88rem;font-weight:600;padding:0.6rem 1.25rem;border-radius:99px;border:none;transition:transform var(--trans),box-shadow var(--trans);box-shadow:0 4px 12px rgba(192,16,42,0.3);}
+    .btn-guardar:hover{transform:translateY(-1px);box-shadow:0 6px 18px rgba(192,16,42,0.4);}
+    .btn-guardar svg{width:14px;height:14px;}
+
+    /* PEDIDOS */
+    .pedido-card{background:var(--gris-claro);border-radius:12px;padding:1.25rem;border:1px solid var(--gris-medio);margin-bottom:0.85rem;transition:box-shadow var(--trans);}
+    .pedido-card:hover{box-shadow:var(--sombra-md);}
+    .pedido-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:0.85rem;flex-wrap:wrap;gap:0.5rem;}
+    .pedido-id{font-family:monospace;font-size:0.78rem;color:var(--gris-texto);background:white;padding:0.2rem 0.6rem;border-radius:6px;border:1px solid var(--gris-medio);}
+    .pedido-fecha{font-size:0.78rem;color:var(--gris-texto);}
+    .pedido-total{font-family:var(--font-titulo);font-weight:800;font-size:1.1rem;color:var(--azul);}
+    .pedido-items{display:flex;flex-direction:column;gap:0.4rem;}
+    .pedido-item-row{display:flex;justify-content:space-between;font-size:0.85rem;}
+    .pedido-item-nombre{color:var(--negro);}
+    .pedido-item-qty{color:var(--gris-texto);}
+    .pedido-footer{display:flex;align-items:center;justify-content:space-between;margin-top:0.85rem;padding-top:0.85rem;border-top:1px solid var(--gris-medio);flex-wrap:wrap;gap:0.5rem;}
+    .badge{display:inline-block;padding:0.25rem 0.65rem;border-radius:99px;font-size:0.72rem;font-weight:700;}
+    .badge-domicilio{background:rgba(27,42,107,0.1);color:var(--azul);}
+    .badge-tienda{background:rgba(22,163,74,0.12);color:var(--verde);}
+    .btn-ver-factura{display:inline-flex;align-items:center;gap:0.35rem;font-size:0.8rem;font-weight:600;color:var(--azul);background:white;border:1.5px solid var(--gris-medio);padding:0.4rem 0.85rem;border-radius:99px;transition:all var(--trans);}
+    .btn-ver-factura:hover{background:var(--azul);color:white;border-color:var(--azul);}
+    .btn-ver-factura svg{width:13px;height:13px;}
+
+    /* VACÍO */
+    .vacio{text-align:center;padding:3rem 1rem;color:var(--gris-texto);}
+    .vacio svg{width:48px;height:48px;margin:0 auto 1rem;color:var(--gris-medio);}
+    .vacio h3{font-family:var(--font-titulo);font-size:1.1rem;color:var(--negro);margin-bottom:0.4rem;}
+    .vacio a{display:inline-flex;margin-top:1rem;align-items:center;gap:0.4rem;background:var(--grad-rojo);color:white;font-size:0.85rem;font-weight:600;padding:0.6rem 1.25rem;border-radius:99px;box-shadow:0 4px 12px rgba(192,16,42,0.3);transition:transform var(--trans);}
+    .vacio a:hover{transform:translateY(-1px);}
+
+    /* FAVORITOS */
+    .favoritos-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:1rem;}
+    .fav-card{background:white;border-radius:12px;padding:1rem;border:1px solid var(--gris-medio);transition:transform var(--trans),box-shadow var(--trans);position:relative;}
+    .fav-card:hover{transform:translateY(-3px);box-shadow:var(--sombra-md);}
+    .fav-nombre{font-weight:600;font-size:0.88rem;color:var(--negro);margin-bottom:0.35rem;}
+    .fav-precio{font-family:var(--font-titulo);font-weight:800;font-size:1rem;color:var(--azul);}
+    .btn-quitar-fav{position:absolute;top:0.5rem;right:0.5rem;background:none;border:none;color:var(--rojo);cursor:pointer;padding:0.2rem;}
+    .btn-quitar-fav svg{width:15px;height:15px;}
+
+    /* Toast */
+    .toast-wrap{position:fixed;bottom:2rem;right:2rem;z-index:9999;display:flex;flex-direction:column;gap:0.75rem;}
+    .toast{background:white;border-left:4px solid var(--verde);border-radius:12px;padding:0.85rem 1.1rem;font-size:0.85rem;font-weight:500;box-shadow:var(--sombra-md);animation:tIn 0.35s ease both;max-width:300px;}
+    .toast.err{border-left-color:var(--rojo);}
+    @keyframes tIn{from{transform:translateX(120%);opacity:0}to{transform:translateX(0);opacity:1}}
+    .toast.out{animation:tOut 0.3s ease forwards;}
+    @keyframes tOut{to{transform:translateX(120%);opacity:0}}
+
+    /* ── VISOR DE FACTURAS ── */
+    .visor-overlay{
+      position:fixed;inset:0;background:rgba(0,0,0,0.6);
+      z-index:2000;display:none;align-items:center;justify-content:center;
+      padding:1rem;
+    }
+    .visor-overlay.visible{display:flex;}
+
+    .visor-wrap{
+      position:relative;width:100%;max-width:700px;
+      display:flex;align-items:center;gap:0.75rem;
+    }
+
+    /* Botones de navegación laterales */
+    .visor-nav-btn{
+      width:44px;height:44px;border-radius:50%;
+      background:white;border:none;cursor:pointer;
+      display:grid;place-items:center;flex-shrink:0;
+      box-shadow:0 4px 16px rgba(0,0,0,0.2);
+      transition:all var(--trans);
+      color:var(--azul);
+    }
+    .visor-nav-btn:hover{background:var(--azul);color:white;transform:scale(1.08);}
+    .visor-nav-btn:disabled{opacity:0.3;cursor:not-allowed;transform:none;}
+    .visor-nav-btn svg{width:20px;height:20px;}
+
+    /* Contenedor de la factura */
+    .visor-factura{
+      flex:1;background:white;border-radius:16px;
+      overflow:hidden;max-height:85vh;overflow-y:auto;
+      box-shadow:0 20px 60px rgba(0,0,0,0.3);
+      animation:visorIn 0.25s cubic-bezier(0.34,1.2,0.64,1) both;
+    }
+    @keyframes visorIn{
+      from{opacity:0;transform:scale(0.96) translateY(10px);}
+      to{opacity:1;transform:scale(1) translateY(0);}
+    }
+    .visor-factura.slide-izq{animation:slideIzq 0.25s ease both;}
+    .visor-factura.slide-der{animation:slideDer 0.25s ease both;}
+    @keyframes slideIzq{from{opacity:0;transform:translateX(40px);}to{opacity:1;transform:translateX(0);}}
+    @keyframes slideDer{from{opacity:0;transform:translateX(-40px);}to{opacity:1;transform:translateX(0);}}
+
+    /* Header del visor */
+    .visor-header{
+      background:var(--grad-hero);padding:1.5rem 1.75rem;
+      display:flex;align-items:center;justify-content:space-between;
+      position:relative;overflow:hidden;
+    }
+    .visor-header::before{content:'';position:absolute;top:-40%;right:-10%;
+      width:200px;height:200px;border-radius:50%;background:rgba(255,255,255,0.05);}
+    .visor-header-info{position:relative;z-index:1;}
+    .visor-num-pedido{font-family:monospace;font-size:0.78rem;color:rgba(255,255,255,0.65);margin-bottom:0.25rem;}
+    .visor-fecha{font-size:0.82rem;color:rgba(255,255,255,0.75);}
+    .visor-total{font-family:var(--font-titulo);font-size:1.6rem;font-weight:800;color:white;}
+    .btn-cerrar-visor{
+      position:relative;z-index:1;
+      background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.25);
+      border-radius:50%;width:36px;height:36px;
+      display:grid;place-items:center;cursor:pointer;color:white;
+      transition:background var(--trans);
+    }
+    .btn-cerrar-visor:hover{background:rgba(255,255,255,0.25);}
+    .btn-cerrar-visor svg{width:16px;height:16px;}
+
+    /* Contenido de la factura */
+    .visor-body{padding:1.5rem 1.75rem;}
+    .visor-modalidad{
+      display:inline-flex;align-items:center;gap:0.5rem;
+      padding:0.45rem 0.9rem;border-radius:99px;font-size:0.78rem;font-weight:600;
+      margin-bottom:1.25rem;
+    }
+    .visor-modalidad.domicilio{background:rgba(27,42,107,0.1);color:var(--azul);}
+    .visor-modalidad.tienda{background:rgba(22,163,74,0.1);color:var(--verde);}
+    .visor-productos-titulo{font-size:0.72rem;font-weight:700;text-transform:uppercase;
+      letter-spacing:0.08em;color:var(--gris-texto);margin-bottom:0.75rem;}
+    .visor-producto-row{
+      display:flex;justify-content:space-between;align-items:center;
+      padding:0.7rem 0;border-bottom:1px solid var(--gris-claro);
+      font-size:0.88rem;
+    }
+    .visor-producto-row:last-child{border-bottom:none;}
+    .visor-prod-nombre{color:var(--negro);font-weight:500;}
+    .visor-prod-detalle{display:flex;align-items:center;gap:0.75rem;}
+    .visor-prod-qty{font-size:0.78rem;color:var(--gris-texto);
+      background:var(--gris-claro);padding:0.15rem 0.5rem;border-radius:99px;}
+    .visor-prod-precio{font-weight:700;color:var(--azul);}
+    .visor-total-row{
+      display:flex;justify-content:space-between;align-items:center;
+      margin-top:1.25rem;padding-top:1.25rem;border-top:1px dashed var(--gris-medio);
+    }
+    .visor-total-label{font-family:var(--font-titulo);font-weight:700;font-size:1rem;color:var(--negro);}
+    .visor-total-valor{font-family:var(--font-titulo);font-weight:800;font-size:1.4rem;color:var(--azul);}
+
+    .visor-footer{
+      padding:1.25rem 1.75rem;border-top:1px solid var(--gris-claro);
+      display:flex;gap:0.75rem;flex-wrap:wrap;
+    }
+    .btn-imprimir-visor{
+      display:inline-flex;align-items:center;gap:0.4rem;
+      background:var(--grad-rojo);color:white;font-size:0.85rem;font-weight:600;
+      padding:0.6rem 1.1rem;border-radius:99px;border:none;cursor:pointer;
+      transition:transform var(--trans),box-shadow var(--trans);
+      box-shadow:0 4px 12px rgba(192,16,42,0.3);
+    }
+    .btn-imprimir-visor:hover{transform:translateY(-1px);box-shadow:0 6px 18px rgba(192,16,42,0.4);}
+    .btn-imprimir-visor svg{width:14px;height:14px;}
+
+    /* Indicador de posición (puntos) */
+    .visor-indicador{
+      position:absolute;bottom:-2rem;left:50%;transform:translateX(-50%);
+      display:flex;gap:0.4rem;align-items:center;
+    }
+    .visor-punto{
+      width:8px;height:8px;border-radius:50%;
+      background:rgba(255,255,255,0.4);
+      transition:all var(--trans);cursor:pointer;
+    }
+    .visor-punto.activo{
+      background:white;width:20px;border-radius:99px;
+    }
+
+    /* Texto contador */
+    .visor-counter{
+      position:absolute;top:-2.5rem;left:50%;transform:translateX(-50%);
+      color:rgba(255,255,255,0.8);font-size:0.82rem;font-weight:600;
+      white-space:nowrap;
+    }
+
+    @media(max-width:600px){
+      .visor-nav-btn{display:none;}
+      .visor-wrap{padding:0;}
+    }
+
+    @media(max-width:640px){
+      .perfil-grid{grid-template-columns:1fr;}
+      .favoritos-grid{grid-template-columns:repeat(auto-fill,minmax(150px,1fr));}
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAVBAR -->
+  <nav class="navbar">
+    <div class="navbar-inner">
+      <a href="../index.html" class="navbar-logo">
+        <img src="logo3.jpeg" alt="Logo" onerror="this.style.display='none'">
+        <span>Los <em>Tres</em> Hermanos</span>
+      </a>
+      <div class="navbar-actions">
+        <a href="explorador-drogueria.html" style="font-size:0.82rem;font-weight:600;color:var(--azul);padding:0.45rem 0.9rem;border-radius:99px;background:var(--gris-claro);border:1.5px solid var(--gris-medio);">
+          Ver catálogo
+        </a>
+        <button class="btn-salir" onclick="cerrarSesion()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9"/></svg>
+          Cerrar sesión
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- HERO PERFIL -->
+  <div class="perfil-hero">
+    <div class="perfil-hero-inner">
+      <div class="avatar-grande" id="avatar-inicial">?</div>
+      <div class="perfil-info">
+        <h1 id="perfil-nombre">Cargando...</h1>
+        <p id="perfil-correo">—</p>
+        <div class="perfil-badge"><span class="punto-verde"></span>Cliente registrado</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- BREADCRUMB -->
+  <div style="background:white;border-bottom:1px solid var(--gris-medio);padding:0.65rem 2rem;">
+    <div style="max-width:1100px;margin:0 auto;">
+      <ol style="display:flex;align-items:center;gap:0.5rem;list-style:none;font-size:0.78rem;color:var(--gris-texto);">
+        <li><a href="../index.html" style="color:var(--gris-texto);text-decoration:none;" onmouseover="this.style.color='var(--azul)'" onmouseout="this.style.color='var(--gris-texto)'">Inicio</a></li>
+        <li style="color:var(--gris-medio);">›</li>
+        <li style="color:var(--azul);font-weight:600;">Mi Cuenta</li>
+      </ol>
+    </div>
+  </div>
+
+  <!-- TABS -->
+  <div class="tabs-wrap">
+    <div class="tabs-inner">
+      <button class="tab activo" data-sec="pedidos">Mis Pedidos</button>
+      <button class="tab" data-sec="favoritos">Favoritos</button>
+      <button class="tab" data-sec="perfil">Mi Perfil</button>
+      <button class="tab" data-sec="seguridad">Seguridad</button>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- ══ MIS PEDIDOS ══ -->
+    <div class="seccion activa" id="sec-pedidos">
+      <div class="panel">
+        <div class="panel-header">
+          <span class="panel-titulo">Historial de Pedidos</span>
+          <span id="pedidos-count" style="font-size:0.82rem;color:var(--gris-texto);">0 pedidos</span>
+        </div>
+        <div class="panel-body" id="pedidos-body">
+          <div class="vacio">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+            <h3>Sin pedidos todavía</h3>
+            <p>Cuando hagas tu primer pedido aparecerá aquí.</p>
+            <a href="explorador-drogueria.html">Ver catálogo →</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ FAVORITOS ══ -->
+    <div class="seccion" id="sec-favoritos">
+      <div class="panel">
+        <div class="panel-header"><span class="panel-titulo">Productos Favoritos</span></div>
+        <div class="panel-body">
+          <div class="favoritos-grid" id="favoritos-grid">
+            <div class="vacio" style="grid-column:1/-1">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
+              <h3>Sin favoritos aún</h3>
+              <p>Agrega productos a favoritos desde el catálogo.</p>
+              <a href="explorador-drogueria.html">Explorar productos →</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ MI PERFIL ══ -->
+    <div class="seccion" id="sec-perfil">
+      <!-- Datos personales -->
+      <div class="panel">
+        <div class="panel-header"><span class="panel-titulo">Datos Personales</span></div>
+        <div class="panel-body">
+          <div class="perfil-grid">
+            <div class="form-grupo">
+              <label>Nombre completo</label>
+              <input type="text" id="edit-nombre" placeholder="Tu nombre completo">
+            </div>
+            <div class="form-grupo">
+              <label>Teléfono</label>
+              <input type="tel" id="edit-telefono" placeholder="+57 300 000 0000">
+            </div>
+            <div class="form-grupo full">
+              <label>Dirección de entrega</label>
+              <input type="text" id="edit-direccion" placeholder="Calle, barrio, ciudad">
+            </div>
+            <div class="form-grupo full">
+              <button class="btn-guardar" onclick="guardarPerfil()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                Guardar datos personales
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Cambiar correo -->
+      <div class="panel">
+        <div class="panel-header"><span class="panel-titulo">Cambiar Correo Electrónico</span></div>
+        <div class="panel-body">
+          <div class="perfil-grid">
+            <div class="form-grupo">
+              <label>Correo actual</label>
+              <input type="email" id="correo-actual-display" disabled style="background:var(--gris-claro);color:var(--gris-texto);">
+            </div>
+            <div class="form-grupo">
+              <label>Nuevo correo</label>
+              <input type="email" id="edit-correo-nuevo" placeholder="nuevo@correo.com">
+            </div>
+            <div class="form-grupo full">
+              <label>Confirma tu contraseña para cambiar el correo</label>
+              <input type="password" id="correo-pass-confirm" placeholder="Tu contraseña actual">
+            </div>
+            <div class="form-grupo full">
+              <button class="btn-guardar" onclick="cambiarCorreo()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                Actualizar correo
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ SEGURIDAD ══ -->
+    <div class="seccion" id="sec-seguridad">
+      <div class="panel">
+        <div class="panel-header"><span class="panel-titulo">Cambiar Contraseña</span></div>
+        <div class="panel-body">
+          <div class="perfil-grid">
+            <div class="form-grupo full">
+              <label>Contraseña actual</label>
+              <input type="password" id="pass-actual" placeholder="Tu contraseña actual">
+            </div>
+            <div class="form-grupo">
+              <label>Nueva contraseña</label>
+              <input type="password" id="pass-nueva" placeholder="Mínimo 6 caracteres">
+            </div>
+            <div class="form-grupo">
+              <label>Confirmar nueva contraseña</label>
+              <input type="password" id="pass-nueva2" placeholder="Repite la nueva contraseña">
+            </div>
+            <!-- Fortaleza contraseña -->
+            <div class="form-grupo full" style="margin-top:-0.5rem;">
+              <div style="height:4px;border-radius:99px;background:var(--gris-medio);overflow:hidden;">
+                <div id="pass-strength-bar" style="height:100%;border-radius:99px;width:0%;transition:width 0.3s,background 0.3s;"></div>
+              </div>
+              <span id="pass-strength-label" style="font-size:0.72rem;color:var(--gris-texto);margin-top:0.25rem;display:block;"></span>
+            </div>
+            <div class="form-grupo full">
+              <button class="btn-guardar" onclick="cambiarPassword()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+                Cambiar contraseña
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Zona de peligro -->
+      <div class="panel" style="border-color:rgba(192,16,42,0.2);">
+        <div class="panel-header" style="border-bottom-color:rgba(192,16,42,0.1);">
+          <span class="panel-titulo" style="color:var(--rojo);">⚠️ Zona de Peligro</span>
+        </div>
+        <div class="panel-body">
+          <p style="font-size:0.88rem;color:var(--gris-texto);margin-bottom:1rem;">
+            Si eliminas tu cuenta, todos tus datos, historial de pedidos y favoritos serán borrados permanentemente. Esta acción no se puede deshacer.
+          </p>
+          <button onclick="eliminarCuenta()" style="display:inline-flex;align-items:center;gap:0.4rem;background:transparent;color:var(--rojo);border:1.5px solid var(--rojo);font-size:0.85rem;font-weight:600;padding:0.6rem 1.25rem;border-radius:99px;cursor:pointer;transition:all var(--trans);"
+            onmouseover="this.style.background='var(--rojo)';this.style.color='white'"
+            onmouseout="this.style.background='transparent';this.style.color='var(--rojo)'">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4a1 1 0 011-1h4a1 1 0 011 1v2"/></svg>
+            Eliminar mi cuenta
+          </button>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /content -->
+
+  <!-- VISOR DE FACTURAS -->
+  <div class="visor-overlay" id="visor-overlay" role="dialog" aria-modal="true" aria-label="Visor de facturas">
+    <div class="visor-wrap" id="visor-wrap">
+      <span class="visor-counter" id="visor-counter"></span>
+
+      <button class="visor-nav-btn" id="visor-prev" aria-label="Factura anterior" disabled>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <polyline points="15 18 9 12 15 6"/>
+        </svg>
+      </button>
+
+      <div class="visor-factura" id="visor-factura"></div>
+
+      <button class="visor-nav-btn" id="visor-next" aria-label="Siguiente factura">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <polyline points="9 18 15 12 9 6"/>
+        </svg>
+      </button>
+
+      <div class="visor-indicador" id="visor-indicador"></div>
+    </div>
+  </div>
+
+  <div class="toast-wrap" id="toast-wrap"></div>
+
+  <script>
+    // ── Verificar sesión cliente ──────────────────────────────
+    const sesion = JSON.parse(sessionStorage.getItem('lth_cliente') || 'null');
+    if (!sesion || sesion.rol !== 'cliente') {
+      window.location.href = 'login-cliente.html';
+    }
+
+    // ── Cargar datos del cliente ──────────────────────────────
+    function getClienteCompleto() {
+      const clientes = JSON.parse(localStorage.getItem('lth_clientes') || '[]');
+      return clientes.find(c => c.id === sesion.id) || null;
+    }
+
+    function inicializar() {
+      const c = getClienteCompleto();
+      if (!c) return;
+      document.getElementById('avatar-inicial').textContent = c.nombre[0].toUpperCase();
+      document.getElementById('perfil-nombre').textContent  = c.nombre;
+      document.getElementById('perfil-correo').textContent  = c.correo;
+      document.getElementById('edit-nombre').value          = c.nombre;
+      document.getElementById('edit-telefono').value          = c.telefono  || '';
+      document.getElementById('edit-direccion').value         = c.direccion || '';
+      document.getElementById('correo-actual-display').value  = c.correo;
+      renderPedidos(c);
+      renderFavoritos(c);
+    }
+
+    // ── Tabs ──────────────────────────────────────────────────
+    document.querySelectorAll('.tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('activo'));
+        tab.classList.add('activo');
+        document.querySelectorAll('.seccion').forEach(s => s.classList.remove('activa'));
+        document.getElementById('sec-' + tab.dataset.sec).classList.add('activa');
+      });
+    });
+
+    // ── Toast ─────────────────────────────────────────────────
+    function toast(msg, ok=true) {
+      const wrap = document.getElementById('toast-wrap');
+      const el   = document.createElement('div');
+      el.className = 'toast' + (ok ? '' : ' err');
+      el.textContent = msg;
+      wrap.appendChild(el);
+      setTimeout(() => { el.classList.add('out'); el.addEventListener('animationend', () => el.remove()); }, 3000);
+    }
+
+    function fmt(v) { return '$' + v.toLocaleString('es-CO'); }
+
+    // ── Render pedidos ────────────────────────────────────────
+    function renderPedidos(c) {
+      // Los pedidos del cliente están en lth_ventas con su id
+      const todasVentas = JSON.parse(localStorage.getItem('lth_ventas') || '[]');
+      const pedidos = todasVentas.filter(v => v.clienteId === c.id).reverse();
+      const body    = document.getElementById('pedidos-body');
+      const count   = document.getElementById('pedidos-count');
+      count.textContent = pedidos.length + ' pedido' + (pedidos.length !== 1 ? 's' : '');
+
+      if (!pedidos.length) {
+        body.innerHTML = `<div class="vacio">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+          <h3>Sin pedidos todavía</h3>
+          <p>Cuando hagas tu primer pedido aparecerá aquí.</p>
+          <a href="explorador-drogueria.html">Ver catálogo →</a>
+        </div>`;
+        return;
+      }
+
+      body.innerHTML = pedidos.map(p => `
+        <div class="pedido-card">
+          <div class="pedido-top">
+            <span class="pedido-id">${p.id}</span>
+            <span class="pedido-fecha">${p.fecha}</span>
+            <span class="pedido-total">${fmt(p.total)}</span>
+          </div>
+          <div class="pedido-items">
+            ${p.productos.map(item => `
+              <div class="pedido-item-row">
+                <span class="pedido-item-nombre">${item.nombre}</span>
+                <span class="pedido-item-qty">x${item.cantidad} · ${fmt(item.precio * item.cantidad)}</span>
+              </div>
+            `).join('')}
+          </div>
+          <div class="pedido-footer">
+            <span class="badge ${p.modalidad === 'domicilio' ? 'badge-domicilio' : 'badge-tienda'}">
+              ${p.modalidad === 'domicilio' ? '🏠 Domicilio' : '🏪 Recoger en tienda'}
+            </span>
+            <button class="btn-ver-factura" onclick="verFactura('${p.id}')">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+              Ver factura
+            </button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    // ── Render favoritos ──────────────────────────────────────
+    function renderFavoritos(c) {
+      const favs = c.favoritos || [];
+      const grid = document.getElementById('favoritos-grid');
+      if (!favs.length) {
+        grid.innerHTML = `<div class="vacio" style="grid-column:1/-1">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
+          <h3>Sin favoritos aún</h3>
+          <p>Agrega productos desde el catálogo.</p>
+          <a href="explorador-drogueria.html">Explorar productos →</a>
+        </div>`;
+        return;
+      }
+      grid.innerHTML = favs.map(f => `
+        <div class="fav-card">
+          <button class="btn-quitar-fav" onclick="quitarFavorito(${f.id})" title="Quitar de favoritos">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          </button>
+          <div class="fav-nombre">${f.nombre}</div>
+          <div class="fav-precio">${fmt(f.precio)}</div>
+        </div>
+      `).join('');
+    }
+
+    // ── Guardar datos personales ──────────────────────────────
+    // ⚠️ PREPARADO PARA BD: fetch('/api/clientes/'+sesion.id, { method:'PUT', body:... })
+    function guardarPerfil() {
+      const nombre    = document.getElementById('edit-nombre').value.trim();
+      const telefono  = document.getElementById('edit-telefono').value.trim();
+      const direccion = document.getElementById('edit-direccion').value.trim();
+      if (!nombre)    { toast('El nombre es obligatorio', false); return; }
+      if (!telefono)  { toast('El teléfono es obligatorio', false); return; }
+      if (!direccion) { toast('La dirección es obligatoria', false); return; }
+
+      const clientes = JSON.parse(localStorage.getItem('lth_clientes') || '[]');
+      const idx = clientes.findIndex(c => c.id === sesion.id);
+      if (idx === -1) { toast('Error al guardar', false); return; }
+
+      clientes[idx].nombre    = nombre;
+      clientes[idx].telefono  = telefono;
+      clientes[idx].direccion = direccion;
+      localStorage.setItem('lth_clientes', JSON.stringify(clientes));
+
+      const nuevaSesion = { ...sesion, nombre, telefono, direccion };
+      sessionStorage.setItem('lth_cliente', JSON.stringify(nuevaSesion));
+      document.getElementById('perfil-nombre').textContent  = nombre;
+      document.getElementById('avatar-inicial').textContent = nombre[0].toUpperCase();
+      toast('✓ Datos personales actualizados');
+    }
+
+    // ── Cambiar correo ────────────────────────────────────────
+    // ⚠️ PREPARADO PARA BD: fetch('/api/clientes/'+sesion.id+'/correo', { method:'PUT', ... })
+    function cambiarCorreo() {
+      const nuevoCorreo = document.getElementById('edit-correo-nuevo').value.trim();
+      const passConfirm = document.getElementById('correo-pass-confirm').value;
+      if (!nuevoCorreo || !passConfirm) { toast('Completa todos los campos', false); return; }
+      if (!nuevoCorreo.includes('@'))   { toast('Ingresa un correo válido', false); return; }
+
+      const clientes = JSON.parse(localStorage.getItem('lth_clientes') || '[]');
+      const idx = clientes.findIndex(c => c.id === sesion.id);
+      if (idx === -1) { toast('Error', false); return; }
+      if (clientes[idx].password !== passConfirm) { toast('Contraseña incorrecta', false); return; }
+      if (clientes.find(c => c.correo === nuevoCorreo && c.id !== sesion.id)) {
+        toast('Ese correo ya está en uso por otra cuenta', false); return;
+      }
+
+      const correoAnterior = clientes[idx].correo;
+      clientes[idx].correo = nuevoCorreo;
+      localStorage.setItem('lth_clientes', JSON.stringify(clientes));
+
+      const nuevaSesion = { ...sesion, correo: nuevoCorreo };
+      sessionStorage.setItem('lth_cliente', JSON.stringify(nuevaSesion));
+      document.getElementById('perfil-correo').textContent       = nuevoCorreo;
+      document.getElementById('correo-actual-display').value     = nuevoCorreo;
+      document.getElementById('edit-correo-nuevo').value         = '';
+      document.getElementById('correo-pass-confirm').value       = '';
+      toast('✓ Correo actualizado correctamente');
+    }
+
+    // ── Cambiar contraseña ────────────────────────────────────
+    // ⚠️ PREPARADO PARA BD: fetch('/api/clientes/'+sesion.id+'/password', { method:'PUT', ... })
+    function cambiarPassword() {
+      const actual  = document.getElementById('pass-actual').value;
+      const nueva   = document.getElementById('pass-nueva').value;
+      const nueva2  = document.getElementById('pass-nueva2').value;
+      if (!actual || !nueva || !nueva2) { toast('Completa todos los campos', false); return; }
+      if (nueva.length < 6)  { toast('La nueva contraseña debe tener mínimo 6 caracteres', false); return; }
+      if (nueva !== nueva2)  { toast('Las contraseñas no coinciden', false); return; }
+      if (actual === nueva)  { toast('La nueva contraseña debe ser diferente a la actual', false); return; }
+
+      const clientes = JSON.parse(localStorage.getItem('lth_clientes') || '[]');
+      const idx = clientes.findIndex(c => c.id === sesion.id);
+      if (idx === -1) { toast('Error', false); return; }
+      if (clientes[idx].password !== actual) { toast('La contraseña actual es incorrecta', false); return; }
+
+      clientes[idx].password = nueva;
+      localStorage.setItem('lth_clientes', JSON.stringify(clientes));
+      document.getElementById('pass-actual').value  = '';
+      document.getElementById('pass-nueva').value   = '';
+      document.getElementById('pass-nueva2').value  = '';
+      document.getElementById('pass-strength-bar').style.width = '0%';
+      document.getElementById('pass-strength-label').textContent = '';
+      toast('✓ Contraseña actualizada correctamente');
+    }
+
+    // ── Eliminar cuenta ───────────────────────────────────────
+    // ⚠️ PREPARADO PARA BD: fetch('/api/clientes/'+sesion.id, { method:'DELETE' })
+    function eliminarCuenta() {
+      if (!confirm('¿Estás seguro? Esta acción eliminará tu cuenta y todos tus datos permanentemente.')) return;
+      const pass = prompt('Ingresa tu contraseña para confirmar:');
+      if (!pass) return;
+
+      const clientes = JSON.parse(localStorage.getItem('lth_clientes') || '[]');
+      const cliente  = clientes.find(c => c.id === sesion.id);
+      if (!cliente || cliente.password !== pass) { toast('Contraseña incorrecta', false); return; }
+
+      const nuevosClientes = clientes.filter(c => c.id !== sesion.id);
+      localStorage.setItem('lth_clientes', JSON.stringify(nuevosClientes));
+      sessionStorage.removeItem('lth_cliente');
+      toast('Cuenta eliminada. Redirigiendo...');
+      setTimeout(() => { window.location.href = '../index.html'; }, 1500);
+    }
+
+    // ── Quitar favorito ───────────────────────────────────────
+    function quitarFavorito(id) {
+      const clientes = JSON.parse(localStorage.getItem('lth_clientes') || '[]');
+      const idx = clientes.findIndex(c => c.id === sesion.id);
+      if (idx === -1) return;
+      clientes[idx].favoritos = (clientes[idx].favoritos || []).filter(f => f.id !== id);
+      localStorage.setItem('lth_clientes', JSON.stringify(clientes));
+      renderFavoritos(clientes[idx]);
+      toast('Eliminado de favoritos');
+    }
+
+    // ── VISOR DE FACTURAS ────────────────────────────────────
+    let visorPedidos = [];
+    let visorIndex   = 0;
+    let touchStartX  = 0;
+
+    function fmt(v) { return '$' + v.toLocaleString('es-CO'); }
+
+    function verFactura(id) {
+      const ventas = JSON.parse(localStorage.getItem('lth_ventas') || '[]');
+      const misPedidos = ventas.filter(v => v.clienteId === sesion.id).reverse();
+      if (!misPedidos.length) return;
+      visorPedidos = misPedidos;
+      visorIndex   = misPedidos.findIndex(v => v.id === id);
+      if (visorIndex === -1) visorIndex = 0;
+      abrirVisor();
+    }
+
+    function abrirVisor() {
+      document.getElementById('visor-overlay').classList.add('visible');
+      document.body.style.overflow = 'hidden';
+      renderVisor('none');
+      actualizarNavVisor();
+    }
+
+    function cerrarVisor() {
+      document.getElementById('visor-overlay').classList.remove('visible');
+      document.body.style.overflow = '';
+    }
+
+    function renderVisor(direccion) {
+      const p    = visorPedidos[visorIndex];
+      const total = p.total || p.productos.reduce((s,i)=>s+i.precio*i.cantidad,0);
+
+      const animClass = direccion === 'izq' ? 'slide-izq'
+                      : direccion === 'der' ? 'slide-der' : '';
+
+      document.getElementById('visor-factura').innerHTML = `
+        <div class="visor-header">
+          <div class="visor-header-info">
+            <div class="visor-num-pedido">Pedido ${p.id}</div>
+            <div class="visor-total">${fmt(total)}</div>
+            <div class="visor-fecha">${p.fecha}</div>
+          </div>
+          <button class="btn-cerrar-visor" onclick="cerrarVisor()" aria-label="Cerrar visor">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+            </svg>
+          </button>
+        </div>
+        <div class="visor-body">
+          <div class="visor-modalidad ${p.modalidad||'tienda'}">
+            ${p.modalidad === 'domicilio' ? '🏠 Domicilio: ' + (p.direccion||'') : '🏪 Recoger en tienda'}
+          </div>
+          <div class="visor-productos-titulo">Productos del pedido</div>
+          ${p.productos.map(item => `
+            <div class="visor-producto-row">
+              <span class="visor-prod-nombre">${item.nombre}</span>
+              <div class="visor-prod-detalle">
+                <span class="visor-prod-qty">x${item.cantidad}</span>
+                <span class="visor-prod-precio">${fmt(item.precio * item.cantidad)}</span>
+              </div>
+            </div>
+          `).join('')}
+          <div class="visor-total-row">
+            <span class="visor-total-label">Total pagado</span>
+            <span class="visor-total-valor">${fmt(total)}</span>
+          </div>
+        </div>
+        <div class="visor-footer">
+          <button class="btn-imprimir-visor" onclick="imprimirFactura(${JSON.stringify(p).replace(/"/g,'&quot;')})">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="6 9 6 2 18 2 18 9"/>
+              <path d="M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2"/>
+              <rect x="6" y="14" width="12" height="8"/>
+            </svg>
+            Imprimir factura
+          </button>
+        </div>`;
+
+      // Animación
+      const el = document.getElementById('visor-factura');
+      el.classList.remove('slide-izq','slide-der');
+      if (animClass) {
+        void el.offsetWidth; // reflow
+        el.classList.add(animClass);
+      }
+
+      // Contador e indicador
+      document.getElementById('visor-counter').textContent =
+        `${visorIndex + 1} de ${visorPedidos.length}`;
+
+      const indEl = document.getElementById('visor-indicador');
+      indEl.innerHTML = visorPedidos.map((_, i) =>
+        `<div class="visor-punto ${i === visorIndex ? 'activo' : ''}"
+              onclick="irVisor(${i})" title="Ir a pedido ${i+1}"></div>`
+      ).join('');
+    }
+
+    function actualizarNavVisor() {
+      document.getElementById('visor-prev').disabled = visorIndex === 0;
+      document.getElementById('visor-next').disabled = visorIndex === visorPedidos.length - 1;
+    }
+
+    function irVisor(idx) {
+      const dir = idx > visorIndex ? 'izq' : 'der';
+      visorIndex = idx;
+      renderVisor(dir);
+      actualizarNavVisor();
+    }
+
+    function imprimirFactura(pedido) {
+      localStorage.setItem('drogueria_carrito', JSON.stringify(
+        pedido.productos.map(i => ({ id:i.id, nombre:i.nombre, precio:i.precio, cantidad:i.cantidad }))
+      ));
+      window.open('recibo.html', '_blank');
+    }
+
+    // Navegación con teclado
+    document.addEventListener('keydown', (e) => {
+      const overlay = document.getElementById('visor-overlay');
+      if (!overlay.classList.contains('visible')) return;
+      if (e.key === 'ArrowRight' && visorIndex < visorPedidos.length - 1) {
+        visorIndex++; renderVisor('izq'); actualizarNavVisor();
+      } else if (e.key === 'ArrowLeft' && visorIndex > 0) {
+        visorIndex--; renderVisor('der'); actualizarNavVisor();
+      } else if (e.key === 'Escape') {
+        cerrarVisor();
+      }
+    });
+
+    // Swipe táctil (móvil)
+    document.getElementById('visor-overlay').addEventListener('touchstart', (e) => {
+      touchStartX = e.touches[0].clientX;
+    }, { passive: true });
+
+    document.getElementById('visor-overlay').addEventListener('touchend', (e) => {
+      const diff = touchStartX - e.changedTouches[0].clientX;
+      if (Math.abs(diff) < 40) return; // ignorar toques pequeños
+      if (diff > 0 && visorIndex < visorPedidos.length - 1) {
+        visorIndex++; renderVisor('izq'); actualizarNavVisor();
+      } else if (diff < 0 && visorIndex > 0) {
+        visorIndex--; renderVisor('der'); actualizarNavVisor();
+      }
+    }, { passive: true });
+
+    // Cerrar al hacer clic en overlay
+    document.getElementById('visor-overlay').addEventListener('click', (e) => {
+      if (e.target === document.getElementById('visor-overlay')) cerrarVisor();
+    });
+
+    // Botones prev/next
+    document.getElementById('visor-prev').addEventListener('click', () => {
+      if (visorIndex > 0) { visorIndex--; renderVisor('der'); actualizarNavVisor(); }
+    });
+    document.getElementById('visor-next').addEventListener('click', () => {
+      if (visorIndex < visorPedidos.length - 1) { visorIndex++; renderVisor('izq'); actualizarNavVisor(); }
+    });
+
+    // ── Cerrar sesión ─────────────────────────────────────────
+    function cerrarSesion() {
+      sessionStorage.removeItem('lth_cliente');
+      window.location.href = '../index.html';
+    }
+
+    // ── Medidor fortaleza contraseña ─────────────────────────
+    document.getElementById('pass-nueva')?.addEventListener('input', function() {
+      const pass  = this.value;
+      const bar   = document.getElementById('pass-strength-bar');
+      const label = document.getElementById('pass-strength-label');
+      let score   = 0;
+      if (pass.length >= 6)  score++;
+      if (pass.length >= 10) score++;
+      if (/[A-Z]/.test(pass)) score++;
+      if (/[0-9]/.test(pass)) score++;
+      if (/[^A-Za-z0-9]/.test(pass)) score++;
+      const pct    = (score / 5) * 100;
+      const colors = ['','#ef4444','#f97316','#eab308','#22c55e','#16a34a'];
+      const labels = ['','Muy débil','Débil','Regular','Fuerte','¡Muy fuerte!'];
+      bar.style.width      = pct + '%';
+      bar.style.background = colors[score] || '#ef4444';
+      label.textContent    = pass ? (labels[score] || '') : '';
+      label.style.color    = colors[score] || '#9CA3AF';
+    });
+
+    // ── Init ──────────────────────────────────────────────────
+    document.addEventListener('DOMContentLoaded', inicializar);
+  </script>
+</body>
+</html>

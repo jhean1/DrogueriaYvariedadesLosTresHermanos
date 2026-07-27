@@ -1,0 +1,790 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Droguería y Variedades Los Tres Hermanos</title>
+  <link rel="stylesheet" href="DROGUERIA/global.css">
+  <style>
+    /* ── HERO ── */
+    .hero {
+      background: var(--grad-hero);
+      min-height: 90vh;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      align-items: center;
+      gap: 4rem;
+      padding: 6rem 4rem 4rem;
+      max-width: 100%;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: -40%;
+      right: -10%;
+      width: 700px;
+      height: 700px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.04);
+      pointer-events: none;
+    }
+
+    .hero::after {
+      content: '';
+      position: absolute;
+      bottom: -20%;
+      left: -5%;
+      width: 400px;
+      height: 400px;
+      border-radius: 50%;
+      background: rgba(232,18,47,0.12);
+      pointer-events: none;
+    }
+
+    .hero-texto { position: relative; z-index: 1; }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: rgba(255,255,255,0.12);
+      border: 1px solid rgba(255,255,255,0.20);
+      color: rgba(255,255,255,0.90);
+      font-size: 0.78rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      padding: 0.45rem 1rem;
+      border-radius: 99px;
+      backdrop-filter: blur(8px);
+      margin-bottom: 1.5rem;
+    }
+
+    .hero-badge span { width: 7px; height: 7px; border-radius: 50%; background: #4ade80; display: block; animation: parpadeo 1.5s infinite; }
+
+    @keyframes parpadeo { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+    .hero-titulo {
+      font-family: var(--font-titulo);
+      font-size: clamp(2.4rem, 5vw, 3.8rem);
+      font-weight: 800;
+      color: white;
+      line-height: 1.1;
+      letter-spacing: -0.03em;
+      margin-bottom: 1.25rem;
+    }
+
+    .hero-titulo em {
+      font-style: normal;
+      color: #FCA5A5;
+    }
+
+    .hero-desc {
+      font-size: 1.05rem;
+      color: rgba(255,255,255,0.75);
+      line-height: 1.8;
+      max-width: 480px;
+      margin-bottom: 2.5rem;
+    }
+
+    .hero-botones {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .hero-botones .btn-primario {
+      background: white;
+      color: var(--azul);
+      box-shadow: 0 8px 32px rgba(0,0,0,0.20);
+    }
+
+    .hero-botones .btn-primario:hover {
+      background: var(--gris-claro);
+      box-shadow: 0 12px 40px rgba(0,0,0,0.30);
+    }
+
+    .hero-botones .btn-secundario {
+      border-color: rgba(255,255,255,0.5);
+      color: white;
+    }
+
+    .hero-botones .btn-secundario:hover {
+      background: rgba(255,255,255,0.15);
+      color: white;
+    }
+
+    .hero-stats {
+      display: flex;
+      gap: 2.5rem;
+      margin-top: 3rem;
+      padding-top: 2rem;
+      border-top: 1px solid rgba(255,255,255,0.15);
+    }
+
+    .stat-item {}
+
+    .stat-numero {
+      font-family: var(--font-titulo);
+      font-size: 2rem;
+      font-weight: 800;
+      color: white;
+      display: block;
+      line-height: 1;
+    }
+
+    .stat-label {
+      font-size: 0.78rem;
+      color: rgba(255,255,255,0.60);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-top: 0.25rem;
+      display: block;
+    }
+
+    /* Imagen hero */
+    .hero-imagen {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      justify-content: center;
+    }
+
+    .hero-imagen-frame {
+      position: relative;
+      width: 100%;
+      max-width: 480px;
+    }
+
+    .hero-imagen-frame::before {
+      content: '';
+      position: absolute;
+      inset: -12px;
+      border-radius: var(--radio-xl);
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.12);
+      backdrop-filter: blur(4px);
+    }
+
+    .hero-imagen-frame img {
+      width: 100%;
+      height: 380px;
+      object-fit: cover;
+      border-radius: var(--radio-lg);
+      box-shadow: var(--sombra-lg);
+      position: relative;
+    }
+
+    .hero-imagen-chip {
+      position: absolute;
+      bottom: -20px;
+      left: -20px;
+      background: white;
+      border-radius: var(--radio);
+      padding: 0.85rem 1.25rem;
+      box-shadow: var(--sombra-lg);
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      z-index: 2;
+    }
+
+    .chip-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      background: var(--grad-rojo);
+      display: grid;
+      place-items: center;
+      flex-shrink: 0;
+    }
+
+    .chip-icon svg { width: 20px; height: 20px; color: white; }
+
+    .chip-texto strong {
+      display: block;
+      font-family: var(--font-titulo);
+      font-weight: 700;
+      font-size: 0.95rem;
+      color: var(--negro-suave);
+    }
+
+    .chip-texto span {
+      font-size: 0.78rem;
+      color: var(--gris-texto);
+    }
+
+    /* ── SECCIÓN SERVICIOS ── */
+    .seccion {
+      padding: 5rem 2rem;
+    }
+
+    .seccion-inner {
+      max-width: 1280px;
+      margin: 0 auto;
+    }
+
+    .seccion-encabezado {
+      text-align: center;
+      margin-bottom: 3.5rem;
+    }
+
+    .seccion-eyebrow {
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--rojo);
+      margin-bottom: 0.75rem;
+    }
+
+    .seccion-titulo {
+      font-family: var(--font-titulo);
+      font-size: clamp(1.8rem, 3.5vw, 2.6rem);
+      font-weight: 800;
+      color: var(--azul);
+      line-height: 1.2;
+      letter-spacing: -0.02em;
+    }
+
+    .seccion-subtitulo {
+      font-size: 1rem;
+      color: var(--gris-texto);
+      max-width: 540px;
+      margin: 0.75rem auto 0;
+      line-height: 1.7;
+    }
+
+    /* ── CARDS DE SERVICIOS ── */
+    .servicios-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .servicio-card {
+      background: white;
+      border-radius: var(--radio-lg);
+      padding: 2rem 1.75rem;
+      border: 1px solid var(--gris-medio);
+      transition: transform var(--trans), box-shadow var(--trans), border-color var(--trans);
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .servicio-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 4px;
+      background: var(--grad-rojo);
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform var(--trans);
+    }
+
+    .servicio-card:hover {
+      transform: translateY(-6px);
+      box-shadow: var(--sombra-lg);
+      border-color: var(--azul-claro);
+    }
+
+    .servicio-card:hover::before { transform: scaleX(1); }
+
+    .servicio-icono {
+      width: 56px;
+      height: 56px;
+      border-radius: var(--radio);
+      background: var(--grad-card);
+      display: grid;
+      place-items: center;
+      margin-bottom: 1.25rem;
+      transition: transform var(--trans);
+    }
+
+    .servicio-card:hover .servicio-icono { transform: scale(1.08) rotate(-3deg); }
+
+    .servicio-icono svg { width: 26px; height: 26px; color: white; }
+
+    .servicio-nombre {
+      font-family: var(--font-titulo);
+      font-weight: 700;
+      font-size: 1.05rem;
+      color: var(--negro-suave);
+      margin-bottom: 0.5rem;
+    }
+
+    .servicio-desc {
+      font-size: 0.88rem;
+      color: var(--gris-texto);
+      line-height: 1.65;
+    }
+
+    /* ── BANNER CTA ── */
+    .banner-cta {
+      background: var(--grad-card);
+      border-radius: var(--radio-xl);
+      padding: 4rem 3rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 2rem;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .banner-cta::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      right: -10%;
+      width: 500px;
+      height: 500px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.04);
+      pointer-events: none;
+    }
+
+    .banner-texto h2 {
+      font-family: var(--font-titulo);
+      font-size: clamp(1.6rem, 3vw, 2.2rem);
+      font-weight: 800;
+      color: white;
+      line-height: 1.2;
+      margin-bottom: 0.75rem;
+    }
+
+    .banner-texto p {
+      color: rgba(255,255,255,0.72);
+      font-size: 0.95rem;
+      max-width: 440px;
+    }
+
+    .banner-cta .btn-primario {
+      background: white;
+      color: var(--azul);
+      flex-shrink: 0;
+    }
+
+    /* ── VALORES / HEURÍSTICAS ── */
+    .valores-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+    }
+
+    .valor-item {
+      background: white;
+      border-radius: var(--radio-lg);
+      padding: 1.5rem;
+      border: 1px solid var(--gris-medio);
+      text-align: center;
+      transition: transform var(--trans), box-shadow var(--trans);
+    }
+
+    .valor-item:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--sombra-md);
+    }
+
+    .valor-numero {
+      font-family: var(--font-titulo);
+      font-size: 2.5rem;
+      font-weight: 800;
+      color: var(--gris-medio);
+      display: block;
+      line-height: 1;
+      margin-bottom: 0.5rem;
+    }
+
+    .valor-nombre {
+      font-weight: 600;
+      font-size: 0.88rem;
+      color: var(--azul);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 900px) {
+      .hero {
+        grid-template-columns: 1fr;
+        padding: 5rem 2rem 3rem;
+        min-height: auto;
+        text-align: center;
+      }
+      .hero-desc { margin: 0 auto 2rem; }
+      .hero-botones { justify-content: center; }
+      .hero-stats { justify-content: center; }
+      .hero-imagen { display: none; }
+      .banner-cta { flex-direction: column; text-align: center; }
+      .banner-texto p { margin: 0 auto; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ── NAVBAR ── -->
+  <nav class="navbar" role="navigation" aria-label="Menú principal">
+    <div class="navbar-inner">
+      <a href="index.html" class="navbar-logo" aria-label="Ir al inicio">
+        <img src="DROGUERIA/logo3.jpeg" alt="Logo Droguería Los Tres Hermanos">
+        <span>Los <em>Tres</em> Hermanos</span>
+      </a>
+
+      <div class="navbar-nav" id="nav-menu">
+        <a href="index.html"                        class="nav-link active">Inicio</a>
+        <a href="DROGUERIA/explorador-drogueria.html" class="nav-link">Medicamentos</a>
+        <a href="DROGUERIA/variedades.html"           class="nav-link">Variedades</a>
+        <a href="DROGUERIA/servicios.html"            class="nav-link">Servicios</a>
+        <a href="DROGUERIA/somos-nosotros.html"       class="nav-link">Nosotros</a>
+        <a href="DROGUERIA/contacto-drogueria.html"   class="nav-link">Contacto</a>
+      </div>
+
+      <div class="navbar-actions">
+        <a href="DROGUERIA/login-cliente.html" id="btn-mi-cuenta" class="btn-secundario" style="font-size:0.82rem;padding:0.45rem 1rem;" aria-label="Mi cuenta">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/>
+          </svg>
+          Mi cuenta
+        </a>
+
+        <a href="DROGUERIA/explorador-drogueria.html" class="btn-carrito-nav" aria-label="Ir al carrito">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/>
+            <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
+          </svg>
+          <span>Explorar</span>
+        </a>
+        <button class="btn-menu" id="btn-menu" aria-label="Abrir menú" aria-expanded="false" aria-controls="nav-menu">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <line x1="4" y1="6"  x2="20" y2="6"/>
+            <line x1="4" y1="12" x2="20" y2="12"/>
+            <line x1="4" y1="18" x2="20" y2="18"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ── HERO ── -->
+  <section class="hero" aria-label="Bienvenida">
+    <div class="hero-texto animar">
+      <div class="hero-badge">
+        <span></span>
+        Abierto · Arjona, Bolívar
+      </div>
+
+      <h1 class="hero-titulo">
+        Tu salud,<br>
+        nuestra <em>prioridad</em>
+      </h1>
+
+      <p class="hero-desc">
+        Droguería y Variedades Los Tres Hermanos — medicamentos, útiles escolares
+        y mucho más. Calidad, confianza y atención personalizada para toda tu familia.
+      </p>
+
+      <div class="hero-botones">
+        <a href="DROGUERIA/explorador-drogueria.html" class="btn-primario">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+          </svg>
+          Ver Medicamentos
+        </a>
+        <a href="DROGUERIA/contacto-drogueria.html" class="btn-secundario">
+          Contactarnos
+        </a>
+      </div>
+
+      <div class="hero-stats">
+        <div class="stat-item">
+          <span class="stat-numero">+150</span>
+          <span class="stat-label">Medicamentos</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-numero">100%</span>
+          <span class="stat-label">Garantizados</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-numero">5★</span>
+          <span class="stat-label">Calificación</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="hero-imagen animar animar-delay-2">
+      <div class="hero-imagen-frame">
+        <img src="DROGUERIA/Logo.jpg" alt="Droguería Los Tres Hermanos">
+        <div class="hero-imagen-chip">
+          <div class="chip-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
+            </svg>
+          </div>
+          <div class="chip-texto">
+            <strong>Medicamentos Certificados</strong>
+            <span>Calidad garantizada</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── SERVICIOS ── -->
+  <section class="seccion" style="background: white;">
+    <div class="seccion-inner">
+      <div class="seccion-encabezado animar">
+        <p class="seccion-eyebrow">¿Qué ofrecemos?</p>
+        <h2 class="seccion-titulo">Todo en un solo lugar</h2>
+        <p class="seccion-subtitulo">
+          Desde medicamentos hasta útiles escolares, tenemos todo lo que tu familia necesita.
+        </p>
+      </div>
+
+      <div class="servicios-grid">
+        <a href="DROGUERIA/explorador-drogueria.html" class="servicio-card animar animar-delay-1" style="color:inherit">
+          <div class="servicio-icono">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0H5m14 0h2M5 21H3M9 7h1m-1 4h1m4-4h1m-1 4h1"/>
+            </svg>
+          </div>
+          <div class="servicio-nombre">Medicamentos</div>
+          <div class="servicio-desc">Amplio catálogo de medicamentos con búsqueda por nombre o categoría.</div>
+        </a>
+
+        <a href="DROGUERIA/variedades.html" class="servicio-card animar animar-delay-2" style="color:inherit">
+          <div class="servicio-icono">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/>
+            </svg>
+          </div>
+          <div class="servicio-nombre">Variedades</div>
+          <div class="servicio-desc">Perfumes, útiles escolares, desodorantes, alcohol y más productos.</div>
+        </a>
+
+        <a href="DROGUERIA/servicios.html" class="servicio-card animar animar-delay-3" style="color:inherit">
+          <div class="servicio-icono">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12" y2="18"/>
+            </svg>
+          </div>
+          <div class="servicio-nombre">Recargas y Minutos</div>
+          <div class="servicio-desc">Recarga tu saldo y compra minutos de manera rápida y segura.</div>
+        </a>
+
+        <a href="DROGUERIA/servicios.html" class="servicio-card animar animar-delay-4" style="color:inherit">
+          <div class="servicio-icono">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M7 21h10M12 21V13M3 13h18M7 13V7a1 1 0 011-1h8a1 1 0 011 1v6"/>
+            </svg>
+          </div>
+          <div class="servicio-nombre">Fotocopiado</div>
+          <div class="servicio-desc">Servicio de fotocopiado rápido. Trae tus documentos y te los copiamos.</div>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── BANNER CTA ── -->
+  <section class="seccion">
+    <div class="seccion-inner">
+      <div class="banner-cta animar">
+        <div class="banner-texto">
+          <h2>¿Necesitas un medicamento ahora?</h2>
+          <p>Explora nuestro catálogo completo. Filtra por categoría, precio o calificación y encuentra lo que buscas en segundos.</p>
+        </div>
+        <a href="DROGUERIA/explorador-drogueria.html" class="btn-primario">
+          Explorar Catálogo →
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── NUESTROS VALORES ── -->
+  <section class="seccion" style="background: white;">
+    <div class="seccion-inner">
+      <div class="seccion-encabezado animar">
+        <p class="seccion-eyebrow">Quiénes somos</p>
+        <h2 class="seccion-titulo">Nuestros Valores</h2>
+      </div>
+      <div class="valores-grid">
+        <div class="valor-item animar animar-delay-1">
+          <span class="valor-numero">01</span>
+          <div class="valor-nombre">Responsabilidad</div>
+        </div>
+        <div class="valor-item animar animar-delay-2">
+          <span class="valor-numero">02</span>
+          <div class="valor-nombre">Respeto</div>
+        </div>
+        <div class="valor-item animar animar-delay-3">
+          <span class="valor-numero">03</span>
+          <div class="valor-nombre">Honestidad</div>
+        </div>
+        <div class="valor-item animar animar-delay-4">
+          <span class="valor-numero">04</span>
+          <div class="valor-nombre">Solidaridad</div>
+        </div>
+        <div class="valor-item animar">
+          <span class="valor-numero">05</span>
+          <div class="valor-nombre">Lealtad</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── FOOTER ── -->
+  <footer class="footer-global" role="contentinfo">
+    <div class="footer-inner">
+      <div class="footer-grid">
+        <div class="footer-marca">
+          <h3>Droguería y Variedades Los Tres Hermanos</h3>
+          <p>Tu farmacia de confianza en Arjona, Bolívar. Comprometidos con tu salud y bienestar desde siempre.</p>
+        </div>
+        <div class="footer-col">
+          <h4>Navegación</h4>
+          <ul>
+            <li><a href="DROGUERIA/explorador-drogueria.html">Medicamentos</a></li>
+            <li><a href="DROGUERIA/variedades.html">Variedades</a></li>
+            <li><a href="DROGUERIA/servicios.html">Servicios</a></li>
+            <li><a href="DROGUERIA/somos-nosotros.html">Nosotros</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Contacto</h4>
+          <ul>
+            <li>
+              <div class="footer-contacto-fila">
+                <a href="https://wa.me/573225065554" target="_blank" rel="noopener" class="btn-contacto whatsapp" title="WhatsApp" aria-label="WhatsApp">
+                  <span class="btn-sign">
+                    <svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" style="fill:white;width:20px;height:20px;">
+                      <path d="M13.601 2.326A7.854 7.854 0 0 0 7.994 0C3.627 0 .068 3.558.064 7.926c0 1.399.366 2.76 1.057 3.965L0 16l4.204-1.102a7.933 7.933 0 0 0 3.79.965h.004c4.368 0 7.926-3.558 7.93-7.93A7.898 7.898 0 0 0 13.6 2.326zM7.994 14.521a6.573 6.573 0 0 1-3.356-.92l-.24-.144-2.494.654.666-2.433-.156-.251a6.56 6.56 0 0 1-1.007-3.505c0-3.626 2.957-6.584 6.591-6.584a6.56 6.56 0 0 1 4.66 1.931 6.557 6.557 0 0 1 1.928 4.66c-.004 3.639-2.961 6.592-6.592 6.592zm3.615-4.934c-.197-.099-1.17-.578-1.353-.646-.182-.065-.315-.099-.445.099-.133.197-.513.646-.627.775-.114.133-.232.148-.43.05-.197-.1-.836-.308-1.592-.985-.59-.525-.985-1.175-1.103-1.372-.114-.198-.011-.304.088-.403.087-.088.197-.232.296-.346.1-.114.133-.198.198-.33.065-.134.034-.248-.015-.347-.05-.099-.445-1.076-.612-1.47-.16-.389-.323-.335-.445-.34-.114-.007-.247-.007-.38-.007a.729.729 0 0 0-.529.247c-.182.198-.691.677-.691 1.654 0 .977.71 1.916.81 2.049.098.133 1.394 2.132 3.383 2.992.47.205.84.326 1.129.418.475.152.904.129 1.246.08.38-.058 1.171-.48 1.338-.943.164-.464.164-.86.114-.943-.049-.084-.182-.133-.38-.232z"/>
+                    </svg>
+                  </span>
+                  <span class="btn-label">WhatsApp</span>
+                </a>
+                <a href="tel:+573225065554" class="footer-contacto-texto">+57 322 506 5554</a>
+              </div>
+            </li>
+            <li>
+              <div class="footer-contacto-fila">
+                <a href="mailto:diazpajaro1208@gmail.com" class="btn-contacto gmail" title="Gmail" aria-label="Gmail">
+                  <span class="btn-sign">
+                    <svg viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg" width="22" height="22">
+                      <path fill="#EA4335" d="M6 40h6V22.8L4 17v21c0 1.1.9 2 2 2z"/>
+                      <path fill="#34A853" d="M36 40h6c1.1 0 2-.9 2-2V17l-8 5.8z"/>
+                      <path fill="#FBBC04" d="M36 10v12.8l8-5.8V11c0-2.5-2.8-3.9-4.8-2.4z"/>
+                      <path fill="#4285F4" d="M12 22.8V10l12 8.7 12-8.7v12.8L24 31.5z"/>
+                      <path fill="#C5221F" d="M4 11v6l8 5.8V10L9.8 8.6C7.8 7.1 4 8.5 4 11z"/>
+                    </svg>
+                  </span>
+                  <span class="btn-label">Gmail</span>
+                </a>
+                <a href="mailto:diazpajaro1208@gmail.com" class="footer-contacto-texto">diazpajaro1208@gmail.com</a>
+              </div>
+            </li>
+            <li>
+              <div class="footer-contacto-fila">
+                <a href="https://www.google.com/maps/search/?api=1&query=Diagonal+52+50A-755+Arjona+Bolivar+Colombia" target="_blank" rel="noopener" class="btn-contacto ubicacion" title="Ver en Maps" aria-label="Diagonal 52 50A-755">
+                  <span class="btn-sign">
+                    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" style="fill:white;width:20px;height:20px;">
+                      <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
+                    </svg>
+                  </span>
+                  <span class="btn-label">Ubicación</span>
+                </a>
+                <a href="DROGUERIA/contacto-drogueria.html" class="footer-contacto-texto">Diagonal 52 50A-755</a>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <span>© 2024 Droguería y Variedades Los Tres Hermanos. Todos los derechos reservados.</span>
+        <div style="display:flex;gap:1.5rem">
+          <a href="#" onclick="abrirTerminos('terminos');return false;">Términos de Servicio</a>
+          <a href="#" onclick="abrirTerminos('privacidad');return false;">Política de Privacidad</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- MODAL TÉRMINOS -->
+  <div id="modal-terminos" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.45);z-index:9999;align-items:center;justify-content:center;padding:2rem;">
+    <div style="background:white;border-radius:16px;max-width:580px;width:100%;max-height:80vh;display:flex;flex-direction:column;box-shadow:0 20px 60px rgba(0,0,0,0.2);">
+      <div style="padding:1.5rem 1.75rem;border-bottom:1px solid var(--gris-medio);display:flex;align-items:center;justify-content:space-between;">
+        <h2 id="modal-terminos-titulo" style="font-family:var(--font-titulo);font-size:1.1rem;font-weight:800;color:var(--azul);"></h2>
+        <button onclick="cerrarTerminos()" style="background:var(--gris-claro);border:none;width:32px;height:32px;border-radius:50%;cursor:pointer;font-size:1.1rem;color:var(--gris-texto);display:grid;place-items:center;">×</button>
+      </div>
+      <div id="modal-terminos-body" style="padding:1.75rem;overflow-y:auto;flex:1;font-size:0.85rem;color:var(--gris-texto);line-height:1.75;"></div>
+      <div style="padding:1.25rem 1.75rem;border-top:1px solid var(--gris-medio);display:flex;justify-content:flex-end;">
+        <button onclick="cerrarTerminos()" style="padding:0.65rem 1.5rem;background:linear-gradient(135deg,#C0102A,#E8122F);color:white;font-family:var(--font-titulo);font-weight:700;font-size:0.9rem;border-radius:99px;border:none;cursor:pointer;box-shadow:0 4px 12px rgba(192,16,42,0.3);">Cerrar</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="DROGUERIA/global.js"></script>
+  <script>
+    // Hamburguesa
+    const btnMenu = document.getElementById('btn-menu');
+    const navMenu = document.getElementById('nav-menu');
+    if (btnMenu && navMenu) {
+      btnMenu.addEventListener('click', () => {
+        const ab = navMenu.classList.toggle('abierto');
+        btnMenu.setAttribute('aria-expanded', ab);
+      });
+    }
+
+    // Términos y condiciones
+    const TERMINOS = {
+      terminos: {
+        titulo: 'Términos y Condiciones',
+        html: `<h3 style="font-family:var(--font-titulo);color:var(--azul);margin:0 0 0.5rem">1. Aceptación</h3>
+<p>Al usar esta plataforma, aceptas cumplir con estos términos. Si no estás de acuerdo, no debes utilizarla.</p>
+<h3 style="font-family:var(--font-titulo);color:var(--azul);margin:1rem 0 0.5rem">2. Uso del Servicio</h3>
+<p>Este sitio web permite a los clientes explorar productos, hacer pedidos y gestionar su cuenta. El pago se realiza en efectivo al recibir el pedido.</p>
+<h3 style="font-family:var(--font-titulo);color:var(--azul);margin:1rem 0 0.5rem">3. Pedidos y Domicilios</h3>
+<p>Los pedidos están sujetos a disponibilidad. El servicio de domicilio aplica dentro del municipio de Arjona, Bolívar. Los tiempos de entrega pueden variar.</p>
+<h3 style="font-family:var(--font-titulo);color:var(--azul);margin:1rem 0 0.5rem">4. Precios</h3>
+<p>Los precios mostrados pueden cambiar sin previo aviso. El precio final es el mostrado al confirmar el pedido.</p>
+<h3 style="font-family:var(--font-titulo);color:var(--azul);margin:1rem 0 0.5rem">5. Contacto</h3>
+<p>Para dudas: +57 322 506 5554 · diazpajaro1208@gmail.com</p>`
+      },
+      privacidad: {
+        titulo: 'Política de Privacidad',
+        html: `<h3 style="font-family:var(--font-titulo);color:var(--azul);margin:0 0 0.5rem">1. Información que Recopilamos</h3>
+<p>Al registrarte recopilamos tu nombre, correo, teléfono y dirección. Esta información se usa exclusivamente para gestionar tus pedidos.</p>
+<h3 style="font-family:var(--font-titulo);color:var(--azul);margin:1rem 0 0.5rem">2. Confidencialidad</h3>
+<p>No compartimos, vendemos ni cedemos tu información personal a terceros bajo ninguna circunstancia, salvo requerimiento legal.</p>
+<h3 style="font-family:var(--font-titulo);color:var(--azul);margin:1rem 0 0.5rem">3. Tus Derechos</h3>
+<p>Puedes acceder, rectificar y eliminar tus datos desde la sección "Mi Perfil" o contactándonos directamente.</p>
+<h3 style="font-family:var(--font-titulo);color:var(--azul);margin:1rem 0 0.5rem">4. Contacto</h3>
+<p>Para ejercer tus derechos: +57 322 506 5554 · diazpajaro1208@gmail.com</p>`
+      }
+    };
+
+    function abrirTerminos(tipo) {
+      const data = TERMINOS[tipo];
+      document.getElementById('modal-terminos-titulo').textContent = data.titulo;
+      document.getElementById('modal-terminos-body').innerHTML    = data.html;
+      const modal = document.getElementById('modal-terminos');
+      modal.style.display = 'flex';
+    }
+
+    function cerrarTerminos() {
+      document.getElementById('modal-terminos').style.display = 'none';
+    }
+
+    document.getElementById('modal-terminos').addEventListener('click', function(e) {
+      if (e.target === this) cerrarTerminos();
+    });
+    document.addEventListener('DOMContentLoaded', () => {
+      initAvatar({ perfilUrl: 'DROGUERIA/perfil-cliente.html', logoutUrl: 'index.html' });
+    });
+  </script>
+</body>
+</html>

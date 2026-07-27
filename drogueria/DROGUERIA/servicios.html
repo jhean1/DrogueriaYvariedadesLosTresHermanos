@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Servicios — Los Tres Hermanos</title>
+  <link rel="stylesheet" href="global.css">
+  <style>
+    body { background: var(--gris-claro); }
+    .page-header { background: var(--grad-hero); padding: 5rem 2rem 3rem; position: relative; overflow: hidden; }
+    .page-header::before { content:''; position:absolute; top:-40%; right:-5%; width:500px; height:500px; border-radius:50%; background:rgba(255,255,255,0.04); pointer-events:none; }
+    .page-header-inner { max-width:1280px; margin:0 auto; position:relative; z-index:1; }
+    .breadcrumb { display:flex; align-items:center; gap:0.5rem; font-size:0.82rem; color:rgba(255,255,255,0.6); margin-bottom:1.25rem; }
+    .breadcrumb a { color:rgba(255,255,255,0.6); transition:color var(--trans); }
+    .breadcrumb a:hover { color:white; }
+    .breadcrumb span { color:rgba(255,255,255,0.9); }
+    .page-header h1 { font-family:var(--font-titulo); font-size:clamp(2rem,4vw,3rem); font-weight:800; color:white; letter-spacing:-0.03em; margin-bottom:0.5rem; }
+    .page-header p { color:rgba(255,255,255,0.72); font-size:1rem; }
+
+    .servicios-main { max-width:1280px; margin:0 auto; padding:3rem 2rem 5rem; }
+
+    /* Grid grande de servicios */
+    .servicios-grande {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 3rem;
+    }
+
+    .servicio-grande-card {
+      background: white; border-radius: var(--radio-xl);
+      padding: 2.5rem 2rem; border: 1px solid var(--gris-medio);
+      transition: transform var(--trans), box-shadow var(--trans);
+      display: flex; flex-direction: column; gap: 1.25rem;
+      position: relative; overflow: hidden;
+    }
+    .servicio-grande-card::after {
+      content: attr(data-num);
+      position: absolute; bottom: -10px; right: 10px;
+      font-family: var(--font-titulo); font-size: 6rem; font-weight: 800;
+      color: var(--gris-medio); line-height: 1; pointer-events: none;
+      user-select: none;
+    }
+    .servicio-grande-card:hover { transform: translateY(-6px); box-shadow: var(--sombra-lg); }
+
+    .srv-icono {
+      width: 64px; height: 64px; border-radius: var(--radio-lg);
+      background: var(--grad-card);
+      display: grid; place-items: center;
+      flex-shrink: 0;
+    }
+    .srv-icono svg { width: 30px; height: 30px; color: white; }
+
+    .srv-nombre { font-family: var(--font-titulo); font-weight: 800; font-size: 1.25rem; color: var(--negro-suave); }
+    .srv-desc { font-size: 0.92rem; color: var(--gris-texto); line-height: 1.7; flex: 1; }
+
+    .srv-tag {
+      display: inline-flex; align-items: center; gap: 0.35rem;
+      background: rgba(27,42,107,0.07); color: var(--azul);
+      font-size: 0.75rem; font-weight: 600; padding: 0.35rem 0.75rem;
+      border-radius: 99px; width: fit-content;
+    }
+    .srv-tag svg { width: 12px; height: 12px; }
+
+    /* Banner horario */
+    .banner-horario {
+      background: var(--grad-card); border-radius: var(--radio-xl);
+      padding: 3rem; color: white;
+      display: grid; grid-template-columns: 1fr auto;
+      align-items: center; gap: 2rem;
+    }
+    .banner-horario h2 { font-family: var(--font-titulo); font-size: 1.5rem; font-weight: 800; margin-bottom: 1rem; }
+    .horarios-lista { display: flex; flex-direction: column; gap: 0.6rem; }
+    .horario-item { display: flex; align-items: center; gap: 0.75rem; font-size: 0.9rem; color: rgba(255,255,255,0.85); }
+    .horario-item svg { width: 16px; height: 16px; flex-shrink: 0; color: rgba(255,255,255,0.5); }
+    .horario-dia { font-weight: 600; color: white; min-width: 120px; }
+
+    .banner-horario-cta { text-align: center; }
+    .icono-grande { font-size: 4rem; margin-bottom: 1rem; }
+
+    @media (max-width: 640px) {
+      .banner-horario { grid-template-columns: 1fr; }
+      .banner-horario-cta { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <nav class="navbar">
+    <div class="navbar-inner">
+      <a href="../index.html" class="navbar-logo">
+        <img src="logo3.jpeg" alt="Logo">
+        <span>Los <em>Tres</em> Hermanos</span>
+      </a>
+      <div class="navbar-nav" id="nav-menu">
+        <a href="../index.html"             class="nav-link">Inicio</a>
+        <a href="explorador-drogueria.html" class="nav-link">Medicamentos</a>
+        <a href="variedades.html"           class="nav-link">Variedades</a>
+        <a href="servicios.html"            class="nav-link active">Servicios</a>
+        <a href="somos-nosotros.html"       class="nav-link">Nosotros</a>
+        <a href="contacto-drogueria.html"   class="nav-link">Contacto</a>
+      </div>
+      <div class="navbar-actions">
+        <a href="login-cliente.html" id="btn-mi-cuenta" class="btn-secundario" style="font-size:0.82rem;padding:0.45rem 1rem;" aria-label="Mi cuenta">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/>
+          </svg>
+          Mi cuenta
+        </a>
+
+        <button class="btn-menu" id="btn-menu" aria-label="Menú" aria-expanded="false" aria-controls="nav-menu">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <line x1="4" y1="6" x2="20" y2="6"/>
+            <line x1="4" y1="12" x2="20" y2="12"/>
+            <line x1="4" y1="18" x2="20" y2="18"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <div class="page-header">
+    <div class="page-header-inner">
+      <div class="breadcrumb">
+        <a href="../index.html">Inicio</a>
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+        <span>Servicios</span>
+      </div>
+      <h1>Nuestros Servicios</h1>
+      <p>Todo lo que necesitas en un solo lugar, con atención de calidad</p>
+    </div>
+  </div>
+
+  <main class="servicios-main">
+
+    <div class="servicios-grande">
+
+      <div class="servicio-grande-card animar animar-delay-1" data-num="01">
+        <div class="srv-icono">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0H5m14 0h2M5 21H3M9 7h1m-1 4h1m4-4h1m-1 4h1"/>
+          </svg>
+        </div>
+        <div class="srv-nombre">Medicamentos</div>
+        <div class="srv-desc">
+          Contamos con un amplio catálogo de medicamentos de todo tipo, garantizando calidad y precios accesibles para toda tu familia. Analgésicos, antibióticos, antiinflamatorios y mucho más.
+        </div>
+        <a href="explorador-drogueria.html" class="srv-tag">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+          Ver catálogo
+        </a>
+      </div>
+
+      <div class="servicio-grande-card animar animar-delay-2" data-num="02">
+        <div class="srv-icono">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="5" y="2" width="14" height="20" rx="2"/>
+            <line x1="12" y1="18" x2="12" y2="18"/>
+          </svg>
+        </div>
+        <div class="srv-nombre">Recargas y Minutos</div>
+        <div class="srv-desc">
+          Recarga tu celular de cualquier operador de forma rápida y segura. También ofrecemos venta de minutos para que siempre estés comunicado.
+        </div>
+        <span class="srv-tag">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+          Disponible ahora
+        </span>
+      </div>
+
+      <div class="servicio-grande-card animar animar-delay-3" data-num="03">
+        <div class="srv-icono">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/>
+            <polyline points="14 2 14 8 20 8"/>
+            <line x1="16" y1="13" x2="8" y2="13"/>
+            <line x1="16" y1="17" x2="8" y2="17"/>
+            <polyline points="10 9 9 9 8 9"/>
+          </svg>
+        </div>
+        <div class="srv-nombre">Fotocopiado</div>
+        <div class="srv-desc">
+          Servicio de fotocopiado rápido y económico. Trae tus documentos y los reproducimos en el momento. Ideal para estudiantes y profesionales.
+        </div>
+        <span class="srv-tag">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+          Servicio express
+        </span>
+      </div>
+
+      <div class="servicio-grande-card animar animar-delay-4" data-num="04">
+        <div class="srv-icono">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/>
+            <line x1="3" y1="6" x2="21" y2="6"/>
+            <path d="M16 10a4 4 0 01-8 0"/>
+          </svg>
+        </div>
+        <div class="srv-nombre">Variedades</div>
+        <div class="srv-desc">
+          Amplio surtido de artículos de primera necesidad: útiles escolares, artículos de aseo personal, perfumes, desodorantes y más.
+        </div>
+        <a href="variedades.html" class="srv-tag">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+          Ver productos
+        </a>
+      </div>
+
+    </div>
+
+    <!-- Banner horario -->
+    <div class="banner-horario animar">
+      <div>
+        <h2>Horario de Atención</h2>
+        <div class="horarios-lista">
+          <div class="horario-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            <span class="horario-dia">Lunes a Viernes</span>
+            <span>7:00 AM – 9:00 PM</span>
+          </div>
+          <div class="horario-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            <span class="horario-dia">Sábados</span>
+            <span>7:00 AM – 8:00 PM</span>
+          </div>
+          <div class="horario-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            <span class="horario-dia">Domingos</span>
+            <span>8:00 AM – 6:00 PM</span>
+          </div>
+        </div>
+      </div>
+      <div class="banner-horario-cta">
+        <div class="icono-grande">🕐</div>
+        <a href="contacto-drogueria.html" class="btn-primario" style="background:white;color:var(--azul);">
+          Cómo llegar →
+        </a>
+      </div>
+    </div>
+
+  </main>
+
+  <footer class="footer-global">
+    <div class="footer-inner">
+      <div class="footer-grid">
+        <div class="footer-marca">
+          <h3>Droguería y Variedades Los Tres Hermanos</h3>
+          <p>Tu farmacia de confianza en Arjona, Bolívar.</p>
+        </div>
+        <div class="footer-col">
+          <h4>Páginas</h4>
+          <ul>
+            <li><a href="explorador-drogueria.html">Medicamentos</a></li>
+            <li><a href="variedades.html">Variedades</a></li>
+            <li><a href="contacto-drogueria.html">Contacto</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Contacto</h4>
+          <ul>
+            <li>
+              <div class="footer-contacto-fila">
+                <a href="https://wa.me/573225065554" target="_blank" rel="noopener" class="btn-contacto whatsapp" title="WhatsApp" aria-label="WhatsApp">
+                  <span class="btn-sign">
+                    <svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" style="fill:white;width:20px;height:20px;">
+                      <path d="M13.601 2.326A7.854 7.854 0 0 0 7.994 0C3.627 0 .068 3.558.064 7.926c0 1.399.366 2.76 1.057 3.965L0 16l4.204-1.102a7.933 7.933 0 0 0 3.79.965h.004c4.368 0 7.926-3.558 7.93-7.93A7.898 7.898 0 0 0 13.6 2.326zM7.994 14.521a6.573 6.573 0 0 1-3.356-.92l-.24-.144-2.494.654.666-2.433-.156-.251a6.56 6.56 0 0 1-1.007-3.505c0-3.626 2.957-6.584 6.591-6.584a6.56 6.56 0 0 1 4.66 1.931 6.557 6.557 0 0 1 1.928 4.66c-.004 3.639-2.961 6.592-6.592 6.592zm3.615-4.934c-.197-.099-1.17-.578-1.353-.646-.182-.065-.315-.099-.445.099-.133.197-.513.646-.627.775-.114.133-.232.148-.43.05-.197-.1-.836-.308-1.592-.985-.59-.525-.985-1.175-1.103-1.372-.114-.198-.011-.304.088-.403.087-.088.197-.232.296-.346.1-.114.133-.198.198-.33.065-.134.034-.248-.015-.347-.05-.099-.445-1.076-.612-1.47-.16-.389-.323-.335-.445-.34-.114-.007-.247-.007-.38-.007a.729.729 0 0 0-.529.247c-.182.198-.691.677-.691 1.654 0 .977.71 1.916.81 2.049.098.133 1.394 2.132 3.383 2.992.47.205.84.326 1.129.418.475.152.904.129 1.246.08.38-.058 1.171-.48 1.338-.943.164-.464.164-.86.114-.943-.049-.084-.182-.133-.38-.232z"/>
+                    </svg>
+                  </span>
+                  <span class="btn-label">WhatsApp</span>
+                </a>
+                <a href="tel:+573225065554" class="footer-contacto-texto">+57 322 506 5554</a>
+              </div>
+            </li>
+            <li>
+              <div class="footer-contacto-fila">
+                <a href="mailto:diazpajaro1208@gmail.com" class="btn-contacto gmail" title="Gmail" aria-label="Gmail">
+                  <span class="btn-sign">
+                    <svg viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg" width="22" height="22">
+                      <path fill="#EA4335" d="M6 40h6V22.8L4 17v21c0 1.1.9 2 2 2z"/>
+                      <path fill="#34A853" d="M36 40h6c1.1 0 2-.9 2-2V17l-8 5.8z"/>
+                      <path fill="#FBBC04" d="M36 10v12.8l8-5.8V11c0-2.5-2.8-3.9-4.8-2.4z"/>
+                      <path fill="#4285F4" d="M12 22.8V10l12 8.7 12-8.7v12.8L24 31.5z"/>
+                      <path fill="#C5221F" d="M4 11v6l8 5.8V10L9.8 8.6C7.8 7.1 4 8.5 4 11z"/>
+                    </svg>
+                  </span>
+                  <span class="btn-label">Gmail</span>
+                </a>
+                <a href="mailto:diazpajaro1208@gmail.com" class="footer-contacto-texto">diazpajaro1208@gmail.com</a>
+              </div>
+            </li>
+            <li>
+              <div class="footer-contacto-fila">
+                <a href="https://www.google.com/maps/search/?api=1&query=Diagonal+52+50A-755+Arjona+Bolivar+Colombia" target="_blank" rel="noopener" class="btn-contacto ubicacion" title="Ver en Maps" aria-label="Diagonal 52 50A-755">
+                  <span class="btn-sign">
+                    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" style="fill:white;width:20px;height:20px;">
+                      <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
+                    </svg>
+                  </span>
+                  <span class="btn-label">Ubicación</span>
+                </a>
+                <a href="contacto-drogueria.html" class="footer-contacto-texto">Diagonal 52 50A-755</a>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <span>© 2024 Droguería y Variedades Los Tres Hermanos</span>
+      </div>
+    </div>
+  </footer>
+
+  <script src="global.js"></script>
+  <script>
+    const btnMenu = document.getElementById('btn-menu');
+    const navMenu = document.getElementById('nav-menu');
+    btnMenu?.addEventListener('click', () => { const ab = navMenu.classList.toggle('abierto'); btnMenu.setAttribute('aria-expanded', ab); });
+    initAvatar({ perfilUrl: 'perfil-cliente.html', logoutUrl: '../index.html' });
+</script>
+<script>
+  // Avatar — se ejecuta garantizando que el DOM esté listo
+  document.addEventListener('DOMContentLoaded', () => {
+    initAvatar({ perfilUrl: 'perfil-cliente.html', logoutUrl: '../index.html' });
+  });
+  </script>
+</body>
+</html>

@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Medicamentos — Los Tres Hermanos</title>
+  <link rel="stylesheet" href="global.css">
+  <style>
+    body { background: var(--gris-claro); }
+
+    /* PAGE HEADER */
+    .page-header { background: var(--grad-hero); padding: 5rem 2rem 3rem; position: relative; overflow: hidden; }
+    .page-header::before { content:''; position:absolute; top:-40%; right:-5%; width:500px; height:500px; border-radius:50%; background:rgba(255,255,255,0.04); pointer-events:none; }
+    .page-header-inner { max-width:1280px; margin:0 auto; position:relative; z-index:1; }
+    .breadcrumb { display:flex; align-items:center; gap:0.5rem; font-size:0.82rem; color:rgba(255,255,255,0.6); margin-bottom:1.25rem; }
+    .breadcrumb a { color:rgba(255,255,255,0.6); transition:color var(--trans); }
+    .breadcrumb a:hover { color:white; }
+    .breadcrumb span { color:rgba(255,255,255,0.9); }
+    .page-header h1 { font-family:var(--font-titulo); font-size:clamp(2rem,4vw,3rem); font-weight:800; color:white; letter-spacing:-0.03em; margin-bottom:0.5rem; }
+    .page-header p { color:rgba(255,255,255,0.72); font-size:1rem; }
+
+    /* BÚSQUEDA */
+    .busqueda-wrap { max-width:1280px; margin:0 auto; padding:2rem; }
+    .busqueda-bar { background:white; border-radius:var(--radio-lg); padding:1.25rem 1.75rem; box-shadow:var(--sombra-md); display:flex; align-items:center; gap:1rem; flex-wrap:wrap; }
+    .busqueda-input-wrap { flex:1; min-width:200px; display:flex; align-items:center; gap:0.75rem; background:var(--gris-claro); border:1.5px solid var(--gris-medio); border-radius:99px; padding:0.65rem 1.25rem; transition:border-color var(--trans),box-shadow var(--trans); }
+    .busqueda-input-wrap:focus-within { border-color:var(--azul-claro); box-shadow:0 0 0 4px rgba(74,95,212,0.1); }
+    .busqueda-input-wrap svg { color:var(--gris-texto); flex-shrink:0; width:16px; height:16px; }
+    .busqueda-input-wrap input { border:none; background:transparent; font-family:var(--font-cuerpo); font-size:0.95rem; color:var(--negro-suave); outline:none; width:100%; }
+    .busqueda-input-wrap input::placeholder { color:var(--gris-texto); }
+    .chips-wrap { display:flex; gap:0.5rem; flex-wrap:wrap; align-items:center; }
+    .chip-filtro { font-size:0.8rem; font-weight:600; padding:0.4rem 0.9rem; border-radius:99px; border:1.5px solid var(--gris-medio); background:white; color:var(--gris-texto); cursor:pointer; transition:all var(--trans); }
+    .chip-filtro:hover { border-color:var(--azul-claro); color:var(--azul); }
+    .chip-filtro.activo { background:var(--azul); color:white; border-color:var(--azul); }
+    .resultados-info { max-width:1280px; margin:0 auto; padding:0 2rem 1rem; font-size:0.88rem; color:var(--gris-texto); display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:0.5rem; }
+    .resultados-info strong { color:var(--azul); }
+    .select-orden { font-family:var(--font-cuerpo); font-size:0.85rem; padding:0.4rem 0.75rem; border-radius:var(--radio); border:1.5px solid var(--gris-medio); color:var(--negro-suave); background:white; cursor:pointer; outline:none; }
+
+    /* GRID */
+    .medicamentos-container { max-width:1280px; margin:0 auto; padding:0 2rem 4rem; }
+    .medicamentos-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(260px,1fr)); gap:1.25rem; }
+
+    /* CARD MEDICAMENTO */
+    .med-card { background:white; border-radius:var(--radio-lg); overflow:hidden; border:1px solid var(--gris-medio); transition:transform var(--trans),box-shadow var(--trans),border-color var(--trans); display:flex; flex-direction:column; position:relative; }
+    .med-card:hover { transform:translateY(-5px); box-shadow:var(--sombra-lg); border-color:var(--azul-claro); }
+    .med-badge-cat { position:absolute; top:0.75rem; left:0.75rem; z-index:2; }
+    .med-img-wrap { height:170px; background:var(--grad-card); display:flex; align-items:center; justify-content:center; overflow:hidden; position:relative; }
+    .img-ph-bg { position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:0.5rem; background:linear-gradient(135deg,#1B2A6B 0%,#2D3E9E 60%,#3a52c9 100%); }
+    .img-ph-bg svg { width:36px; height:36px; color:rgba(255,255,255,0.35); }
+    .img-ph-bg span { font-family:var(--font-titulo); font-weight:700; font-size:0.78rem; color:rgba(255,255,255,0.5); text-transform:uppercase; letter-spacing:0.08em; max-width:120px; text-align:center; line-height:1.3; }
+    .med-img-wrap img { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; transition:transform 0.4s ease,opacity 0.3s ease; }
+    .med-card:hover .med-img-wrap img { transform:scale(1.06); }
+    .med-body { padding:1.25rem; flex:1; display:flex; flex-direction:column; gap:0.4rem; }
+    .med-nombre { font-family:var(--font-titulo); font-weight:700; font-size:1rem; color:var(--negro-suave); line-height:1.3; }
+    .med-desc { font-size:0.82rem; color:var(--gris-texto); line-height:1.55; }
+
+    /* SELECTOR DE PRESENTACIÓN */
+    .med-selector { padding:0 1.25rem 1rem; display:flex; flex-direction:column; gap:0.5rem; }
+    .selector-label { font-size:0.7rem; font-weight:700; text-transform:uppercase; letter-spacing:0.08em; color:var(--gris-texto); }
+    .selector-row { display:flex; gap:0.4rem; flex-wrap:wrap; }
+    .sel-btn { font-size:0.75rem; font-weight:600; padding:0.3rem 0.65rem; border-radius:99px; border:1.5px solid var(--gris-medio); background:white; color:var(--gris-texto); cursor:pointer; transition:all var(--trans); font-family:var(--font-cuerpo); }
+    .sel-btn:hover { border-color:var(--azul-claro); color:var(--azul); }
+    .sel-btn.activo { background:var(--azul); color:white; border-color:var(--azul); }
+
+    /* PRECIO Y BOTÓN */
+    .med-footer { display:flex; align-items:center; justify-content:space-between; padding:1rem 1.25rem; border-top:1px solid var(--gris-claro); gap:0.5rem; }
+    .med-precio-wrap {}
+    .med-precio { font-family:var(--font-titulo); font-weight:800; font-size:1.15rem; color:var(--azul); display:block; }
+    .med-precio-unit { font-size:0.7rem; color:var(--gris-texto); }
+    .btn-agregar { display:flex; align-items:center; gap:0.4rem; background:var(--azul); color:white; font-size:0.82rem; font-weight:600; padding:0.5rem 1rem; border-radius:99px; border:none; cursor:pointer; transition:background var(--trans),transform var(--trans),box-shadow var(--trans); white-space:nowrap; font-family:var(--font-cuerpo); }
+    .btn-agregar:hover { background:var(--azul-medio); transform:translateY(-1px); box-shadow:var(--sombra-md); }
+    .btn-agregar svg { width:14px; height:14px; }
+
+    /* SIN RESULTADOS */
+    .sin-resultados { grid-column:1/-1; text-align:center; padding:4rem 2rem; color:var(--gris-texto); }
+    .sin-resultados svg { width:56px; height:56px; margin:0 auto 1rem; color:var(--gris-medio); }
+    .sin-resultados h3 { font-family:var(--font-titulo); font-size:1.2rem; color:var(--negro-suave); margin-bottom:0.5rem; }
+
+    /* DRAWER CARRITO */
+    .drawer-overlay { position:fixed; inset:0; background:rgba(0,0,0,0.45); z-index:2000; opacity:0; pointer-events:none; transition:opacity var(--trans); }
+    .drawer-overlay.visible { opacity:1; pointer-events:all; }
+    .carrito-drawer { position:fixed; top:0; right:0; bottom:0; width:380px; max-width:95vw; background:white; z-index:2001; transform:translateX(100%); transition:transform 0.35s cubic-bezier(0.4,0,0.2,1); display:flex; flex-direction:column; box-shadow:var(--sombra-lg); }
+    .carrito-drawer.abierto { transform:translateX(0); }
+    .drawer-header { display:flex; align-items:center; justify-content:space-between; padding:1.5rem 1.75rem; border-bottom:1px solid var(--gris-medio); }
+    .drawer-header h2 { font-family:var(--font-titulo); font-weight:800; font-size:1.15rem; color:var(--azul); display:flex; align-items:center; gap:0.5rem; }
+    .btn-cerrar-drawer { background:var(--gris-claro); border-radius:50%; width:36px; height:36px; display:grid; place-items:center; border:none; cursor:pointer; transition:background var(--trans); }
+    .btn-cerrar-drawer:hover { background:var(--gris-medio); }
+    .btn-cerrar-drawer svg { width:18px; height:18px; }
+    .drawer-body { flex:1; overflow-y:auto; padding:1.25rem 1.75rem; display:flex; flex-direction:column; gap:1rem; }
+    .carrito-item { display:flex; align-items:center; gap:1rem; background:var(--azul); border-radius:var(--radio); padding:0.85rem 1rem; }
+    .carrito-item-img { width:52px; height:52px; border-radius:8px; object-fit:cover; flex-shrink:0; background:var(--azul-medio); }
+    .carrito-item-info { flex:1; min-width:0; }
+    .carrito-item-nombre { font-weight:600; font-size:0.88rem; color:white; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .carrito-item-detalle { font-size:0.72rem; color:rgba(255,255,255,0.7); margin-top:0.15rem; }
+    .carrito-item-precio { font-size:0.82rem; color:rgba(255,255,255,0.9); font-weight:700; margin-top:0.2rem; }
+    .carrito-item-controles { display:flex; align-items:center; gap:0.4rem; }
+    .btn-qty { width:26px; height:26px; border-radius:50%; background:rgba(255,255,255,0.2); border:1.5px solid rgba(255,255,255,0.3); display:grid; place-items:center; font-size:1rem; font-weight:700; color:white; cursor:pointer; transition:all var(--trans); }
+    .btn-qty:hover { background:rgba(255,255,255,0.35); }
+    .qty-num { font-size:0.88rem; font-weight:700; min-width:18px; text-align:center; color:white; }
+    .btn-eliminar-item { background:none; border:none; cursor:pointer; color:rgba(255,255,255,0.5); padding:0.2rem; line-height:0; border-radius:6px; transition:all var(--trans); flex-shrink:0; }
+    .btn-eliminar-item:hover { color:white; background:rgba(255,255,255,0.15); }
+    .btn-eliminar-item svg { width:14px; height:14px; }
+    .carrito-vacio { text-align:center; padding:3rem 1rem; color:var(--gris-texto); }
+    .carrito-vacio svg { width:52px; height:52px; margin:0 auto 1rem; color:var(--gris-medio); }
+    .drawer-footer { padding:1.5rem 1.75rem; border-top:1px solid var(--gris-medio); }
+    .total-row { display:flex; justify-content:space-between; align-items:center; margin-bottom:1.25rem; }
+    .total-label { font-weight:600; color:var(--gris-texto); }
+    .total-valor { font-family:var(--font-titulo); font-size:1.5rem; font-weight:800; color:var(--azul); }
+    .btn-comprar { width:100%; padding:0.85rem; background:var(--grad-rojo); color:white; font-family:var(--font-titulo); font-weight:700; font-size:1rem; border-radius:var(--radio); border:none; cursor:pointer; transition:opacity var(--trans),transform var(--trans); box-shadow:var(--sombra-rojo); font-family:var(--font-cuerpo); }
+    .btn-comprar:hover { opacity:0.92; transform:translateY(-1px); }
+    .fab-carrito { position:fixed; bottom:2rem; right:2rem; background:var(--grad-card); color:white; border:none; width:60px; height:60px; border-radius:50%; display:grid; place-items:center; box-shadow:var(--sombra-lg); cursor:pointer; transition:transform var(--trans); z-index:1500; }
+    .fab-carrito:hover { transform:scale(1.1); }
+    .fab-carrito svg { width:24px; height:24px; }
+    .fab-badge { position:absolute; top:-4px; right:-4px; background:var(--rojo); color:white; font-size:0.7rem; font-weight:800; min-width:20px; height:20px; border-radius:99px; display:none; place-items:center; padding:0 4px; border:2px solid white; }
+
+    @media(max-width:640px){ .busqueda-bar { flex-direction:column; align-items:stretch; } }
+  </style>
+</head>
+<body>
+
+  <nav class="navbar">
+    <div class="navbar-inner">
+      <a href="../index.html" class="navbar-logo">
+        <img src="logo3.jpeg" alt="Logo" onerror="this.style.display='none'">
+        <span>Los <em>Tres</em> Hermanos</span>
+      </a>
+      <div class="navbar-nav" id="nav-menu">
+        <a href="../index.html" class="nav-link">Inicio</a>
+        <a href="explorador-drogueria.html" class="nav-link active">Medicamentos</a>
+        <a href="variedades.html" class="nav-link">Variedades</a>
+        <a href="servicios.html" class="nav-link">Servicios</a>
+        <a href="somos-nosotros.html" class="nav-link">Nosotros</a>
+        <a href="contacto-drogueria.html" class="nav-link">Contacto</a>
+      </div>
+      <div class="navbar-actions">
+        <a href="login-cliente.html" id="btn-mi-cuenta" class="btn-secundario" style="font-size:0.82rem;padding:0.45rem 1rem;">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          Mi cuenta
+        </a>
+        <button class="btn-carrito-nav" id="btn-abrir-carrito">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 002-1.61L23 6H6"/></svg>
+          <span>Carrito</span>
+          <span class="badge badge-carrito" style="display:none">0</span>
+        </button>
+        <button class="btn-menu" id="btn-menu" aria-label="Menú" aria-expanded="false" aria-controls="nav-menu">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="18" x2="20" y2="18"/></svg>
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <div class="page-header">
+    <div class="page-header-inner">
+      <div class="breadcrumb">
+        <a href="../index.html">Inicio</a>
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+        <span>Medicamentos</span>
+      </div>
+      <h1>Catálogo de Medicamentos</h1>
+      <p>Encuentra el medicamento que necesitas — elige presentación, concentración y marca</p>
+    </div>
+  </div>
+
+  <div class="busqueda-wrap">
+    <div class="busqueda-bar">
+      <div class="busqueda-input-wrap">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input type="text" id="search-input" placeholder="Buscar medicamento..." autocomplete="off">
+      </div>
+      <div class="chips-wrap" id="chips-categoria">
+        <button class="chip-filtro activo" data-cat="all">Todos</button>
+        <button class="chip-filtro" data-cat="analgesicos">Analgésicos</button>
+        <button class="chip-filtro" data-cat="antiinflamatorios">Antiinflamatorios</button>
+        <button class="chip-filtro" data-cat="antibioticos">Antibióticos</button>
+        <button class="chip-filtro" data-cat="antihistaminicos">Antihistamínicos</button>
+        <button class="chip-filtro" data-cat="otros">Otros</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="resultados-info">
+    <span id="contador-resultados">Cargando...</span>
+    <select class="select-orden" id="select-orden">
+      <option value="default">Ordenar por defecto</option>
+      <option value="precio-asc">Precio: menor a mayor</option>
+      <option value="precio-desc">Precio: mayor a menor</option>
+      <option value="nombre">A - Z</option>
+    </select>
+  </div>
+
+  <div class="medicamentos-container">
+    <div class="medicamentos-grid" id="medications-list"></div>
+  </div>
+
+  <button class="fab-carrito" id="fab-carrito">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 002-1.61L23 6H6"/></svg>
+    <span class="fab-badge badge-carrito">0</span>
+  </button>
+
+  <div class="drawer-overlay" id="drawer-overlay"></div>
+  <aside class="carrito-drawer" id="carrito-drawer">
+    <div class="drawer-header">
+      <h2>
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 002-1.61L23 6H6"/></svg>
+        Mi Carrito
+      </h2>
+      <button class="btn-cerrar-drawer" id="btn-cerrar-drawer">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div class="drawer-body" id="drawer-body"></div>
+    <div class="drawer-footer" id="drawer-footer" style="display:none">
+      <div class="total-row">
+        <span class="total-label">Total</span>
+        <span class="total-valor" id="total-valor">$0</span>
+      </div>
+      <button class="btn-comprar" id="btn-comprar">Finalizar Compra →</button>
+    </div>
+  </aside>
+
+  <footer class="footer-global">
+    <div class="footer-inner">
+      <div class="footer-grid">
+        <div class="footer-marca">
+          <h3>Droguería y Variedades Los Tres Hermanos</h3>
+          <p>Tu farmacia de confianza en Arjona, Bolívar. Comprometidos con tu salud y bienestar.</p>
+        </div>
+        <div class="footer-col">
+          <h4>Navegación</h4>
+          <ul>
+            <li><a href="explorador-drogueria.html">Medicamentos</a></li>
+            <li><a href="variedades.html">Variedades</a></li>
+            <li><a href="servicios.html">Servicios</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Contacto</h4>
+          <ul>
+            <li>
+              <div class="footer-contacto-fila">
+                <a href="https://wa.me/573225065554" target="_blank" rel="noopener" class="btn-contacto whatsapp" title="WhatsApp" aria-label="WhatsApp">
+                  <span class="btn-sign"><svg viewBox="0 0 16 16" style="fill:white;width:20px;height:20px;"><path d="M13.601 2.326A7.854 7.854 0 0 0 7.994 0C3.627 0 .068 3.558.064 7.926c0 1.399.366 2.76 1.057 3.965L0 16l4.204-1.102a7.933 7.933 0 0 0 3.79.965h.004c4.368 0 7.926-3.558 7.93-7.93A7.898 7.898 0 0 0 13.6 2.326zM7.994 14.521a6.573 6.573 0 0 1-3.356-.92l-.24-.144-2.494.654.666-2.433-.156-.251a6.56 6.56 0 0 1-1.007-3.505c0-3.626 2.957-6.584 6.591-6.584a6.56 6.56 0 0 1 4.66 1.931 6.557 6.557 0 0 1 1.928 4.66c-.004 3.639-2.961 6.592-6.592 6.592zm3.615-4.934c-.197-.099-1.17-.578-1.353-.646-.182-.065-.315-.099-.445.099-.133.197-.513.646-.627.775-.114.133-.232.148-.43.05-.197-.1-.836-.308-1.592-.985-.59-.525-.985-1.175-1.103-1.372-.114-.198-.011-.304.088-.403.087-.088.197-.232.296-.346.1-.114.133-.198.198-.33.065-.134.034-.248-.015-.347-.05-.099-.445-1.076-.612-1.47-.16-.389-.323-.335-.445-.34-.114-.007-.247-.007-.38-.007a.729.729 0 0 0-.529.247c-.182.198-.691.677-.691 1.654 0 .977.71 1.916.81 2.049.098.133 1.394 2.132 3.383 2.992.47.205.84.326 1.129.418.475.152.904.129 1.246.08.38-.058 1.171-.48 1.338-.943.164-.464.164-.86.114-.943-.049-.084-.182-.133-.38-.232z"/></svg></span>
+                  <span class="btn-label">WhatsApp</span>
+                </a>
+                <a href="tel:+573225065554" class="footer-contacto-texto">+57 322 506 5554</a>
+              </div>
+            </li>
+            <li>
+              <div class="footer-contacto-fila">
+                <a href="mailto:diazpajaro1208@gmail.com" class="btn-contacto gmail" title="Gmail" aria-label="Gmail">
+                  <span class="btn-sign"><svg viewBox="0 0 48 48" width="22" height="22"><path fill="#EA4335" d="M6 40h6V22.8L4 17v21c0 1.1.9 2 2 2z"/><path fill="#34A853" d="M36 40h6c1.1 0 2-.9 2-2V17l-8 5.8z"/><path fill="#FBBC04" d="M36 10v12.8l8-5.8V11c0-2.5-2.8-3.9-4.8-2.4z"/><path fill="#4285F4" d="M12 22.8V10l12 8.7 12-8.7v12.8L24 31.5z"/><path fill="#C5221F" d="M4 11v6l8 5.8V10L9.8 8.6C7.8 7.1 4 8.5 4 11z"/></svg></span>
+                  <span class="btn-label">Gmail</span>
+                </a>
+                <a href="mailto:diazpajaro1208@gmail.com" class="footer-contacto-texto">diazpajaro1208@gmail.com</a>
+              </div>
+            </li>
+            <li>
+              <div class="footer-contacto-fila">
+                <a href="https://www.google.com/maps/search/?api=1&query=Diagonal+52+50A-755+Arjona+Bolivar+Colombia" target="_blank" rel="noopener" class="btn-contacto ubicacion" title="Ver en Maps" aria-label="Ver ubicación">
+                  <span class="btn-sign"><svg viewBox="0 0 24 24" style="fill:white;width:20px;height:20px;"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg></span>
+                  <span class="btn-label">Ubicación</span>
+                </a>
+                <a href="contacto-drogueria.html" class="footer-contacto-texto">Diagonal 52 50A-755</a>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <span>© 2024 Droguería y Variedades Los Tres Hermanos</span>
+      </div>
+    </div>
+  </footer>
+
+  <script src="global.js"></script>
+  <script src="explorador-data.js"></script>
+  <script>
+  // ── ESTADO POR CARD ──────────────────────────────────────
+  // Guardamos: { medId: { tipo, conc, marca } }
+  const estadoSel = {};
+
+  function initEstado(med) {
+    if (!estadoSel[med.id]) {
+      const p = med.presentaciones[0];
+      estadoSel[med.id] = { tipo: p.tipo, conc: p.conc, marca: p.marca };
+    }
+  }
+
+  function getPresActual(med) {
+    initEstado(med);
+    const e = estadoSel[med.id];
+    return med.presentaciones.find(p =>
+      p.tipo === e.tipo && p.conc === e.conc && p.marca === e.marca
+    ) || med.presentaciones[0];
+  }
+
+  // ── FILTROS ───────────────────────────────────────────────
+  let filtro = { cat:'all', busqueda:'', orden:'default' };
+
+  // ── RENDER CARDS ─────────────────────────────────────────
+  function render() {
+    let lista = [...MEDICAMENTOS];
+    if (filtro.cat !== 'all') lista = lista.filter(m => m.cat === filtro.cat);
+    if (filtro.busqueda) {
+      const q = filtro.busqueda.toLowerCase();
+      lista = lista.filter(m => m.nombre.toLowerCase().includes(q) || m.desc.toLowerCase().includes(q));
+    }
+    if (filtro.orden === 'nombre') {
+      lista.sort((a,b) => a.nombre.localeCompare(b.nombre));
+    } else if (filtro.orden === 'precio-asc' || filtro.orden === 'precio-desc') {
+      lista.sort((a,b) => {
+        const pa = getPresActual(a).precio;
+        const pb = getPresActual(b).precio;
+        return filtro.orden === 'precio-asc' ? pa - pb : pb - pa;
+      });
+    }
+
+    const grid = document.getElementById('medications-list');
+    document.getElementById('contador-resultados').innerHTML =
+      `Mostrando <strong>${lista.length}</strong> medicamento${lista.length!==1?'s':''}`;
+
+    if (!lista.length) {
+      grid.innerHTML = `<div class="sin-resultados">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <h3>Sin resultados</h3><p>Intenta con otro término o categoría.</p>
+      </div>`;
+      return;
+    }
+
+    grid.innerHTML = lista.map((m,i) => renderCard(m, i)).join('');
+    attachCardEvents();
+  }
+
+  function renderCard(m, i) {
+    initEstado(m);
+    const e    = estadoSel[m.id];
+    const pres = getPresActual(m);
+
+    // Tipos únicos disponibles
+    const tipos = [...new Set(m.presentaciones.map(p => p.tipo))];
+    // Concentraciones disponibles para el tipo seleccionado
+    const concs = [...new Set(
+      m.presentaciones.filter(p => p.tipo === e.tipo).map(p => p.conc)
+    )];
+    // Marcas disponibles para tipo+conc seleccionados
+    const marcas = m.presentaciones
+      .filter(p => p.tipo === e.tipo && p.conc === e.conc);
+
+    return `<div class="med-card animar" data-med="${m.id}" style="animation-delay:${i*0.04}s">
+      <span class="med-badge-cat">
+        <span class="badge-categoria badge-azul">${LABELS_CAT[m.cat]||m.cat}</span>
+      </span>
+      <div class="med-img-wrap">
+        <div class="img-ph-bg">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0H5"/></svg>
+          <span>${m.nombre}</span>
+        </div>
+        <img src="${m.imagen}" alt="${m.nombre}" loading="lazy" onerror="this.style.opacity='0'">
+      </div>
+      <div class="med-body">
+        <div class="med-nombre">${m.nombre}</div>
+        <div class="med-desc">${m.desc}</div>
+      </div>
+      <div class="med-selector">
+        <span class="selector-label">Presentación</span>
+        <div class="selector-row" data-grupo="tipo">
+          ${tipos.map(t => `
+            <button class="sel-btn ${t===e.tipo?'activo':''}" data-tipo="${t}">${t}</button>
+          `).join('')}
+        </div>
+        <span class="selector-label" style="margin-top:0.35rem">Concentración</span>
+        <div class="selector-row" data-grupo="conc">
+          ${concs.map(c => `
+            <button class="sel-btn ${c===e.conc?'activo':''}" data-conc="${c}">${c}</button>
+          `).join('')}
+        </div>
+        <span class="selector-label" style="margin-top:0.35rem">Marca</span>
+        <div class="selector-row" data-grupo="marca">
+          ${marcas.map(p => `
+            <button class="sel-btn ${p.marca===e.marca?'activo':''}" data-marca="${p.marca}" data-presid="${p.id}">
+              ${p.marca}
+            </button>
+          `).join('')}
+        </div>
+      </div>
+      <div class="med-footer">
+        <div class="med-precio-wrap">
+          <span class="med-precio">${formatPrecio(pres.precio)}</span>
+          <span class="med-precio-unit">${pres.tipo} · ${pres.conc} · ${pres.marca}</span>
+        </div>
+        <button class="btn-agregar" data-id="${m.id}">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Agregar
+        </button>
+      </div>
+    </div>`;
+  }
+
+  function actualizarCard(card, med) {
+    const e    = estadoSel[med.id];
+    const pres = getPresActual(med);
+
+    // Actualizar concentraciones disponibles para el tipo
+    const concs = [...new Set(
+      med.presentaciones.filter(p => p.tipo === e.tipo).map(p => p.conc)
+    )];
+    const concRow = card.querySelector('[data-grupo="conc"]');
+    concRow.innerHTML = concs.map(c => `
+      <button class="sel-btn ${c===e.conc?'activo':''}" data-conc="${c}">${c}</button>
+    `).join('');
+
+    // Actualizar marcas disponibles para tipo+conc
+    const marcas = med.presentaciones.filter(p => p.tipo === e.tipo && p.conc === e.conc);
+    const marcaRow = card.querySelector('[data-grupo="marca"]');
+    marcaRow.innerHTML = marcas.map(p => `
+      <button class="sel-btn ${p.marca===e.marca?'activo':''}" data-marca="${p.marca}" data-presid="${p.id}">
+        ${p.marca}
+      </button>
+    `).join('');
+
+    // Actualizar precio
+    card.querySelector('.med-precio').textContent     = formatPrecio(pres.precio);
+    card.querySelector('.med-precio-unit').textContent = `${pres.tipo} · ${pres.conc} · ${pres.marca}`;
+
+    // Re-adjuntar eventos a los nuevos botones
+    attachRowEvents(card, med);
+  }
+
+  function attachRowEvents(card, med) {
+    // Tipo
+    card.querySelectorAll('[data-grupo="tipo"] .sel-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const nuevoTipo = btn.dataset.tipo;
+        // Verificar si la conc actual existe en el nuevo tipo
+        const e = estadoSel[med.id];
+        const concsDisp = [...new Set(
+          med.presentaciones.filter(p => p.tipo === nuevoTipo).map(p => p.conc)
+        )];
+        const nuevaConc  = concsDisp.includes(e.conc) ? e.conc : concsDisp[0];
+        const marcasDisp = med.presentaciones.filter(p => p.tipo === nuevoTipo && p.conc === nuevaConc);
+        const nuevaMarca = marcasDisp.find(p => p.marca === e.marca)?.marca || marcasDisp[0].marca;
+
+        estadoSel[med.id] = { tipo: nuevoTipo, conc: nuevaConc, marca: nuevaMarca };
+
+        // Marcar activo en tipo
+        card.querySelectorAll('[data-grupo="tipo"] .sel-btn').forEach(b => b.classList.remove('activo'));
+        btn.classList.add('activo');
+
+        actualizarCard(card, med);
+      });
+    });
+
+    // Concentración
+    card.querySelectorAll('[data-grupo="conc"] .sel-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const nuevaConc = btn.dataset.conc;
+        const e = estadoSel[med.id];
+        const marcasDisp = med.presentaciones.filter(p => p.tipo === e.tipo && p.conc === nuevaConc);
+        const nuevaMarca = marcasDisp.find(p => p.marca === e.marca)?.marca || marcasDisp[0].marca;
+
+        estadoSel[med.id] = { tipo: e.tipo, conc: nuevaConc, marca: nuevaMarca };
+
+        card.querySelectorAll('[data-grupo="conc"] .sel-btn').forEach(b => b.classList.remove('activo'));
+        btn.classList.add('activo');
+
+        actualizarCard(card, med);
+      });
+    });
+
+    // Marca
+    card.querySelectorAll('[data-grupo="marca"] .sel-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const e = estadoSel[med.id];
+        estadoSel[med.id] = { tipo: e.tipo, conc: e.conc, marca: btn.dataset.marca };
+
+        card.querySelectorAll('[data-grupo="marca"] .sel-btn').forEach(b => b.classList.remove('activo'));
+        btn.classList.add('activo');
+
+        const pres = getPresActual(med);
+        card.querySelector('.med-precio').textContent      = formatPrecio(pres.precio);
+        card.querySelector('.med-precio-unit').textContent = `${pres.tipo} · ${pres.conc} · ${pres.marca}`;
+      });
+    });
+  }
+
+  function attachCardEvents() {
+    document.querySelectorAll('.med-card').forEach(card => {
+      const med = MEDICAMENTOS.find(m => m.id === +card.dataset.med);
+      if (!med) return;
+      attachRowEvents(card, med);
+
+      // Botón agregar
+      card.querySelector('.btn-agregar').addEventListener('click', () => {
+        const pres = getPresActual(med);
+        Carrito.agregar({
+          id:      pres.id,
+          nombre:  med.nombre,
+          detalle: `${pres.conc} · ${pres.tipo} · ${pres.marca}`,
+          precio:  pres.precio,
+          imagen:  med.imagen
+        });
+        renderDrawer();
+      });
+    });
+  }
+
+  // ── DRAWER CARRITO ────────────────────────────────────────
+  function abrirDrawer() {
+    document.getElementById('carrito-drawer').classList.add('abierto');
+    document.getElementById('drawer-overlay').classList.add('visible');
+    document.body.style.overflow = 'hidden';
+    renderDrawer();
+  }
+  function cerrarDrawer() {
+    document.getElementById('carrito-drawer').classList.remove('abierto');
+    document.getElementById('drawer-overlay').classList.remove('visible');
+    document.body.style.overflow = '';
+  }
+  function renderDrawer() {
+    const items  = Carrito.obtener();
+    const body   = document.getElementById('drawer-body');
+    const footer = document.getElementById('drawer-footer');
+
+    if (!items.length) {
+      body.innerHTML = `<div class="carrito-vacio">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 002-1.61L23 6H6"/></svg>
+        <p>Tu carrito está vacío</p>
+      </div>`;
+      footer.style.display = 'none';
+      return;
+    }
+
+    body.innerHTML = items.map(item => `
+      <div class="carrito-item">
+        <img class="carrito-item-img" src="${item.imagen||''}" alt="${item.nombre}"
+          onerror="this.style.opacity='0';this.parentElement.style.background='var(--azul-medio)'">
+        <div class="carrito-item-info">
+          <div class="carrito-item-nombre">${item.nombre}</div>
+          ${item.detalle ? `<div class="carrito-item-detalle">${item.detalle}</div>` : ''}
+          <div class="carrito-item-precio">${formatPrecio(item.precio)}</div>
+        </div>
+        <div class="carrito-item-controles">
+          <button class="btn-qty" data-id="${item.id}" data-delta="-1">−</button>
+          <span class="qty-num">${item.cantidad}</span>
+          <button class="btn-qty" data-id="${item.id}" data-delta="1">+</button>
+          <button class="btn-eliminar-item" data-eliminar="${item.id}" title="Eliminar">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <polyline points="3 6 5 6 21 6"/>
+              <path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/>
+              <path d="M10 11v6M14 11v6"/>
+              <path d="M9 6V4a1 1 0 011-1h4a1 1 0 011 1v2"/>
+            </svg>
+          </button>
+        </div>
+      </div>`).join('');
+
+    document.getElementById('total-valor').textContent = formatPrecio(Carrito.total());
+    footer.style.display = '';
+
+    body.querySelectorAll('.btn-qty').forEach(btn => {
+      btn.addEventListener('click', () => {
+        Carrito.cambiarCantidad(btn.dataset.id, +btn.dataset.delta);
+        renderDrawer();
+      });
+    });
+    body.querySelectorAll('.btn-eliminar-item').forEach(btn => {
+      btn.addEventListener('click', () => {
+        Carrito.remover(btn.dataset.eliminar);
+        renderDrawer();
+        Toast.mostrar('Producto eliminado del carrito');
+      });
+    });
+  }
+
+  // ── INIT ─────────────────────────────────────────────────
+  document.addEventListener('DOMContentLoaded', () => {
+    render();
+
+    document.getElementById('search-input').addEventListener('input', e => {
+      filtro.busqueda = e.target.value.trim();
+      render();
+    });
+    document.getElementById('chips-categoria').addEventListener('click', e => {
+      const chip = e.target.closest('.chip-filtro');
+      if (!chip) return;
+      document.querySelectorAll('.chip-filtro').forEach(c => c.classList.remove('activo'));
+      chip.classList.add('activo');
+      filtro.cat = chip.dataset.cat;
+      render();
+    });
+    document.getElementById('select-orden').addEventListener('change', e => {
+      filtro.orden = e.target.value;
+      render();
+    });
+    ['btn-abrir-carrito','fab-carrito'].forEach(id => {
+      document.getElementById(id)?.addEventListener('click', abrirDrawer);
+    });
+    document.getElementById('btn-cerrar-drawer').addEventListener('click', cerrarDrawer);
+    document.getElementById('drawer-overlay').addEventListener('click', cerrarDrawer);
+    document.getElementById('btn-comprar').addEventListener('click', () => {
+      window.location.href = 'checkout.html';
+    });
+    const btnMenu = document.getElementById('btn-menu');
+    const navMenu = document.getElementById('nav-menu');
+    btnMenu?.addEventListener('click', () => {
+      const ab = navMenu.classList.toggle('abierto');
+      btnMenu.setAttribute('aria-expanded', ab);
+    });
+    initAvatar({ perfilUrl: 'perfil-cliente.html', logoutUrl: '../index.html' });
+  });
+  </script>
+</body>
+</html>
