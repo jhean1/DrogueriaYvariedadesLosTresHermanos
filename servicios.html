@@ -88,12 +88,12 @@
 
   <nav class="navbar">
     <div class="navbar-inner">
-      <a href="../index.html" class="navbar-logo">
+      <a href="index.html" class="navbar-logo">
         <img src="logo3.jpeg" alt="Logo">
         <span>Los <em>Tres</em> Hermanos</span>
       </a>
       <div class="navbar-nav" id="nav-menu">
-        <a href="../index.html"             class="nav-link">Inicio</a>
+        <a href="index.html"             class="nav-link">Inicio</a>
         <a href="explorador-drogueria.html" class="nav-link">Medicamentos</a>
         <a href="variedades.html"           class="nav-link">Variedades</a>
         <a href="servicios.html"            class="nav-link active">Servicios</a>
@@ -122,7 +122,7 @@
   <div class="page-header">
     <div class="page-header-inner">
       <div class="breadcrumb">
-        <a href="../index.html">Inicio</a>
+        <a href="index.html">Inicio</a>
         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
         <span>Servicios</span>
       </div>
@@ -315,12 +315,12 @@
     const btnMenu = document.getElementById('btn-menu');
     const navMenu = document.getElementById('nav-menu');
     btnMenu?.addEventListener('click', () => { const ab = navMenu.classList.toggle('abierto'); btnMenu.setAttribute('aria-expanded', ab); });
-    initAvatar({ perfilUrl: 'perfil-cliente.html', logoutUrl: '../index.html' });
+    initAvatar({ perfilUrl: 'perfil-cliente.html', logoutUrl: 'index.html' });
 </script>
 <script>
   // Avatar — se ejecuta garantizando que el DOM esté listo
   document.addEventListener('DOMContentLoaded', () => {
-    initAvatar({ perfilUrl: 'perfil-cliente.html', logoutUrl: '../index.html' });
+    initAvatar({ perfilUrl: 'perfil-cliente.html', logoutUrl: 'index.html' });
   });
   </script>
 </body>

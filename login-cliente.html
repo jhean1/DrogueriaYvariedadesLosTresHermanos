@@ -110,11 +110,11 @@
 
   <nav class="navbar">
     <div class="navbar-inner">
-      <a href="../index.html" class="navbar-logo">
+      <a href="index.html" class="navbar-logo">
         <img src="logo3.jpeg" alt="Logo" onerror="this.style.display='none'">
         <span>Los <em>Tres</em> Hermanos</span>
       </a>
-      <a href="../registro.html" class="navbar-link">¿No tienes cuenta? Regístrate →</a>
+      <a href="registro.html" class="navbar-link">¿No tienes cuenta? Regístrate →</a>
     </div>
   </nav>
 
@@ -145,7 +145,7 @@
     <div class="panel-der">
       <nav aria-label="Breadcrumb" style="margin-bottom:1.5rem;">
         <ol style="display:flex;align-items:center;gap:0.5rem;list-style:none;font-size:0.78rem;color:var(--gris-texto);">
-          <li><a href="../index.html" style="color:var(--gris-texto);text-decoration:none;transition:color 0.2s;" onmouseover="this.style.color='var(--azul)'" onmouseout="this.style.color='var(--gris-texto)'">Inicio</a></li>
+          <li><a href="index.html" style="color:var(--gris-texto);text-decoration:none;transition:color 0.2s;" onmouseover="this.style.color='var(--azul)'" onmouseout="this.style.color='var(--gris-texto)'">Inicio</a></li>
           <li style="color:var(--gris-medio);">›</li>
           <li style="color:var(--azul);font-weight:600;">Iniciar Sesión</li>
         </ol>
@@ -192,9 +192,9 @@
       </button>
 
       <div class="links-bottom">
-        ¿No tienes cuenta? <a href="../registro.html">Regístrate gratis</a>
+        ¿No tienes cuenta? <a href="registro.html">Regístrate gratis</a>
         &nbsp;·&nbsp;
-        <a href="../index.html">← Volver al sitio</a>
+        <a href="index.html">← Volver al sitio</a>
       </div>
     </div>
   </div>
@@ -252,7 +252,7 @@
           telefono: cliente.telefono, direccion: cliente.direccion, rol: 'cliente'
         }));
         toast(`✓ Bienvenido, ${cliente.nombre.split(' ')[0]}!`);
-        setTimeout(() => { window.location.href = '../index.html'; }, 1000);
+        setTimeout(() => { window.location.href = 'index.html'; }, 1000);
       } else {
         btn.disabled = false; texto.style.display = ''; spin.classList.remove('visible');
         document.getElementById('login-form').classList.add('shake');
@@ -277,7 +277,7 @@
     if (sc) {
       try {
         const c = JSON.parse(sc);
-        if (c.rol === 'cliente') window.location.href = '../index.html';
+        if (c.rol === 'cliente') window.location.href = 'index.html';
       } catch {}
     }
   </script>

@@ -16,7 +16,7 @@
   const currentPage = location.pathname.split('/').pop() || 'index.html';
   document.querySelectorAll('.nav-link').forEach(link => {
     const href = link.getAttribute('href') || '';
-    if (href.includes(currentPage) || (currentPage === 'index.html' && href === '../index.html')) {
+    if (href.includes(currentPage) || (currentPage === 'index.html' && href === 'index.html')) {
       link.classList.add('active');
     }
   });
@@ -187,7 +187,7 @@ function _runAvatar(opciones) {
   // opciones: { perfilUrl, logoutUrl, homeUrl }
   const opts = opciones || {};
   const perfilUrl  = opts.perfilUrl  || 'perfil-cliente.html';
-  const logoutUrl  = opts.logoutUrl  || '../index.html';
+  const logoutUrl  = opts.logoutUrl  || 'index.html';
 
   const sesion = JSON.parse(sessionStorage.getItem('lth_cliente') || 'null');
   const btnMiCuenta = document.getElementById('btn-mi-cuenta');
@@ -293,5 +293,5 @@ function _runAvatar(opciones) {
 
 window.cerrarSesionCliente = function(url) {
   sessionStorage.removeItem('lth_cliente');
-  window.location.href = url || '../index.html';
+  window.location.href = url || 'index.html';
 };

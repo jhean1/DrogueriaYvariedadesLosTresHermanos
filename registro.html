@@ -150,10 +150,10 @@
   <nav class="navbar">
     <div class="navbar-inner">
       <a href="index.html" class="navbar-logo">
-        <img src="DROGUERIA/logo3.jpeg" alt="Logo" onerror="this.style.display='none'">
+        <img src="logo3.jpeg" alt="Logo" onerror="this.style.display='none'">
         <span>Los <em>Tres</em> Hermanos</span>
       </a>
-      <a href="DROGUERIA/login-cliente.html" class="navbar-link">¿Ya tienes cuenta? Inicia sesión →</a>
+      <a href="login-cliente.html" class="navbar-link">¿Ya tienes cuenta? Inicia sesión →</a>
     </div>
   </nav>
 
@@ -164,7 +164,7 @@
       <div class="izq-content">
         <div class="izq-logo">
           <div class="izq-logo-icon">
-            <img src="DROGUERIA/logo3.jpeg" alt="Logo" onerror="this.style.display='none'">
+            <img src="logo3.jpeg" alt="Logo" onerror="this.style.display='none'">
           </div>
           <div class="izq-logo-text">
             Los Tres Hermanos
@@ -284,7 +284,7 @@
       </button>
 
       <div class="links-bottom">
-        ¿Ya tienes cuenta? <a href="DROGUERIA/login-cliente.html">Iniciar sesión</a>
+        ¿Ya tienes cuenta? <a href="login-cliente.html">Iniciar sesión</a>
         &nbsp;·&nbsp;
         <a href="index.html">← Volver al sitio</a>
       </div>
@@ -460,12 +460,12 @@
       }));
 
       toast('✓ ¡Cuenta creada exitosamente!');
-      setTimeout(() => { window.location.href = 'DROGUERIA/explorador-drogueria.html'; }, 1200);
+      setTimeout(() => { window.location.href = 'explorador-drogueria.html'; }, 1200);
     }
 
     function entrarComoInvitado() {
       sessionStorage.setItem('lth_cliente', JSON.stringify({ rol: 'invitado', nombre: 'Invitado' }));
-      window.location.href = 'DROGUERIA/explorador-drogueria.html';
+      window.location.href = 'explorador-drogueria.html';
     }
 
     // Si ya hay sesión activa
@@ -473,7 +473,7 @@
     if (sc) {
       try {
         const c = JSON.parse(sc);
-        if (c.rol === 'cliente') window.location.href = 'DROGUERIA/perfil-cliente.html';
+        if (c.rol === 'cliente') window.location.href = 'perfil-cliente.html';
       } catch {}
     }
   </script>
