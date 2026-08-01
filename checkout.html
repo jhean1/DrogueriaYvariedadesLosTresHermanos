@@ -116,12 +116,31 @@
     .toast.out{animation:tOut 0.3s ease forwards;}
     @keyframes tOut{to{transform:translateX(120%);opacity:0}}
 
-    @media(max-width:768px){
-      .checkout-layout{grid-template-columns:1fr;}
-      .modalidad-grid{grid-template-columns:1fr 1fr;}
-      .resumen-panel{position:static;}
+    /* ── TV ── */
+    @media (min-width: 1400px) {
+      .checkout-layout { max-width: 1400px; }
     }
-    @media(max-width:480px){.modalidad-grid{grid-template-columns:1fr;}}
+    /* ── Tablet ── */
+    @media (min-width: 768px) and (max-width: 1023px) {
+      .checkout-layout { grid-template-columns: 1fr; }
+      .resumen-panel { position: static; }
+      .modalidad-grid { grid-template-columns: 1fr 1fr; }
+    }
+    /* ── Móvil ── */
+    @media (max-width: 767px) {
+      .checkout-layout { grid-template-columns: 1fr; padding: 1.25rem 1rem 3rem; gap: 1.25rem; }
+      .steps-wrap { padding: 0.75rem 1rem; }
+      .step-label { font-size: 0.7rem; }
+      .modalidad-grid { grid-template-columns: 1fr; gap: 0.75rem; }
+      .modalidad-card { padding: 1.25rem 1rem; }
+      .resumen-panel { position: static; padding: 1.25rem; }
+      .navbar-inner { padding: 0 1rem; }
+    }
+    @media (max-width: 479px) {
+      .modalidad-grid { grid-template-columns: 1fr; }
+      .steps { gap: 0; }
+      .step-label { display: none; }
+    }
   </style>
 </head>
 <body>

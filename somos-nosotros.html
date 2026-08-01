@@ -77,8 +77,24 @@
     .historia-wrap p { font-size: 0.98rem; color: var(--gris-texto); line-height: 1.9; }
     .historia-wrap p + p { margin-top: 1rem; }
 
-    @media (max-width: 640px) {
-      .mv-grid { grid-template-columns: 1fr; }
+    
+    @media (min-width: 1400px) {
+      .nosotros-grid { max-width: 1600px; }
+    }
+    @media (min-width: 768px) and (max-width: 1023px) {
+      .nosotros-grid { grid-template-columns: 1fr; }
+      .nosotros-img { max-height: 300px; }
+    }
+    @media (max-width: 767px) {
+      .page-header { padding: 4rem 1.25rem 2rem; }
+      .page-header h1 { font-size: 1.6rem; }
+      .nosotros-grid { grid-template-columns: 1fr; gap: 2rem; padding: 2rem 1.25rem; }
+      .nosotros-img { display: none; }
+      .valores-grid { grid-template-columns: 1fr 1fr; gap: 0.85rem; padding: 2rem 1.25rem; }
+      .equipo-grid { grid-template-columns: 1fr; padding: 2rem 1.25rem; }
+    }
+    @media (max-width: 479px) {
+      .valores-grid { grid-template-columns: 1fr; }
     }
   </style>
 </head>

@@ -96,8 +96,19 @@
     .mapa-overlay-btn:hover { transform: translateY(-2px); box-shadow: var(--sombra-lg); }
     .mapa-overlay-btn svg { width: 14px; height: 14px; }
 
-    @media (max-width: 900px) {
-      .contacto-main { grid-template-columns: 1fr; }
+    
+    @media (min-width: 1400px) {
+      .contacto-grid { max-width: 1600px; }
+    }
+    @media (min-width: 768px) and (max-width: 1023px) {
+      .contacto-grid { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 767px) {
+      .page-header { padding: 4rem 1.25rem 2rem; }
+      .page-header h1 { font-size: 1.6rem; }
+      .contacto-grid { grid-template-columns: 1fr; padding: 2rem 1.25rem; gap: 1.5rem; }
+      .contacto-info-card { padding: 1.5rem 1.25rem; }
+      .mapa-wrap { height: 260px; }
     }
   </style>
 </head>

@@ -112,7 +112,39 @@
     .fab-carrito svg { width:24px; height:24px; }
     .fab-badge { position:absolute; top:-4px; right:-4px; background:var(--rojo); color:white; font-size:0.7rem; font-weight:800; min-width:20px; height:20px; border-radius:99px; display:none; place-items:center; padding:0 4px; border:2px solid white; }
 
-    @media(max-width:640px){ .busqueda-bar { flex-direction:column; align-items:stretch; } }
+    
+    /* ── TV ── */
+    @media (min-width: 1400px) {
+      .busqueda-wrap, .resultados-info, .medicamentos-container { max-width: 1600px; }
+      .medicamentos-grid { grid-template-columns: repeat(auto-fill, minmax(280px,1fr)); }
+    }
+    /* ── Tablet ── */
+    @media (min-width: 768px) and (max-width: 1023px) {
+      .medicamentos-grid { grid-template-columns: repeat(2,1fr); }
+      .busqueda-bar { gap: 0.75rem; }
+    }
+    /* ── Móvil ── */
+    @media (max-width: 767px) {
+      .page-header { padding: 4rem 1.25rem 2rem; }
+      .page-header h1 { font-size: 1.6rem; }
+      .busqueda-wrap { padding: 1.25rem 1rem; }
+      .busqueda-bar { flex-direction: column; gap: 0.75rem; padding: 1rem; }
+      .chips-wrap { gap: 0.4rem; }
+      .chip-filtro { font-size: 0.75rem; padding: 0.3rem 0.7rem; }
+      .resultados-info { padding: 0 1rem 0.75rem; flex-direction: column; align-items: flex-start; gap: 0.4rem; }
+      .medicamentos-container { padding: 0 1rem 3rem; }
+      .medicamentos-grid { grid-template-columns: 1fr; gap: 1rem; }
+      .med-img-wrap { height: 140px; }
+      .med-body { padding: 1rem; }
+      .med-selector { padding: 0 1rem 0.75rem; }
+      .med-footer { padding: 0.85rem 1rem; }
+      .carrito-drawer { width: 100%; max-width: 100%; }
+      .fab-carrito { bottom: 1rem; right: 1rem; width: 52px; height: 52px; }
+    }
+    @media (max-width: 479px) {
+      .medicamentos-grid { grid-template-columns: 1fr; }
+      .page-header h1 { font-size: 1.4rem; }
+    }
   </style>
 </head>
 <body>

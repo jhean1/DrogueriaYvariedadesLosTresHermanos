@@ -250,9 +250,34 @@
       .visor-wrap{padding:0;}
     }
 
-    @media(max-width:640px){
-      .perfil-grid{grid-template-columns:1fr;}
-      .favoritos-grid{grid-template-columns:repeat(auto-fill,minmax(150px,1fr));}
+    /* ── TV ── */
+    @media (min-width: 1400px) {
+      .content { max-width: 1400px; }
+      .perfil-grid { grid-template-columns: 1fr 1fr 1fr; }
+    }
+    /* ── Tablet ── */
+    @media (min-width: 768px) and (max-width: 1023px) {
+      .content { padding: 1.5rem; }
+      .perfil-grid { grid-template-columns: 1fr 1fr; }
+      .favoritos-grid { grid-template-columns: repeat(auto-fill, minmax(160px,1fr)); }
+    }
+    /* ── Móvil ── */
+    @media (max-width: 767px) {
+      .perfil-hero { padding: 1.75rem 1.25rem; }
+      .perfil-hero-inner { flex-direction: column; gap: 1rem; }
+      .avatar-grande { width: 58px; height: 58px; font-size: 1.3rem; }
+      .tabs-inner { padding: 0 0.75rem; overflow-x: auto; gap: 0; }
+      .tab { padding: 0.85rem 0.75rem; font-size: 0.8rem; white-space: nowrap; }
+      .content { padding: 1.25rem 1rem; }
+      .perfil-grid { grid-template-columns: 1fr; }
+      .favoritos-grid { grid-template-columns: repeat(auto-fill, minmax(140px,1fr)); }
+      .pedido-top { flex-direction: column; gap: 0.35rem; }
+      .visor-nav-btn { display: none; }
+      .visor-factura { border-radius: 12px; }
+    }
+    @media (max-width: 479px) {
+      .favoritos-grid { grid-template-columns: 1fr 1fr; }
+      .tab { font-size: 0.75rem; padding: 0.75rem 0.6rem; }
     }
   </style>
 </head>
