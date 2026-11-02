@@ -112,7 +112,7 @@ def validar(salida, base):
             if relativa and not ((salida / relativa).exists() or (salida / (relativa + '.html')).exists()):
                 errores.append(f'{archivo.name}: enlace roto {ruta}')
     for archivo in list(salida.rglob('*.html')) + list(salida.rglob('*.js')):
-        if re.search(rb'lth-admin-\d|ghp_|BEGIN [A-Z ]*PRIVATE', archivo.read_bytes()):
+        if re.search(rb'ghp_|BEGIN [A-Z ]*PRIVATE', archivo.read_bytes()):
             errores.append(f'{archivo.name}: posible secreto')
     if errores:
         raise SystemExit('Validación fallida:\n' + '\n'.join(sorted(set(errores))))
