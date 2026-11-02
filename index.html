@@ -1,403 +1,403 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
+<!DOCTYPE html>
+<html lang="es">
+<head>
   <meta charset="UTF-8">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; frame-src https://www.google.com; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Inicio · Los Tres Hermanos</title>
-  <meta name="description" content="Droguería y Variedades Los Tres Hermanos: medicamentos, variedades y servicios en Arjona, Bolívar.">
-  <meta name="theme-color" content="#101B35">
-  <link rel="icon" type="image/svg+xml" href="/DrogueriaYvariedadesLosTresHermanos/img/marca/favicon.svg">
-  <link rel="icon" type="image/png" sizes="32x32" href="/DrogueriaYvariedadesLosTresHermanos/img/marca/favicon-32.png">
-  <link rel="apple-touch-icon" href="/DrogueriaYvariedadesLosTresHermanos/img/marca/apple-touch-icon.png">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;family=Sora:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/DrogueriaYvariedadesLosTresHermanos/css/design-system.css">
-  <link rel="stylesheet" href="/DrogueriaYvariedadesLosTresHermanos/css/tienda.css">
-  <script>
-    document.documentElement.classList.add('js');
-    try {
-      var s = JSON.parse(sessionStorage.getItem('lth_cliente') || 'null');
-      if (s && s.rol === 'cliente') document.documentElement.classList.add('con-sesion');
-    } catch (e) {}
-  </script>
-</head>
-<body class="sobre-oscuro">
-  
-  <a class="saltar" href="#contenido">Saltar al contenido</a>
-  <header class="navbar no-imprimir" role="banner">
-    <div class="navbar-inner contenedor">
-      <a href="/DrogueriaYvariedadesLosTresHermanos/" class="navbar-logo" aria-label="Los Tres Hermanos, ir al inicio">
-        <img class="logo-claro" src="/DrogueriaYvariedadesLosTresHermanos/img/marca/logo-horizontal.svg" alt="" width="290" height="44">
-        <img class="logo-oscuro" src="/DrogueriaYvariedadesLosTresHermanos/img/marca/logo-horizontal-oscuro.svg" alt="" width="290" height="44">
-      </a>
-
-      <div class="barra-velo" id="barra-velo"></div>
-      <nav class="navbar-nav" id="nav-menu" aria-label="Menú principal">
-        <div class="menu-cabeza">
-          <img src="/DrogueriaYvariedadesLosTresHermanos/img/marca/isotipo-3h.svg" alt="" width="64" height="40">
-          <button class="btn-icono" id="btn-cerrar-menu" type="button" aria-label="Cerrar menú"><svg class="ic" aria-hidden="true"><use href="/DrogueriaYvariedadesLosTresHermanos/img/iconos.svg#cerrar"/></svg></button>
-        </div>
-        <a href="/DrogueriaYvariedadesLosTresHermanos/" class="nav-link active" aria-current="page">Inicio</a>
-        <a href="/DrogueriaYvariedadesLosTresHermanos/medicamentos" class="nav-link">Medicamentos</a>
-        <a href="/DrogueriaYvariedadesLosTresHermanos/variedades" class="nav-link">Variedades</a>
-        <a href="/DrogueriaYvariedadesLosTresHermanos/servicios" class="nav-link">Servicios</a>
-        <a href="/DrogueriaYvariedadesLosTresHermanos/suscripciones" class="nav-link">Suscripciones</a>
-        <a href="/DrogueriaYvariedadesLosTresHermanos/nosotros" class="nav-link">Nosotros</a>
-        <a href="/DrogueriaYvariedadesLosTresHermanos/contacto" class="nav-link">Contacto</a>
-        <a href="/DrogueriaYvariedadesLosTresHermanos/registro" class="btn btn--primario menu-registro" id="btn-registrate-menu">Crear cuenta</a>
-      </nav>
-
-      <div class="navbar-actions">
-        <a href="/DrogueriaYvariedadesLosTresHermanos/registro" id="btn-registrate" class="btn btn--fantasma btn--sm">Regístrate</a>
-        <a href="/DrogueriaYvariedadesLosTresHermanos/login" id="btn-mi-cuenta" class="btn btn--secundario btn--sm" aria-label="Mi cuenta">
-          <svg class="ic" aria-hidden="true"><use href="/DrogueriaYvariedadesLosTresHermanos/img/iconos.svg#usuario"/></svg>
-          <span class="etiqueta-cuenta">Mi cuenta</span>
-        </a>
-        <button class="btn-carrito-nav btn-icono" id="btn-abrir-carrito" type="button" onclick="abrirDrawer()" aria-label="Abrir carrito">
-          <svg class="ic" aria-hidden="true"><use href="/DrogueriaYvariedadesLosTresHermanos/img/iconos.svg#carrito"/></svg>
-          <span class="badge-carrito" style="display:none">0</span>
-        </button>
-        <button class="btn-menu btn-icono" id="btn-menu" type="button" aria-label="Abrir menú" aria-expanded="false" aria-controls="nav-menu">
-          <svg class="ic" aria-hidden="true"><use href="/DrogueriaYvariedadesLosTresHermanos/img/iconos.svg#menu"/></svg>
-        </button>
-      </div>
-    </div>
-  </header>
-
-
-  <main id="contenido">
-    <!-- Hero: la cápsula de la marca es el protagonista -->
-    <section class="hero" aria-labelledby="hero-titulo">
-      <div class="hero-fondo" aria-hidden="true">
-        <div class="hero-aura" data-paralaje="-.5"></div>
-        <div class="hero-rejilla"></div>
-      </div>
-      <div class="contenedor hero-interior">
-        <div class="hero-texto">
-          <span class="hero-lugar entra" style="--i:0"><svg class="ic" aria-hidden="true"><use href="/DrogueriaYvariedadesLosTresHermanos/img/iconos.svg#ubicacion"/></svg>Arjona, Bolívar</span>
-          <h1 id="hero-titulo" class="hero-titulo">
-            <span class="linea"><span class="entra-linea" style="--i:1">Tu salud,</span></span>
-            <span class="linea"><span class="entra-linea" style="--i:2">nuestra</span></span>
-            <span class="linea"><span class="entra-linea hero-acento" style="--i:3">prioridad.</span></span>
-          </h1>
-          <p class="hero-desc entra" style="--i:5">Medicamentos, variedades y servicios para tu familia, con la atención cercana de siempre.</p>
-          <div class="hero-acciones entra" style="--i:6">
-            <a href="/DrogueriaYvariedadesLosTresHermanos/medicamentos" class="btn btn--primario btn--lg">Ver medicamentos <svg class="ic ic-mueve" aria-hidden="true"><use href="/DrogueriaYvariedadesLosTresHermanos/img/iconos.svg#flecha"/></svg></a>
-            <a href="/DrogueriaYvariedadesLosTresHermanos/variedades" class="btn btn--vidrio btn--lg">Explorar variedades</a>
-          </div>
-        </div>
-
-        <div class="hero-escena" aria-hidden="true">
-          <div class="hero-anillo" data-paralaje=".25"></div>
-          <div class="hero-capsula-capa" data-paralaje=".9">
-            <svg class="hero-capsula" viewBox="0 0 520 520">
-              <defs>
-                <linearGradient id="capA" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#7EA3FF"/><stop offset=".45" stop-color="#3F6BF0"/><stop offset="1" stop-color="#152F9C"/></linearGradient>
-                <linearGradient id="capB" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#D9607B"/><stop offset=".45" stop-color="#A52A44"/><stop offset="1" stop-color="#561222"/></linearGradient>
-                <linearGradient id="capBrillo" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#fff" stop-opacity=".75"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient>
-                <filter id="capSombra" x="-30%" y="-30%" width="160%" height="170%"><feGaussianBlur stdDeviation="22"/></filter>
-              </defs>
-              <ellipse cx="270" cy="440" rx="170" ry="20" fill="#02060F" opacity=".55" filter="url(#capSombra)"/>
-              <g transform="rotate(-32 260 250)">
-                <path d="M260 160H150a90 90 0 0 0 0 180h110z" fill="url(#capA)"/>
-                <path d="M260 160h110a90 90 0 0 1 0 180H260z" fill="url(#capB)"/>
-                <rect x="256" y="160" width="8" height="180" fill="#0B1226" opacity=".35"/>
-                <rect x="90" y="184" width="150" height="20" rx="10" fill="url(#capBrillo)"/>
-                <rect x="284" y="184" width="120" height="14" rx="7" fill="#fff" opacity=".22"/>
-              </g>
-            </svg>
-          </div>
-          <div class="hero-ficha hero-ficha--a" data-paralaje="1.5"><div class="flota">
-            <span class="hero-ficha-icono"><svg class="ic"><use href="/DrogueriaYvariedadesLosTresHermanos/img/iconos.svg#capsula"/></svg></span>
-            <div><strong id="hero-medicamento">Catálogo</strong><span id="hero-medicamento-precio">Medicamentos</span></div>
-          </div></div>
-          <div class="hero-ficha hero-ficha--b" data-paralaje="1.15"><div class="flota flota--2">
-            <span class="hero-ficha-icono hero-ficha-icono--b"><svg class="ic"><use href="/DrogueriaYvariedadesLosTresHermanos/img/iconos.svg#corona"/></svg></span>
-            <div><strong>Plan Premium</strong><span>15% de descuento</span></div>
-          </div></div>
-          <div class="hero-ficha hero-ficha--c" data-paralaje="1.8"><div class="flota flota--3">
-            <span class="hero-ficha-icono hero-ficha-icono--c"><svg class="ic"><use href="/DrogueriaYvariedadesLosTresHermanos/img/iconos.svg#camion"/></svg></span>
-            <div><strong>Domicilio</strong><span>Dentro de Arjona</span></div>
-          </div></div>
-        </div>
-      </div>
-    </section>
-
-    <!-- Cifras calculadas del catálogo real -->
-    <section class="cifras contenedor" aria-label="El catálogo en cifras">
-      <div class="cifras-panel" data-escalonar>
-        <div class="cifra"><strong id="cifra-medicamentos">15</strong><span>medicamentos en catálogo</span></div>
-        <div class="cifra"><strong id="cifra-presentaciones">115</strong><span>presentaciones y marcas</span></div>
-        <div class="cifra"><strong id="cifra-variedades">11</strong><span>productos de variedades</span></div>
-        <div class="cifra"><strong data-contar="4">4</strong><span>planes de suscripción</span></div>
-      </div>
-    </section>
-
-    <!-- Lo que hay en la droguería: cuadrícula asimétrica -->
-    <section class="bloque contenedor" aria-labelledby="titulo-oferta">
-      <header class="encabezado revelar">
-        <span class="ante">Todo en un solo lugar</span>
-        <h2 id="titulo-oferta" class="titulo-seccion">Lo que tu familia necesita, sin dar más vueltas.</h2>
-      </header>
-      <div class="mosaico" data-escalonar>
-        <a href="/DrogueriaYvariedadesLosTresHermanos/medicamentos" class="mosaico-item mosaico-item--grande" data-brillo>
-          <div class="mosaico-texto">
-            <span class="ante ante--claro">Farmacia</span>
-            <h3>Medicamentos</h3>
-            <p>Busca por nombre o categoría y elige presentación, concentración y marca.</p>
-            <span class="enlace-flecha">Ver catálogo <svg class="ic" aria-hidden="true"><use href="/DrogueriaYvariedadesLosTresHermanos/img/iconos.svg#flecha"/></svg></span>
-          </div>
-          <div class="mosaico-arte" id="arte-medicamentos" aria-hidden="true"></div>
-        </a>
-        <a href="/DrogueriaYvariedadesLosTresHermanos/variedades" class="mosaico-item mosaico-item--vino" data-brillo>
-          <div class="mosaico-texto">
-            <span class="ante ante--borgona">Tienda</span>
-            <h3>Variedades</h3>
-            <p>Perfumes, útiles escolares y cuidado personal.</p>
-            <span class="enlace-flecha">Ver productos <svg class="ic" aria-hidden="true"><use href="/DrogueriaYvariedadesLosTresHermanos/img/iconos.svg#flecha"/></svg></span>
-          </div>
-          <div class="mosaico-arte mosaico-arte--pequena" id="arte-variedades" aria-hidden="true"></div>
-        </a>
-        <a href="/DrogueriaYvariedadesLosTresHermanos/servicios" class="mosaico-item" data-brillo>
-          <span class="mosaico-icono"><svg class="ic" aria-hidden="true"><use href="/DrogueriaYvariedadesLosTresHermanos/img/iconos.svg#celular"/></svg></span>
-          <h3>Recargas y minutos</h3>
-          <p>Recarga tu saldo y compra minutos de manera rápida.</p>
-        </a>
-        <a href="/DrogueriaYvariedadesLosTresHermanos/servicios" class="mosaico-item" data-brillo>
-          <span class="mosaico-icono"><svg class="ic" aria-hidden="true"><use href="/DrogueriaYvariedadesLosTresHermanos/img/iconos.svg#copia"/></svg></span>
-          <h3>Fotocopiado</h3>
-          <p>Trae tus documentos y te los copiamos en el momento.</p>
-        </a>
-      </div>
-    </section>
-
-    <!-- Selección del catálogo -->
-    <section class="bloque bloque--tono" aria-labelledby="titulo-seleccion">
-      <div class="contenedor">
-        <header class="encabezado encabezado--fila revelar">
-          <div>
-            <span class="ante">Del catálogo</span>
-            <h2 id="titulo-seleccion" class="titulo-seccion">Una muestra de lo que encuentras.</h2>
-          </div>
-          <a href="/DrogueriaYvariedadesLosTresHermanos/medicamentos" class="btn btn--secundario">Ver todo <svg class="ic ic-mueve" aria-hidden="true"><use href="/DrogueriaYvariedadesLosTresHermanos/img/iconos.svg#flecha"/></svg></a>
-        </header>
-      </div>
-      <div class="carrusel contenedor" id="seleccion-productos" tabindex="0" aria-label="Productos del catálogo"></div>
-    </section>
-
-    <!-- Medicamentos: bloque editorial sobre azul noche -->
-    <section class="editorial" aria-labelledby="titulo-editorial">
-      <div class="contenedor editorial-interior">
-        <div class="revelar revelar--izq">
-          <span class="ante ante--claro">Medicamentos</span>
-          <h2 id="titulo-editorial" class="titulo-seccion titulo-seccion--claro">Elige exactamente la presentación que necesitas.</h2>
-          <p class="editorial-texto">Cada producto muestra sus presentaciones, concentraciones y marcas, con su precio actualizado al seleccionarlas.</p>
-          <a href="/DrogueriaYvariedadesLosTresHermanos/medicamentos" class="btn btn--claro">Buscar un medicamento <svg class="ic ic-mueve" aria-hidden="true"><use href="/DrogueriaYvariedadesLosTresHermanos/img/iconos.svg#flecha"/></svg></a>
-        </div>
-        <ul class="lista-categorias" id="lista-categorias" data-escalonar></ul>
-      </div>
-    </section>
-
-    <!-- Beneficios: lista sin tarjetas -->
-    <section class="bloque contenedor beneficios" aria-labelledby="titulo-beneficios">
-      <header class="revelar beneficios-cabeza">
-        <span class="ante">Comprar aquí</span>
-        <h2 id="titulo-beneficios" class="titulo-seccion">Simple, de principio a fin.</h2>
-      </header>
-      <ol class="beneficios-lista" data-escalonar>
-        <li><span class="beneficio-num"><svg class="ic" aria-hidden="true"><use href="/DrogueriaYvariedadesLosTresHermanos/img/iconos.svg#carrito"/></svg></span><div><h3>Arma tu pedido en línea</h3><p>Agrega productos al carrito y revisa el total antes de confirmar.</p></div></li>
-        <li><span class="beneficio-num"><svg class="ic" aria-hidden="true"><use href="/DrogueriaYvariedadesLosTresHermanos/img/iconos.svg#camion"/></svg></span><div><h3>Domicilio o recogida en tienda</h3><p>Te lo llevamos dentro de Arjona o lo recoges en la droguería.</p></div></li>
-        <li><span class="beneficio-num"><svg class="ic" aria-hidden="true"><use href="/DrogueriaYvariedadesLosTresHermanos/img/iconos.svg#billete"/></svg></span><div><h3>Pago en efectivo al recibir</h3><p>Pagas cuando tienes tu pedido en las manos.</p></div></li>
-        <li><span class="beneficio-num"><svg class="ic" aria-hidden="true"><use href="/DrogueriaYvariedadesLosTresHermanos/img/iconos.svg#whatsapp"/></svg></span><div><h3>Confirmación por WhatsApp</h3><p>Tu pedido llega directo a la droguería con todos sus detalles.</p></div></li>
-      </ol>
-    </section>
-
-    <!-- Planes -->
-    <section class="bloque bloque--tono" aria-labelledby="titulo-planes">
-      <div class="contenedor">
-        <header class="encabezado encabezado--fila revelar">
-          <div>
-            <span class="ante ante--borgona">Suscripciones</span>
-            <h2 id="titulo-planes" class="titulo-seccion">Ahorra en cada compra del mes.</h2>
-          </div>
-          <a href="/DrogueriaYvariedadesLosTresHermanos/suscripciones" class="btn btn--oscuro">Comparar planes <svg class="ic ic-mueve" aria-hidden="true"><use href="/DrogueriaYvariedadesLosTresHermanos/img/iconos.svg#flecha"/></svg></a>
-        </header>
-        <div class="planes-franja" data-escalonar>
-          <a href="/DrogueriaYvariedadesLosTresHermanos/suscripciones" class="plan-mini"><span>Básico</span><strong>3%</strong><small>$4.900 al mes</small></a>
-          <a href="/DrogueriaYvariedadesLosTresHermanos/suscripciones" class="plan-mini"><span>Estándar</span><strong>5%</strong><small>$9.900 al mes</small></a>
-          <a href="/DrogueriaYvariedadesLosTresHermanos/suscripciones" class="plan-mini"><span>Regular</span><strong>10%</strong><small>$14.900 al mes</small></a>
-          <a href="/DrogueriaYvariedadesLosTresHermanos/suscripciones" class="plan-mini plan-mini--top"><span>Premium</span><strong>15%</strong><small>$19.900 al mes</small></a>
-        </div>
-      </div>
-    </section>
-
-    <!-- Valores -->
-    <section class="bloque contenedor valores" aria-labelledby="titulo-valores">
-      <div>
-        <header class="revelar">
-          <span class="ante">Quiénes somos</span>
-          <h2 id="titulo-valores" class="titulo-seccion">Los valores detrás del mostrador.</h2>
-        </header>
-        <ul class="valores-lista" data-escalonar>
-          <li><span>01</span>Responsabilidad</li>
-          <li><span>02</span>Respeto</li>
-          <li><span>03</span>Honestidad</li>
-          <li><span>04</span>Solidaridad</li>
-          <li><span>05</span>Lealtad</li>
-        </ul>
-        <a href="/DrogueriaYvariedadesLosTresHermanos/nosotros" class="enlace-flecha revelar">Conoce nuestra historia <svg class="ic" aria-hidden="true"><use href="/DrogueriaYvariedadesLosTresHermanos/img/iconos.svg#flecha"/></svg></a>
-      </div>
-      <img class="pieza-marca revelar revelar--der" src="/DrogueriaYvariedadesLosTresHermanos/img/marca/pieza-marca-3h.jpeg" alt="Pieza de marca de Droguería Los Tres Hermanos: el símbolo 3H con una cápsula, el lema Calidad y servicio y la frase Tu salud, nuestra prioridad." width="1214" height="1296" loading="lazy">
-    </section>
-  </main>
-
-  
-  <footer class="footer-global no-imprimir" role="contentinfo">
-    <div class="contenedor">
-      <div class="pie-cta revelar">
-        <div>
-          <h2>¿Tienes una consulta?</h2>
-          <p>Escríbenos por WhatsApp y te atendemos directamente desde la droguería.</p>
-        </div>
-        <a class="btn btn--claro btn--lg" href="https://wa.me/573225065554" target="_blank" rel="noopener">
-          <svg class="ic" aria-hidden="true"><use href="/DrogueriaYvariedadesLosTresHermanos/img/iconos.svg#whatsapp"/></svg> Escribir por WhatsApp
-        </a>
-      </div>
-      <div class="footer-grid">
-        <div class="footer-marca">
-          <img src="/DrogueriaYvariedadesLosTresHermanos/img/marca/logo-vertical-oscuro.svg" alt="Droguería y Variedades Los Tres Hermanos" width="200" height="133">
-          <p>Medicamentos, variedades y servicios para las familias de Arjona, Bolívar.</p>
-        </div>
-        <div class="footer-col">
-          <h3>Tienda</h3>
-          <ul>
-            <li><a href="/DrogueriaYvariedadesLosTresHermanos/medicamentos">Medicamentos</a></li>
-            <li><a href="/DrogueriaYvariedadesLosTresHermanos/variedades">Variedades</a></li>
-            <li><a href="/DrogueriaYvariedadesLosTresHermanos/suscripciones">Suscripciones</a></li>
-            <li><a href="/DrogueriaYvariedadesLosTresHermanos/servicios">Servicios</a></li>
-          </ul>
-        </div>
-        <div class="footer-col">
-          <h3>La droguería</h3>
-          <ul>
-            <li><a href="/DrogueriaYvariedadesLosTresHermanos/nosotros">Quiénes somos</a></li>
-            <li><a href="/DrogueriaYvariedadesLosTresHermanos/contacto">Contacto</a></li>
-            <li><a href="/DrogueriaYvariedadesLosTresHermanos/login">Mi cuenta</a></li>
-          </ul>
-        </div>
-        <div class="footer-col">
-          <h3>Contacto</h3>
-          <ul class="pie-contacto">
-            <li><a href="tel:+573225065554"><svg class="ic" aria-hidden="true"><use href="/DrogueriaYvariedadesLosTresHermanos/img/iconos.svg#telefono"/></svg>+57 322 506 5554</a></li>
-            <li><a href="mailto:diazpajaro1208@gmail.com"><svg class="ic" aria-hidden="true"><use href="/DrogueriaYvariedadesLosTresHermanos/img/iconos.svg#correo"/></svg>diazpajaro1208@gmail.com</a></li>
-            <li><a href="https://www.google.com/maps/search/?api=1&amp;query=Diagonal+52+50A-755+Arjona+Bolivar+Colombia" target="_blank" rel="noopener"><svg class="ic" aria-hidden="true"><use href="/DrogueriaYvariedadesLosTresHermanos/img/iconos.svg#ubicacion"/></svg>Diagonal 52 50A-755, Arjona</a></li>
-          </ul>
-        </div>
-      </div>
-      <div class="footer-bottom">
-        <span>© 2026 Droguería y Variedades Los Tres Hermanos</span>
-        <div>
-          <button type="button" onclick="abrirTerminos('terminos')">Términos de servicio</button>
-          <button type="button" onclick="abrirTerminos('privacidad')">Política de privacidad</button>
-        </div>
-      </div>
-    </div>
-  </footer>
-
-  <div class="modal-velo no-imprimir" id="modal-terminos" role="dialog" aria-modal="true" aria-labelledby="modal-terminos-titulo">
-    <div class="modal">
-      <div class="modal-cabeza">
-        <h2 id="modal-terminos-titulo"></h2>
-        <button class="btn-icono" type="button" onclick="cerrarTerminos()" aria-label="Cerrar"><svg class="ic" aria-hidden="true"><use href="/DrogueriaYvariedadesLosTresHermanos/img/iconos.svg#cerrar"/></svg></button>
-      </div>
-      <div class="modal-cuerpo" id="modal-terminos-body"></div>
-      <div class="modal-pie"><button class="btn btn--primario" type="button" onclick="cerrarTerminos()">Cerrar</button></div>
-    </div>
-  </div>
-
-  
-  <div class="drawer-overlay no-imprimir" id="drawer-overlay" onclick="cerrarDrawer()"></div>
-  <aside class="carrito-drawer no-imprimir" id="carrito-drawer" role="dialog" aria-modal="true" aria-labelledby="titulo-carrito">
-    <div class="drawer-header">
-      <h2 id="titulo-carrito">Mi carrito</h2>
-      <button class="btn-cerrar-drawer btn-icono" id="btn-cerrar-drawer" type="button" onclick="cerrarDrawer()" aria-label="Cerrar carrito">
-        <svg class="ic" aria-hidden="true"><use href="/DrogueriaYvariedadesLosTresHermanos/img/iconos.svg#cerrar"/></svg>
-      </button>
-    </div>
-    <div class="drawer-body" id="drawer-body"></div>
-    <div class="drawer-footer" id="drawer-footer" style="display:none">
-      <div class="total-row">
-        <span class="total-label">Total</span>
-        <span class="total-valor" id="total-valor">$0</span>
-      </div>
-      <button class="btn btn--primario btn--lg btn--bloque" id="btn-comprar" type="button" onclick="window.location.href='/DrogueriaYvariedadesLosTresHermanos/checkout'">
-        Finalizar compra <svg class="ic ic-mueve" aria-hidden="true"><use href="/DrogueriaYvariedadesLosTresHermanos/img/iconos.svg#flecha"/></svg>
-      </button>
-    </div>
-  </aside>
-
-  
-  <script src="/DrogueriaYvariedadesLosTresHermanos/js/seguridad.js"></script>
-  <script src="/DrogueriaYvariedadesLosTresHermanos/js/global.js"></script>
-  <script src="/DrogueriaYvariedadesLosTresHermanos/js/experiencia.js"></script>
-  <script src="/DrogueriaYvariedadesLosTresHermanos/js/legal.js"></script>
-  <script src="/DrogueriaYvariedadesLosTresHermanos/js/carrito-ui.js"></script>
-
-  <script src="/DrogueriaYvariedadesLosTresHermanos/js/arte.js"></script>
-  <script src="/DrogueriaYvariedadesLosTresHermanos/js/explorador-data.js"></script>
-  <script src="/DrogueriaYvariedadesLosTresHermanos/js/variedades-data.js"></script>
-  <script>
-    document.addEventListener('DOMContentLoaded', () => {
-      const esc = Seguridad.esc;
-
-      // Todas las cifras salen de los datos del catálogo
-      const fijarCifra = (id, valor) => {
-        const el = document.getElementById(id);
-        el.textContent = valor;
-        el.dataset.contar = valor;
-      };
-      fijarCifra('cifra-medicamentos', MEDICAMENTOS.length);
-      fijarCifra('cifra-presentaciones', MEDICAMENTOS.reduce((s, m) => s + m.presentaciones.length, 0));
-      fijarCifra('cifra-variedades', VARIEDADES.length);
-      Experiencia.contadores();
-
-      const muestra = MEDICAMENTOS[0];
-      const desde = Math.min(...muestra.presentaciones.map(p => p.precio));
-      document.getElementById('hero-medicamento').textContent = muestra.nombre;
-      document.getElementById('hero-medicamento-precio').textContent = 'Desde ' + formatPrecio(desde);
-
-      document.getElementById('arte-medicamentos').innerHTML = Arte.medicamento(MEDICAMENTOS[0], { tipo: 'Unidad' });
-      document.getElementById('arte-variedades').innerHTML = Arte.variedad(VARIEDADES[0]);
-
-      const seleccion = [
-        ...MEDICAMENTOS.slice(0, 3).map(m => ({
-          nombre: m.nombre, tipo: LABELS_CAT[m.cat], url: '/DrogueriaYvariedadesLosTresHermanos/medicamentos',
-          arte: Arte.medicamento(m, m.presentaciones[3] || m.presentaciones[0]),
-          precio: 'Desde ' + formatPrecio(Math.min(...m.presentaciones.map(p => p.precio)))
-        })),
-        ...[VARIEDADES[0], VARIEDADES[3], VARIEDADES[9]].map(v => ({
-          nombre: v.nombre, tipo: 'Variedades', url: '/DrogueriaYvariedadesLosTresHermanos/variedades', arte: Arte.variedad(v), precio: formatPrecio(v.precio)
-        }))
-      ];
-      document.getElementById('seleccion-productos').innerHTML = seleccion.map((p, i) => `
-        <a class="ficha-producto revelar" style="--i:${i}" href="${p.url}">
-          <div class="ficha-arte">${p.arte}</div>
-          <span class="ficha-tipo">${esc(p.tipo)}</span>
-          <h3>${esc(p.nombre)}</h3>
-          <strong>${esc(p.precio)}</strong>
-        </a>`).join('');
-
-      const conteos = {};
-      MEDICAMENTOS.forEach(m => { conteos[m.cat] = (conteos[m.cat] || 0) + 1; });
-      document.getElementById('lista-categorias').innerHTML = Object.keys(conteos).map(c => `
-        <li><a href="/DrogueriaYvariedadesLosTresHermanos/medicamentos"><span>${esc(LABELS_CAT[c] || c)}</span><small>${conteos[c]}</small></a></li>`).join('');
-
-      Experiencia.revelar();
-      initAvatar({ perfilUrl: '/DrogueriaYvariedadesLosTresHermanos/perfil', logoutUrl: '/DrogueriaYvariedadesLosTresHermanos/' });
-    });
-  </script>
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; frame-src https://www.google.com; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Inicio · Los Tres Hermanos</title>
+  <meta name="description" content="Droguería y Variedades Los Tres Hermanos: medicamentos, variedades y servicios en Arjona, Bolívar.">
+  <meta name="theme-color" content="#101B35">
+  <link rel="icon" type="image/svg+xml" href="/DrogueriaYvariedadesLosTresHermanos/img/marca/favicon.svg">
+  <link rel="icon" type="image/png" sizes="32x32" href="/DrogueriaYvariedadesLosTresHermanos/img/marca/favicon-32.png">
+  <link rel="apple-touch-icon" href="/DrogueriaYvariedadesLosTresHermanos/img/marca/apple-touch-icon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;family=Sora:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/DrogueriaYvariedadesLosTresHermanos/css/design-system.css">
+  <link rel="stylesheet" href="/DrogueriaYvariedadesLosTresHermanos/css/tienda.css">
+  <script>
+    document.documentElement.classList.add('js');
+    try {
+      var s = JSON.parse(sessionStorage.getItem('lth_cliente') || 'null');
+      if (s && s.rol === 'cliente') document.documentElement.classList.add('con-sesion');
+    } catch (e) {}
+  </script>
+</head>
+<body class="sobre-oscuro">
+  
+  <a class="saltar" href="#contenido">Saltar al contenido</a>
+  <header class="navbar no-imprimir" role="banner">
+    <div class="navbar-inner contenedor">
+      <a href="/DrogueriaYvariedadesLosTresHermanos/" class="navbar-logo" aria-label="Los Tres Hermanos, ir al inicio">
+        <img class="logo-claro" src="/DrogueriaYvariedadesLosTresHermanos/img/marca/logo-horizontal.svg" alt="" width="290" height="44">
+        <img class="logo-oscuro" src="/DrogueriaYvariedadesLosTresHermanos/img/marca/logo-horizontal-oscuro.svg" alt="" width="290" height="44">
+      </a>
+
+      <div class="barra-velo" id="barra-velo"></div>
+      <nav class="navbar-nav" id="nav-menu" aria-label="Menú principal">
+        <div class="menu-cabeza">
+          <img src="/DrogueriaYvariedadesLosTresHermanos/img/marca/isotipo-3h.svg" alt="" width="64" height="40">
+          <button class="btn-icono" id="btn-cerrar-menu" type="button" aria-label="Cerrar menú"><svg class="ic" aria-hidden="true"><use href="/DrogueriaYvariedadesLosTresHermanos/img/iconos.svg#cerrar"/></svg></button>
+        </div>
+        <a href="/DrogueriaYvariedadesLosTresHermanos/" class="nav-link active" aria-current="page">Inicio</a>
+        <a href="/DrogueriaYvariedadesLosTresHermanos/medicamentos" class="nav-link">Medicamentos</a>
+        <a href="/DrogueriaYvariedadesLosTresHermanos/variedades" class="nav-link">Variedades</a>
+        <a href="/DrogueriaYvariedadesLosTresHermanos/servicios" class="nav-link">Servicios</a>
+        <a href="/DrogueriaYvariedadesLosTresHermanos/suscripciones" class="nav-link">Suscripciones</a>
+        <a href="/DrogueriaYvariedadesLosTresHermanos/nosotros" class="nav-link">Nosotros</a>
+        <a href="/DrogueriaYvariedadesLosTresHermanos/contacto" class="nav-link">Contacto</a>
+        <a href="/DrogueriaYvariedadesLosTresHermanos/registro" class="btn btn--primario menu-registro" id="btn-registrate-menu">Crear cuenta</a>
+      </nav>
+
+      <div class="navbar-actions">
+        <a href="/DrogueriaYvariedadesLosTresHermanos/registro" id="btn-registrate" class="btn btn--fantasma btn--sm">Regístrate</a>
+        <a href="/DrogueriaYvariedadesLosTresHermanos/login" id="btn-mi-cuenta" class="btn btn--secundario btn--sm" aria-label="Mi cuenta">
+          <svg class="ic" aria-hidden="true"><use href="/DrogueriaYvariedadesLosTresHermanos/img/iconos.svg#usuario"/></svg>
+          <span class="etiqueta-cuenta">Mi cuenta</span>
+        </a>
+        <button class="btn-carrito-nav btn-icono" id="btn-abrir-carrito" type="button" onclick="abrirDrawer()" aria-label="Abrir carrito">
+          <svg class="ic" aria-hidden="true"><use href="/DrogueriaYvariedadesLosTresHermanos/img/iconos.svg#carrito"/></svg>
+          <span class="badge-carrito" style="display:none">0</span>
+        </button>
+        <button class="btn-menu btn-icono" id="btn-menu" type="button" aria-label="Abrir menú" aria-expanded="false" aria-controls="nav-menu">
+          <svg class="ic" aria-hidden="true"><use href="/DrogueriaYvariedadesLosTresHermanos/img/iconos.svg#menu"/></svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+
+  <main id="contenido">
+    <!-- Hero: la cápsula de la marca es el protagonista -->
+    <section class="hero" aria-labelledby="hero-titulo">
+      <div class="hero-fondo" aria-hidden="true">
+        <div class="hero-aura" data-paralaje="-.5"></div>
+        <div class="hero-rejilla"></div>
+      </div>
+      <div class="contenedor hero-interior">
+        <div class="hero-texto">
+          <span class="hero-lugar entra" style="--i:0"><svg class="ic" aria-hidden="true"><use href="/DrogueriaYvariedadesLosTresHermanos/img/iconos.svg#ubicacion"/></svg>Arjona, Bolívar</span>
+          <h1 id="hero-titulo" class="hero-titulo">
+            <span class="linea"><span class="entra-linea" style="--i:1">Tu salud,</span></span>
+            <span class="linea"><span class="entra-linea" style="--i:2">nuestra</span></span>
+            <span class="linea"><span class="entra-linea hero-acento" style="--i:3">prioridad.</span></span>
+          </h1>
+          <p class="hero-desc entra" style="--i:5">Medicamentos, variedades y servicios para tu familia, con la atención cercana de siempre.</p>
+          <div class="hero-acciones entra" style="--i:6">
+            <a href="/DrogueriaYvariedadesLosTresHermanos/medicamentos" class="btn btn--primario btn--lg">Ver medicamentos <svg class="ic ic-mueve" aria-hidden="true"><use href="/DrogueriaYvariedadesLosTresHermanos/img/iconos.svg#flecha"/></svg></a>
+            <a href="/DrogueriaYvariedadesLosTresHermanos/variedades" class="btn btn--vidrio btn--lg">Explorar variedades</a>
+          </div>
+        </div>
+
+        <div class="hero-escena" aria-hidden="true">
+          <div class="hero-anillo" data-paralaje=".25"></div>
+          <div class="hero-capsula-capa" data-paralaje=".9">
+            <svg class="hero-capsula" viewBox="0 0 520 520">
+              <defs>
+                <linearGradient id="capA" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#7EA3FF"/><stop offset=".45" stop-color="#3F6BF0"/><stop offset="1" stop-color="#152F9C"/></linearGradient>
+                <linearGradient id="capB" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#D9607B"/><stop offset=".45" stop-color="#A52A44"/><stop offset="1" stop-color="#561222"/></linearGradient>
+                <linearGradient id="capBrillo" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#fff" stop-opacity=".75"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient>
+                <filter id="capSombra" x="-30%" y="-30%" width="160%" height="170%"><feGaussianBlur stdDeviation="22"/></filter>
+              </defs>
+              <ellipse cx="270" cy="440" rx="170" ry="20" fill="#02060F" opacity=".55" filter="url(#capSombra)"/>
+              <g transform="rotate(-32 260 250)">
+                <path d="M260 160H150a90 90 0 0 0 0 180h110z" fill="url(#capA)"/>
+                <path d="M260 160h110a90 90 0 0 1 0 180H260z" fill="url(#capB)"/>
+                <rect x="256" y="160" width="8" height="180" fill="#0B1226" opacity=".35"/>
+                <rect x="90" y="184" width="150" height="20" rx="10" fill="url(#capBrillo)"/>
+                <rect x="284" y="184" width="120" height="14" rx="7" fill="#fff" opacity=".22"/>
+              </g>
+            </svg>
+          </div>
+          <div class="hero-ficha hero-ficha--a" data-paralaje="1.5"><div class="flota">
+            <span class="hero-ficha-icono"><svg class="ic"><use href="/DrogueriaYvariedadesLosTresHermanos/img/iconos.svg#capsula"/></svg></span>
+            <div><strong id="hero-medicamento">Catálogo</strong><span id="hero-medicamento-precio">Medicamentos</span></div>
+          </div></div>
+          <div class="hero-ficha hero-ficha--b" data-paralaje="1.15"><div class="flota flota--2">
+            <span class="hero-ficha-icono hero-ficha-icono--b"><svg class="ic"><use href="/DrogueriaYvariedadesLosTresHermanos/img/iconos.svg#corona"/></svg></span>
+            <div><strong>Plan Premium</strong><span>15% de descuento</span></div>
+          </div></div>
+          <div class="hero-ficha hero-ficha--c" data-paralaje="1.8"><div class="flota flota--3">
+            <span class="hero-ficha-icono hero-ficha-icono--c"><svg class="ic"><use href="/DrogueriaYvariedadesLosTresHermanos/img/iconos.svg#camion"/></svg></span>
+            <div><strong>Domicilio</strong><span>Dentro de Arjona</span></div>
+          </div></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Cifras calculadas del catálogo real -->
+    <section class="cifras contenedor" aria-label="El catálogo en cifras">
+      <div class="cifras-panel" data-escalonar>
+        <div class="cifra"><strong id="cifra-medicamentos">15</strong><span>medicamentos en catálogo</span></div>
+        <div class="cifra"><strong id="cifra-presentaciones">115</strong><span>presentaciones y marcas</span></div>
+        <div class="cifra"><strong id="cifra-variedades">11</strong><span>productos de variedades</span></div>
+        <div class="cifra"><strong data-contar="4">4</strong><span>planes de suscripción</span></div>
+      </div>
+    </section>
+
+    <!-- Lo que hay en la droguería: cuadrícula asimétrica -->
+    <section class="bloque contenedor" aria-labelledby="titulo-oferta">
+      <header class="encabezado revelar">
+        <span class="ante">Todo en un solo lugar</span>
+        <h2 id="titulo-oferta" class="titulo-seccion">Lo que tu familia necesita, sin dar más vueltas.</h2>
+      </header>
+      <div class="mosaico" data-escalonar>
+        <a href="/DrogueriaYvariedadesLosTresHermanos/medicamentos" class="mosaico-item mosaico-item--grande" data-brillo>
+          <div class="mosaico-texto">
+            <span class="ante ante--claro">Farmacia</span>
+            <h3>Medicamentos</h3>
+            <p>Busca por nombre o categoría y elige presentación, concentración y marca.</p>
+            <span class="enlace-flecha">Ver catálogo <svg class="ic" aria-hidden="true"><use href="/DrogueriaYvariedadesLosTresHermanos/img/iconos.svg#flecha"/></svg></span>
+          </div>
+          <div class="mosaico-arte" id="arte-medicamentos" aria-hidden="true"></div>
+        </a>
+        <a href="/DrogueriaYvariedadesLosTresHermanos/variedades" class="mosaico-item mosaico-item--vino" data-brillo>
+          <div class="mosaico-texto">
+            <span class="ante ante--borgona">Tienda</span>
+            <h3>Variedades</h3>
+            <p>Perfumes, útiles escolares y cuidado personal.</p>
+            <span class="enlace-flecha">Ver productos <svg class="ic" aria-hidden="true"><use href="/DrogueriaYvariedadesLosTresHermanos/img/iconos.svg#flecha"/></svg></span>
+          </div>
+          <div class="mosaico-arte mosaico-arte--pequena" id="arte-variedades" aria-hidden="true"></div>
+        </a>
+        <a href="/DrogueriaYvariedadesLosTresHermanos/servicios" class="mosaico-item" data-brillo>
+          <span class="mosaico-icono"><svg class="ic" aria-hidden="true"><use href="/DrogueriaYvariedadesLosTresHermanos/img/iconos.svg#celular"/></svg></span>
+          <h3>Recargas y minutos</h3>
+          <p>Recarga tu saldo y compra minutos de manera rápida.</p>
+        </a>
+        <a href="/DrogueriaYvariedadesLosTresHermanos/servicios" class="mosaico-item" data-brillo>
+          <span class="mosaico-icono"><svg class="ic" aria-hidden="true"><use href="/DrogueriaYvariedadesLosTresHermanos/img/iconos.svg#copia"/></svg></span>
+          <h3>Fotocopiado</h3>
+          <p>Trae tus documentos y te los copiamos en el momento.</p>
+        </a>
+      </div>
+    </section>
+
+    <!-- Selección del catálogo -->
+    <section class="bloque bloque--tono" aria-labelledby="titulo-seleccion">
+      <div class="contenedor">
+        <header class="encabezado encabezado--fila revelar">
+          <div>
+            <span class="ante">Del catálogo</span>
+            <h2 id="titulo-seleccion" class="titulo-seccion">Una muestra de lo que encuentras.</h2>
+          </div>
+          <a href="/DrogueriaYvariedadesLosTresHermanos/medicamentos" class="btn btn--secundario">Ver todo <svg class="ic ic-mueve" aria-hidden="true"><use href="/DrogueriaYvariedadesLosTresHermanos/img/iconos.svg#flecha"/></svg></a>
+        </header>
+      </div>
+      <div class="carrusel contenedor" id="seleccion-productos" tabindex="0" aria-label="Productos del catálogo"></div>
+    </section>
+
+    <!-- Medicamentos: bloque editorial sobre azul noche -->
+    <section class="editorial" aria-labelledby="titulo-editorial">
+      <div class="contenedor editorial-interior">
+        <div class="revelar revelar--izq">
+          <span class="ante ante--claro">Medicamentos</span>
+          <h2 id="titulo-editorial" class="titulo-seccion titulo-seccion--claro">Elige exactamente la presentación que necesitas.</h2>
+          <p class="editorial-texto">Cada producto muestra sus presentaciones, concentraciones y marcas, con su precio actualizado al seleccionarlas.</p>
+          <a href="/DrogueriaYvariedadesLosTresHermanos/medicamentos" class="btn btn--claro">Buscar un medicamento <svg class="ic ic-mueve" aria-hidden="true"><use href="/DrogueriaYvariedadesLosTresHermanos/img/iconos.svg#flecha"/></svg></a>
+        </div>
+        <ul class="lista-categorias" id="lista-categorias" data-escalonar></ul>
+      </div>
+    </section>
+
+    <!-- Beneficios: lista sin tarjetas -->
+    <section class="bloque contenedor beneficios" aria-labelledby="titulo-beneficios">
+      <header class="revelar beneficios-cabeza">
+        <span class="ante">Comprar aquí</span>
+        <h2 id="titulo-beneficios" class="titulo-seccion">Simple, de principio a fin.</h2>
+      </header>
+      <ol class="beneficios-lista" data-escalonar>
+        <li><span class="beneficio-num"><svg class="ic" aria-hidden="true"><use href="/DrogueriaYvariedadesLosTresHermanos/img/iconos.svg#carrito"/></svg></span><div><h3>Arma tu pedido en línea</h3><p>Agrega productos al carrito y revisa el total antes de confirmar.</p></div></li>
+        <li><span class="beneficio-num"><svg class="ic" aria-hidden="true"><use href="/DrogueriaYvariedadesLosTresHermanos/img/iconos.svg#camion"/></svg></span><div><h3>Domicilio o recogida en tienda</h3><p>Te lo llevamos dentro de Arjona o lo recoges en la droguería.</p></div></li>
+        <li><span class="beneficio-num"><svg class="ic" aria-hidden="true"><use href="/DrogueriaYvariedadesLosTresHermanos/img/iconos.svg#billete"/></svg></span><div><h3>Pago en efectivo al recibir</h3><p>Pagas cuando tienes tu pedido en las manos.</p></div></li>
+        <li><span class="beneficio-num"><svg class="ic" aria-hidden="true"><use href="/DrogueriaYvariedadesLosTresHermanos/img/iconos.svg#whatsapp"/></svg></span><div><h3>Confirmación por WhatsApp</h3><p>Tu pedido llega directo a la droguería con todos sus detalles.</p></div></li>
+      </ol>
+    </section>
+
+    <!-- Planes -->
+    <section class="bloque bloque--tono" aria-labelledby="titulo-planes">
+      <div class="contenedor">
+        <header class="encabezado encabezado--fila revelar">
+          <div>
+            <span class="ante ante--borgona">Suscripciones</span>
+            <h2 id="titulo-planes" class="titulo-seccion">Ahorra en cada compra del mes.</h2>
+          </div>
+          <a href="/DrogueriaYvariedadesLosTresHermanos/suscripciones" class="btn btn--oscuro">Comparar planes <svg class="ic ic-mueve" aria-hidden="true"><use href="/DrogueriaYvariedadesLosTresHermanos/img/iconos.svg#flecha"/></svg></a>
+        </header>
+        <div class="planes-franja" data-escalonar>
+          <a href="/DrogueriaYvariedadesLosTresHermanos/suscripciones" class="plan-mini"><span>Básico</span><strong>3%</strong><small>$4.900 al mes</small></a>
+          <a href="/DrogueriaYvariedadesLosTresHermanos/suscripciones" class="plan-mini"><span>Estándar</span><strong>5%</strong><small>$9.900 al mes</small></a>
+          <a href="/DrogueriaYvariedadesLosTresHermanos/suscripciones" class="plan-mini"><span>Regular</span><strong>10%</strong><small>$14.900 al mes</small></a>
+          <a href="/DrogueriaYvariedadesLosTresHermanos/suscripciones" class="plan-mini plan-mini--top"><span>Premium</span><strong>15%</strong><small>$19.900 al mes</small></a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Valores -->
+    <section class="bloque contenedor valores" aria-labelledby="titulo-valores">
+      <div>
+        <header class="revelar">
+          <span class="ante">Quiénes somos</span>
+          <h2 id="titulo-valores" class="titulo-seccion">Los valores detrás del mostrador.</h2>
+        </header>
+        <ul class="valores-lista" data-escalonar>
+          <li><span>01</span>Responsabilidad</li>
+          <li><span>02</span>Respeto</li>
+          <li><span>03</span>Honestidad</li>
+          <li><span>04</span>Solidaridad</li>
+          <li><span>05</span>Lealtad</li>
+        </ul>
+        <a href="/DrogueriaYvariedadesLosTresHermanos/nosotros" class="enlace-flecha revelar">Conoce nuestra historia <svg class="ic" aria-hidden="true"><use href="/DrogueriaYvariedadesLosTresHermanos/img/iconos.svg#flecha"/></svg></a>
+      </div>
+      <img class="pieza-marca revelar revelar--der" src="/DrogueriaYvariedadesLosTresHermanos/img/marca/pieza-marca-3h.jpeg" alt="Pieza de marca de Droguería Los Tres Hermanos: el símbolo 3H con una cápsula, el lema Calidad y servicio y la frase Tu salud, nuestra prioridad." width="1214" height="1296" loading="lazy">
+    </section>
+  </main>
+
+  
+  <footer class="footer-global no-imprimir" role="contentinfo">
+    <div class="contenedor">
+      <div class="pie-cta revelar">
+        <div>
+          <h2>¿Tienes una consulta?</h2>
+          <p>Escríbenos por WhatsApp y te atendemos directamente desde la droguería.</p>
+        </div>
+        <a class="btn btn--claro btn--lg" href="https://wa.me/573225065554" target="_blank" rel="noopener">
+          <svg class="ic" aria-hidden="true"><use href="/DrogueriaYvariedadesLosTresHermanos/img/iconos.svg#whatsapp"/></svg> Escribir por WhatsApp
+        </a>
+      </div>
+      <div class="footer-grid">
+        <div class="footer-marca">
+          <img src="/DrogueriaYvariedadesLosTresHermanos/img/marca/logo-vertical-oscuro.svg" alt="Droguería y Variedades Los Tres Hermanos" width="200" height="133">
+          <p>Medicamentos, variedades y servicios para las familias de Arjona, Bolívar.</p>
+        </div>
+        <div class="footer-col">
+          <h3>Tienda</h3>
+          <ul>
+            <li><a href="/DrogueriaYvariedadesLosTresHermanos/medicamentos">Medicamentos</a></li>
+            <li><a href="/DrogueriaYvariedadesLosTresHermanos/variedades">Variedades</a></li>
+            <li><a href="/DrogueriaYvariedadesLosTresHermanos/suscripciones">Suscripciones</a></li>
+            <li><a href="/DrogueriaYvariedadesLosTresHermanos/servicios">Servicios</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h3>La droguería</h3>
+          <ul>
+            <li><a href="/DrogueriaYvariedadesLosTresHermanos/nosotros">Quiénes somos</a></li>
+            <li><a href="/DrogueriaYvariedadesLosTresHermanos/contacto">Contacto</a></li>
+            <li><a href="/DrogueriaYvariedadesLosTresHermanos/login">Mi cuenta</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h3>Contacto</h3>
+          <ul class="pie-contacto">
+            <li><a href="tel:+573225065554"><svg class="ic" aria-hidden="true"><use href="/DrogueriaYvariedadesLosTresHermanos/img/iconos.svg#telefono"/></svg>+57 322 506 5554</a></li>
+            <li><a href="mailto:diazpajaro1208@gmail.com"><svg class="ic" aria-hidden="true"><use href="/DrogueriaYvariedadesLosTresHermanos/img/iconos.svg#correo"/></svg>diazpajaro1208@gmail.com</a></li>
+            <li><a href="https://www.google.com/maps/search/?api=1&amp;query=Diagonal+52+50A-755+Arjona+Bolivar+Colombia" target="_blank" rel="noopener"><svg class="ic" aria-hidden="true"><use href="/DrogueriaYvariedadesLosTresHermanos/img/iconos.svg#ubicacion"/></svg>Diagonal 52 50A-755, Arjona</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <span>© 2026 Droguería y Variedades Los Tres Hermanos</span>
+        <div>
+          <button type="button" onclick="abrirTerminos('terminos')">Términos de servicio</button>
+          <button type="button" onclick="abrirTerminos('privacidad')">Política de privacidad</button>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <div class="modal-velo no-imprimir" id="modal-terminos" role="dialog" aria-modal="true" aria-labelledby="modal-terminos-titulo">
+    <div class="modal">
+      <div class="modal-cabeza">
+        <h2 id="modal-terminos-titulo"></h2>
+        <button class="btn-icono" type="button" onclick="cerrarTerminos()" aria-label="Cerrar"><svg class="ic" aria-hidden="true"><use href="/DrogueriaYvariedadesLosTresHermanos/img/iconos.svg#cerrar"/></svg></button>
+      </div>
+      <div class="modal-cuerpo" id="modal-terminos-body"></div>
+      <div class="modal-pie"><button class="btn btn--primario" type="button" onclick="cerrarTerminos()">Cerrar</button></div>
+    </div>
+  </div>
+
+  
+  <div class="drawer-overlay no-imprimir" id="drawer-overlay" onclick="cerrarDrawer()"></div>
+  <aside class="carrito-drawer no-imprimir" id="carrito-drawer" role="dialog" aria-modal="true" aria-labelledby="titulo-carrito">
+    <div class="drawer-header">
+      <h2 id="titulo-carrito">Mi carrito</h2>
+      <button class="btn-cerrar-drawer btn-icono" id="btn-cerrar-drawer" type="button" onclick="cerrarDrawer()" aria-label="Cerrar carrito">
+        <svg class="ic" aria-hidden="true"><use href="/DrogueriaYvariedadesLosTresHermanos/img/iconos.svg#cerrar"/></svg>
+      </button>
+    </div>
+    <div class="drawer-body" id="drawer-body"></div>
+    <div class="drawer-footer" id="drawer-footer" style="display:none">
+      <div class="total-row">
+        <span class="total-label">Total</span>
+        <span class="total-valor" id="total-valor">$0</span>
+      </div>
+      <button class="btn btn--primario btn--lg btn--bloque" id="btn-comprar" type="button" onclick="window.location.href='/DrogueriaYvariedadesLosTresHermanos/checkout'">
+        Finalizar compra <svg class="ic ic-mueve" aria-hidden="true"><use href="/DrogueriaYvariedadesLosTresHermanos/img/iconos.svg#flecha"/></svg>
+      </button>
+    </div>
+  </aside>
+
+  
+  <script src="/DrogueriaYvariedadesLosTresHermanos/js/seguridad.js"></script>
+  <script src="/DrogueriaYvariedadesLosTresHermanos/js/global.js"></script>
+  <script src="/DrogueriaYvariedadesLosTresHermanos/js/experiencia.js"></script>
+  <script src="/DrogueriaYvariedadesLosTresHermanos/js/legal.js"></script>
+  <script src="/DrogueriaYvariedadesLosTresHermanos/js/carrito-ui.js"></script>
+
+  <script src="/DrogueriaYvariedadesLosTresHermanos/js/arte.js"></script>
+  <script src="/DrogueriaYvariedadesLosTresHermanos/js/explorador-data.js"></script>
+  <script src="/DrogueriaYvariedadesLosTresHermanos/js/variedades-data.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const esc = Seguridad.esc;
+
+      // Todas las cifras salen de los datos del catálogo
+      const fijarCifra = (id, valor) => {
+        const el = document.getElementById(id);
+        el.textContent = valor;
+        el.dataset.contar = valor;
+      };
+      fijarCifra('cifra-medicamentos', MEDICAMENTOS.length);
+      fijarCifra('cifra-presentaciones', MEDICAMENTOS.reduce((s, m) => s + m.presentaciones.length, 0));
+      fijarCifra('cifra-variedades', VARIEDADES.length);
+      Experiencia.contadores();
+
+      const muestra = MEDICAMENTOS[0];
+      const desde = Math.min(...muestra.presentaciones.map(p => p.precio));
+      document.getElementById('hero-medicamento').textContent = muestra.nombre;
+      document.getElementById('hero-medicamento-precio').textContent = 'Desde ' + formatPrecio(desde);
+
+      document.getElementById('arte-medicamentos').innerHTML = Arte.medicamento(MEDICAMENTOS[0], { tipo: 'Unidad' });
+      document.getElementById('arte-variedades').innerHTML = Arte.variedad(VARIEDADES[0]);
+
+      const seleccion = [
+        ...MEDICAMENTOS.slice(0, 3).map(m => ({
+          nombre: m.nombre, tipo: LABELS_CAT[m.cat], url: '/DrogueriaYvariedadesLosTresHermanos/medicamentos',
+          arte: Arte.medicamento(m, m.presentaciones[3] || m.presentaciones[0]),
+          precio: 'Desde ' + formatPrecio(Math.min(...m.presentaciones.map(p => p.precio)))
+        })),
+        ...[VARIEDADES[0], VARIEDADES[3], VARIEDADES[9]].map(v => ({
+          nombre: v.nombre, tipo: 'Variedades', url: '/DrogueriaYvariedadesLosTresHermanos/variedades', arte: Arte.variedad(v), precio: formatPrecio(v.precio)
+        }))
+      ];
+      document.getElementById('seleccion-productos').innerHTML = seleccion.map((p, i) => `
+        <a class="ficha-producto revelar" style="--i:${i}" href="${p.url}">
+          <div class="ficha-arte">${p.arte}</div>
+          <span class="ficha-tipo">${esc(p.tipo)}</span>
+          <h3>${esc(p.nombre)}</h3>
+          <strong>${esc(p.precio)}</strong>
+        </a>`).join('');
+
+      const conteos = {};
+      MEDICAMENTOS.forEach(m => { conteos[m.cat] = (conteos[m.cat] || 0) + 1; });
+      document.getElementById('lista-categorias').innerHTML = Object.keys(conteos).map(c => `
+        <li><a href="/DrogueriaYvariedadesLosTresHermanos/medicamentos"><span>${esc(LABELS_CAT[c] || c)}</span><small>${conteos[c]}</small></a></li>`).join('');
+
+      Experiencia.revelar();
+      initAvatar({ perfilUrl: '/DrogueriaYvariedadesLosTresHermanos/perfil', logoutUrl: '/DrogueriaYvariedadesLosTresHermanos/' });
+    });
+  </script>
   <script src="/DrogueriaYvariedadesLosTresHermanos/js/modo-estatico.js"></script>
-</body>
-</html>
+</body>
+</html>

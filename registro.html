@@ -1,289 +1,289 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
+<!DOCTYPE html>
+<html lang="es">
+<head>
   <meta charset="UTF-8">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; frame-src https://www.google.com; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Crear cuenta · Los Tres Hermanos</title>
-  <meta name="description" content="Crea tu cuenta gratis en Los Tres Hermanos.">
-  <meta name="theme-color" content="#101B35">
-  <link rel="icon" type="image/svg+xml" href="/DrogueriaYvariedadesLosTresHermanos/img/marca/favicon.svg">
-  <link rel="icon" type="image/png" sizes="32x32" href="/DrogueriaYvariedadesLosTresHermanos/img/marca/favicon-32.png">
-  <link rel="apple-touch-icon" href="/DrogueriaYvariedadesLosTresHermanos/img/marca/apple-touch-icon.png">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;family=Sora:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/DrogueriaYvariedadesLosTresHermanos/css/design-system.css">
-  <link rel="stylesheet" href="/DrogueriaYvariedadesLosTresHermanos/css/tienda.css">
-  <script>
-    document.documentElement.classList.add('js');
-    try {
-      var s = JSON.parse(sessionStorage.getItem('lth_cliente') || 'null');
-      if (s && s.rol === 'cliente') document.documentElement.classList.add('con-sesion');
-    } catch (e) {}
-  </script>
-</head>
-<body class="pagina-auth">
-  <main class="auth auth--registro">
-    <aside class="auth-marca" aria-hidden="true">
-      <div class="hero-fondo"><div class="hero-aura" data-paralaje="-.4"></div><div class="hero-rejilla"></div></div>
-      <a href="/DrogueriaYvariedadesLosTresHermanos/" class="auth-logo" tabindex="-1"><img src="/DrogueriaYvariedadesLosTresHermanos/img/marca/logo-horizontal-oscuro.svg" alt="" width="330" height="50"></a>
-      <div class="auth-marca-texto">
-        <h2 class="entra" style="--i:1">Crea tu cuenta y compra con más comodidad.</h2>
-        <ul class="auth-puntos entra" style="--i:3">
-          <li><svg class="ic"><use href="/DrogueriaYvariedadesLosTresHermanos/img/iconos.svg#documento"/></svg>Historial de pedidos y facturas</li>
-          <li><svg class="ic"><use href="/DrogueriaYvariedadesLosTresHermanos/img/iconos.svg#casa"/></svg>Pedidos a domicilio en Arjona</li>
-          <li><svg class="ic"><use href="/DrogueriaYvariedadesLosTresHermanos/img/iconos.svg#corazon"/></svg>Tus productos favoritos a mano</li>
-        </ul>
-      </div>
-      <img class="auth-simbolo" src="/DrogueriaYvariedadesLosTresHermanos/img/marca/isotipo-reducido-oscuro.svg" alt="" data-paralaje=".6">
-    </aside>
-
-    <section class="auth-panel">
-      <a href="/DrogueriaYvariedadesLosTresHermanos/" class="auth-logo-movil"><img src="/DrogueriaYvariedadesLosTresHermanos/img/marca/logo-horizontal.svg" alt="Los Tres Hermanos, ir al inicio" width="290" height="44"></a>
-      <div class="auth-formulario auth-formulario--ancho entra" style="--i:0">
-        <nav class="migas" aria-label="Ruta"><a href="/DrogueriaYvariedadesLosTresHermanos/">Inicio</a><svg class="ic" aria-hidden="true"><use href="/DrogueriaYvariedadesLosTresHermanos/img/iconos.svg#chevron"/></svg><span aria-current="page">Crear cuenta</span></nav>
-        <h1>Crear mi cuenta</h1>
-        <p class="auth-sub">Completa tus datos para registrarte. Es gratis.</p>
-
-        <div class="rejilla-form">
-          <div class="campo"><label for="input-nombre">Nombre completo</label>
-            <div class="campo-icono field" id="f-nombre"><svg class="ic" aria-hidden="true"><use href="/DrogueriaYvariedadesLosTresHermanos/img/iconos.svg#usuario"/></svg><input type="text" id="input-nombre" placeholder="Ej: María González" autocomplete="name"></div></div>
-          <div class="campo"><label for="input-correo">Correo electrónico</label>
-            <div class="campo-icono field" id="f-correo"><svg class="ic" aria-hidden="true"><use href="/DrogueriaYvariedadesLosTresHermanos/img/iconos.svg#correo"/></svg><input type="email" id="input-correo" placeholder="tu@correo.com" autocomplete="email"></div></div>
-          <div class="campo"><label for="input-telefono">Teléfono</label>
-            <div class="campo-icono field" id="f-telefono"><svg class="ic" aria-hidden="true"><use href="/DrogueriaYvariedadesLosTresHermanos/img/iconos.svg#telefono"/></svg><input type="tel" id="input-telefono" placeholder="+57 300 000 0000" autocomplete="tel"></div></div>
-          <div class="campo"><label for="input-direccion">Dirección de entrega</label>
-            <div class="campo-icono field" id="f-direccion"><svg class="ic" aria-hidden="true"><use href="/DrogueriaYvariedadesLosTresHermanos/img/iconos.svg#ubicacion"/></svg><input type="text" id="input-direccion" placeholder="Calle, barrio, ciudad" autocomplete="street-address"></div></div>
-          <div class="campo"><label for="input-pass">Contraseña</label>
-            <div class="campo-icono field" id="f-pass"><svg class="ic" aria-hidden="true"><use href="/DrogueriaYvariedadesLosTresHermanos/img/iconos.svg#candado"/></svg><input type="password" id="input-pass" placeholder="Mínimo 8 caracteres" autocomplete="new-password">
-              <button type="button" class="btn-ojo" aria-label="Mostrar u ocultar contraseña" onclick="toggleOjo('input-pass','ojo1-c','ojo1-a')"><svg id="ojo1-c" class="ic" aria-hidden="true"><use href="/DrogueriaYvariedadesLosTresHermanos/img/iconos.svg#ojo-no"/></svg><svg id="ojo1-a" class="ic" style="display:none" aria-hidden="true"><use href="/DrogueriaYvariedadesLosTresHermanos/img/iconos.svg#ojo"/></svg></button></div></div>
-          <div class="campo"><label for="input-pass2">Confirmar contraseña</label>
-            <div class="campo-icono field" id="f-pass2"><svg class="ic" aria-hidden="true"><use href="/DrogueriaYvariedadesLosTresHermanos/img/iconos.svg#candado"/></svg><input type="password" id="input-pass2" placeholder="Repite tu contraseña" autocomplete="new-password">
-              <button type="button" class="btn-ojo" aria-label="Mostrar u ocultar contraseña" onclick="toggleOjo('input-pass2','ojo2-c','ojo2-a')"><svg id="ojo2-c" class="ic" aria-hidden="true"><use href="/DrogueriaYvariedadesLosTresHermanos/img/iconos.svg#ojo-no"/></svg><svg id="ojo2-a" class="ic" style="display:none" aria-hidden="true"><use href="/DrogueriaYvariedadesLosTresHermanos/img/iconos.svg#ojo"/></svg></button></div></div>
-        </div>
-
-        <div class="terminos-wrap" id="terminos-wrap">
-          <input type="checkbox" id="acepto-terminos" onchange="actualizarBoton()">
-          <label for="acepto-terminos">He leído y acepto los <button type="button" class="enlace" onclick="abrirTerminos('terminos')">Términos y Condiciones</button> y la <button type="button" class="enlace" onclick="abrirTerminos('privacidad')">Política de Privacidad</button> de Droguería y Variedades Los Tres Hermanos.</label>
-        </div>
-
-        <div class="alerta alerta--peligro error-msg" id="error-reg" role="alert">
-          <svg class="ic" aria-hidden="true"><use href="/DrogueriaYvariedadesLosTresHermanos/img/iconos.svg#alerta"/></svg>
-          <span id="error-reg-texto"></span>
-        </div>
-
-        <button class="btn btn--primario btn--lg btn--bloque btn-registrar" id="btn-registrar" type="button" onclick="registrar()" disabled>
-          <span class="btn-texto">Crear mi cuenta</span>
-          <span class="btn-spinner" id="spin-reg"></span>
-        </button>
-
-        <div class="divisor"><span>o</span></div>
-        <button class="btn btn--secundario btn--bloque btn-invitado" type="button" onclick="entrarComoInvitado()">Continuar como invitado</button>
-        <p class="auth-pie">¿Ya tienes cuenta? <a href="/DrogueriaYvariedadesLosTresHermanos/login">Iniciar sesión</a></p>
-      </div>
-    </section>
-  </main>
-
-  <div class="modal-velo" id="modal-terminos" role="dialog" aria-modal="true" aria-labelledby="modal-titulo">
-    <div class="modal">
-      <div class="modal-cabeza">
-        <h2 id="modal-titulo">Términos y Condiciones</h2>
-        <button class="btn-icono btn-cerrar-modal" type="button" onclick="cerrarModal()" aria-label="Cerrar"><svg class="ic" aria-hidden="true"><use href="/DrogueriaYvariedadesLosTresHermanos/img/iconos.svg#cerrar"/></svg></button>
-      </div>
-      <div class="modal-cuerpo" id="modal-contenido"></div>
-      <div class="modal-pie">
-        <button class="btn btn--fantasma" type="button" onclick="cerrarModal()">Cerrar</button>
-        <button class="btn btn--primario" type="button" onclick="aceptarDesdeModal()">Aceptar y cerrar</button>
-      </div>
-    </div>
-  </div>
-  <div class="toast-wrap" id="toast-wrap"></div>
-
-  <script src="/DrogueriaYvariedadesLosTresHermanos/js/seguridad.js"></script>
-  <script src="/DrogueriaYvariedadesLosTresHermanos/js/experiencia.js"></script>
-  <script>
-    const TERMINOS_CONTENIDO = {
-      terminos: {
-        titulo: 'Términos y Condiciones',
-        html: `
-          <h3>1. Aceptación de los Términos</h3>
-          <p>Al crear una cuenta en Droguería y Variedades Los Tres Hermanos, aceptas cumplir con estos términos y condiciones. Si no estás de acuerdo, no debes crear una cuenta.</p>
-          <h3>2. Uso de la Cuenta</h3>
-          <p>Tu cuenta es personal e intransferible. Eres responsable de mantener la confidencialidad de tus credenciales y de todas las actividades realizadas desde tu cuenta.</p>
-          <h3>3. Pedidos y Compras</h3>
-          <p>Los pedidos realizados a través de nuestra plataforma están sujetos a disponibilidad de inventario. Nos reservamos el derecho de cancelar pedidos en casos de error en precios o falta de stock.</p>
-          <p>El pago se realiza en efectivo al momento de recibir el pedido, ya sea en tienda o a domicilio.</p>
-          <h3>4. Domicilios</h3>
-          <p>El servicio de domicilio aplica únicamente dentro del municipio de Arjona, Bolívar. Los tiempos de entrega pueden variar según la disponibilidad del personal.</p>
-          <h3>5. Precios</h3>
-          <p>Los precios mostrados en la plataforma pueden cambiar sin previo aviso. El precio final es el mostrado al momento de confirmar el pedido.</p>
-          <h3>6. Modificaciones</h3>
-          <p>Droguería y Variedades Los Tres Hermanos se reserva el derecho de modificar estos términos en cualquier momento. Los cambios serán notificados a través de la plataforma.</p>
-          <h3>7. Contacto</h3>
-          <p>Para cualquier inquietud sobre estos términos, contáctanos al +57 322 506 5554 o escríbenos a diazpajaro1208@gmail.com.</p>
-        `
-      },
-      privacidad: {
-        titulo: 'Política de Privacidad',
-        html: `
-          <h3>1. Información que Recopilamos</h3>
-          <p>Al registrarte, recopilamos tu nombre completo, correo electrónico, número de teléfono y dirección de entrega. Esta información es necesaria para gestionar tus pedidos.</p>
-          <h3>2. Uso de la Información</h3>
-          <p>Tu información personal se utiliza exclusivamente para procesar tus pedidos, contactarte sobre el estado de los mismos y mejorar tu experiencia en nuestra plataforma.</p>
-          <h3>3. Confidencialidad</h3>
-          <p>No compartimos, vendemos ni cedemos tu información personal a terceros bajo ninguna circunstancia, salvo requerimiento legal.</p>
-          <h3>4. Seguridad</h3>
-          <p>Implementamos medidas de seguridad para proteger tu información. Sin embargo, ningún sistema es completamente invulnerable. Te recomendamos usar una contraseña segura.</p>
-          <h3>5. Tus Derechos</h3>
-          <p>Tienes derecho a acceder, rectificar y eliminar tus datos personales en cualquier momento desde la sección "Mi Perfil" de tu cuenta, o contactándonos directamente.</p>
-          <h3>6. Cookies</h3>
-          <p>Nuestra plataforma utiliza almacenamiento local del navegador para mantener tu sesión activa y recordar tus preferencias. No utilizamos cookies de rastreo de terceros.</p>
-          <h3>7. Contacto</h3>
-          <p>Para ejercer tus derechos de privacidad o resolver dudas, contáctanos al +57 322 506 5554 o escríbenos a diazpajaro1208@gmail.com.</p>
-        `
-      }
-    };
-
-    function abrirTerminos(tipo) {
-      const data = TERMINOS_CONTENIDO[tipo];
-      document.getElementById('modal-titulo').textContent    = data.titulo;
-      document.getElementById('modal-contenido').innerHTML  = data.html;
-      document.getElementById('modal-terminos').classList.add('visible');
-    }
-
-    function cerrarModal() {
-      document.getElementById('modal-terminos').classList.remove('visible');
-    }
-
-    function aceptarDesdeModal() {
-      document.getElementById('acepto-terminos').checked = true;
-      actualizarBoton();
-      cerrarModal();
-      toast('✓ Términos aceptados');
-    }
-
-    // Cerrar modal al hacer clic fuera
-    document.getElementById('modal-terminos').addEventListener('click', function(e) {
-      if (e.target === this) cerrarModal();
-    });
-
-    function actualizarBoton() {
-      const aceptado = document.getElementById('acepto-terminos').checked;
-      document.getElementById('btn-registrar').disabled = !aceptado;
-    }
-
-    function toggleOjo(inputId, cId, aId) {
-      const inp = document.getElementById(inputId);
-      const vis = inp.type === 'text';
-      inp.type = vis ? 'password' : 'text';
-      document.getElementById(cId).style.display = vis ? 'block' : 'none';
-      document.getElementById(aId).style.display = vis ? 'none' : 'block';
-    }
-
-    function toast(msg, ok=true) {
-      const wrap = document.getElementById('toast-wrap');
-      const el = document.createElement('div');
-      el.className = 'toast' + (ok ? '' : ' err');
-      el.textContent = msg;
-      wrap.appendChild(el);
-      setTimeout(() => { el.classList.add('out'); el.addEventListener('animationend', () => el.remove()); }, 3500);
-    }
-
-    function limpiarErrores() {
-      ['f-nombre','f-correo','f-telefono','f-direccion','f-pass','f-pass2'].forEach(id =>
-        document.getElementById(id).classList.remove('error')
-      );
-      document.getElementById('terminos-wrap').classList.remove('error');
-      document.getElementById('error-reg').classList.remove('visible');
-    }
-
-    function mostrarError(campos, msg) {
-      campos.forEach(id => document.getElementById(id)?.classList.add('error'));
-      document.getElementById('error-reg-texto').textContent = msg;
-      document.getElementById('error-reg').classList.add('visible');
-    }
-
-    // ⚠️ PREPARADO PARA BD: reemplazar guardado con fetch('/api/clientes', { method:'POST', ... })
-    async function registrar() {
-      limpiarErrores();
-      const nombre    = document.getElementById('input-nombre').value.trim();
-      const correo    = document.getElementById('input-correo').value.trim().toLowerCase();
-      const telefono  = document.getElementById('input-telefono').value.trim();
-      const direccion = document.getElementById('input-direccion').value.trim();
-      const pass      = document.getElementById('input-pass').value;
-      const pass2     = document.getElementById('input-pass2').value;
-      const terminos  = document.getElementById('acepto-terminos').checked;
-
-      if (!nombre)    { mostrarError(['f-nombre'],    'El nombre es obligatorio.'); return; }
-      if (!correo || !correo.includes('@')) { mostrarError(['f-correo'], 'Ingresa un correo válido.'); return; }
-      if (!telefono)  { mostrarError(['f-telefono'],  'El teléfono es obligatorio.'); return; }
-      if (!direccion) { mostrarError(['f-direccion'], 'La dirección es obligatoria.'); return; }
-      if (pass.length < 8) { mostrarError(['f-pass'], 'La contraseña debe tener mínimo 8 caracteres.'); return; }
-      if (pass !== pass2)  { mostrarError(['f-pass','f-pass2'], 'Las contraseñas no coinciden.'); return; }
-      if (!terminos) { document.getElementById('terminos-wrap').classList.add('error'); mostrarError([], 'Debes aceptar los términos y condiciones.'); return; }
-
-      if (!Seguridad.criptoDisponible()) {
-        mostrarError([], 'El registro requiere una conexión segura (HTTPS).'); return;
-      }
-      await Seguridad.listo;
-
-      const clientes = JSON.parse(localStorage.getItem('lth_clientes') || '[]');
-      if (clientes.find(c => String(c.correo).toLowerCase() === correo)) {
-        mostrarError(['f-correo'], 'Ya existe una cuenta con ese correo.'); return;
-      }
-
-      const btn   = document.getElementById('btn-registrar');
-      const spin  = document.getElementById('spin-reg');
-      const texto = btn.querySelector('.btn-texto');
-      // Mostrar spinner (el botón permanece enabled para no bloquear si hay error)
-      texto.style.display = 'none'; spin.classList.add('visible');
-      await new Promise(r => setTimeout(r, 700));
-
-      const nuevoCliente = {
-        id:        'CLI-' + Date.now().toString(36).toUpperCase(),
-        nombre, correo, telefono, direccion,
-        credencial: await Seguridad.crearCredencial(pass),
-        rol:       'cliente',
-        fechaReg:  new Date().toLocaleString('es-CO'),
-        pedidos:   [],
-        favoritos: []
-      };
-      clientes.push(nuevoCliente);
-      localStorage.setItem('lth_clientes', JSON.stringify(clientes));
-
-      // Marcar que recién se registró para que perfil.html no dispare re-check
-      sessionStorage.setItem('lth_cliente', JSON.stringify({
-        id: nuevoCliente.id, nombre, correo, telefono, direccion, rol: 'cliente'
-      }));
-      sessionStorage.setItem('lth_recien_registro', '1');
-
-      toast('✓ ¡Cuenta creada exitosamente!');
-      // Deshabilitar el botón SOLO después de guardar correctamente
-      btn.disabled = true;
-
-      // Redirigir a la página de retorno si viene de suscripciones, si no al perfil
-      const params  = new URLSearchParams(window.location.search);
-      const destino = Seguridad.rutaRetornoSegura(params.get('retorno'), '/DrogueriaYvariedadesLosTresHermanos/perfil');
-      setTimeout(() => { window.location.href = destino; }, 1200);
-    }
-
-    function entrarComoInvitado() {
-      sessionStorage.setItem('lth_cliente', JSON.stringify({ rol: 'invitado', nombre: 'Invitado' }));
-      window.location.href = '/DrogueriaYvariedadesLosTresHermanos/';
-    }
-
-    // Si ya hay sesión activa de cliente (pero NO recién registrado — ese flujo lo maneja registrar())
-    const sc = sessionStorage.getItem('lth_cliente');
-    if (sc && !sessionStorage.getItem('lth_recien_registro')) {
-      try {
-        const c = JSON.parse(sc);
-        if (c.rol === 'cliente') window.location.href = '/DrogueriaYvariedadesLosTresHermanos/perfil';
-      } catch {}
-    }
-    // Limpiar flag de recién registrado al cargar la página de registro
-    sessionStorage.removeItem('lth_recien_registro');
-  </script>
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; frame-src https://www.google.com; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Crear cuenta · Los Tres Hermanos</title>
+  <meta name="description" content="Crea tu cuenta gratis en Los Tres Hermanos.">
+  <meta name="theme-color" content="#101B35">
+  <link rel="icon" type="image/svg+xml" href="/DrogueriaYvariedadesLosTresHermanos/img/marca/favicon.svg">
+  <link rel="icon" type="image/png" sizes="32x32" href="/DrogueriaYvariedadesLosTresHermanos/img/marca/favicon-32.png">
+  <link rel="apple-touch-icon" href="/DrogueriaYvariedadesLosTresHermanos/img/marca/apple-touch-icon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;family=Sora:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/DrogueriaYvariedadesLosTresHermanos/css/design-system.css">
+  <link rel="stylesheet" href="/DrogueriaYvariedadesLosTresHermanos/css/tienda.css">
+  <script>
+    document.documentElement.classList.add('js');
+    try {
+      var s = JSON.parse(sessionStorage.getItem('lth_cliente') || 'null');
+      if (s && s.rol === 'cliente') document.documentElement.classList.add('con-sesion');
+    } catch (e) {}
+  </script>
+</head>
+<body class="pagina-auth">
+  <main class="auth auth--registro">
+    <aside class="auth-marca" aria-hidden="true">
+      <div class="hero-fondo"><div class="hero-aura" data-paralaje="-.4"></div><div class="hero-rejilla"></div></div>
+      <a href="/DrogueriaYvariedadesLosTresHermanos/" class="auth-logo" tabindex="-1"><img src="/DrogueriaYvariedadesLosTresHermanos/img/marca/logo-horizontal-oscuro.svg" alt="" width="330" height="50"></a>
+      <div class="auth-marca-texto">
+        <h2 class="entra" style="--i:1">Crea tu cuenta y compra con más comodidad.</h2>
+        <ul class="auth-puntos entra" style="--i:3">
+          <li><svg class="ic"><use href="/DrogueriaYvariedadesLosTresHermanos/img/iconos.svg#documento"/></svg>Historial de pedidos y facturas</li>
+          <li><svg class="ic"><use href="/DrogueriaYvariedadesLosTresHermanos/img/iconos.svg#casa"/></svg>Pedidos a domicilio en Arjona</li>
+          <li><svg class="ic"><use href="/DrogueriaYvariedadesLosTresHermanos/img/iconos.svg#corazon"/></svg>Tus productos favoritos a mano</li>
+        </ul>
+      </div>
+      <img class="auth-simbolo" src="/DrogueriaYvariedadesLosTresHermanos/img/marca/isotipo-reducido-oscuro.svg" alt="" data-paralaje=".6">
+    </aside>
+
+    <section class="auth-panel">
+      <a href="/DrogueriaYvariedadesLosTresHermanos/" class="auth-logo-movil"><img src="/DrogueriaYvariedadesLosTresHermanos/img/marca/logo-horizontal.svg" alt="Los Tres Hermanos, ir al inicio" width="290" height="44"></a>
+      <div class="auth-formulario auth-formulario--ancho entra" style="--i:0">
+        <nav class="migas" aria-label="Ruta"><a href="/DrogueriaYvariedadesLosTresHermanos/">Inicio</a><svg class="ic" aria-hidden="true"><use href="/DrogueriaYvariedadesLosTresHermanos/img/iconos.svg#chevron"/></svg><span aria-current="page">Crear cuenta</span></nav>
+        <h1>Crear mi cuenta</h1>
+        <p class="auth-sub">Completa tus datos para registrarte. Es gratis.</p>
+
+        <div class="rejilla-form">
+          <div class="campo"><label for="input-nombre">Nombre completo</label>
+            <div class="campo-icono field" id="f-nombre"><svg class="ic" aria-hidden="true"><use href="/DrogueriaYvariedadesLosTresHermanos/img/iconos.svg#usuario"/></svg><input type="text" id="input-nombre" placeholder="Ej: María González" autocomplete="name"></div></div>
+          <div class="campo"><label for="input-correo">Correo electrónico</label>
+            <div class="campo-icono field" id="f-correo"><svg class="ic" aria-hidden="true"><use href="/DrogueriaYvariedadesLosTresHermanos/img/iconos.svg#correo"/></svg><input type="email" id="input-correo" placeholder="tu@correo.com" autocomplete="email"></div></div>
+          <div class="campo"><label for="input-telefono">Teléfono</label>
+            <div class="campo-icono field" id="f-telefono"><svg class="ic" aria-hidden="true"><use href="/DrogueriaYvariedadesLosTresHermanos/img/iconos.svg#telefono"/></svg><input type="tel" id="input-telefono" placeholder="+57 300 000 0000" autocomplete="tel"></div></div>
+          <div class="campo"><label for="input-direccion">Dirección de entrega</label>
+            <div class="campo-icono field" id="f-direccion"><svg class="ic" aria-hidden="true"><use href="/DrogueriaYvariedadesLosTresHermanos/img/iconos.svg#ubicacion"/></svg><input type="text" id="input-direccion" placeholder="Calle, barrio, ciudad" autocomplete="street-address"></div></div>
+          <div class="campo"><label for="input-pass">Contraseña</label>
+            <div class="campo-icono field" id="f-pass"><svg class="ic" aria-hidden="true"><use href="/DrogueriaYvariedadesLosTresHermanos/img/iconos.svg#candado"/></svg><input type="password" id="input-pass" placeholder="Mínimo 8 caracteres" autocomplete="new-password">
+              <button type="button" class="btn-ojo" aria-label="Mostrar u ocultar contraseña" onclick="toggleOjo('input-pass','ojo1-c','ojo1-a')"><svg id="ojo1-c" class="ic" aria-hidden="true"><use href="/DrogueriaYvariedadesLosTresHermanos/img/iconos.svg#ojo-no"/></svg><svg id="ojo1-a" class="ic" style="display:none" aria-hidden="true"><use href="/DrogueriaYvariedadesLosTresHermanos/img/iconos.svg#ojo"/></svg></button></div></div>
+          <div class="campo"><label for="input-pass2">Confirmar contraseña</label>
+            <div class="campo-icono field" id="f-pass2"><svg class="ic" aria-hidden="true"><use href="/DrogueriaYvariedadesLosTresHermanos/img/iconos.svg#candado"/></svg><input type="password" id="input-pass2" placeholder="Repite tu contraseña" autocomplete="new-password">
+              <button type="button" class="btn-ojo" aria-label="Mostrar u ocultar contraseña" onclick="toggleOjo('input-pass2','ojo2-c','ojo2-a')"><svg id="ojo2-c" class="ic" aria-hidden="true"><use href="/DrogueriaYvariedadesLosTresHermanos/img/iconos.svg#ojo-no"/></svg><svg id="ojo2-a" class="ic" style="display:none" aria-hidden="true"><use href="/DrogueriaYvariedadesLosTresHermanos/img/iconos.svg#ojo"/></svg></button></div></div>
+        </div>
+
+        <div class="terminos-wrap" id="terminos-wrap">
+          <input type="checkbox" id="acepto-terminos" onchange="actualizarBoton()">
+          <label for="acepto-terminos">He leído y acepto los <button type="button" class="enlace" onclick="abrirTerminos('terminos')">Términos y Condiciones</button> y la <button type="button" class="enlace" onclick="abrirTerminos('privacidad')">Política de Privacidad</button> de Droguería y Variedades Los Tres Hermanos.</label>
+        </div>
+
+        <div class="alerta alerta--peligro error-msg" id="error-reg" role="alert">
+          <svg class="ic" aria-hidden="true"><use href="/DrogueriaYvariedadesLosTresHermanos/img/iconos.svg#alerta"/></svg>
+          <span id="error-reg-texto"></span>
+        </div>
+
+        <button class="btn btn--primario btn--lg btn--bloque btn-registrar" id="btn-registrar" type="button" onclick="registrar()" disabled>
+          <span class="btn-texto">Crear mi cuenta</span>
+          <span class="btn-spinner" id="spin-reg"></span>
+        </button>
+
+        <div class="divisor"><span>o</span></div>
+        <button class="btn btn--secundario btn--bloque btn-invitado" type="button" onclick="entrarComoInvitado()">Continuar como invitado</button>
+        <p class="auth-pie">¿Ya tienes cuenta? <a href="/DrogueriaYvariedadesLosTresHermanos/login">Iniciar sesión</a></p>
+      </div>
+    </section>
+  </main>
+
+  <div class="modal-velo" id="modal-terminos" role="dialog" aria-modal="true" aria-labelledby="modal-titulo">
+    <div class="modal">
+      <div class="modal-cabeza">
+        <h2 id="modal-titulo">Términos y Condiciones</h2>
+        <button class="btn-icono btn-cerrar-modal" type="button" onclick="cerrarModal()" aria-label="Cerrar"><svg class="ic" aria-hidden="true"><use href="/DrogueriaYvariedadesLosTresHermanos/img/iconos.svg#cerrar"/></svg></button>
+      </div>
+      <div class="modal-cuerpo" id="modal-contenido"></div>
+      <div class="modal-pie">
+        <button class="btn btn--fantasma" type="button" onclick="cerrarModal()">Cerrar</button>
+        <button class="btn btn--primario" type="button" onclick="aceptarDesdeModal()">Aceptar y cerrar</button>
+      </div>
+    </div>
+  </div>
+  <div class="toast-wrap" id="toast-wrap"></div>
+
+  <script src="/DrogueriaYvariedadesLosTresHermanos/js/seguridad.js"></script>
+  <script src="/DrogueriaYvariedadesLosTresHermanos/js/experiencia.js"></script>
+  <script>
+    const TERMINOS_CONTENIDO = {
+      terminos: {
+        titulo: 'Términos y Condiciones',
+        html: `
+          <h3>1. Aceptación de los Términos</h3>
+          <p>Al crear una cuenta en Droguería y Variedades Los Tres Hermanos, aceptas cumplir con estos términos y condiciones. Si no estás de acuerdo, no debes crear una cuenta.</p>
+          <h3>2. Uso de la Cuenta</h3>
+          <p>Tu cuenta es personal e intransferible. Eres responsable de mantener la confidencialidad de tus credenciales y de todas las actividades realizadas desde tu cuenta.</p>
+          <h3>3. Pedidos y Compras</h3>
+          <p>Los pedidos realizados a través de nuestra plataforma están sujetos a disponibilidad de inventario. Nos reservamos el derecho de cancelar pedidos en casos de error en precios o falta de stock.</p>
+          <p>El pago se realiza en efectivo al momento de recibir el pedido, ya sea en tienda o a domicilio.</p>
+          <h3>4. Domicilios</h3>
+          <p>El servicio de domicilio aplica únicamente dentro del municipio de Arjona, Bolívar. Los tiempos de entrega pueden variar según la disponibilidad del personal.</p>
+          <h3>5. Precios</h3>
+          <p>Los precios mostrados en la plataforma pueden cambiar sin previo aviso. El precio final es el mostrado al momento de confirmar el pedido.</p>
+          <h3>6. Modificaciones</h3>
+          <p>Droguería y Variedades Los Tres Hermanos se reserva el derecho de modificar estos términos en cualquier momento. Los cambios serán notificados a través de la plataforma.</p>
+          <h3>7. Contacto</h3>
+          <p>Para cualquier inquietud sobre estos términos, contáctanos al +57 322 506 5554 o escríbenos a diazpajaro1208@gmail.com.</p>
+        `
+      },
+      privacidad: {
+        titulo: 'Política de Privacidad',
+        html: `
+          <h3>1. Información que Recopilamos</h3>
+          <p>Al registrarte, recopilamos tu nombre completo, correo electrónico, número de teléfono y dirección de entrega. Esta información es necesaria para gestionar tus pedidos.</p>
+          <h3>2. Uso de la Información</h3>
+          <p>Tu información personal se utiliza exclusivamente para procesar tus pedidos, contactarte sobre el estado de los mismos y mejorar tu experiencia en nuestra plataforma.</p>
+          <h3>3. Confidencialidad</h3>
+          <p>No compartimos, vendemos ni cedemos tu información personal a terceros bajo ninguna circunstancia, salvo requerimiento legal.</p>
+          <h3>4. Seguridad</h3>
+          <p>Implementamos medidas de seguridad para proteger tu información. Sin embargo, ningún sistema es completamente invulnerable. Te recomendamos usar una contraseña segura.</p>
+          <h3>5. Tus Derechos</h3>
+          <p>Tienes derecho a acceder, rectificar y eliminar tus datos personales en cualquier momento desde la sección "Mi Perfil" de tu cuenta, o contactándonos directamente.</p>
+          <h3>6. Cookies</h3>
+          <p>Nuestra plataforma utiliza almacenamiento local del navegador para mantener tu sesión activa y recordar tus preferencias. No utilizamos cookies de rastreo de terceros.</p>
+          <h3>7. Contacto</h3>
+          <p>Para ejercer tus derechos de privacidad o resolver dudas, contáctanos al +57 322 506 5554 o escríbenos a diazpajaro1208@gmail.com.</p>
+        `
+      }
+    };
+
+    function abrirTerminos(tipo) {
+      const data = TERMINOS_CONTENIDO[tipo];
+      document.getElementById('modal-titulo').textContent    = data.titulo;
+      document.getElementById('modal-contenido').innerHTML  = data.html;
+      document.getElementById('modal-terminos').classList.add('visible');
+    }
+
+    function cerrarModal() {
+      document.getElementById('modal-terminos').classList.remove('visible');
+    }
+
+    function aceptarDesdeModal() {
+      document.getElementById('acepto-terminos').checked = true;
+      actualizarBoton();
+      cerrarModal();
+      toast('✓ Términos aceptados');
+    }
+
+    // Cerrar modal al hacer clic fuera
+    document.getElementById('modal-terminos').addEventListener('click', function(e) {
+      if (e.target === this) cerrarModal();
+    });
+
+    function actualizarBoton() {
+      const aceptado = document.getElementById('acepto-terminos').checked;
+      document.getElementById('btn-registrar').disabled = !aceptado;
+    }
+
+    function toggleOjo(inputId, cId, aId) {
+      const inp = document.getElementById(inputId);
+      const vis = inp.type === 'text';
+      inp.type = vis ? 'password' : 'text';
+      document.getElementById(cId).style.display = vis ? 'block' : 'none';
+      document.getElementById(aId).style.display = vis ? 'none' : 'block';
+    }
+
+    function toast(msg, ok=true) {
+      const wrap = document.getElementById('toast-wrap');
+      const el = document.createElement('div');
+      el.className = 'toast' + (ok ? '' : ' err');
+      el.textContent = msg;
+      wrap.appendChild(el);
+      setTimeout(() => { el.classList.add('out'); el.addEventListener('animationend', () => el.remove()); }, 3500);
+    }
+
+    function limpiarErrores() {
+      ['f-nombre','f-correo','f-telefono','f-direccion','f-pass','f-pass2'].forEach(id =>
+        document.getElementById(id).classList.remove('error')
+      );
+      document.getElementById('terminos-wrap').classList.remove('error');
+      document.getElementById('error-reg').classList.remove('visible');
+    }
+
+    function mostrarError(campos, msg) {
+      campos.forEach(id => document.getElementById(id)?.classList.add('error'));
+      document.getElementById('error-reg-texto').textContent = msg;
+      document.getElementById('error-reg').classList.add('visible');
+    }
+
+    // ⚠️ PREPARADO PARA BD: reemplazar guardado con fetch('/api/clientes', { method:'POST', ... })
+    async function registrar() {
+      limpiarErrores();
+      const nombre    = document.getElementById('input-nombre').value.trim();
+      const correo    = document.getElementById('input-correo').value.trim().toLowerCase();
+      const telefono  = document.getElementById('input-telefono').value.trim();
+      const direccion = document.getElementById('input-direccion').value.trim();
+      const pass      = document.getElementById('input-pass').value;
+      const pass2     = document.getElementById('input-pass2').value;
+      const terminos  = document.getElementById('acepto-terminos').checked;
+
+      if (!nombre)    { mostrarError(['f-nombre'],    'El nombre es obligatorio.'); return; }
+      if (!correo || !correo.includes('@')) { mostrarError(['f-correo'], 'Ingresa un correo válido.'); return; }
+      if (!telefono)  { mostrarError(['f-telefono'],  'El teléfono es obligatorio.'); return; }
+      if (!direccion) { mostrarError(['f-direccion'], 'La dirección es obligatoria.'); return; }
+      if (pass.length < 8) { mostrarError(['f-pass'], 'La contraseña debe tener mínimo 8 caracteres.'); return; }
+      if (pass !== pass2)  { mostrarError(['f-pass','f-pass2'], 'Las contraseñas no coinciden.'); return; }
+      if (!terminos) { document.getElementById('terminos-wrap').classList.add('error'); mostrarError([], 'Debes aceptar los términos y condiciones.'); return; }
+
+      if (!Seguridad.criptoDisponible()) {
+        mostrarError([], 'El registro requiere una conexión segura (HTTPS).'); return;
+      }
+      await Seguridad.listo;
+
+      const clientes = JSON.parse(localStorage.getItem('lth_clientes') || '[]');
+      if (clientes.find(c => String(c.correo).toLowerCase() === correo)) {
+        mostrarError(['f-correo'], 'Ya existe una cuenta con ese correo.'); return;
+      }
+
+      const btn   = document.getElementById('btn-registrar');
+      const spin  = document.getElementById('spin-reg');
+      const texto = btn.querySelector('.btn-texto');
+      // Mostrar spinner (el botón permanece enabled para no bloquear si hay error)
+      texto.style.display = 'none'; spin.classList.add('visible');
+      await new Promise(r => setTimeout(r, 700));
+
+      const nuevoCliente = {
+        id:        'CLI-' + Date.now().toString(36).toUpperCase(),
+        nombre, correo, telefono, direccion,
+        credencial: await Seguridad.crearCredencial(pass),
+        rol:       'cliente',
+        fechaReg:  new Date().toLocaleString('es-CO'),
+        pedidos:   [],
+        favoritos: []
+      };
+      clientes.push(nuevoCliente);
+      localStorage.setItem('lth_clientes', JSON.stringify(clientes));
+
+      // Marcar que recién se registró para que perfil.html no dispare re-check
+      sessionStorage.setItem('lth_cliente', JSON.stringify({
+        id: nuevoCliente.id, nombre, correo, telefono, direccion, rol: 'cliente'
+      }));
+      sessionStorage.setItem('lth_recien_registro', '1');
+
+      toast('✓ ¡Cuenta creada exitosamente!');
+      // Deshabilitar el botón SOLO después de guardar correctamente
+      btn.disabled = true;
+
+      // Redirigir a la página de retorno si viene de suscripciones, si no al perfil
+      const params  = new URLSearchParams(window.location.search);
+      const destino = Seguridad.rutaRetornoSegura(params.get('retorno'), '/DrogueriaYvariedadesLosTresHermanos/perfil');
+      setTimeout(() => { window.location.href = destino; }, 1200);
+    }
+
+    function entrarComoInvitado() {
+      sessionStorage.setItem('lth_cliente', JSON.stringify({ rol: 'invitado', nombre: 'Invitado' }));
+      window.location.href = '/DrogueriaYvariedadesLosTresHermanos/';
+    }
+
+    // Si ya hay sesión activa de cliente (pero NO recién registrado — ese flujo lo maneja registrar())
+    const sc = sessionStorage.getItem('lth_cliente');
+    if (sc && !sessionStorage.getItem('lth_recien_registro')) {
+      try {
+        const c = JSON.parse(sc);
+        if (c.rol === 'cliente') window.location.href = '/DrogueriaYvariedadesLosTresHermanos/perfil';
+      } catch {}
+    }
+    // Limpiar flag de recién registrado al cargar la página de registro
+    sessionStorage.removeItem('lth_recien_registro');
+  </script>
   <script src="/DrogueriaYvariedadesLosTresHermanos/js/modo-estatico.js"></script>
-</body>
-</html>
+</body>
+</html>

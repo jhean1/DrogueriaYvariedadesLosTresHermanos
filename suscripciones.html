@@ -1,537 +1,537 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
+<!DOCTYPE html>
+<html lang="es">
+<head>
   <meta charset="UTF-8">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; frame-src https://www.google.com; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Suscripciones · Los Tres Hermanos</title>
-  <meta name="description" content="Planes de suscripción con descuento en medicamentos y variedades.">
-  <meta name="theme-color" content="#101B35">
-  <link rel="icon" type="image/svg+xml" href="/DrogueriaYvariedadesLosTresHermanos/img/marca/favicon.svg">
-  <link rel="icon" type="image/png" sizes="32x32" href="/DrogueriaYvariedadesLosTresHermanos/img/marca/favicon-32.png">
-  <link rel="apple-touch-icon" href="/DrogueriaYvariedadesLosTresHermanos/img/marca/apple-touch-icon.png">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;family=Sora:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/DrogueriaYvariedadesLosTresHermanos/css/design-system.css">
-  <link rel="stylesheet" href="/DrogueriaYvariedadesLosTresHermanos/css/tienda.css">
-  <script>
-    document.documentElement.classList.add('js');
-    try {
-      var s = JSON.parse(sessionStorage.getItem('lth_cliente') || 'null');
-      if (s && s.rol === 'cliente') document.documentElement.classList.add('con-sesion');
-    } catch (e) {}
-  </script>
-</head>
-<body class="sobre-oscuro">
-  
-  <a class="saltar" href="#contenido">Saltar al contenido</a>
-  <header class="navbar no-imprimir" role="banner">
-    <div class="navbar-inner contenedor">
-      <a href="/DrogueriaYvariedadesLosTresHermanos/" class="navbar-logo" aria-label="Los Tres Hermanos, ir al inicio">
-        <img class="logo-claro" src="/DrogueriaYvariedadesLosTresHermanos/img/marca/logo-horizontal.svg" alt="" width="290" height="44">
-        <img class="logo-oscuro" src="/DrogueriaYvariedadesLosTresHermanos/img/marca/logo-horizontal-oscuro.svg" alt="" width="290" height="44">
-      </a>
-
-      <div class="barra-velo" id="barra-velo"></div>
-      <nav class="navbar-nav" id="nav-menu" aria-label="Menú principal">
-        <div class="menu-cabeza">
-          <img src="/DrogueriaYvariedadesLosTresHermanos/img/marca/isotipo-3h.svg" alt="" width="64" height="40">
-          <button class="btn-icono" id="btn-cerrar-menu" type="button" aria-label="Cerrar menú"><svg class="ic" aria-hidden="true"><use href="/DrogueriaYvariedadesLosTresHermanos/img/iconos.svg#cerrar"/></svg></button>
-        </div>
-        <a href="/DrogueriaYvariedadesLosTresHermanos/" class="nav-link">Inicio</a>
-        <a href="/DrogueriaYvariedadesLosTresHermanos/medicamentos" class="nav-link">Medicamentos</a>
-        <a href="/DrogueriaYvariedadesLosTresHermanos/variedades" class="nav-link">Variedades</a>
-        <a href="/DrogueriaYvariedadesLosTresHermanos/servicios" class="nav-link">Servicios</a>
-        <a href="/DrogueriaYvariedadesLosTresHermanos/suscripciones" class="nav-link active" aria-current="page">Suscripciones</a>
-        <a href="/DrogueriaYvariedadesLosTresHermanos/nosotros" class="nav-link">Nosotros</a>
-        <a href="/DrogueriaYvariedadesLosTresHermanos/contacto" class="nav-link">Contacto</a>
-        <a href="/DrogueriaYvariedadesLosTresHermanos/registro" class="btn btn--primario menu-registro" id="btn-registrate-menu">Crear cuenta</a>
-      </nav>
-
-      <div class="navbar-actions">
-        <a href="/DrogueriaYvariedadesLosTresHermanos/registro" id="btn-registrate" class="btn btn--fantasma btn--sm">Regístrate</a>
-        <a href="/DrogueriaYvariedadesLosTresHermanos/login" id="btn-mi-cuenta" class="btn btn--secundario btn--sm" aria-label="Mi cuenta">
-          <svg class="ic" aria-hidden="true"><use href="/DrogueriaYvariedadesLosTresHermanos/img/iconos.svg#usuario"/></svg>
-          <span class="etiqueta-cuenta">Mi cuenta</span>
-        </a>
-        <button class="btn-carrito-nav btn-icono" id="btn-abrir-carrito" type="button" onclick="abrirDrawer()" aria-label="Abrir carrito">
-          <svg class="ic" aria-hidden="true"><use href="/DrogueriaYvariedadesLosTresHermanos/img/iconos.svg#carrito"/></svg>
-          <span class="badge-carrito" style="display:none">0</span>
-        </button>
-        <button class="btn-menu btn-icono" id="btn-menu" type="button" aria-label="Abrir menú" aria-expanded="false" aria-controls="nav-menu">
-          <svg class="ic" aria-hidden="true"><use href="/DrogueriaYvariedadesLosTresHermanos/img/iconos.svg#menu"/></svg>
-        </button>
-      </div>
-    </div>
-  </header>
-
-
-  <main id="contenido">
-    <section class="sus-hero">
-      <div class="hero-fondo" aria-hidden="true"><div class="hero-aura" data-paralaje="-.4"></div><div class="hero-rejilla"></div></div>
-      <div class="contenedor sus-hero-interior">
-        <div id="badge-hero-activo"></div>
-        <nav class="migas migas--claras entra" style="--i:0" aria-label="Ruta"><a href="/DrogueriaYvariedadesLosTresHermanos/">Inicio</a><svg class="ic" aria-hidden="true"><use href="/DrogueriaYvariedadesLosTresHermanos/img/iconos.svg#chevron"/></svg><span aria-current="page">Suscripciones</span></nav>
-        <h1 class="hero-titulo hero-titulo--centro">
-          <span class="linea"><span class="entra-linea" style="--i:1">Compra lo de siempre.</span></span>
-          <span class="linea"><span class="entra-linea hero-acento" style="--i:2">Paga menos.</span></span>
-        </h1>
-        <p class="hero-desc entra" style="--i:4">Suscríbete y obtén descuentos automáticos en todos tus medicamentos y variedades.</p>
-      </div>
-    </section>
-
-    <section class="contenedor planes-seccion" aria-label="Planes">
-      <div class="plan-activo-banner" id="banner-plan-activo">
-        <span class="banner-icono"><svg class="ic" aria-hidden="true"><use href="/DrogueriaYvariedadesLosTresHermanos/img/iconos.svg#check"/></svg></span>
-        <div class="banner-texto">
-          <strong id="banner-plan-nombre">Plan activo</strong>
-          <span id="banner-plan-desc">Tu descuento está activo en toda la tienda</span>
-        </div>
-        <div class="banner-acciones">
-          <button class="btn btn--secundario btn--sm" type="button" onclick="renovarPlan()"><svg class="ic" aria-hidden="true"><use href="/DrogueriaYvariedadesLosTresHermanos/img/iconos.svg#refrescar"/></svg> Renovar</button>
-          <button class="btn btn--peligro btn--sm" type="button" onclick="cancelarSuscripcion()">Cancelar</button>
-        </div>
-      </div>
-
-      <div id="alerta-vencimiento" class="alerta alerta--aviso">
-        <svg class="ic" aria-hidden="true"><use href="/DrogueriaYvariedadesLosTresHermanos/img/iconos.svg#reloj"/></svg>
-        <span class="alerta-venc-txt"></span>
-        <button class="btn btn--secundario btn--sm" type="button" onclick="renovarPlan()">Renovar ahora</button>
-      </div>
-
-      <div class="planes-grid" data-escalonar>
-        <article class="plan-card" data-plan="basico" data-descuento="3" data-precio="4900" data-brillo>
-          <span class="plan-icono"><svg class="ic" aria-hidden="true"><use href="/DrogueriaYvariedadesLosTresHermanos/img/iconos.svg#brote"/></svg></span>
-          <h2 class="plan-nombre">Básico</h2>
-          <p class="plan-desc">Empieza a ahorrar en tus compras de la droguería.</p>
-          <div class="plan-precio"><sup>$</sup>4.900<small>COP por mes</small></div>
-          <div class="plan-descuento"><strong>3%</strong> de descuento en todos los productos</div>
-          <ul class="plan-beneficios">
-            <li class="plan-beneficio">Acceso completo al catálogo</li>
-            <li class="plan-beneficio">Pedidos por WhatsApp</li>
-          </ul>
-          <button class="btn btn--secundario btn--bloque btn-plan" type="button" onclick="seleccionarPlan('basico',3,4900)">Suscribirme</button>
-        </article>
-        <article class="plan-card" data-plan="estandar" data-descuento="5" data-precio="9900" data-brillo>
-          <span class="plan-icono"><svg class="ic" aria-hidden="true"><use href="/DrogueriaYvariedadesLosTresHermanos/img/iconos.svg#capsula"/></svg></span>
-          <h2 class="plan-nombre">Estándar</h2>
-          <p class="plan-desc">Ahorra más en tus medicamentos y variedades del mes.</p>
-          <div class="plan-precio"><sup>$</sup>9.900<small>COP por mes</small></div>
-          <div class="plan-descuento"><strong>5%</strong> de descuento en todos los productos</div>
-          <ul class="plan-beneficios">
-            <li class="plan-beneficio">Acceso completo al catálogo</li>
-            <li class="plan-beneficio">Pedidos por WhatsApp</li>
-          </ul>
-          <button class="btn btn--secundario btn--bloque btn-plan" type="button" onclick="seleccionarPlan('estandar',5,9900)">Suscribirme</button>
-        </article>
-        <article class="plan-card popular" data-plan="regular" data-descuento="10" data-precio="14900" data-brillo>
-          <span class="badge-popular">Recomendado</span>
-          <span class="plan-icono"><svg class="ic" aria-hidden="true"><use href="/DrogueriaYvariedadesLosTresHermanos/img/iconos.svg#hospital"/></svg></span>
-          <h2 class="plan-nombre">Regular</h2>
-          <p class="plan-desc">Domicilio prioritario y descuento ampliado para clientes frecuentes.</p>
-          <div class="plan-precio"><sup>$</sup>14.900<small>COP por mes</small></div>
-          <div class="plan-descuento"><strong>10%</strong> de descuento en todos los productos</div>
-          <ul class="plan-beneficios">
-            <li class="plan-beneficio">Acceso completo al catálogo</li>
-            <li class="plan-beneficio">Pedidos por WhatsApp</li>
-            <li class="plan-beneficio">Domicilio prioritario</li>
-          </ul>
-          <button class="btn btn--primario btn--bloque btn-plan" type="button" onclick="seleccionarPlan('regular',10,14900)">Suscribirme</button>
-        </article>
-        <article class="plan-card" data-plan="premium" data-descuento="15" data-precio="19900" data-brillo>
-          <span class="plan-icono plan-icono--vino"><svg class="ic" aria-hidden="true"><use href="/DrogueriaYvariedadesLosTresHermanos/img/iconos.svg#corona"/></svg></span>
-          <h2 class="plan-nombre">Premium</h2>
-          <p class="plan-desc">Máximo ahorro, domicilio prioritario y acceso exclusivo a ofertas.</p>
-          <div class="plan-precio"><sup>$</sup>19.900<small>COP por mes</small></div>
-          <div class="plan-descuento"><strong>15%</strong> de descuento en todos los productos</div>
-          <ul class="plan-beneficios">
-            <li class="plan-beneficio">Acceso completo al catálogo</li>
-            <li class="plan-beneficio">Pedidos por WhatsApp</li>
-            <li class="plan-beneficio">Domicilio prioritario</li>
-            <li class="plan-beneficio">Acceso anticipado a ofertas</li>
-            <li class="plan-beneficio">Acceso exclusivo a lanzamientos</li>
-          </ul>
-          <button class="btn btn--oscuro btn--bloque btn-plan" type="button" onclick="seleccionarPlan('premium',15,19900)">Suscribirme</button>
-        </article>
-      </div>
-    </section>
-
-    <section class="contenedor bloque" aria-labelledby="titulo-comparativa">
-      <header class="encabezado revelar">
-        <span class="ante">Comparativa</span>
-        <h2 id="titulo-comparativa" class="titulo-seccion">Todos los planes, lado a lado.</h2>
-      </header>
-      <div class="tarjeta tabla-marco revelar">
-        <table class="tabla tabla-comparativa">
-          <thead><tr><th scope="col">Beneficio</th><th scope="col">Básico</th><th scope="col">Estándar</th><th scope="col">Regular</th><th scope="col">Premium</th></tr></thead>
-          <tbody>
-            <tr><th scope="row">Acceso al catálogo</th><td class="si">Incluido</td><td class="si">Incluido</td><td class="si">Incluido</td><td class="si">Incluido</td></tr>
-            <tr><th scope="row">Pedidos por WhatsApp</th><td class="si">Incluido</td><td class="si">Incluido</td><td class="si">Incluido</td><td class="si">Incluido</td></tr>
-            <tr><th scope="row">Descuento en productos</th><td class="valor">3%</td><td class="valor">5%</td><td class="valor">10%</td><td class="valor">15%</td></tr>
-            <tr><th scope="row">Domicilio prioritario</th><td class="no">No incluido</td><td class="no">No incluido</td><td class="si">Incluido</td><td class="si">Incluido</td></tr>
-            <tr><th scope="row">Ofertas anticipadas</th><td class="no">No incluido</td><td class="no">No incluido</td><td class="no">No incluido</td><td class="si">Incluido</td></tr>
-            <tr><th scope="row">Acceso exclusivo</th><td class="no">No incluido</td><td class="no">No incluido</td><td class="no">No incluido</td><td class="si">Incluido</td></tr>
-            <tr><th scope="row">Precio mensual</th><td class="valor">$4.900</td><td class="valor">$9.900</td><td class="valor">$14.900</td><td class="valor">$19.900</td></tr>
-          </tbody>
-        </table>
-      </div>
-    </section>
-
-    <section class="bloque bloque--tono" aria-labelledby="titulo-faq">
-      <div class="contenedor faq-rejilla">
-        <header class="revelar">
-          <span class="ante">Preguntas frecuentes</span>
-          <h2 id="titulo-faq" class="titulo-seccion">Lo que suelen preguntarnos.</h2>
-        </header>
-        <div class="faq-lista revelar">
-          <div class="faq-item">
-            <button class="faq-pregunta" type="button" onclick="toggleFaq(this)">¿Cómo se aplica el descuento?<svg class="ic chevron" aria-hidden="true"><use href="/DrogueriaYvariedadesLosTresHermanos/img/iconos.svg#chevron-abajo"/></svg></button>
-            <div class="faq-respuesta"><div>Cuando el equipo aprueba tu pago, el descuento se activa en tu cuenta. En los catálogos verás el precio original tachado junto al precio con descuento, y el carrito calcula el total con ese precio.</div></div>
-          </div>
-          <div class="faq-item">
-            <button class="faq-pregunta" type="button" onclick="toggleFaq(this)">¿Puedo cancelar mi suscripción?<svg class="ic chevron" aria-hidden="true"><use href="/DrogueriaYvariedadesLosTresHermanos/img/iconos.svg#chevron-abajo"/></svg></button>
-            <div class="faq-respuesta"><div>Sí, desde esta página o desde tu perfil. Tu descuento sigue vigente hasta que termine el período que ya pagaste.</div></div>
-          </div>
-          <div class="faq-item">
-            <button class="faq-pregunta" type="button" onclick="toggleFaq(this)">¿El descuento aplica a todos los productos?<svg class="ic chevron" aria-hidden="true"><use href="/DrogueriaYvariedadesLosTresHermanos/img/iconos.svg#chevron-abajo"/></svg></button>
-            <div class="faq-respuesta"><div>Sí, aplica a todos los medicamentos y variedades de la tienda. Se calcula sobre el precio de cada presentación o producto al agregarlo al carrito.</div></div>
-          </div>
-          <div class="faq-item">
-            <button class="faq-pregunta" type="button" onclick="toggleFaq(this)">¿Cómo pago la suscripción?<svg class="ic chevron" aria-hidden="true"><use href="/DrogueriaYvariedadesLosTresHermanos/img/iconos.svg#chevron-abajo"/></svg></button>
-            <div class="faq-respuesta"><div>Puedes pagar por Nequi, Daviplata, PSE o Bancolombia y enviar tu comprobante, o pagar en efectivo en la tienda. Cuando el pago se verifica, el equipo activa tu plan por 30 días.</div></div>
-          </div>
-        </div>
-      </div>
-    </section>
-  </main>
-
-  <div class="modal-velo" id="alerta-sesion" role="dialog" aria-modal="true" aria-labelledby="alerta-sesion-titulo">
-    <div class="modal modal--centrado">
-      <div class="modal-cuerpo">
-        <span class="modal-icono"><svg class="ic" aria-hidden="true"><use href="/DrogueriaYvariedadesLosTresHermanos/img/iconos.svg#candado"/></svg></span>
-        <h2 id="alerta-sesion-titulo">Inicia sesión primero</h2>
-        <p id="alerta-sesion-msg">Para suscribirte necesitas iniciar sesión o registrarte.</p>
-      </div>
-      <div class="modal-pie">
-        <button class="btn btn--fantasma" type="button" onclick="cerrarAlertaSesion()">Cancelar</button>
-        <button class="btn btn--secundario" type="button" onclick="irAlLogin()">Iniciar sesión</button>
-        <button class="btn btn--primario" type="button" onclick="irAlRegistro()">Crear cuenta gratis</button>
-      </div>
-    </div>
-  </div>
-
-  <div class="modal-velo" id="modal-sus" role="dialog" aria-modal="true" aria-labelledby="modal-titulo">
-    <div class="modal modal--centrado">
-      <div class="modal-cuerpo">
-        <span class="modal-icono" id="modal-icono"></span>
-        <h2 id="modal-titulo">Plan Regular</h2>
-        <p id="modal-texto">¿Quieres activar este plan?</p>
-        <div class="insignia insignia--exito descuento-badge" id="modal-descuento-badge">5% de descuento</div>
-      </div>
-      <div class="modal-pie">
-        <button class="btn btn--fantasma" type="button" onclick="cerrarModal()">Cancelar</button>
-        <button class="btn btn--primario" id="btn-confirmar-sus" type="button" onclick="confirmarPlan()">Continuar al pago <svg class="ic ic-mueve" aria-hidden="true"><use href="/DrogueriaYvariedadesLosTresHermanos/img/iconos.svg#flecha"/></svg></button>
-      </div>
-    </div>
-  </div>
-
-  
-  <footer class="footer-global no-imprimir" role="contentinfo">
-    <div class="contenedor">
-      <div class="pie-cta revelar">
-        <div>
-          <h2>¿Tienes una consulta?</h2>
-          <p>Escríbenos por WhatsApp y te atendemos directamente desde la droguería.</p>
-        </div>
-        <a class="btn btn--claro btn--lg" href="https://wa.me/573225065554" target="_blank" rel="noopener">
-          <svg class="ic" aria-hidden="true"><use href="/DrogueriaYvariedadesLosTresHermanos/img/iconos.svg#whatsapp"/></svg> Escribir por WhatsApp
-        </a>
-      </div>
-      <div class="footer-grid">
-        <div class="footer-marca">
-          <img src="/DrogueriaYvariedadesLosTresHermanos/img/marca/logo-vertical-oscuro.svg" alt="Droguería y Variedades Los Tres Hermanos" width="200" height="133">
-          <p>Medicamentos, variedades y servicios para las familias de Arjona, Bolívar.</p>
-        </div>
-        <div class="footer-col">
-          <h3>Tienda</h3>
-          <ul>
-            <li><a href="/DrogueriaYvariedadesLosTresHermanos/medicamentos">Medicamentos</a></li>
-            <li><a href="/DrogueriaYvariedadesLosTresHermanos/variedades">Variedades</a></li>
-            <li><a href="/DrogueriaYvariedadesLosTresHermanos/suscripciones">Suscripciones</a></li>
-            <li><a href="/DrogueriaYvariedadesLosTresHermanos/servicios">Servicios</a></li>
-          </ul>
-        </div>
-        <div class="footer-col">
-          <h3>La droguería</h3>
-          <ul>
-            <li><a href="/DrogueriaYvariedadesLosTresHermanos/nosotros">Quiénes somos</a></li>
-            <li><a href="/DrogueriaYvariedadesLosTresHermanos/contacto">Contacto</a></li>
-            <li><a href="/DrogueriaYvariedadesLosTresHermanos/login">Mi cuenta</a></li>
-          </ul>
-        </div>
-        <div class="footer-col">
-          <h3>Contacto</h3>
-          <ul class="pie-contacto">
-            <li><a href="tel:+573225065554"><svg class="ic" aria-hidden="true"><use href="/DrogueriaYvariedadesLosTresHermanos/img/iconos.svg#telefono"/></svg>+57 322 506 5554</a></li>
-            <li><a href="mailto:diazpajaro1208@gmail.com"><svg class="ic" aria-hidden="true"><use href="/DrogueriaYvariedadesLosTresHermanos/img/iconos.svg#correo"/></svg>diazpajaro1208@gmail.com</a></li>
-            <li><a href="https://www.google.com/maps/search/?api=1&amp;query=Diagonal+52+50A-755+Arjona+Bolivar+Colombia" target="_blank" rel="noopener"><svg class="ic" aria-hidden="true"><use href="/DrogueriaYvariedadesLosTresHermanos/img/iconos.svg#ubicacion"/></svg>Diagonal 52 50A-755, Arjona</a></li>
-          </ul>
-        </div>
-      </div>
-      <div class="footer-bottom">
-        <span>© 2026 Droguería y Variedades Los Tres Hermanos</span>
-        <div>
-          <button type="button" onclick="abrirTerminos('terminos')">Términos de servicio</button>
-          <button type="button" onclick="abrirTerminos('privacidad')">Política de privacidad</button>
-        </div>
-      </div>
-    </div>
-  </footer>
-
-  <div class="modal-velo no-imprimir" id="modal-terminos" role="dialog" aria-modal="true" aria-labelledby="modal-terminos-titulo">
-    <div class="modal">
-      <div class="modal-cabeza">
-        <h2 id="modal-terminos-titulo"></h2>
-        <button class="btn-icono" type="button" onclick="cerrarTerminos()" aria-label="Cerrar"><svg class="ic" aria-hidden="true"><use href="/DrogueriaYvariedadesLosTresHermanos/img/iconos.svg#cerrar"/></svg></button>
-      </div>
-      <div class="modal-cuerpo" id="modal-terminos-body"></div>
-      <div class="modal-pie"><button class="btn btn--primario" type="button" onclick="cerrarTerminos()">Cerrar</button></div>
-    </div>
-  </div>
-
-  
-  <div class="drawer-overlay no-imprimir" id="drawer-overlay" onclick="cerrarDrawer()"></div>
-  <aside class="carrito-drawer no-imprimir" id="carrito-drawer" role="dialog" aria-modal="true" aria-labelledby="titulo-carrito">
-    <div class="drawer-header">
-      <h2 id="titulo-carrito">Mi carrito</h2>
-      <button class="btn-cerrar-drawer btn-icono" id="btn-cerrar-drawer" type="button" onclick="cerrarDrawer()" aria-label="Cerrar carrito">
-        <svg class="ic" aria-hidden="true"><use href="/DrogueriaYvariedadesLosTresHermanos/img/iconos.svg#cerrar"/></svg>
-      </button>
-    </div>
-    <div class="drawer-body" id="drawer-body"></div>
-    <div class="drawer-footer" id="drawer-footer" style="display:none">
-      <div class="total-row">
-        <span class="total-label">Total</span>
-        <span class="total-valor" id="total-valor">$0</span>
-      </div>
-      <button class="btn btn--primario btn--lg btn--bloque" id="btn-comprar" type="button" onclick="window.location.href='/DrogueriaYvariedadesLosTresHermanos/checkout'">
-        Finalizar compra <svg class="ic ic-mueve" aria-hidden="true"><use href="/DrogueriaYvariedadesLosTresHermanos/img/iconos.svg#flecha"/></svg>
-      </button>
-    </div>
-  </aside>
-
-  
-  <script src="/DrogueriaYvariedadesLosTresHermanos/js/seguridad.js"></script>
-  <script src="/DrogueriaYvariedadesLosTresHermanos/js/global.js"></script>
-  <script src="/DrogueriaYvariedadesLosTresHermanos/js/experiencia.js"></script>
-  <script src="/DrogueriaYvariedadesLosTresHermanos/js/legal.js"></script>
-  <script src="/DrogueriaYvariedadesLosTresHermanos/js/carrito-ui.js"></script>
-
-  <script>
-    // ── Estado del plan seleccionado pendiente de confirmar ──
-    let planPendiente = null;
-
-    const PLANES_INFO = {
-      basico:   { icono:'brote',  nombre:'Plan Básico',    descuento:3,  precio:4900  },
-      estandar: { icono:'capsula',  nombre:'Plan Estándar',  descuento:5,  precio:9900  },
-      regular:  { icono:'hospital',  nombre:'Plan Regular',   descuento:10, precio:14900 },
-      premium:  { icono:'corona',  nombre:'Plan Premium',   descuento:15, precio:19900 }
-    };
-
-    // ── Abrir modal de confirmación ──
-    // ── Verificar si hay sesión activa ──
-    function haySession() {
-      try {
-        const sc = sessionStorage.getItem('lth_cliente');
-        if (!sc) return false;
-        const cliente = JSON.parse(sc);
-        // Aceptar cualquier sesión real (no invitado)
-        return cliente && cliente.correo;
-      } catch(e) { return false; }
-    }
-
-    function seleccionarPlan(nombre, descuento, precio) {
-      const info = PLANES_INFO[nombre];
-      if (!info) return;
-
-      // ── Verificar sesión antes de continuar ──
-      if (!haySession()) {
-        // Guardar plan pendiente para retomar después del login
-        try {
-          sessionStorage.setItem('lth_plan_pendiente', JSON.stringify({ nombre, descuento, precio }));
-        } catch(e) {}
-        mostrarAlertaSesion(info.nombre);
-        return;
-      }
-
-      planPendiente = { nombre, descuento, precio };
-
-      document.getElementById('modal-icono').innerHTML = Experiencia.icono(info.icono);
-      document.getElementById('modal-titulo').textContent          = info.nombre;
-      document.getElementById('modal-descuento-badge').textContent = descuento + '% de descuento';
-      document.getElementById('modal-texto').textContent =
-        `Para activar el ${info.nombre} envía tu comprobante de pago. Cuando se apruebe, tu descuento del ${descuento}% se aplicará en toda la tienda.`;
-
-      document.getElementById('modal-sus').classList.add('visible');
-    }
-
-    // ── Mostrar alerta de sesión requerida ──
-    function mostrarAlertaSesion(nombrePlan) {
-      const alerta = document.getElementById('alerta-sesion');
-      const msg    = document.getElementById('alerta-sesion-msg');
-      if (msg) msg.textContent =
-        `Para suscribirte al ${nombrePlan} necesitas iniciar sesión o registrarte.`;
-      if (alerta) alerta.classList.add('visible');
-    }
-
-    function cerrarAlertaSesion() {
-      const alerta = document.getElementById('alerta-sesion');
-      if (alerta) alerta.classList.remove('visible');
-      try { sessionStorage.removeItem('lth_plan_pendiente'); } catch(e) {}
-    }
-
-    function irAlLogin() {
-      window.location.href = '/DrogueriaYvariedadesLosTresHermanos/login?retorno=suscripciones';
-    }
-
-    function irAlRegistro() {
-      window.location.href = '/DrogueriaYvariedadesLosTresHermanos/registro?retorno=suscripciones';
-    }
-
-    // ── Al cargar: si volvió del login con plan pendiente, retomar ──
-    (function retomarPlanPendiente() {
-      if (!haySession()) return;
-      try {
-        const pendiente = sessionStorage.getItem('lth_plan_pendiente');
-        if (!pendiente) return;
-        const p = JSON.parse(pendiente);
-        sessionStorage.removeItem('lth_plan_pendiente');
-        // Pequeño delay para que la UI esté lista
-        setTimeout(() => seleccionarPlan(p.nombre, p.descuento, p.precio), 300);
-      } catch(e) {}
-    })();
-
-    function cerrarModal() {
-      document.getElementById('modal-sus').classList.remove('visible');
-      planPendiente = null;
-    }
-
-    // ── Confirmar y guardar suscripción ──
-    function confirmarPlan() {
-      if (!planPendiente) return;
-      // En lugar de activar directo, ir al formulario de pago
-      cerrarModal();
-      abrirPagoPlan(planPendiente);
-    }
-
-    // ── Abrir formulario de pago ──
-    function abrirPagoPlan(plan) {
-      // Guardar plan seleccionado para el formulario
-      try { sessionStorage.setItem('lth_plan_pago', JSON.stringify(plan)); } catch(e) {}
-      window.location.href = '/pago-suscripcion';
-    }
-
-    // ── Renovar plan (vuelve a seleccionarlo) ──
-    function renovarPlan() {
-      const sus = getSuscripcionActiva();
-      if (!sus) return;
-      seleccionarPlan(sus.plan, sus.descuento, sus.precio);
-    }
-
-    // ── Cancelar suscripción ──
-    function cancelarSuscripcion() {
-      if (!confirm('¿Seguro que quieres cancelar tu suscripción? Perderás tu descuento.')) return;
-      try { localStorage.removeItem('lth_suscripcion'); } catch(e) {}
-      Suscripcion.cancelar();
-      actualizarUI();
-    }
-
-    // ── Leer suscripción activa (solo planes aprobados, no solicitudes pendientes) ──
-    function getSuscripcionActiva() {
-      const sus = Suscripcion.obtener();
-      return sus && sus.estado === 'activo' ? sus : null;
-    }
-
-    // ── Actualizar UI según el estado ──
-    function actualizarUI() {
-      const sus       = getSuscripcionActiva();
-      const banner    = document.getElementById('banner-plan-activo');
-      const badgeHero = document.getElementById('badge-hero-activo');
-      const alertaVenc = document.getElementById('alerta-vencimiento');
-
-      if (sus) {
-        const info = PLANES_INFO[sus.plan] || { nombre: sus.plan, icono: 'estrella' };
-
-        // Calcular días restantes
-        let diasRestantes = null;
-        let fechaTexto = '';
-        if (sus.fechaVencimiento) {
-          const venc = new Date(sus.fechaVencimiento);
-          diasRestantes = Math.ceil((venc - new Date()) / (1000 * 60 * 60 * 24));
-          if (diasRestantes <= 0) {
-            // Venció — cancelar y recargar
-            localStorage.removeItem('lth_suscripcion');
-            actualizarUI();
-            return;
-          }
-          fechaTexto = ` · Vence en ${diasRestantes} día${diasRestantes === 1 ? '' : 's'}`;
-        }
-
-        banner.classList.add('visible');
-        document.getElementById('banner-plan-nombre').textContent = '✓ ' + info.nombre + ' activo';
-        document.getElementById('banner-plan-desc').textContent =
-          `${sus.descuento}% de descuento activo en toda la tienda${fechaTexto}`;
-        badgeHero.innerHTML =
-          `<div class="sus-badge-activo"><span class="dot"></span>${info.nombre} activo · ${sus.descuento}% descuento${fechaTexto}</div>`;
-
-        // Alerta de vencimiento próximo (≤5 días)
-        if (alertaVenc && diasRestantes !== null && diasRestantes <= 5) {
-          alertaVenc.style.display = 'flex';
-          const txt = alertaVenc.querySelector('.alerta-venc-txt');
-          if (txt) txt.textContent =
-            `⚠️ Tu plan vence en ${diasRestantes} día${diasRestantes === 1 ? '' : 's'}. Renuévalo para no perder tu descuento.`;
-        } else if (alertaVenc) {
-          alertaVenc.style.display = 'none';
-        }
-
-      } else {
-        banner.classList.remove('visible');
-        badgeHero.innerHTML = '';
-        if (alertaVenc) alertaVenc.style.display = 'none';
-      }
-
-      // Resaltar la tarjeta del plan activo con borde verde
-      document.querySelectorAll('.plan-card').forEach(card => card.classList.remove('plan-actual'));
-      if (sus) {
-        const cardActiva = document.querySelector(`.plan-card[data-plan="${sus.plan}"]`);
-        if (cardActiva) cardActiva.classList.add('plan-actual');
-      }
-    }
-
-    // ── FAQ acordeón ──
-    function toggleFaq(btn) {
-      const item = btn.closest('.faq-item');
-      const estaAbierto = item.classList.contains('abierto');
-      document.querySelectorAll('.faq-item').forEach(i => i.classList.remove('abierto'));
-      if (!estaAbierto) item.classList.add('abierto');
-    }
-
-    // Cerrar modal con Escape
-    document.addEventListener('keydown', e => {
-      if (e.key === 'Escape') cerrarModal();
-    });
-    document.getElementById('modal-sus').addEventListener('click', e => {
-      if (e.target === e.currentTarget) cerrarModal();
-    });
-
-    // Inicializar
-    document.addEventListener('DOMContentLoaded', () => {
-      actualizarUI();
-      initAvatar({ perfilUrl: '/DrogueriaYvariedadesLosTresHermanos/perfil', logoutUrl: '/DrogueriaYvariedadesLosTresHermanos/' });
-      verificarVencimientoSuscripcion();
-    });
-  </script>
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; frame-src https://www.google.com; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Suscripciones · Los Tres Hermanos</title>
+  <meta name="description" content="Planes de suscripción con descuento en medicamentos y variedades.">
+  <meta name="theme-color" content="#101B35">
+  <link rel="icon" type="image/svg+xml" href="/DrogueriaYvariedadesLosTresHermanos/img/marca/favicon.svg">
+  <link rel="icon" type="image/png" sizes="32x32" href="/DrogueriaYvariedadesLosTresHermanos/img/marca/favicon-32.png">
+  <link rel="apple-touch-icon" href="/DrogueriaYvariedadesLosTresHermanos/img/marca/apple-touch-icon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;family=Sora:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/DrogueriaYvariedadesLosTresHermanos/css/design-system.css">
+  <link rel="stylesheet" href="/DrogueriaYvariedadesLosTresHermanos/css/tienda.css">
+  <script>
+    document.documentElement.classList.add('js');
+    try {
+      var s = JSON.parse(sessionStorage.getItem('lth_cliente') || 'null');
+      if (s && s.rol === 'cliente') document.documentElement.classList.add('con-sesion');
+    } catch (e) {}
+  </script>
+</head>
+<body class="sobre-oscuro">
+  
+  <a class="saltar" href="#contenido">Saltar al contenido</a>
+  <header class="navbar no-imprimir" role="banner">
+    <div class="navbar-inner contenedor">
+      <a href="/DrogueriaYvariedadesLosTresHermanos/" class="navbar-logo" aria-label="Los Tres Hermanos, ir al inicio">
+        <img class="logo-claro" src="/DrogueriaYvariedadesLosTresHermanos/img/marca/logo-horizontal.svg" alt="" width="290" height="44">
+        <img class="logo-oscuro" src="/DrogueriaYvariedadesLosTresHermanos/img/marca/logo-horizontal-oscuro.svg" alt="" width="290" height="44">
+      </a>
+
+      <div class="barra-velo" id="barra-velo"></div>
+      <nav class="navbar-nav" id="nav-menu" aria-label="Menú principal">
+        <div class="menu-cabeza">
+          <img src="/DrogueriaYvariedadesLosTresHermanos/img/marca/isotipo-3h.svg" alt="" width="64" height="40">
+          <button class="btn-icono" id="btn-cerrar-menu" type="button" aria-label="Cerrar menú"><svg class="ic" aria-hidden="true"><use href="/DrogueriaYvariedadesLosTresHermanos/img/iconos.svg#cerrar"/></svg></button>
+        </div>
+        <a href="/DrogueriaYvariedadesLosTresHermanos/" class="nav-link">Inicio</a>
+        <a href="/DrogueriaYvariedadesLosTresHermanos/medicamentos" class="nav-link">Medicamentos</a>
+        <a href="/DrogueriaYvariedadesLosTresHermanos/variedades" class="nav-link">Variedades</a>
+        <a href="/DrogueriaYvariedadesLosTresHermanos/servicios" class="nav-link">Servicios</a>
+        <a href="/DrogueriaYvariedadesLosTresHermanos/suscripciones" class="nav-link active" aria-current="page">Suscripciones</a>
+        <a href="/DrogueriaYvariedadesLosTresHermanos/nosotros" class="nav-link">Nosotros</a>
+        <a href="/DrogueriaYvariedadesLosTresHermanos/contacto" class="nav-link">Contacto</a>
+        <a href="/DrogueriaYvariedadesLosTresHermanos/registro" class="btn btn--primario menu-registro" id="btn-registrate-menu">Crear cuenta</a>
+      </nav>
+
+      <div class="navbar-actions">
+        <a href="/DrogueriaYvariedadesLosTresHermanos/registro" id="btn-registrate" class="btn btn--fantasma btn--sm">Regístrate</a>
+        <a href="/DrogueriaYvariedadesLosTresHermanos/login" id="btn-mi-cuenta" class="btn btn--secundario btn--sm" aria-label="Mi cuenta">
+          <svg class="ic" aria-hidden="true"><use href="/DrogueriaYvariedadesLosTresHermanos/img/iconos.svg#usuario"/></svg>
+          <span class="etiqueta-cuenta">Mi cuenta</span>
+        </a>
+        <button class="btn-carrito-nav btn-icono" id="btn-abrir-carrito" type="button" onclick="abrirDrawer()" aria-label="Abrir carrito">
+          <svg class="ic" aria-hidden="true"><use href="/DrogueriaYvariedadesLosTresHermanos/img/iconos.svg#carrito"/></svg>
+          <span class="badge-carrito" style="display:none">0</span>
+        </button>
+        <button class="btn-menu btn-icono" id="btn-menu" type="button" aria-label="Abrir menú" aria-expanded="false" aria-controls="nav-menu">
+          <svg class="ic" aria-hidden="true"><use href="/DrogueriaYvariedadesLosTresHermanos/img/iconos.svg#menu"/></svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+
+  <main id="contenido">
+    <section class="sus-hero">
+      <div class="hero-fondo" aria-hidden="true"><div class="hero-aura" data-paralaje="-.4"></div><div class="hero-rejilla"></div></div>
+      <div class="contenedor sus-hero-interior">
+        <div id="badge-hero-activo"></div>
+        <nav class="migas migas--claras entra" style="--i:0" aria-label="Ruta"><a href="/DrogueriaYvariedadesLosTresHermanos/">Inicio</a><svg class="ic" aria-hidden="true"><use href="/DrogueriaYvariedadesLosTresHermanos/img/iconos.svg#chevron"/></svg><span aria-current="page">Suscripciones</span></nav>
+        <h1 class="hero-titulo hero-titulo--centro">
+          <span class="linea"><span class="entra-linea" style="--i:1">Compra lo de siempre.</span></span>
+          <span class="linea"><span class="entra-linea hero-acento" style="--i:2">Paga menos.</span></span>
+        </h1>
+        <p class="hero-desc entra" style="--i:4">Suscríbete y obtén descuentos automáticos en todos tus medicamentos y variedades.</p>
+      </div>
+    </section>
+
+    <section class="contenedor planes-seccion" aria-label="Planes">
+      <div class="plan-activo-banner" id="banner-plan-activo">
+        <span class="banner-icono"><svg class="ic" aria-hidden="true"><use href="/DrogueriaYvariedadesLosTresHermanos/img/iconos.svg#check"/></svg></span>
+        <div class="banner-texto">
+          <strong id="banner-plan-nombre">Plan activo</strong>
+          <span id="banner-plan-desc">Tu descuento está activo en toda la tienda</span>
+        </div>
+        <div class="banner-acciones">
+          <button class="btn btn--secundario btn--sm" type="button" onclick="renovarPlan()"><svg class="ic" aria-hidden="true"><use href="/DrogueriaYvariedadesLosTresHermanos/img/iconos.svg#refrescar"/></svg> Renovar</button>
+          <button class="btn btn--peligro btn--sm" type="button" onclick="cancelarSuscripcion()">Cancelar</button>
+        </div>
+      </div>
+
+      <div id="alerta-vencimiento" class="alerta alerta--aviso">
+        <svg class="ic" aria-hidden="true"><use href="/DrogueriaYvariedadesLosTresHermanos/img/iconos.svg#reloj"/></svg>
+        <span class="alerta-venc-txt"></span>
+        <button class="btn btn--secundario btn--sm" type="button" onclick="renovarPlan()">Renovar ahora</button>
+      </div>
+
+      <div class="planes-grid" data-escalonar>
+        <article class="plan-card" data-plan="basico" data-descuento="3" data-precio="4900" data-brillo>
+          <span class="plan-icono"><svg class="ic" aria-hidden="true"><use href="/DrogueriaYvariedadesLosTresHermanos/img/iconos.svg#brote"/></svg></span>
+          <h2 class="plan-nombre">Básico</h2>
+          <p class="plan-desc">Empieza a ahorrar en tus compras de la droguería.</p>
+          <div class="plan-precio"><sup>$</sup>4.900<small>COP por mes</small></div>
+          <div class="plan-descuento"><strong>3%</strong> de descuento en todos los productos</div>
+          <ul class="plan-beneficios">
+            <li class="plan-beneficio">Acceso completo al catálogo</li>
+            <li class="plan-beneficio">Pedidos por WhatsApp</li>
+          </ul>
+          <button class="btn btn--secundario btn--bloque btn-plan" type="button" onclick="seleccionarPlan('basico',3,4900)">Suscribirme</button>
+        </article>
+        <article class="plan-card" data-plan="estandar" data-descuento="5" data-precio="9900" data-brillo>
+          <span class="plan-icono"><svg class="ic" aria-hidden="true"><use href="/DrogueriaYvariedadesLosTresHermanos/img/iconos.svg#capsula"/></svg></span>
+          <h2 class="plan-nombre">Estándar</h2>
+          <p class="plan-desc">Ahorra más en tus medicamentos y variedades del mes.</p>
+          <div class="plan-precio"><sup>$</sup>9.900<small>COP por mes</small></div>
+          <div class="plan-descuento"><strong>5%</strong> de descuento en todos los productos</div>
+          <ul class="plan-beneficios">
+            <li class="plan-beneficio">Acceso completo al catálogo</li>
+            <li class="plan-beneficio">Pedidos por WhatsApp</li>
+          </ul>
+          <button class="btn btn--secundario btn--bloque btn-plan" type="button" onclick="seleccionarPlan('estandar',5,9900)">Suscribirme</button>
+        </article>
+        <article class="plan-card popular" data-plan="regular" data-descuento="10" data-precio="14900" data-brillo>
+          <span class="badge-popular">Recomendado</span>
+          <span class="plan-icono"><svg class="ic" aria-hidden="true"><use href="/DrogueriaYvariedadesLosTresHermanos/img/iconos.svg#hospital"/></svg></span>
+          <h2 class="plan-nombre">Regular</h2>
+          <p class="plan-desc">Domicilio prioritario y descuento ampliado para clientes frecuentes.</p>
+          <div class="plan-precio"><sup>$</sup>14.900<small>COP por mes</small></div>
+          <div class="plan-descuento"><strong>10%</strong> de descuento en todos los productos</div>
+          <ul class="plan-beneficios">
+            <li class="plan-beneficio">Acceso completo al catálogo</li>
+            <li class="plan-beneficio">Pedidos por WhatsApp</li>
+            <li class="plan-beneficio">Domicilio prioritario</li>
+          </ul>
+          <button class="btn btn--primario btn--bloque btn-plan" type="button" onclick="seleccionarPlan('regular',10,14900)">Suscribirme</button>
+        </article>
+        <article class="plan-card" data-plan="premium" data-descuento="15" data-precio="19900" data-brillo>
+          <span class="plan-icono plan-icono--vino"><svg class="ic" aria-hidden="true"><use href="/DrogueriaYvariedadesLosTresHermanos/img/iconos.svg#corona"/></svg></span>
+          <h2 class="plan-nombre">Premium</h2>
+          <p class="plan-desc">Máximo ahorro, domicilio prioritario y acceso exclusivo a ofertas.</p>
+          <div class="plan-precio"><sup>$</sup>19.900<small>COP por mes</small></div>
+          <div class="plan-descuento"><strong>15%</strong> de descuento en todos los productos</div>
+          <ul class="plan-beneficios">
+            <li class="plan-beneficio">Acceso completo al catálogo</li>
+            <li class="plan-beneficio">Pedidos por WhatsApp</li>
+            <li class="plan-beneficio">Domicilio prioritario</li>
+            <li class="plan-beneficio">Acceso anticipado a ofertas</li>
+            <li class="plan-beneficio">Acceso exclusivo a lanzamientos</li>
+          </ul>
+          <button class="btn btn--oscuro btn--bloque btn-plan" type="button" onclick="seleccionarPlan('premium',15,19900)">Suscribirme</button>
+        </article>
+      </div>
+    </section>
+
+    <section class="contenedor bloque" aria-labelledby="titulo-comparativa">
+      <header class="encabezado revelar">
+        <span class="ante">Comparativa</span>
+        <h2 id="titulo-comparativa" class="titulo-seccion">Todos los planes, lado a lado.</h2>
+      </header>
+      <div class="tarjeta tabla-marco revelar">
+        <table class="tabla tabla-comparativa">
+          <thead><tr><th scope="col">Beneficio</th><th scope="col">Básico</th><th scope="col">Estándar</th><th scope="col">Regular</th><th scope="col">Premium</th></tr></thead>
+          <tbody>
+            <tr><th scope="row">Acceso al catálogo</th><td class="si">Incluido</td><td class="si">Incluido</td><td class="si">Incluido</td><td class="si">Incluido</td></tr>
+            <tr><th scope="row">Pedidos por WhatsApp</th><td class="si">Incluido</td><td class="si">Incluido</td><td class="si">Incluido</td><td class="si">Incluido</td></tr>
+            <tr><th scope="row">Descuento en productos</th><td class="valor">3%</td><td class="valor">5%</td><td class="valor">10%</td><td class="valor">15%</td></tr>
+            <tr><th scope="row">Domicilio prioritario</th><td class="no">No incluido</td><td class="no">No incluido</td><td class="si">Incluido</td><td class="si">Incluido</td></tr>
+            <tr><th scope="row">Ofertas anticipadas</th><td class="no">No incluido</td><td class="no">No incluido</td><td class="no">No incluido</td><td class="si">Incluido</td></tr>
+            <tr><th scope="row">Acceso exclusivo</th><td class="no">No incluido</td><td class="no">No incluido</td><td class="no">No incluido</td><td class="si">Incluido</td></tr>
+            <tr><th scope="row">Precio mensual</th><td class="valor">$4.900</td><td class="valor">$9.900</td><td class="valor">$14.900</td><td class="valor">$19.900</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="bloque bloque--tono" aria-labelledby="titulo-faq">
+      <div class="contenedor faq-rejilla">
+        <header class="revelar">
+          <span class="ante">Preguntas frecuentes</span>
+          <h2 id="titulo-faq" class="titulo-seccion">Lo que suelen preguntarnos.</h2>
+        </header>
+        <div class="faq-lista revelar">
+          <div class="faq-item">
+            <button class="faq-pregunta" type="button" onclick="toggleFaq(this)">¿Cómo se aplica el descuento?<svg class="ic chevron" aria-hidden="true"><use href="/DrogueriaYvariedadesLosTresHermanos/img/iconos.svg#chevron-abajo"/></svg></button>
+            <div class="faq-respuesta"><div>Cuando el equipo aprueba tu pago, el descuento se activa en tu cuenta. En los catálogos verás el precio original tachado junto al precio con descuento, y el carrito calcula el total con ese precio.</div></div>
+          </div>
+          <div class="faq-item">
+            <button class="faq-pregunta" type="button" onclick="toggleFaq(this)">¿Puedo cancelar mi suscripción?<svg class="ic chevron" aria-hidden="true"><use href="/DrogueriaYvariedadesLosTresHermanos/img/iconos.svg#chevron-abajo"/></svg></button>
+            <div class="faq-respuesta"><div>Sí, desde esta página o desde tu perfil. Tu descuento sigue vigente hasta que termine el período que ya pagaste.</div></div>
+          </div>
+          <div class="faq-item">
+            <button class="faq-pregunta" type="button" onclick="toggleFaq(this)">¿El descuento aplica a todos los productos?<svg class="ic chevron" aria-hidden="true"><use href="/DrogueriaYvariedadesLosTresHermanos/img/iconos.svg#chevron-abajo"/></svg></button>
+            <div class="faq-respuesta"><div>Sí, aplica a todos los medicamentos y variedades de la tienda. Se calcula sobre el precio de cada presentación o producto al agregarlo al carrito.</div></div>
+          </div>
+          <div class="faq-item">
+            <button class="faq-pregunta" type="button" onclick="toggleFaq(this)">¿Cómo pago la suscripción?<svg class="ic chevron" aria-hidden="true"><use href="/DrogueriaYvariedadesLosTresHermanos/img/iconos.svg#chevron-abajo"/></svg></button>
+            <div class="faq-respuesta"><div>Puedes pagar por Nequi, Daviplata, PSE o Bancolombia y enviar tu comprobante, o pagar en efectivo en la tienda. Cuando el pago se verifica, el equipo activa tu plan por 30 días.</div></div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <div class="modal-velo" id="alerta-sesion" role="dialog" aria-modal="true" aria-labelledby="alerta-sesion-titulo">
+    <div class="modal modal--centrado">
+      <div class="modal-cuerpo">
+        <span class="modal-icono"><svg class="ic" aria-hidden="true"><use href="/DrogueriaYvariedadesLosTresHermanos/img/iconos.svg#candado"/></svg></span>
+        <h2 id="alerta-sesion-titulo">Inicia sesión primero</h2>
+        <p id="alerta-sesion-msg">Para suscribirte necesitas iniciar sesión o registrarte.</p>
+      </div>
+      <div class="modal-pie">
+        <button class="btn btn--fantasma" type="button" onclick="cerrarAlertaSesion()">Cancelar</button>
+        <button class="btn btn--secundario" type="button" onclick="irAlLogin()">Iniciar sesión</button>
+        <button class="btn btn--primario" type="button" onclick="irAlRegistro()">Crear cuenta gratis</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-velo" id="modal-sus" role="dialog" aria-modal="true" aria-labelledby="modal-titulo">
+    <div class="modal modal--centrado">
+      <div class="modal-cuerpo">
+        <span class="modal-icono" id="modal-icono"></span>
+        <h2 id="modal-titulo">Plan Regular</h2>
+        <p id="modal-texto">¿Quieres activar este plan?</p>
+        <div class="insignia insignia--exito descuento-badge" id="modal-descuento-badge">5% de descuento</div>
+      </div>
+      <div class="modal-pie">
+        <button class="btn btn--fantasma" type="button" onclick="cerrarModal()">Cancelar</button>
+        <button class="btn btn--primario" id="btn-confirmar-sus" type="button" onclick="confirmarPlan()">Continuar al pago <svg class="ic ic-mueve" aria-hidden="true"><use href="/DrogueriaYvariedadesLosTresHermanos/img/iconos.svg#flecha"/></svg></button>
+      </div>
+    </div>
+  </div>
+
+  
+  <footer class="footer-global no-imprimir" role="contentinfo">
+    <div class="contenedor">
+      <div class="pie-cta revelar">
+        <div>
+          <h2>¿Tienes una consulta?</h2>
+          <p>Escríbenos por WhatsApp y te atendemos directamente desde la droguería.</p>
+        </div>
+        <a class="btn btn--claro btn--lg" href="https://wa.me/573225065554" target="_blank" rel="noopener">
+          <svg class="ic" aria-hidden="true"><use href="/DrogueriaYvariedadesLosTresHermanos/img/iconos.svg#whatsapp"/></svg> Escribir por WhatsApp
+        </a>
+      </div>
+      <div class="footer-grid">
+        <div class="footer-marca">
+          <img src="/DrogueriaYvariedadesLosTresHermanos/img/marca/logo-vertical-oscuro.svg" alt="Droguería y Variedades Los Tres Hermanos" width="200" height="133">
+          <p>Medicamentos, variedades y servicios para las familias de Arjona, Bolívar.</p>
+        </div>
+        <div class="footer-col">
+          <h3>Tienda</h3>
+          <ul>
+            <li><a href="/DrogueriaYvariedadesLosTresHermanos/medicamentos">Medicamentos</a></li>
+            <li><a href="/DrogueriaYvariedadesLosTresHermanos/variedades">Variedades</a></li>
+            <li><a href="/DrogueriaYvariedadesLosTresHermanos/suscripciones">Suscripciones</a></li>
+            <li><a href="/DrogueriaYvariedadesLosTresHermanos/servicios">Servicios</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h3>La droguería</h3>
+          <ul>
+            <li><a href="/DrogueriaYvariedadesLosTresHermanos/nosotros">Quiénes somos</a></li>
+            <li><a href="/DrogueriaYvariedadesLosTresHermanos/contacto">Contacto</a></li>
+            <li><a href="/DrogueriaYvariedadesLosTresHermanos/login">Mi cuenta</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h3>Contacto</h3>
+          <ul class="pie-contacto">
+            <li><a href="tel:+573225065554"><svg class="ic" aria-hidden="true"><use href="/DrogueriaYvariedadesLosTresHermanos/img/iconos.svg#telefono"/></svg>+57 322 506 5554</a></li>
+            <li><a href="mailto:diazpajaro1208@gmail.com"><svg class="ic" aria-hidden="true"><use href="/DrogueriaYvariedadesLosTresHermanos/img/iconos.svg#correo"/></svg>diazpajaro1208@gmail.com</a></li>
+            <li><a href="https://www.google.com/maps/search/?api=1&amp;query=Diagonal+52+50A-755+Arjona+Bolivar+Colombia" target="_blank" rel="noopener"><svg class="ic" aria-hidden="true"><use href="/DrogueriaYvariedadesLosTresHermanos/img/iconos.svg#ubicacion"/></svg>Diagonal 52 50A-755, Arjona</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <span>© 2026 Droguería y Variedades Los Tres Hermanos</span>
+        <div>
+          <button type="button" onclick="abrirTerminos('terminos')">Términos de servicio</button>
+          <button type="button" onclick="abrirTerminos('privacidad')">Política de privacidad</button>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <div class="modal-velo no-imprimir" id="modal-terminos" role="dialog" aria-modal="true" aria-labelledby="modal-terminos-titulo">
+    <div class="modal">
+      <div class="modal-cabeza">
+        <h2 id="modal-terminos-titulo"></h2>
+        <button class="btn-icono" type="button" onclick="cerrarTerminos()" aria-label="Cerrar"><svg class="ic" aria-hidden="true"><use href="/DrogueriaYvariedadesLosTresHermanos/img/iconos.svg#cerrar"/></svg></button>
+      </div>
+      <div class="modal-cuerpo" id="modal-terminos-body"></div>
+      <div class="modal-pie"><button class="btn btn--primario" type="button" onclick="cerrarTerminos()">Cerrar</button></div>
+    </div>
+  </div>
+
+  
+  <div class="drawer-overlay no-imprimir" id="drawer-overlay" onclick="cerrarDrawer()"></div>
+  <aside class="carrito-drawer no-imprimir" id="carrito-drawer" role="dialog" aria-modal="true" aria-labelledby="titulo-carrito">
+    <div class="drawer-header">
+      <h2 id="titulo-carrito">Mi carrito</h2>
+      <button class="btn-cerrar-drawer btn-icono" id="btn-cerrar-drawer" type="button" onclick="cerrarDrawer()" aria-label="Cerrar carrito">
+        <svg class="ic" aria-hidden="true"><use href="/DrogueriaYvariedadesLosTresHermanos/img/iconos.svg#cerrar"/></svg>
+      </button>
+    </div>
+    <div class="drawer-body" id="drawer-body"></div>
+    <div class="drawer-footer" id="drawer-footer" style="display:none">
+      <div class="total-row">
+        <span class="total-label">Total</span>
+        <span class="total-valor" id="total-valor">$0</span>
+      </div>
+      <button class="btn btn--primario btn--lg btn--bloque" id="btn-comprar" type="button" onclick="window.location.href='/DrogueriaYvariedadesLosTresHermanos/checkout'">
+        Finalizar compra <svg class="ic ic-mueve" aria-hidden="true"><use href="/DrogueriaYvariedadesLosTresHermanos/img/iconos.svg#flecha"/></svg>
+      </button>
+    </div>
+  </aside>
+
+  
+  <script src="/DrogueriaYvariedadesLosTresHermanos/js/seguridad.js"></script>
+  <script src="/DrogueriaYvariedadesLosTresHermanos/js/global.js"></script>
+  <script src="/DrogueriaYvariedadesLosTresHermanos/js/experiencia.js"></script>
+  <script src="/DrogueriaYvariedadesLosTresHermanos/js/legal.js"></script>
+  <script src="/DrogueriaYvariedadesLosTresHermanos/js/carrito-ui.js"></script>
+
+  <script>
+    // ── Estado del plan seleccionado pendiente de confirmar ──
+    let planPendiente = null;
+
+    const PLANES_INFO = {
+      basico:   { icono:'brote',  nombre:'Plan Básico',    descuento:3,  precio:4900  },
+      estandar: { icono:'capsula',  nombre:'Plan Estándar',  descuento:5,  precio:9900  },
+      regular:  { icono:'hospital',  nombre:'Plan Regular',   descuento:10, precio:14900 },
+      premium:  { icono:'corona',  nombre:'Plan Premium',   descuento:15, precio:19900 }
+    };
+
+    // ── Abrir modal de confirmación ──
+    // ── Verificar si hay sesión activa ──
+    function haySession() {
+      try {
+        const sc = sessionStorage.getItem('lth_cliente');
+        if (!sc) return false;
+        const cliente = JSON.parse(sc);
+        // Aceptar cualquier sesión real (no invitado)
+        return cliente && cliente.correo;
+      } catch(e) { return false; }
+    }
+
+    function seleccionarPlan(nombre, descuento, precio) {
+      const info = PLANES_INFO[nombre];
+      if (!info) return;
+
+      // ── Verificar sesión antes de continuar ──
+      if (!haySession()) {
+        // Guardar plan pendiente para retomar después del login
+        try {
+          sessionStorage.setItem('lth_plan_pendiente', JSON.stringify({ nombre, descuento, precio }));
+        } catch(e) {}
+        mostrarAlertaSesion(info.nombre);
+        return;
+      }
+
+      planPendiente = { nombre, descuento, precio };
+
+      document.getElementById('modal-icono').innerHTML = Experiencia.icono(info.icono);
+      document.getElementById('modal-titulo').textContent          = info.nombre;
+      document.getElementById('modal-descuento-badge').textContent = descuento + '% de descuento';
+      document.getElementById('modal-texto').textContent =
+        `Para activar el ${info.nombre} envía tu comprobante de pago. Cuando se apruebe, tu descuento del ${descuento}% se aplicará en toda la tienda.`;
+
+      document.getElementById('modal-sus').classList.add('visible');
+    }
+
+    // ── Mostrar alerta de sesión requerida ──
+    function mostrarAlertaSesion(nombrePlan) {
+      const alerta = document.getElementById('alerta-sesion');
+      const msg    = document.getElementById('alerta-sesion-msg');
+      if (msg) msg.textContent =
+        `Para suscribirte al ${nombrePlan} necesitas iniciar sesión o registrarte.`;
+      if (alerta) alerta.classList.add('visible');
+    }
+
+    function cerrarAlertaSesion() {
+      const alerta = document.getElementById('alerta-sesion');
+      if (alerta) alerta.classList.remove('visible');
+      try { sessionStorage.removeItem('lth_plan_pendiente'); } catch(e) {}
+    }
+
+    function irAlLogin() {
+      window.location.href = '/DrogueriaYvariedadesLosTresHermanos/login?retorno=suscripciones';
+    }
+
+    function irAlRegistro() {
+      window.location.href = '/DrogueriaYvariedadesLosTresHermanos/registro?retorno=suscripciones';
+    }
+
+    // ── Al cargar: si volvió del login con plan pendiente, retomar ──
+    (function retomarPlanPendiente() {
+      if (!haySession()) return;
+      try {
+        const pendiente = sessionStorage.getItem('lth_plan_pendiente');
+        if (!pendiente) return;
+        const p = JSON.parse(pendiente);
+        sessionStorage.removeItem('lth_plan_pendiente');
+        // Pequeño delay para que la UI esté lista
+        setTimeout(() => seleccionarPlan(p.nombre, p.descuento, p.precio), 300);
+      } catch(e) {}
+    })();
+
+    function cerrarModal() {
+      document.getElementById('modal-sus').classList.remove('visible');
+      planPendiente = null;
+    }
+
+    // ── Confirmar y guardar suscripción ──
+    function confirmarPlan() {
+      if (!planPendiente) return;
+      // En lugar de activar directo, ir al formulario de pago
+      cerrarModal();
+      abrirPagoPlan(planPendiente);
+    }
+
+    // ── Abrir formulario de pago ──
+    function abrirPagoPlan(plan) {
+      // Guardar plan seleccionado para el formulario
+      try { sessionStorage.setItem('lth_plan_pago', JSON.stringify(plan)); } catch(e) {}
+      window.location.href = '/pago-suscripcion';
+    }
+
+    // ── Renovar plan (vuelve a seleccionarlo) ──
+    function renovarPlan() {
+      const sus = getSuscripcionActiva();
+      if (!sus) return;
+      seleccionarPlan(sus.plan, sus.descuento, sus.precio);
+    }
+
+    // ── Cancelar suscripción ──
+    function cancelarSuscripcion() {
+      if (!confirm('¿Seguro que quieres cancelar tu suscripción? Perderás tu descuento.')) return;
+      try { localStorage.removeItem('lth_suscripcion'); } catch(e) {}
+      Suscripcion.cancelar();
+      actualizarUI();
+    }
+
+    // ── Leer suscripción activa (solo planes aprobados, no solicitudes pendientes) ──
+    function getSuscripcionActiva() {
+      const sus = Suscripcion.obtener();
+      return sus && sus.estado === 'activo' ? sus : null;
+    }
+
+    // ── Actualizar UI según el estado ──
+    function actualizarUI() {
+      const sus       = getSuscripcionActiva();
+      const banner    = document.getElementById('banner-plan-activo');
+      const badgeHero = document.getElementById('badge-hero-activo');
+      const alertaVenc = document.getElementById('alerta-vencimiento');
+
+      if (sus) {
+        const info = PLANES_INFO[sus.plan] || { nombre: sus.plan, icono: 'estrella' };
+
+        // Calcular días restantes
+        let diasRestantes = null;
+        let fechaTexto = '';
+        if (sus.fechaVencimiento) {
+          const venc = new Date(sus.fechaVencimiento);
+          diasRestantes = Math.ceil((venc - new Date()) / (1000 * 60 * 60 * 24));
+          if (diasRestantes <= 0) {
+            // Venció — cancelar y recargar
+            localStorage.removeItem('lth_suscripcion');
+            actualizarUI();
+            return;
+          }
+          fechaTexto = ` · Vence en ${diasRestantes} día${diasRestantes === 1 ? '' : 's'}`;
+        }
+
+        banner.classList.add('visible');
+        document.getElementById('banner-plan-nombre').textContent = '✓ ' + info.nombre + ' activo';
+        document.getElementById('banner-plan-desc').textContent =
+          `${sus.descuento}% de descuento activo en toda la tienda${fechaTexto}`;
+        badgeHero.innerHTML =
+          `<div class="sus-badge-activo"><span class="dot"></span>${info.nombre} activo · ${sus.descuento}% descuento${fechaTexto}</div>`;
+
+        // Alerta de vencimiento próximo (≤5 días)
+        if (alertaVenc && diasRestantes !== null && diasRestantes <= 5) {
+          alertaVenc.style.display = 'flex';
+          const txt = alertaVenc.querySelector('.alerta-venc-txt');
+          if (txt) txt.textContent =
+            `⚠️ Tu plan vence en ${diasRestantes} día${diasRestantes === 1 ? '' : 's'}. Renuévalo para no perder tu descuento.`;
+        } else if (alertaVenc) {
+          alertaVenc.style.display = 'none';
+        }
+
+      } else {
+        banner.classList.remove('visible');
+        badgeHero.innerHTML = '';
+        if (alertaVenc) alertaVenc.style.display = 'none';
+      }
+
+      // Resaltar la tarjeta del plan activo con borde verde
+      document.querySelectorAll('.plan-card').forEach(card => card.classList.remove('plan-actual'));
+      if (sus) {
+        const cardActiva = document.querySelector(`.plan-card[data-plan="${sus.plan}"]`);
+        if (cardActiva) cardActiva.classList.add('plan-actual');
+      }
+    }
+
+    // ── FAQ acordeón ──
+    function toggleFaq(btn) {
+      const item = btn.closest('.faq-item');
+      const estaAbierto = item.classList.contains('abierto');
+      document.querySelectorAll('.faq-item').forEach(i => i.classList.remove('abierto'));
+      if (!estaAbierto) item.classList.add('abierto');
+    }
+
+    // Cerrar modal con Escape
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape') cerrarModal();
+    });
+    document.getElementById('modal-sus').addEventListener('click', e => {
+      if (e.target === e.currentTarget) cerrarModal();
+    });
+
+    // Inicializar
+    document.addEventListener('DOMContentLoaded', () => {
+      actualizarUI();
+      initAvatar({ perfilUrl: '/DrogueriaYvariedadesLosTresHermanos/perfil', logoutUrl: '/DrogueriaYvariedadesLosTresHermanos/' });
+      verificarVencimientoSuscripcion();
+    });
+  </script>
   <script src="/DrogueriaYvariedadesLosTresHermanos/js/modo-estatico.js"></script>
-</body>
-</html>
+</body>
+</html>
