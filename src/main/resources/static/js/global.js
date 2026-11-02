@@ -312,7 +312,7 @@ window.protegerRuta = function() {
   let sesion = null;
   try { sesion = JSON.parse(sessionStorage.getItem('lth_cliente') || 'null'); } catch(e) {}
   if (!sesion || !sesion.correo) {
-    const retorno = window.location.pathname.replace('/', '');
+    const retorno = window.location.pathname.replace(/^.*\//, '').replace(/\.html$/, '');
     window.location.href = '/login' + (retorno ? '?retorno=' + encodeURIComponent(retorno) : '');
   }
 };

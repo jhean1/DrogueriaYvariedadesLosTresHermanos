@@ -12,6 +12,8 @@
 ![Thymeleaf](https://img.shields.io/badge/Thymeleaf-plantillas-005F0F?logo=thymeleaf&logoColor=white)
 ![Estado](https://img.shields.io/badge/estado-proyecto%20acad%C3%A9mico-1B2A6B)
 
+**[Ver el sitio publicado](https://jhean1.github.io/DrogueriaYvariedadesLosTresHermanos/)**
+
 [Capturas](#-capturas) · [Funcionalidades](#-funcionalidades) · [Arquitectura](#-arquitectura) · [Instalación](#-instalación-y-ejecución) · [Seguridad](#-seguridad) · [Limitaciones](#%EF%B8%8F-limitaciones-actuales)
 
 <img src="docs/imagenes/inicio.png" alt="Página de inicio de la droguería" width="850">
@@ -288,12 +290,33 @@ Roles disponibles para `APP_EQUIPO_N_ROL`: `ADMINISTRADOR`, `REGENTE`, `CAJERO` 
 - [ ] Construir los módulos de inventario, ventas, compras, caja, reportes y auditoría.
 - [ ] Publicar el sitio con HTTPS.
 
+## 🌐 Publicación en GitHub Pages
+
+Cada cambio en `master` ejecuta las pruebas, genera una copia estática de la tienda con `scripts/generar_sitio.py` y la publica en la rama `gh-pages`.
+
+GitHub Pages solo sirve archivos estáticos, así que el sitio publicado funciona de esta forma:
+
+| Función | En GitHub Pages | Con el servidor Spring Boot |
+|---|---|---|
+| Catálogo, carrito y pedidos por WhatsApp | ✅ | ✅ |
+| Cuentas de cliente | ✅ Solo en el navegador de cada cliente | ✅ Solo en el navegador de cada cliente |
+| Suscripciones | Se solicitan por WhatsApp | Formulario de pago con revisión en el panel |
+| Panel de administración y roles | ❌ No se publica | ✅ |
+
+Para generar el sitio en tu equipo:
+
+```bash
+./mvnw package -DskipTests
+python scripts/generar_sitio.py --salida _sitio
+```
+
 ## 🌿 Ramas
 
 | Rama | Propósito |
 |---|---|
 | `master` | Versión principal del proyecto |
 | `frontend` | Rediseño visual, identidad 3H y panel con roles |
+| `gh-pages` | Sitio estático generado automáticamente; no se edita a mano |
 
 ## 👤 Autor
 

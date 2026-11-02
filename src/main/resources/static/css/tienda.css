@@ -24,8 +24,8 @@ body.sin-scroll { overflow: hidden; }
 .navbar.oculta { transform: translateY(-105%); }
 .navbar-inner { height: 100%; display: flex; align-items: center; gap: var(--e-4); }
 .navbar-logo { flex: none; display: block; }
-.navbar-logo img { height: 36px; width: auto; transition: height var(--t-media) var(--curva); }
-.navbar.scrolled .navbar-logo img { height: 32px; }
+.navbar-logo img { height: 46px; width: auto; transition: height var(--t-media) var(--curva); }
+.navbar.scrolled .navbar-logo img { height: 40px; }
 .logo-oscuro { display: none !important; }
 
 .navbar-nav { display: flex; align-items: center; gap: .15rem; margin-inline: auto; }
@@ -78,7 +78,7 @@ body.sin-scroll { overflow: hidden; }
 }
 @media (max-width: 560px) {
   :root { --alto-barra: 64px; }
-  .navbar-logo img { height: 32px; }
+  .navbar-logo img, .navbar.scrolled .navbar-logo img { height: 38px; }
   .logo-claro, .logo-oscuro { max-width: 170px; object-fit: contain; object-position: left; }
   .etiqueta-cuenta, .avatar-nombre-corto, .avatar-navbar-btn > svg { display: none; }
   .avatar-navbar-btn { padding: .25rem; }
@@ -523,7 +523,7 @@ a:hover .enlace-flecha .ic, a.enlace-flecha:hover .ic { transform: translateX(5p
 .auth { display: grid; grid-template-columns: minmax(380px, 1fr) minmax(0, 1.1fr); min-height: 100dvh; }
 .auth--registro { grid-template-columns: minmax(340px, .8fr) minmax(0, 1.2fr); }
 .auth-marca { position: relative; display: flex; flex-direction: column; justify-content: space-between; gap: var(--e-6); padding: clamp(2rem, 4vw, 3.5rem); background: var(--navy); color: var(--sobre-oscuro); overflow: hidden; isolation: isolate; }
-.auth-logo img { width: 270px; height: auto; }
+.auth-logo img { width: 300px; height: auto; }
 .auth-marca h2 { max-width: 16ch; color: #fff; font-size: var(--t-3xl); font-weight: 800; letter-spacing: -.035em; line-height: 1.1; }
 .auth-puntos { margin-top: var(--e-5); }
 .auth-puntos li { display: flex; gap: var(--e-3); align-items: center; margin-top: var(--e-3); }
@@ -535,6 +535,7 @@ a:hover .enlace-flecha .ic, a.enlace-flecha:hover .ic { transform: translateX(5p
 .auth-formulario--ancho { width: min(100%, 640px); }
 .auth-formulario h1 { margin-top: var(--e-4); font-size: var(--t-2xl); }
 .auth-sub { margin-block: var(--e-2) var(--e-5); color: var(--tinta-3); }
+.aviso-estatico { margin-bottom: var(--e-4); font-size: var(--t-xs); }
 .form { display: flex; flex-direction: column; gap: var(--e-4); }
 .form.shake { animation: sacudir .42s var(--curva); }
 @keyframes sacudir { 20%,60% { transform: translateX(-7px); } 40%,80% { transform: translateX(7px); } }
