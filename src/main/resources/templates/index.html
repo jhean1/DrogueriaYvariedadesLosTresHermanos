@@ -1,912 +1,246 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="es">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Droguería y Variedades Los Tres Hermanos</title>
-  <link rel="stylesheet" th:href="@{/css/global.css}">
-  <style>
-    /* ── HERO ── */
-    .hero {
-      background: var(--grad-hero);
-      min-height: 90vh;
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      align-items: center;
-      gap: 4rem;
-      padding: 6rem 4rem 4rem;
-      max-width: 100%;
-      position: relative;
-      overflow: hidden;
-    }
+<head th:replace="~{fragments/tienda :: cabeza('Inicio', 'Droguería y Variedades Los Tres Hermanos: medicamentos, variedades y servicios en Arjona, Bolívar.')}"></head>
+<body class="sobre-oscuro">
+  <th:block th:replace="~{fragments/tienda :: barra}"></th:block>
 
-    .hero::before {
-      content: '';
-      position: absolute;
-      top: -40%;
-      right: -10%;
-      width: 700px;
-      height: 700px;
-      border-radius: 50%;
-      background: rgba(255,255,255,0.04);
-      pointer-events: none;
-    }
-
-    .hero::after {
-      content: '';
-      position: absolute;
-      bottom: -20%;
-      left: -5%;
-      width: 400px;
-      height: 400px;
-      border-radius: 50%;
-      background: rgba(232,18,47,0.12);
-      pointer-events: none;
-    }
-
-    .hero-texto { position: relative; z-index: 1; }
-
-    .hero-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.5rem;
-      background: rgba(255,255,255,0.12);
-      border: 1px solid rgba(255,255,255,0.20);
-      color: rgba(255,255,255,0.90);
-      font-size: 0.78rem;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.1em;
-      padding: 0.45rem 1rem;
-      border-radius: 99px;
-      backdrop-filter: blur(8px);
-      margin-bottom: 1.5rem;
-    }
-
-    .hero-badge span { width: 7px; height: 7px; border-radius: 50%; background: #4ade80; display: block; animation: parpadeo 1.5s infinite; }
-
-    @keyframes parpadeo { 0%,100%{opacity:1} 50%{opacity:0.3} }
-
-    .hero-titulo {
-      font-family: var(--font-titulo);
-      font-size: clamp(2.4rem, 5vw, 3.8rem);
-      font-weight: 800;
-      color: white;
-      line-height: 1.1;
-      letter-spacing: -0.03em;
-      margin-bottom: 1.25rem;
-    }
-
-    .hero-titulo em {
-      font-style: normal;
-      color: #FCA5A5;
-    }
-
-    .hero-desc {
-      font-size: 1.05rem;
-      color: rgba(255,255,255,0.75);
-      line-height: 1.8;
-      max-width: 480px;
-      margin-bottom: 2.5rem;
-    }
-
-    .hero-botones {
-      display: flex;
-      gap: 1rem;
-      flex-wrap: wrap;
-    }
-
-    .hero-botones .btn-primario {
-      background: white;
-      color: var(--azul);
-      box-shadow: 0 8px 32px rgba(0,0,0,0.20);
-    }
-
-    .hero-botones .btn-primario:hover {
-      background: var(--gris-claro);
-      box-shadow: 0 12px 40px rgba(0,0,0,0.30);
-    }
-
-    .hero-botones .btn-secundario {
-      border-color: rgba(255,255,255,0.5);
-      color: white;
-    }
-
-    .hero-botones .btn-secundario:hover {
-      background: rgba(255,255,255,0.15);
-      color: white;
-    }
-
-    .hero-stats {
-      display: flex;
-      gap: 2.5rem;
-      margin-top: 3rem;
-      padding-top: 2rem;
-      border-top: 1px solid rgba(255,255,255,0.15);
-    }
-
-    .stat-item {}
-
-    .stat-numero {
-      font-family: var(--font-titulo);
-      font-size: 2rem;
-      font-weight: 800;
-      color: white;
-      display: block;
-      line-height: 1;
-    }
-
-    .stat-label {
-      font-size: 0.78rem;
-      color: rgba(255,255,255,0.60);
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-      margin-top: 0.25rem;
-      display: block;
-    }
-
-    /* Imagen hero */
-    .hero-imagen {
-      position: relative;
-      z-index: 1;
-      display: flex;
-      justify-content: center;
-    }
-
-    .hero-imagen-frame {
-      position: relative;
-      width: 100%;
-      max-width: 480px;
-    }
-
-    .hero-imagen-frame::before {
-      content: '';
-      position: absolute;
-      inset: -12px;
-      border-radius: var(--radio-xl);
-      background: rgba(255,255,255,0.08);
-      border: 1px solid rgba(255,255,255,0.12);
-      backdrop-filter: blur(4px);
-    }
-
-    .hero-imagen-frame img {
-      width: 100%;
-      height: 380px;
-      object-fit: cover;
-      border-radius: var(--radio-lg);
-      box-shadow: var(--sombra-lg);
-      position: relative;
-    }
-
-    .hero-imagen-chip {
-      position: absolute;
-      bottom: -20px;
-      left: -20px;
-      background: white;
-      border-radius: var(--radio);
-      padding: 0.85rem 1.25rem;
-      box-shadow: var(--sombra-lg);
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-      z-index: 2;
-    }
-
-    .chip-icon {
-      width: 40px;
-      height: 40px;
-      border-radius: 10px;
-      background: var(--grad-rojo);
-      display: grid;
-      place-items: center;
-      flex-shrink: 0;
-    }
-
-    .chip-icon svg { width: 20px; height: 20px; color: white; }
-
-    .chip-texto strong {
-      display: block;
-      font-family: var(--font-titulo);
-      font-weight: 700;
-      font-size: 0.95rem;
-      color: var(--negro-suave);
-    }
-
-    .chip-texto span {
-      font-size: 0.78rem;
-      color: var(--gris-texto);
-    }
-
-    /* ── SECCIÓN SERVICIOS ── */
-    .seccion {
-      padding: 5rem 2rem;
-    }
-
-    .seccion-inner {
-      max-width: 1280px;
-      margin: 0 auto;
-    }
-
-    .seccion-encabezado {
-      text-align: center;
-      margin-bottom: 3.5rem;
-    }
-
-    .seccion-eyebrow {
-      font-size: 0.75rem;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.12em;
-      color: var(--rojo);
-      margin-bottom: 0.75rem;
-    }
-
-    .seccion-titulo {
-      font-family: var(--font-titulo);
-      font-size: clamp(1.8rem, 3.5vw, 2.6rem);
-      font-weight: 800;
-      color: var(--azul);
-      line-height: 1.2;
-      letter-spacing: -0.02em;
-    }
-
-    .seccion-subtitulo {
-      font-size: 1rem;
-      color: var(--gris-texto);
-      max-width: 540px;
-      margin: 0.75rem auto 0;
-      line-height: 1.7;
-    }
-
-    /* ── CARDS DE SERVICIOS ── */
-    .servicios-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-      gap: 1.5rem;
-    }
-
-    .servicio-card {
-      background: white;
-      border-radius: var(--radio-lg);
-      padding: 2rem 1.75rem;
-      border: 1px solid var(--gris-medio);
-      transition: transform var(--trans), box-shadow var(--trans), border-color var(--trans);
-      cursor: pointer;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .servicio-card::before {
-      content: '';
-      position: absolute;
-      top: 0; left: 0; right: 0;
-      height: 4px;
-      background: var(--grad-rojo);
-      transform: scaleX(0);
-      transform-origin: left;
-      transition: transform var(--trans);
-    }
-
-    .servicio-card:hover {
-      transform: translateY(-6px);
-      box-shadow: var(--sombra-lg);
-      border-color: var(--azul-claro);
-    }
-
-    .servicio-card:hover::before { transform: scaleX(1); }
-
-    .servicio-icono {
-      width: 56px;
-      height: 56px;
-      border-radius: var(--radio);
-      background: var(--grad-card);
-      display: grid;
-      place-items: center;
-      margin-bottom: 1.25rem;
-      transition: transform var(--trans);
-    }
-
-    .servicio-card:hover .servicio-icono { transform: scale(1.08) rotate(-3deg); }
-
-    .servicio-icono svg { width: 26px; height: 26px; color: white; }
-
-    .servicio-nombre {
-      font-family: var(--font-titulo);
-      font-weight: 700;
-      font-size: 1.05rem;
-      color: var(--negro-suave);
-      margin-bottom: 0.5rem;
-    }
-
-    .servicio-desc {
-      font-size: 0.88rem;
-      color: var(--gris-texto);
-      line-height: 1.65;
-    }
-
-    /* ── BANNER CTA ── */
-    .banner-cta {
-      background: var(--grad-card);
-      border-radius: var(--radio-xl);
-      padding: 4rem 3rem;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 2rem;
-      overflow: hidden;
-      position: relative;
-    }
-
-    .banner-cta::before {
-      content: '';
-      position: absolute;
-      top: -50%;
-      right: -10%;
-      width: 500px;
-      height: 500px;
-      border-radius: 50%;
-      background: rgba(255,255,255,0.04);
-      pointer-events: none;
-    }
-
-    .banner-texto h2 {
-      font-family: var(--font-titulo);
-      font-size: clamp(1.6rem, 3vw, 2.2rem);
-      font-weight: 800;
-      color: white;
-      line-height: 1.2;
-      margin-bottom: 0.75rem;
-    }
-
-    .banner-texto p {
-      color: rgba(255,255,255,0.72);
-      font-size: 0.95rem;
-      max-width: 440px;
-    }
-
-    .banner-cta .btn-primario {
-      background: white;
-      color: var(--azul);
-      flex-shrink: 0;
-    }
-
-    /* ── VALORES / HEURÍSTICAS ── */
-    .valores-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 1rem;
-    }
-
-    .valor-item {
-      background: white;
-      border-radius: var(--radio-lg);
-      padding: 1.5rem;
-      border: 1px solid var(--gris-medio);
-      text-align: center;
-      transition: transform var(--trans), box-shadow var(--trans);
-    }
-
-    .valor-item:hover {
-      transform: translateY(-4px);
-      box-shadow: var(--sombra-md);
-    }
-
-    .valor-numero {
-      font-family: var(--font-titulo);
-      font-size: 2.5rem;
-      font-weight: 800;
-      color: var(--gris-medio);
-      display: block;
-      line-height: 1;
-      margin-bottom: 0.5rem;
-    }
-
-    .valor-nombre {
-      font-weight: 600;
-      font-size: 0.88rem;
-      color: var(--azul);
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-    }
-
-    /* ── RESPONSIVE ── */
-    /* ── TV (1400px+) ── */
-    @media (min-width: 1400px) {
-      .hero { padding: 7rem 6rem 5rem; gap: 6rem; }
-      .hero-titulo { font-size: 4rem; }
-      .hero-desc { font-size: 1.15rem; }
-      .categorias-grid, .stats-grid, .trust-grid { max-width: 1600px; }
-      .stats-grid { grid-template-columns: repeat(4,1fr); }
-    }
-
-    /* ── Tablet (768px – 1023px) ── */
-    @media (min-width: 768px) and (max-width: 1023px) {
-      .hero {
-        grid-template-columns: 1fr;
-        padding: 5rem 2.5rem 3rem;
-        text-align: center;
-        gap: 2rem;
-        min-height: auto;
-      }
-      .hero-img { display: none; }
-      .hero-titulo { font-size: clamp(2rem,5vw,3rem); }
-      .hero-botones { justify-content: center; }
-      .categorias-grid { grid-template-columns: repeat(2,1fr); }
-      .stats-grid { grid-template-columns: repeat(2,1fr); }
-      .trust-grid { grid-template-columns: repeat(2,1fr); }
-    }
-
-    /* ── Móvil (< 768px) ── */
-    @media (max-width: 767px) {
-      .hero {
-        grid-template-columns: 1fr !important;
-        padding: 4rem 1.25rem 3rem;
-        text-align: center;
-        gap: 1.5rem;
-        min-height: auto;
-        width: 100%;
-        box-sizing: border-box;
-      }
-      .hero-content { width: 100%; }
-      .hero-img { display: none !important; }
-      .hero-titulo { font-size: clamp(1.75rem,8vw,2.4rem); line-height: 1.2; }
-      .hero-desc { font-size: 0.9rem; padding: 0 0.5rem; }
-      .hero-botones {
-        flex-direction: column;
-        align-items: center;
-        gap: 0.75rem;
-        width: 100%;
-      }
-      .hero-botones a,
-      .hero-botones button {
-        width: 100%;
-        max-width: 300px;
-        text-align: center;
-        justify-content: center;
-      }
-      .hero-badge { font-size: 0.72rem; margin-bottom: 1rem; }
-      .categorias-grid {
-        grid-template-columns: 1fr 1fr;
-        gap: 0.85rem;
-        padding: 2rem 1.25rem;
-      }
-      .cat-card { padding: 1.25rem 1rem; }
-      .cat-card h3 { font-size: 0.88rem; }
-      .cat-card p { font-size: 0.78rem; }
-      .stats-section { padding: 2.5rem 1.25rem; }
-      .stats-grid {
-        grid-template-columns: repeat(2,1fr);
-        gap: 1rem;
-      }
-      .stat-numero { font-size: 2rem; }
-      .stat-label { font-size: 0.72rem; }
-      .trust-section { padding: 2.5rem 1.25rem; }
-      .trust-grid { grid-template-columns: 1fr; gap: 1rem; }
-      .cta-section { padding: 3rem 1.25rem; }
-      .cta-section h2 { font-size: 1.5rem; }
-      .cta-section p { font-size: 0.9rem; }
-
-      /* Navbar en móvil */
-      .navbar-inner {
-        padding: 0 0.75rem;
-        height: 56px;
-      }
-      .navbar-logo { font-size: 0.82rem; gap: 0.4rem; }
-      .navbar-logo img { width: 30px; height: 30px; }
-      .navbar-actions {
-        gap: 0.3rem;
-      }
-      .navbar-actions .btn-secundario {
-        font-size: 0.7rem !important;
-        padding: 0.3rem 0.55rem !important;
-      }
-    }
-
-    /* ── Móvil pequeño (< 480px) ── */
-    @media (max-width: 479px) {
-      .hero { padding: 3.5rem 1rem 2.5rem; }
-      .hero-titulo { font-size: clamp(1.5rem,7vw,2rem); }
-      .categorias-grid { grid-template-columns: 1fr; }
-      .stats-grid { grid-template-columns: 1fr 1fr; }
-      .navbar-actions .btn-secundario:first-child { display: none; } /* Ocultar Regístrate en muy pequeños */
-    }
-  </style>
-</head>
-<body>
-<script>
-  // Ocultar botón Regístrate INMEDIATAMENTE con CSS si hay sesión activa
-  (function() {
-    try {
-      var s = JSON.parse(sessionStorage.getItem('lth_cliente') || 'null');
-      if (s && s.rol === 'cliente') {
-        var st = document.createElement('style');
-        st.textContent = '#btn-registrate{display:none!important}';
-        document.head.appendChild(st);
-      }
-    } catch(e) {}
-  })();
-</script>
-
-  <!-- ── NAVBAR ── -->
-  <nav class="navbar" role="navigation" aria-label="Menú principal">
-    <div class="navbar-inner">
-      <a th:href="@{/}" class="navbar-logo" aria-label="Ir al inicio">
-        <img th:src="@{/logo3.jpeg}" src="/logo3.jpeg" alt="Logo Droguería Los Tres Hermanos">
-        <span>Los <em>Tres</em> Hermanos</span>
-      </a>
-
-      <div class="navbar-nav" id="nav-menu">
-        <a th:href="@{/}"                        class="nav-link active">Inicio</a>
-        <a th:href="@{/medicamentos}" class="nav-link">Medicamentos</a>
-        <a th:href="@{/variedades}"           class="nav-link">Variedades</a>
-        <a th:href="@{/servicios}"            class="nav-link">Servicios</a>
-        <a th:href="@{/suscripciones}"      class="nav-link nav-link-suscripcion">⭐ Suscripciones</a>
-        <a th:href="@{/nosotros}"       class="nav-link">Nosotros</a>
-        <a th:href="@{/contacto}"   class="nav-link">Contacto</a>
+  <main id="contenido">
+    <!-- Hero: la cápsula de la marca es el protagonista -->
+    <section class="hero" aria-labelledby="hero-titulo">
+      <div class="hero-fondo" aria-hidden="true">
+        <div class="hero-aura" data-paralaje="-.5"></div>
+        <div class="hero-rejilla"></div>
       </div>
+      <div class="contenedor hero-interior">
+        <div class="hero-texto">
+          <span class="hero-lugar entra" style="--i:0"><svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#ubicacion"/></svg>Arjona, Bolívar</span>
+          <h1 id="hero-titulo" class="hero-titulo">
+            <span class="linea"><span class="entra-linea" style="--i:1">Tu salud,</span></span>
+            <span class="linea"><span class="entra-linea" style="--i:2">nuestra</span></span>
+            <span class="linea"><span class="entra-linea hero-acento" style="--i:3">prioridad.</span></span>
+          </h1>
+          <p class="hero-desc entra" style="--i:5">Medicamentos, variedades y servicios para tu familia, con la atención cercana de siempre.</p>
+          <div class="hero-acciones entra" style="--i:6">
+            <a th:href="@{/medicamentos}" class="btn btn--primario btn--lg">Ver medicamentos <svg class="ic ic-mueve" aria-hidden="true"><use href="/img/iconos.svg#flecha"/></svg></a>
+            <a th:href="@{/variedades}" class="btn btn--vidrio btn--lg">Explorar variedades</a>
+          </div>
+        </div>
 
-      <div class="navbar-actions">
-        <a th:href="@{/registro}" id="btn-registrate" class="btn-secundario hide-mobile" style="font-size:0.82rem;padding:0.45rem 1rem;">Regístrate</a>
-        <a id="btn-mi-cuenta" class="btn-secundario" style="font-size:0.82rem;padding:0.45rem 1rem;cursor:pointer;" aria-label="Mi cuenta"
-           onclick="(function(){var s=JSON.parse(sessionStorage.getItem('lth_cliente')||'null');window.location.href=(s&&s.rol==='cliente')?'/perfil':'/login';})()">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-            <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/>
-          </svg>
-          Mi cuenta
+        <div class="hero-escena" aria-hidden="true">
+          <div class="hero-anillo" data-paralaje=".25"></div>
+          <div class="hero-capsula-capa" data-paralaje=".9">
+            <svg class="hero-capsula" viewBox="0 0 520 520">
+              <defs>
+                <linearGradient id="capA" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#7EA3FF"/><stop offset=".45" stop-color="#3F6BF0"/><stop offset="1" stop-color="#152F9C"/></linearGradient>
+                <linearGradient id="capB" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#D9607B"/><stop offset=".45" stop-color="#A52A44"/><stop offset="1" stop-color="#561222"/></linearGradient>
+                <linearGradient id="capBrillo" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#fff" stop-opacity=".75"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient>
+                <filter id="capSombra" x="-30%" y="-30%" width="160%" height="170%"><feGaussianBlur stdDeviation="22"/></filter>
+              </defs>
+              <ellipse cx="270" cy="440" rx="170" ry="20" fill="#02060F" opacity=".55" filter="url(#capSombra)"/>
+              <g transform="rotate(-32 260 250)">
+                <path d="M260 160H150a90 90 0 0 0 0 180h110z" fill="url(#capA)"/>
+                <path d="M260 160h110a90 90 0 0 1 0 180H260z" fill="url(#capB)"/>
+                <rect x="256" y="160" width="8" height="180" fill="#0B1226" opacity=".35"/>
+                <rect x="90" y="184" width="150" height="20" rx="10" fill="url(#capBrillo)"/>
+                <rect x="284" y="184" width="120" height="14" rx="7" fill="#fff" opacity=".22"/>
+              </g>
+            </svg>
+          </div>
+          <div class="hero-ficha hero-ficha--a" data-paralaje="1.5"><div class="flota">
+            <span class="hero-ficha-icono"><svg class="ic"><use href="/img/iconos.svg#capsula"/></svg></span>
+            <div><strong id="hero-medicamento">Catálogo</strong><span id="hero-medicamento-precio">Medicamentos</span></div>
+          </div></div>
+          <div class="hero-ficha hero-ficha--b" data-paralaje="1.15"><div class="flota flota--2">
+            <span class="hero-ficha-icono hero-ficha-icono--b"><svg class="ic"><use href="/img/iconos.svg#corona"/></svg></span>
+            <div><strong>Plan Premium</strong><span>15% de descuento</span></div>
+          </div></div>
+          <div class="hero-ficha hero-ficha--c" data-paralaje="1.8"><div class="flota flota--3">
+            <span class="hero-ficha-icono hero-ficha-icono--c"><svg class="ic"><use href="/img/iconos.svg#camion"/></svg></span>
+            <div><strong>Domicilio</strong><span>Dentro de Arjona</span></div>
+          </div></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Cifras calculadas del catálogo real -->
+    <section class="cifras contenedor" aria-label="El catálogo en cifras">
+      <div class="cifras-panel" data-escalonar>
+        <div class="cifra"><strong id="cifra-medicamentos">15</strong><span>medicamentos en catálogo</span></div>
+        <div class="cifra"><strong id="cifra-presentaciones">115</strong><span>presentaciones y marcas</span></div>
+        <div class="cifra"><strong id="cifra-variedades">11</strong><span>productos de variedades</span></div>
+        <div class="cifra"><strong data-contar="4">4</strong><span>planes de suscripción</span></div>
+      </div>
+    </section>
+
+    <!-- Lo que hay en la droguería: cuadrícula asimétrica -->
+    <section class="bloque contenedor" aria-labelledby="titulo-oferta">
+      <header class="encabezado revelar">
+        <span class="ante">Todo en un solo lugar</span>
+        <h2 id="titulo-oferta" class="titulo-seccion">Lo que tu familia necesita, sin dar más vueltas.</h2>
+      </header>
+      <div class="mosaico" data-escalonar>
+        <a th:href="@{/medicamentos}" class="mosaico-item mosaico-item--grande" data-brillo>
+          <div class="mosaico-texto">
+            <span class="ante ante--claro">Farmacia</span>
+            <h3>Medicamentos</h3>
+            <p>Busca por nombre o categoría y elige presentación, concentración y marca.</p>
+            <span class="enlace-flecha">Ver catálogo <svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#flecha"/></svg></span>
+          </div>
+          <div class="mosaico-arte" id="arte-medicamentos" aria-hidden="true"></div>
         </a>
-        <button class="btn-menu" id="btn-menu" aria-label="Abrir menú" aria-expanded="false" aria-controls="nav-menu">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-            <line x1="4" y1="6"  x2="20" y2="6"/>
-            <line x1="4" y1="12" x2="20" y2="12"/>
-            <line x1="4" y1="18" x2="20" y2="18"/>
-          </svg>
-        </button>
+        <a th:href="@{/variedades}" class="mosaico-item mosaico-item--vino" data-brillo>
+          <div class="mosaico-texto">
+            <span class="ante ante--borgona">Tienda</span>
+            <h3>Variedades</h3>
+            <p>Perfumes, útiles escolares y cuidado personal.</p>
+            <span class="enlace-flecha">Ver productos <svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#flecha"/></svg></span>
+          </div>
+          <div class="mosaico-arte mosaico-arte--pequena" id="arte-variedades" aria-hidden="true"></div>
+        </a>
+        <a th:href="@{/servicios}" class="mosaico-item" data-brillo>
+          <span class="mosaico-icono"><svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#celular"/></svg></span>
+          <h3>Recargas y minutos</h3>
+          <p>Recarga tu saldo y compra minutos de manera rápida.</p>
+        </a>
+        <a th:href="@{/servicios}" class="mosaico-item" data-brillo>
+          <span class="mosaico-icono"><svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#copia"/></svg></span>
+          <h3>Fotocopiado</h3>
+          <p>Trae tus documentos y te los copiamos en el momento.</p>
+        </a>
       </div>
-    </div>
-  </nav>
+    </section>
+
+    <!-- Selección del catálogo -->
+    <section class="bloque bloque--tono" aria-labelledby="titulo-seleccion">
+      <div class="contenedor">
+        <header class="encabezado encabezado--fila revelar">
+          <div>
+            <span class="ante">Del catálogo</span>
+            <h2 id="titulo-seleccion" class="titulo-seccion">Una muestra de lo que encuentras.</h2>
+          </div>
+          <a th:href="@{/medicamentos}" class="btn btn--secundario">Ver todo <svg class="ic ic-mueve" aria-hidden="true"><use href="/img/iconos.svg#flecha"/></svg></a>
+        </header>
+      </div>
+      <div class="carrusel contenedor" id="seleccion-productos" tabindex="0" aria-label="Productos del catálogo"></div>
+    </section>
+
+    <!-- Medicamentos: bloque editorial sobre azul noche -->
+    <section class="editorial" aria-labelledby="titulo-editorial">
+      <div class="contenedor editorial-interior">
+        <div class="revelar revelar--izq">
+          <span class="ante ante--claro">Medicamentos</span>
+          <h2 id="titulo-editorial" class="titulo-seccion titulo-seccion--claro">Elige exactamente la presentación que necesitas.</h2>
+          <p class="editorial-texto">Cada producto muestra sus presentaciones, concentraciones y marcas, con su precio actualizado al seleccionarlas.</p>
+          <a th:href="@{/medicamentos}" class="btn btn--claro">Buscar un medicamento <svg class="ic ic-mueve" aria-hidden="true"><use href="/img/iconos.svg#flecha"/></svg></a>
+        </div>
+        <ul class="lista-categorias" id="lista-categorias" data-escalonar></ul>
+      </div>
+    </section>
+
+    <!-- Beneficios: lista sin tarjetas -->
+    <section class="bloque contenedor beneficios" aria-labelledby="titulo-beneficios">
+      <header class="revelar beneficios-cabeza">
+        <span class="ante">Comprar aquí</span>
+        <h2 id="titulo-beneficios" class="titulo-seccion">Simple, de principio a fin.</h2>
+      </header>
+      <ol class="beneficios-lista" data-escalonar>
+        <li><span class="beneficio-num"><svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#carrito"/></svg></span><div><h3>Arma tu pedido en línea</h3><p>Agrega productos al carrito y revisa el total antes de confirmar.</p></div></li>
+        <li><span class="beneficio-num"><svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#camion"/></svg></span><div><h3>Domicilio o recogida en tienda</h3><p>Te lo llevamos dentro de Arjona o lo recoges en la droguería.</p></div></li>
+        <li><span class="beneficio-num"><svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#billete"/></svg></span><div><h3>Pago en efectivo al recibir</h3><p>Pagas cuando tienes tu pedido en las manos.</p></div></li>
+        <li><span class="beneficio-num"><svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#whatsapp"/></svg></span><div><h3>Confirmación por WhatsApp</h3><p>Tu pedido llega directo a la droguería con todos sus detalles.</p></div></li>
+      </ol>
+    </section>
+
+    <!-- Planes -->
+    <section class="bloque bloque--tono" aria-labelledby="titulo-planes">
+      <div class="contenedor">
+        <header class="encabezado encabezado--fila revelar">
+          <div>
+            <span class="ante ante--borgona">Suscripciones</span>
+            <h2 id="titulo-planes" class="titulo-seccion">Ahorra en cada compra del mes.</h2>
+          </div>
+          <a th:href="@{/suscripciones}" class="btn btn--oscuro">Comparar planes <svg class="ic ic-mueve" aria-hidden="true"><use href="/img/iconos.svg#flecha"/></svg></a>
+        </header>
+        <div class="planes-franja" data-escalonar>
+          <a th:href="@{/suscripciones}" class="plan-mini"><span>Básico</span><strong>3%</strong><small>$4.900 al mes</small></a>
+          <a th:href="@{/suscripciones}" class="plan-mini"><span>Estándar</span><strong>5%</strong><small>$9.900 al mes</small></a>
+          <a th:href="@{/suscripciones}" class="plan-mini"><span>Regular</span><strong>10%</strong><small>$14.900 al mes</small></a>
+          <a th:href="@{/suscripciones}" class="plan-mini plan-mini--top"><span>Premium</span><strong>15%</strong><small>$19.900 al mes</small></a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Valores -->
+    <section class="bloque contenedor valores" aria-labelledby="titulo-valores">
+      <header class="revelar">
+        <span class="ante">Quiénes somos</span>
+        <h2 id="titulo-valores" class="titulo-seccion">Los valores detrás del mostrador.</h2>
+      </header>
+      <ul class="valores-lista" data-escalonar>
+        <li><span>01</span>Responsabilidad</li>
+        <li><span>02</span>Respeto</li>
+        <li><span>03</span>Honestidad</li>
+        <li><span>04</span>Solidaridad</li>
+        <li><span>05</span>Lealtad</li>
+      </ul>
+      <a th:href="@{/nosotros}" class="enlace-flecha revelar">Conoce nuestra historia <svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#flecha"/></svg></a>
+    </section>
+  </main>
+
+  <th:block th:replace="~{fragments/tienda :: pie}"></th:block>
+  <th:block th:replace="~{fragments/tienda :: carrito}"></th:block>
+  <th:block th:replace="~{fragments/tienda :: scripts}"></th:block>
+  <script th:src="@{/js/arte.js}"></script>
+  <script th:src="@{/js/explorador-data.js}"></script>
+  <script th:src="@{/js/variedades-data.js}"></script>
   <script>
-    // Este script corre justo después del navbar — el botón ya existe en el DOM
-    (function() {
-      try {
-        var s = JSON.parse(sessionStorage.getItem('lth_cliente') || 'null');
-        if (s && s.rol === 'cliente') {
-          var btn = document.getElementById('btn-mi-cuenta');
-          if (btn) { btn.href = '/perfil'; }
-        }
-      } catch(e) {}
-    })();
-  </script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const esc = Seguridad.esc;
 
-  <!-- ── HERO ── -->
-  <section class="hero" aria-label="Bienvenida">
-    <div class="hero-texto animar">
-      <div class="hero-badge">
-        <span></span>
-        Abierto · Arjona, Bolívar
-      </div>
+      // Todas las cifras salen de los datos del catálogo
+      const fijarCifra = (id, valor) => {
+        const el = document.getElementById(id);
+        el.textContent = valor;
+        el.dataset.contar = valor;
+      };
+      fijarCifra('cifra-medicamentos', MEDICAMENTOS.length);
+      fijarCifra('cifra-presentaciones', MEDICAMENTOS.reduce((s, m) => s + m.presentaciones.length, 0));
+      fijarCifra('cifra-variedades', VARIEDADES.length);
+      Experiencia.contadores();
 
-      <h1 class="hero-titulo">
-        Tu salud,<br>
-        nuestra <em>prioridad</em>
-      </h1>
+      const muestra = MEDICAMENTOS[0];
+      const desde = Math.min(...muestra.presentaciones.map(p => p.precio));
+      document.getElementById('hero-medicamento').textContent = muestra.nombre;
+      document.getElementById('hero-medicamento-precio').textContent = 'Desde ' + formatPrecio(desde);
 
-      <p class="hero-desc">
-        Droguería y Variedades Los Tres Hermanos — medicamentos, útiles escolares
-        y mucho más. Calidad, confianza y atención personalizada para toda tu familia.
-      </p>
+      document.getElementById('arte-medicamentos').innerHTML = Arte.medicamento(MEDICAMENTOS[0], { tipo: 'Unidad' });
+      document.getElementById('arte-variedades').innerHTML = Arte.variedad(VARIEDADES[0]);
 
-      <div class="hero-botones">
-        <a th:href="@{/medicamentos}" class="btn-primario">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-            <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
-          </svg>
-          Ver Medicamentos
-        </a>
-        <a th:href="@{/contacto}" class="btn-secundario">
-          Contactarnos
-        </a>
-      </div>
+      const seleccion = [
+        ...MEDICAMENTOS.slice(0, 3).map(m => ({
+          nombre: m.nombre, tipo: LABELS_CAT[m.cat], url: '/medicamentos',
+          arte: Arte.medicamento(m, m.presentaciones[3] || m.presentaciones[0]),
+          precio: 'Desde ' + formatPrecio(Math.min(...m.presentaciones.map(p => p.precio)))
+        })),
+        ...[VARIEDADES[0], VARIEDADES[3], VARIEDADES[9]].map(v => ({
+          nombre: v.nombre, tipo: 'Variedades', url: '/variedades', arte: Arte.variedad(v), precio: formatPrecio(v.precio)
+        }))
+      ];
+      document.getElementById('seleccion-productos').innerHTML = seleccion.map((p, i) => `
+        <a class="ficha-producto revelar" style="--i:${i}" href="${p.url}">
+          <div class="ficha-arte">${p.arte}</div>
+          <span class="ficha-tipo">${esc(p.tipo)}</span>
+          <h3>${esc(p.nombre)}</h3>
+          <strong>${esc(p.precio)}</strong>
+        </a>`).join('');
 
-      <div class="hero-stats">
-        <div class="stat-item">
-          <span class="stat-numero">+150</span>
-          <span class="stat-label">Medicamentos</span>
-        </div>
-        <div class="stat-item">
-          <span class="stat-numero">100%</span>
-          <span class="stat-label">Garantizados</span>
-        </div>
-        <div class="stat-item">
-          <span class="stat-numero">5★</span>
-          <span class="stat-label">Calificación</span>
-        </div>
-      </div>
-    </div>
+      const conteos = {};
+      MEDICAMENTOS.forEach(m => { conteos[m.cat] = (conteos[m.cat] || 0) + 1; });
+      document.getElementById('lista-categorias').innerHTML = Object.keys(conteos).map(c => `
+        <li><a href="/medicamentos"><span>${esc(LABELS_CAT[c] || c)}</span><small>${conteos[c]}</small></a></li>`).join('');
 
-    <div class="hero-imagen animar animar-delay-2">
-      <div class="hero-imagen-frame">
-        <img src="Logo.jpg" alt="Droguería Los Tres Hermanos">
-        <div class="hero-imagen-chip">
-          <div class="chip-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-              <path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
-            </svg>
-          </div>
-          <div class="chip-texto">
-            <strong>Medicamentos Certificados</strong>
-            <span>Calidad garantizada</span>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- ── SERVICIOS ── -->
-  <section class="seccion" style="background: white;">
-    <div class="seccion-inner">
-      <div class="seccion-encabezado animar">
-        <p class="seccion-eyebrow">¿Qué ofrecemos?</p>
-        <h2 class="seccion-titulo">Todo en un solo lugar</h2>
-        <p class="seccion-subtitulo">
-          Desde medicamentos hasta útiles escolares, tenemos todo lo que tu familia necesita.
-        </p>
-      </div>
-
-      <div class="servicios-grid">
-        <a th:href="@{/medicamentos}" class="servicio-card animar animar-delay-1" style="color:inherit">
-          <div class="servicio-icono">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0H5m14 0h2M5 21H3M9 7h1m-1 4h1m4-4h1m-1 4h1"/>
-            </svg>
-          </div>
-          <div class="servicio-nombre">Medicamentos</div>
-          <div class="servicio-desc">Amplio catálogo de medicamentos con búsqueda por nombre o categoría.</div>
-        </a>
-
-        <a th:href="@{/variedades}" class="servicio-card animar animar-delay-2" style="color:inherit">
-          <div class="servicio-icono">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/>
-            </svg>
-          </div>
-          <div class="servicio-nombre">Variedades</div>
-          <div class="servicio-desc">Perfumes, útiles escolares, desodorantes, alcohol y más productos.</div>
-        </a>
-
-        <a th:href="@{/servicios}" class="servicio-card animar animar-delay-3" style="color:inherit">
-          <div class="servicio-icono">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12" y2="18"/>
-            </svg>
-          </div>
-          <div class="servicio-nombre">Recargas y Minutos</div>
-          <div class="servicio-desc">Recarga tu saldo y compra minutos de manera rápida y segura.</div>
-        </a>
-
-        <a th:href="@{/servicios}" class="servicio-card animar animar-delay-4" style="color:inherit">
-          <div class="servicio-icono">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M7 21h10M12 21V13M3 13h18M7 13V7a1 1 0 011-1h8a1 1 0 011 1v6"/>
-            </svg>
-          </div>
-          <div class="servicio-nombre">Fotocopiado</div>
-          <div class="servicio-desc">Servicio de fotocopiado rápido. Trae tus documentos y te los copiamos.</div>
-        </a>
-      </div>
-    </div>
-  </section>
-
-  <!-- ── BANNER CTA ── -->
-  <section class="seccion">
-    <div class="seccion-inner">
-      <div class="banner-cta animar">
-        <div class="banner-texto">
-          <h2>¿Necesitas un medicamento ahora?</h2>
-          <p>Explora nuestro catálogo completo. Filtra por categoría, precio o calificación y encuentra lo que buscas en segundos.</p>
-        </div>
-        <a th:href="@{/medicamentos}" class="btn-primario">
-          Explorar Catálogo →
-        </a>
-      </div>
-    </div>
-  </section>
-
-  <!-- ── NUESTROS VALORES ── -->
-  <section class="seccion" style="background: white;">
-    <div class="seccion-inner">
-      <div class="seccion-encabezado animar">
-        <p class="seccion-eyebrow">Quiénes somos</p>
-        <h2 class="seccion-titulo">Nuestros Valores</h2>
-      </div>
-      <div class="valores-grid">
-        <div class="valor-item animar animar-delay-1">
-          <span class="valor-numero">01</span>
-          <div class="valor-nombre">Responsabilidad</div>
-        </div>
-        <div class="valor-item animar animar-delay-2">
-          <span class="valor-numero">02</span>
-          <div class="valor-nombre">Respeto</div>
-        </div>
-        <div class="valor-item animar animar-delay-3">
-          <span class="valor-numero">03</span>
-          <div class="valor-nombre">Honestidad</div>
-        </div>
-        <div class="valor-item animar animar-delay-4">
-          <span class="valor-numero">04</span>
-          <div class="valor-nombre">Solidaridad</div>
-        </div>
-        <div class="valor-item animar">
-          <span class="valor-numero">05</span>
-          <div class="valor-nombre">Lealtad</div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- ── FOOTER ── -->
-  <footer class="footer-global" role="contentinfo">
-    <div class="footer-inner">
-      <div class="footer-grid">
-        <div class="footer-marca">
-          <h3>Droguería y Variedades Los Tres Hermanos</h3>
-          <p>Tu farmacia de confianza en Arjona, Bolívar. Comprometidos con tu salud y bienestar desde siempre.</p>
-        </div>
-        <div class="footer-col">
-          <h4>Navegación</h4>
-          <ul>
-            <li><a th:href="@{/medicamentos}">Medicamentos</a></li>
-            <li><a th:href="@{/variedades}">Variedades</a></li>
-            <li><a th:href="@{/servicios}">Servicios</a></li>
-            <li><a th:href="@{/nosotros}">Nosotros</a></li>
-          </ul>
-        </div>
-        <div class="footer-col">
-          <h4>Contacto</h4>
-          <ul>
-            <li>
-              <div class="footer-contacto-fila">
-                <a href="https://wa.me/573225065554" target="_blank" rel="noopener" class="btn-contacto whatsapp" title="WhatsApp" aria-label="WhatsApp">
-                  <span class="btn-sign">
-                    <svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" style="fill:white;width:20px;height:20px;">
-                      <path d="M13.601 2.326A7.854 7.854 0 0 0 7.994 0C3.627 0 .068 3.558.064 7.926c0 1.399.366 2.76 1.057 3.965L0 16l4.204-1.102a7.933 7.933 0 0 0 3.79.965h.004c4.368 0 7.926-3.558 7.93-7.93A7.898 7.898 0 0 0 13.6 2.326zM7.994 14.521a6.573 6.573 0 0 1-3.356-.92l-.24-.144-2.494.654.666-2.433-.156-.251a6.56 6.56 0 0 1-1.007-3.505c0-3.626 2.957-6.584 6.591-6.584a6.56 6.56 0 0 1 4.66 1.931 6.557 6.557 0 0 1 1.928 4.66c-.004 3.639-2.961 6.592-6.592 6.592zm3.615-4.934c-.197-.099-1.17-.578-1.353-.646-.182-.065-.315-.099-.445.099-.133.197-.513.646-.627.775-.114.133-.232.148-.43.05-.197-.1-.836-.308-1.592-.985-.59-.525-.985-1.175-1.103-1.372-.114-.198-.011-.304.088-.403.087-.088.197-.232.296-.346.1-.114.133-.198.198-.33.065-.134.034-.248-.015-.347-.05-.099-.445-1.076-.612-1.47-.16-.389-.323-.335-.445-.34-.114-.007-.247-.007-.38-.007a.729.729 0 0 0-.529.247c-.182.198-.691.677-.691 1.654 0 .977.71 1.916.81 2.049.098.133 1.394 2.132 3.383 2.992.47.205.84.326 1.129.418.475.152.904.129 1.246.08.38-.058 1.171-.48 1.338-.943.164-.464.164-.86.114-.943-.049-.084-.182-.133-.38-.232z"/>
-                    </svg>
-                  </span>
-                  <span class="btn-label">WhatsApp</span>
-                </a>
-                <a href="tel:+573225065554" class="footer-contacto-texto">+57 322 506 5554</a>
-              </div>
-            </li>
-            <li>
-              <div class="footer-contacto-fila">
-                <a href="mailto:diazpajaro1208@gmail.com" class="btn-contacto gmail" title="Gmail" aria-label="Gmail">
-                  <span class="btn-sign">
-                    <svg viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg" width="22" height="22">
-                      <path fill="#EA4335" d="M6 40h6V22.8L4 17v21c0 1.1.9 2 2 2z"/>
-                      <path fill="#34A853" d="M36 40h6c1.1 0 2-.9 2-2V17l-8 5.8z"/>
-                      <path fill="#FBBC04" d="M36 10v12.8l8-5.8V11c0-2.5-2.8-3.9-4.8-2.4z"/>
-                      <path fill="#4285F4" d="M12 22.8V10l12 8.7 12-8.7v12.8L24 31.5z"/>
-                      <path fill="#C5221F" d="M4 11v6l8 5.8V10L9.8 8.6C7.8 7.1 4 8.5 4 11z"/>
-                    </svg>
-                  </span>
-                  <span class="btn-label">Gmail</span>
-                </a>
-                <a href="mailto:diazpajaro1208@gmail.com" class="footer-contacto-texto">diazpajaro1208@gmail.com</a>
-              </div>
-            </li>
-            <li>
-              <div class="footer-contacto-fila">
-                <a href="https://www.google.com/maps/search/?api=1&query=Diagonal+52+50A-755+Arjona+Bolivar+Colombia" target="_blank" rel="noopener" class="btn-contacto ubicacion" title="Ver en Maps" aria-label="Diagonal 52 50A-755">
-                  <span class="btn-sign">
-                    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" style="fill:white;width:20px;height:20px;">
-                      <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
-                    </svg>
-                  </span>
-                  <span class="btn-label">Ubicación</span>
-                </a>
-                <a th:href="@{/contacto}" class="footer-contacto-texto">Diagonal 52 50A-755</a>
-              </div>
-            </li>
-          </ul>
-        </div>
-      </div>
-      <div class="footer-bottom">
-        <span>© 2024 Droguería y Variedades Los Tres Hermanos. Todos los derechos reservados.</span>
-        <div style="display:flex;gap:1.5rem">
-          <a href="#" onclick="abrirTerminos('terminos');return false;">Términos de Servicio</a>
-          <a href="#" onclick="abrirTerminos('privacidad');return false;">Política de Privacidad</a>
-        </div>
-      </div>
-    </div>
-  </footer>
-
-  <!-- MODAL TÉRMINOS -->
-  <div id="modal-terminos" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.45);z-index:9999;align-items:center;justify-content:center;padding:2rem;">
-    <div style="background:white;border-radius:16px;max-width:580px;width:100%;max-height:80vh;display:flex;flex-direction:column;box-shadow:0 20px 60px rgba(0,0,0,0.2);">
-      <div style="padding:1.5rem 1.75rem;border-bottom:1px solid var(--gris-medio);display:flex;align-items:center;justify-content:space-between;">
-        <h2 id="modal-terminos-titulo" style="font-family:var(--font-titulo);font-size:1.1rem;font-weight:800;color:var(--azul);"></h2>
-        <button onclick="cerrarTerminos()" style="background:var(--gris-claro);border:none;width:32px;height:32px;border-radius:50%;cursor:pointer;font-size:1.1rem;color:var(--gris-texto);display:grid;place-items:center;">×</button>
-      </div>
-      <div id="modal-terminos-body" style="padding:1.75rem;overflow-y:auto;flex:1;font-size:0.85rem;color:var(--gris-texto);line-height:1.75;"></div>
-      <div style="padding:1.25rem 1.75rem;border-top:1px solid var(--gris-medio);display:flex;justify-content:flex-end;">
-        <button onclick="cerrarTerminos()" style="padding:0.65rem 1.5rem;background:linear-gradient(135deg,#C0102A,#E8122F);color:white;font-family:var(--font-titulo);font-weight:700;font-size:0.9rem;border-radius:99px;border:none;cursor:pointer;box-shadow:0 4px 12px rgba(192,16,42,0.3);">Cerrar</button>
-      </div>
-    </div>
-  </div>
-
-  <script th:src="@{/js/seguridad.js}"></script>
-  <script th:src="@{/js/global.js}"></script>
-  <script>
-    // Hamburguesa
-    const btnMenu = document.getElementById('btn-menu');
-    const navMenu = document.getElementById('nav-menu');
-    if (btnMenu && navMenu) {
-      btnMenu.addEventListener('click', () => {
-        const ab = navMenu.classList.toggle('abierto');
-        btnMenu.setAttribute('aria-expanded', ab);
-      });
-    }
-
-    // Términos y condiciones
-    const TERMINOS = {
-      terminos: {
-        titulo: 'Términos y Condiciones',
-        html: `<h3 style="font-family:var(--font-titulo);color:var(--azul);margin:0 0 0.5rem">1. Aceptación</h3>
-<p>Al usar esta plataforma, aceptas cumplir con estos términos. Si no estás de acuerdo, no debes utilizarla.</p>
-<h3 style="font-family:var(--font-titulo);color:var(--azul);margin:1rem 0 0.5rem">2. Uso del Servicio</h3>
-<p>Este sitio web permite a los clientes explorar productos, hacer pedidos y gestionar su cuenta. El pago se realiza en efectivo al recibir el pedido.</p>
-<h3 style="font-family:var(--font-titulo);color:var(--azul);margin:1rem 0 0.5rem">3. Pedidos y Domicilios</h3>
-<p>Los pedidos están sujetos a disponibilidad. El servicio de domicilio aplica dentro del municipio de Arjona, Bolívar. Los tiempos de entrega pueden variar.</p>
-<h3 style="font-family:var(--font-titulo);color:var(--azul);margin:1rem 0 0.5rem">4. Precios</h3>
-<p>Los precios mostrados pueden cambiar sin previo aviso. El precio final es el mostrado al confirmar el pedido.</p>
-<h3 style="font-family:var(--font-titulo);color:var(--azul);margin:1rem 0 0.5rem">5. Contacto</h3>
-<p>Para dudas: +57 322 506 5554 · diazpajaro1208@gmail.com</p>`
-      },
-      privacidad: {
-        titulo: 'Política de Privacidad',
-        html: `<h3 style="font-family:var(--font-titulo);color:var(--azul);margin:0 0 0.5rem">1. Información que Recopilamos</h3>
-<p>Al registrarte recopilamos tu nombre, correo, teléfono y dirección. Esta información se usa exclusivamente para gestionar tus pedidos.</p>
-<h3 style="font-family:var(--font-titulo);color:var(--azul);margin:1rem 0 0.5rem">2. Confidencialidad</h3>
-<p>No compartimos, vendemos ni cedemos tu información personal a terceros bajo ninguna circunstancia, salvo requerimiento legal.</p>
-<h3 style="font-family:var(--font-titulo);color:var(--azul);margin:1rem 0 0.5rem">3. Tus Derechos</h3>
-<p>Puedes acceder, rectificar y eliminar tus datos desde la sección "Mi Perfil" o contactándonos directamente.</p>
-<h3 style="font-family:var(--font-titulo);color:var(--azul);margin:1rem 0 0.5rem">4. Contacto</h3>
-<p>Para ejercer tus derechos: +57 322 506 5554 · diazpajaro1208@gmail.com</p>`
-      }
-    };
-
-    function abrirTerminos(tipo) {
-      const data = TERMINOS[tipo];
-      document.getElementById('modal-terminos-titulo').textContent = data.titulo;
-      document.getElementById('modal-terminos-body').innerHTML    = data.html;
-      const modal = document.getElementById('modal-terminos');
-      modal.style.display = 'flex';
-    }
-
-    function cerrarTerminos() {
-      document.getElementById('modal-terminos').style.display = 'none';
-    }
-
-    document.getElementById('modal-terminos').addEventListener('click', function(e) {
-      if (e.target === this) cerrarTerminos();
-    });
-
-    // ── Navbar: sesión activa → ocultar Regístrate, Mi cuenta va a /perfil
-    document.addEventListener('DOMContentLoaded', function() {
-      try {
-        var s = JSON.parse(sessionStorage.getItem('lth_cliente') || 'null');
-        var btnReg   = document.getElementById('btn-registrate');
-        var btnCuenta = document.getElementById('btn-mi-cuenta');
-
-        if (s && s.rol === 'cliente') {
-          // Ocultar Regístrate
-          if (btnReg) btnReg.style.display = 'none';
-          // Mi cuenta apunta a /perfil — garantía absoluta
-          if (btnCuenta) btnCuenta.href = '/perfil';
-        }
-      } catch(e) {}
-
-      // Dropdown avatar (mejora visual — si falla, el href=/perfil ya funciona)
-      try { initAvatar({ perfilUrl: '/perfil', logoutUrl: '/' }); } catch(e) {}
+      Experiencia.revelar();
+      initAvatar({ perfilUrl: '/perfil', logoutUrl: '/' });
     });
   </script>
 </body>

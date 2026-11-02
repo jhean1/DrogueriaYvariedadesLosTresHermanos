@@ -6,41 +6,61 @@
 
 // ── Navbar sticky + hamburguesa ──────────────────────────────
 (function initNavbar() {
-  const navbar  = document.querySelector('.navbar');
-  const btnMenu = document.querySelector('.btn-menu');
+  const navbar   = document.querySelector('.navbar');
+  const btnMenu  = document.querySelector('.btn-menu');
   const navLinks = document.querySelector('.navbar-nav');
-
+  const velo     = document.getElementById('barra-velo');
   if (!navbar) return;
 
-  // Nielsen #1: el navbar muestra visualmente en qué sección estás
-  const currentPage = location.pathname.split('/').pop() || 'index.html';
-  document.querySelectorAll('.nav-link').forEach(link => {
-    const href = link.getAttribute('href') || '';
-    if (href.includes(currentPage) || (currentPage === 'index.html' && href === 'index.html')) {
-      link.classList.add('active');
+  // La barra se compacta al bajar y se oculta si se sigue bajando; reaparece al subir.
+  let ultimoY = window.scrollY;
+  function alDesplazar() {
+    const y = window.scrollY;
+    navbar.classList.toggle('scrolled', y > 16);
+    if (!navLinks || !navLinks.classList.contains('abierto')) {
+      navbar.classList.toggle('oculta', y > 480 && y > ultimoY + 2);
+      if (y < ultimoY - 2) navbar.classList.remove('oculta');
+    }
+    ultimoY = y;
+  }
+  window.addEventListener('scroll', alDesplazar, { passive: true });
+  alDesplazar();
+
+  if (!btnMenu || !navLinks) return;
+
+  function fijarMenu(abierto) {
+    navLinks.classList.toggle('abierto', abierto);
+    velo && velo.classList.toggle('visible', abierto);
+    btnMenu.setAttribute('aria-expanded', String(abierto));
+    document.body.classList.toggle('sin-scroll', abierto);
+    if (abierto) navbar.classList.remove('oculta');
+  }
+
+  btnMenu.addEventListener('click', () => fijarMenu(!navLinks.classList.contains('abierto')));
+  velo && velo.addEventListener('click', () => fijarMenu(false));
+  document.getElementById('btn-cerrar-menu')?.addEventListener('click', () => {
+    fijarMenu(false);
+    btnMenu.focus();
+  });
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && navLinks.classList.contains('abierto')) {
+      fijarMenu(false);
+      btnMenu.focus();
     }
   });
+  window.addEventListener('resize', () => {
+    if (window.innerWidth > 1180) fijarMenu(false);
+  });
+})();
 
-  // Sombra al hacer scroll
-  window.addEventListener('scroll', () => {
-    navbar.classList.toggle('scrolled', window.scrollY > 10);
-  }, { passive: true });
-
-  // Menú hamburguesa
-  if (btnMenu && navLinks) {
-    btnMenu.addEventListener('click', () => {
-      const abierto = navLinks.classList.toggle('abierto');
-      btnMenu.setAttribute('aria-expanded', abierto);
-    });
-
-    // Cerrar al hacer clic fuera
-    document.addEventListener('click', (e) => {
-      if (!navbar.contains(e.target)) {
-        navLinks.classList.remove('abierto');
-        btnMenu.setAttribute('aria-expanded', 'false');
-      }
-    });
-  }
+// Mi cuenta: lleva al perfil si hay sesión de cliente
+(function initMiCuenta() {
+  const enlace = document.getElementById('btn-mi-cuenta');
+  if (!enlace) return;
+  try {
+    const sesion = JSON.parse(sessionStorage.getItem('lth_cliente') || 'null');
+    enlace.href = (sesion && sesion.rol === 'cliente') ? '/perfil' : '/login';
+  } catch (e) {}
 })();
 
 // ── Sistema de Toast (Nielsen #1 — feedback al usuario) ──────
@@ -65,23 +85,6 @@ window.Toast = (function() {
   }
 
   return { mostrar };
-})();
-
-// ── Animaciones de entrada al hacer scroll ───────────────────
-(function initScrollAnimations() {
-  const observer = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        entry.target.style.animationPlayState = 'running';
-        observer.unobserve(entry.target);
-      }
-    });
-  }, { threshold: 0.12 });
-
-  document.querySelectorAll('.animar').forEach(el => {
-    el.style.animationPlayState = 'paused';
-    observer.observe(el);
-  });
 })();
 
 // ── Carrito global compartido (localStorage) ─────────────────
@@ -152,6 +155,13 @@ window.Carrito = (function() {
       badge.textContent = n;
       badge.style.display = n > 0 ? 'grid' : 'none';
     }
+    document.querySelectorAll('.fab-badge').forEach(fab => {
+      fab.textContent = conteo();
+      fab.toggleAttribute('data-cero', conteo() === 0);
+      fab.classList.remove('rebote');
+      void fab.offsetWidth;
+      fab.classList.add('rebote');
+    });
   }
 
   // Inicializar badge al cargar
@@ -234,7 +244,7 @@ function _construirAvatar(opciones) {
     '<button class="avatar-navbar-btn" id="avatar-btn" aria-label="Mi cuenta" aria-expanded="false">' +
       '<div class="avatar-circulo">' + avatarHtml + '<span class="avatar-online-dot"></span></div>' +
       '<span class="avatar-nombre-corto">' + esc(String(nombre).split(' ')[0]) + '</span>' +
-      '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--gris-texto)" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>' +
+      '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>' +
     '</button>' +
     '<div class="avatar-dropdown" id="avatar-dropdown" role="menu">' +
       '<div class="avatar-dropdown-header">' +
@@ -421,27 +431,12 @@ window.Suscripcion = (function() {
     const nombrePlan = Seguridad.planCanonico(sus.plan).nombre;
     const banner  = document.createElement('div');
     banner.id     = 'sus-descuento-banner';
-    banner.style.cssText = [
-      'background:linear-gradient(90deg,#166534,#15803d)',
-      'color:#fff',
-      'text-align:center',
-      'padding:0.45rem 1rem',
-      'font-size:0.82rem',
-      'font-weight:600',
-      'letter-spacing:0.01em',
-      'z-index:999',
-      'position:relative',
-    ].join(';');
+    banner.className = 'pildora-plan no-imprimir';
     banner.innerHTML =
-      `🎉 Plan ${Seguridad.esc(nombrePlan)} activo · <strong>${Seguridad.esc(sus.descuento)}% de descuento</strong> aplicado en todos los productos ·
-       <a href="/suscripciones" style="color:#bbf7d0;text-decoration:underline;font-weight:700;">Ver plan</a>`;
-
-    const navbar = document.querySelector('.navbar');
-    if (navbar && navbar.nextSibling) {
-      navbar.parentNode.insertBefore(banner, navbar.nextSibling);
-    } else {
-      document.body.prepend(banner);
-    }
+      `<span class="punto punto--vivo"></span>
+       <span>Plan ${Seguridad.esc(nombrePlan)}: <strong>${Seguridad.esc(sus.descuento)}% de descuento</strong></span>
+       <a href="/perfil#suscripcion">Ver plan</a>`;
+    document.body.appendChild(banner);
   }
 
   // Inicializar banner en DOMContentLoaded

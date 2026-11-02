@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+
+<!-- Cabecera común: fuentes, identidad y hojas de estilo -->
+<head th:fragment="cabeza(titulo, descripcion)">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title th:text="${titulo} + ' · Los Tres Hermanos'">Los Tres Hermanos</title>
+  <meta name="description" th:content="${descripcion}">
+  <meta name="theme-color" content="#101B35">
+  <link rel="icon" type="image/svg+xml" th:href="@{/img/marca/favicon.svg}">
+  <link rel="icon" type="image/png" sizes="32x32" th:href="@{/img/marca/favicon-32.png}">
+  <link rel="apple-touch-icon" th:href="@{/img/marca/apple-touch-icon.png}">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;family=Sora:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
+  <link rel="stylesheet" th:href="@{/css/design-system.css}">
+  <link rel="stylesheet" th:href="@{/css/tienda.css}">
+  <script>
+    document.documentElement.classList.add('js');
+    try {
+      var s = JSON.parse(sessionStorage.getItem('lth_cliente') || 'null');
+      if (s && s.rol === 'cliente') document.documentElement.classList.add('con-sesion');
+    } catch (e) {}
+  </script>
+</head>
+
+<body>
+
+<!-- Barra de navegación -->
+<th:block th:fragment="barra">
+  <a class="saltar" href="#contenido">Saltar al contenido</a>
+  <header class="navbar no-imprimir" role="banner">
+    <div class="navbar-inner contenedor">
+      <a th:href="@{/}" class="navbar-logo" aria-label="Los Tres Hermanos, ir al inicio">
+        <img class="logo-claro" th:src="@{/img/marca/logo-horizontal.svg}" alt="" width="290" height="44">
+        <img class="logo-oscuro" th:src="@{/img/marca/logo-horizontal-oscuro.svg}" alt="" width="290" height="44">
+      </a>
+
+      <div class="barra-velo" id="barra-velo"></div>
+      <nav class="navbar-nav" id="nav-menu" aria-label="Menú principal">
+        <div class="menu-cabeza">
+          <img th:src="@{/img/marca/isotipo-3h.svg}" alt="" width="64" height="40">
+          <button class="btn-icono" id="btn-cerrar-menu" type="button" aria-label="Cerrar menú"><svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#cerrar"/></svg></button>
+        </div>
+        <a th:href="@{/}" class="nav-link" th:classappend="${pagina == 'inicio'} ? 'active'" th:attrappend="aria-current=${pagina == 'inicio'} ? 'page'">Inicio</a>
+        <a th:href="@{/medicamentos}" class="nav-link" th:classappend="${pagina == 'medicamentos'} ? 'active'" th:attrappend="aria-current=${pagina == 'medicamentos'} ? 'page'">Medicamentos</a>
+        <a th:href="@{/variedades}" class="nav-link" th:classappend="${pagina == 'variedades'} ? 'active'" th:attrappend="aria-current=${pagina == 'variedades'} ? 'page'">Variedades</a>
+        <a th:href="@{/servicios}" class="nav-link" th:classappend="${pagina == 'servicios'} ? 'active'" th:attrappend="aria-current=${pagina == 'servicios'} ? 'page'">Servicios</a>
+        <a th:href="@{/suscripciones}" class="nav-link" th:classappend="${pagina == 'suscripciones'} ? 'active'" th:attrappend="aria-current=${pagina == 'suscripciones'} ? 'page'">Suscripciones</a>
+        <a th:href="@{/nosotros}" class="nav-link" th:classappend="${pagina == 'nosotros'} ? 'active'" th:attrappend="aria-current=${pagina == 'nosotros'} ? 'page'">Nosotros</a>
+        <a th:href="@{/contacto}" class="nav-link" th:classappend="${pagina == 'contacto'} ? 'active'" th:attrappend="aria-current=${pagina == 'contacto'} ? 'page'">Contacto</a>
+        <a th:href="@{/registro}" class="btn btn--primario menu-registro" id="btn-registrate-menu">Crear cuenta</a>
+      </nav>
+
+      <div class="navbar-actions">
+        <a th:href="@{/registro}" id="btn-registrate" class="btn btn--fantasma btn--sm">Regístrate</a>
+        <a th:href="@{/login}" id="btn-mi-cuenta" class="btn btn--secundario btn--sm" aria-label="Mi cuenta">
+          <svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#usuario"/></svg>
+          <span class="etiqueta-cuenta">Mi cuenta</span>
+        </a>
+        <button class="btn-carrito-nav btn-icono" id="btn-abrir-carrito" type="button" onclick="abrirDrawer()" aria-label="Abrir carrito">
+          <svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#carrito"/></svg>
+          <span class="badge-carrito" style="display:none">0</span>
+        </button>
+        <button class="btn-menu btn-icono" id="btn-menu" type="button" aria-label="Abrir menú" aria-expanded="false" aria-controls="nav-menu">
+          <svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#menu"/></svg>
+        </button>
+      </div>
+    </div>
+  </header>
+</th:block>
+
+<!-- Panel lateral del carrito -->
+<th:block th:fragment="carrito">
+  <div class="drawer-overlay no-imprimir" id="drawer-overlay" onclick="cerrarDrawer()"></div>
+  <aside class="carrito-drawer no-imprimir" id="carrito-drawer" role="dialog" aria-modal="true" aria-labelledby="titulo-carrito">
+    <div class="drawer-header">
+      <h2 id="titulo-carrito">Mi carrito</h2>
+      <button class="btn-cerrar-drawer btn-icono" id="btn-cerrar-drawer" type="button" onclick="cerrarDrawer()" aria-label="Cerrar carrito">
+        <svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#cerrar"/></svg>
+      </button>
+    </div>
+    <div class="drawer-body" id="drawer-body"></div>
+    <div class="drawer-footer" id="drawer-footer" style="display:none">
+      <div class="total-row">
+        <span class="total-label">Total</span>
+        <span class="total-valor" id="total-valor">$0</span>
+      </div>
+      <button class="btn btn--primario btn--lg btn--bloque" id="btn-comprar" type="button" onclick="window.location.href='/checkout'">
+        Finalizar compra <svg class="ic ic-mueve" aria-hidden="true"><use href="/img/iconos.svg#flecha"/></svg>
+      </button>
+    </div>
+  </aside>
+</th:block>
+
+<!-- Pie de página -->
+<th:block th:fragment="pie">
+  <footer class="footer-global no-imprimir" role="contentinfo">
+    <div class="contenedor">
+      <div class="pie-cta revelar">
+        <div>
+          <h2>¿Tienes una consulta?</h2>
+          <p>Escríbenos por WhatsApp y te atendemos directamente desde la droguería.</p>
+        </div>
+        <a class="btn btn--claro btn--lg" href="https://wa.me/573225065554" target="_blank" rel="noopener">
+          <svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#whatsapp"/></svg> Escribir por WhatsApp
+        </a>
+      </div>
+      <div class="footer-grid">
+        <div class="footer-marca">
+          <img th:src="@{/img/marca/logo-vertical-oscuro.svg}" alt="Droguería y Variedades Los Tres Hermanos" width="200" height="133">
+          <p>Medicamentos, variedades y servicios para las familias de Arjona, Bolívar.</p>
+        </div>
+        <div class="footer-col">
+          <h3>Tienda</h3>
+          <ul>
+            <li><a th:href="@{/medicamentos}">Medicamentos</a></li>
+            <li><a th:href="@{/variedades}">Variedades</a></li>
+            <li><a th:href="@{/suscripciones}">Suscripciones</a></li>
+            <li><a th:href="@{/servicios}">Servicios</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h3>La droguería</h3>
+          <ul>
+            <li><a th:href="@{/nosotros}">Quiénes somos</a></li>
+            <li><a th:href="@{/contacto}">Contacto</a></li>
+            <li><a th:href="@{/login}">Mi cuenta</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h3>Contacto</h3>
+          <ul class="pie-contacto">
+            <li><a href="tel:+573225065554"><svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#telefono"/></svg>+57 322 506 5554</a></li>
+            <li><a href="mailto:diazpajaro1208@gmail.com"><svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#correo"/></svg>diazpajaro1208@gmail.com</a></li>
+            <li><a href="https://www.google.com/maps/search/?api=1&amp;query=Diagonal+52+50A-755+Arjona+Bolivar+Colombia" target="_blank" rel="noopener"><svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#ubicacion"/></svg>Diagonal 52 50A-755, Arjona</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <span th:text="'© ' + ${#calendars.format(#calendars.createNow(), 'yyyy')} + ' Droguería y Variedades Los Tres Hermanos'">© Droguería y Variedades Los Tres Hermanos</span>
+        <div>
+          <button type="button" onclick="abrirTerminos('terminos')">Términos de servicio</button>
+          <button type="button" onclick="abrirTerminos('privacidad')">Política de privacidad</button>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <div class="modal-velo no-imprimir" id="modal-terminos" role="dialog" aria-modal="true" aria-labelledby="modal-terminos-titulo">
+    <div class="modal">
+      <div class="modal-cabeza">
+        <h2 id="modal-terminos-titulo"></h2>
+        <button class="btn-icono" type="button" onclick="cerrarTerminos()" aria-label="Cerrar"><svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#cerrar"/></svg></button>
+      </div>
+      <div class="modal-cuerpo" id="modal-terminos-body"></div>
+      <div class="modal-pie"><button class="btn btn--primario" type="button" onclick="cerrarTerminos()">Cerrar</button></div>
+    </div>
+  </div>
+</th:block>
+
+<!-- Scripts comunes, en orden de dependencia -->
+<th:block th:fragment="scripts">
+  <script th:src="@{/js/seguridad.js}"></script>
+  <script th:src="@{/js/global.js}"></script>
+  <script th:src="@{/js/experiencia.js}"></script>
+  <script th:src="@{/js/legal.js}"></script>
+  <script th:src="@{/js/carrito-ui.js}"></script>
+</th:block>
+
+</body>
+</html>

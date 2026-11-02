@@ -1,6 +1,8 @@
 <div align="center">
 
-# 💊 Droguería y Variedades Los Tres Hermanos
+<img src="src/main/resources/static/img/marca/logo-vertical.svg" alt="Los Tres Hermanos" width="240">
+
+# Droguería y Variedades Los Tres Hermanos
 
 **Tienda web para una droguería de Arjona, Bolívar (Colombia): catálogo de medicamentos y variedades, pedidos por WhatsApp, planes de suscripción con descuento y panel de administración.**
 
@@ -28,7 +30,7 @@ Los clientes también pueden suscribirse a un plan mensual para obtener descuent
 ## 📸 Capturas
 
 > [!NOTE]
-> Las capturas son de la aplicación real con **datos ficticios**. El logo y las fotos de productos todavía no están en el repositorio; por eso se ven huecos y tarjetas con el nombre del producto.
+> Las capturas son de la aplicación real con **datos ficticios**. Las imágenes de productos son ilustraciones vectoriales propias, a la espera de las fotografías reales.
 
 ### Catálogo
 
@@ -45,9 +47,19 @@ Los clientes también pueden suscribirse a un plan mensual para obtener descuent
 
 ### Panel de administración
 
-| Acceso | Resumen | Revisión de un pago |
+| Resumen | Revisión de un pago |
+|:---:|:---:|
+| <img src="docs/imagenes/admin-panel.png" alt="Resumen del panel con indicadores y gráficas" width="420"> | <img src="docs/imagenes/admin-solicitud.png" alt="Detalle de una solicitud de pago" width="420"> |
+
+| Roles y permisos | Módulo en desarrollo | Acceso del equipo |
 |:---:|:---:|:---:|
-| <img src="docs/imagenes/admin-login.png" alt="Inicio de sesión del administrador" width="280"> | <img src="docs/imagenes/admin-panel.png" alt="Resumen del panel de administración" width="280"> | <img src="docs/imagenes/admin-solicitud.png" alt="Detalle de una solicitud de pago" width="280"> |
+| <img src="docs/imagenes/admin-accesos.png" alt="Roles y permisos del equipo" width="280"> | <img src="docs/imagenes/admin-modulo.png" alt="Módulo de inventario en desarrollo" width="280"> | <img src="docs/imagenes/admin-login.png" alt="Inicio de sesión del equipo" width="280"> |
+
+### En el celular
+
+| Inicio | Medicamentos |
+|:---:|:---:|
+| <img src="docs/imagenes/movil-inicio.png" alt="Inicio en un celular" width="240"> | <img src="docs/imagenes/movil-medicamentos.png" alt="Catálogo en un celular" width="240"> |
 
 ## ✨ Funcionalidades
 
@@ -66,6 +78,8 @@ Los clientes también pueden suscribirse a un plan mensual para obtener descuent
 - ✅ **Pagos:** revisión de comprobantes y aprobación o rechazo de solicitudes.
 - 👥 **Clientes:** búsqueda y creación de cuentas.
 - 🏪 **Pagos en tienda:** activación manual del plan cuando el cliente paga en efectivo.
+- 🔑 **Roles y permisos:** cinco roles con permisos por módulo y acción, validados por Spring Security en cada ruta.
+- 🧭 **Módulos planificados:** inventario, ventas, compras, caja, reportes, auditoría y notificaciones, marcados como *en desarrollo* y sin acciones simuladas.
 
 ### Planes de suscripción
 
@@ -83,7 +97,8 @@ Los clientes también pueden suscribirse a un plan mensual para obtener descuent
 | Lenguaje | Java 21 |
 | Framework | Spring Boot 4.1 (Spring MVC) |
 | Seguridad | Spring Security y BCrypt en el servidor; PBKDF2 con Web Crypto en el navegador |
-| Vistas | Thymeleaf, HTML5, CSS3 y JavaScript sin frameworks |
+| Vistas | Thymeleaf con fragmentos, HTML5, CSS3 y JavaScript sin frameworks |
+| Diseño | Sistema de diseño propio con variables CSS; tipografías Sora y Manrope |
 | Almacenamiento actual | `localStorage` y `sessionStorage` del navegador |
 | Construcción | Maven (incluye Maven Wrapper) |
 | Pruebas | JUnit 5, Spring MockMvc y Spring Security Test |
@@ -144,16 +159,17 @@ sequenceDiagram
 └── src
     ├── main
     │   ├── java/com/example/DrogueriaLosTresHermanos
-    │   │   ├── configuracion/      # Spring Security y límite de intentos de login
+    │   │   ├── configuracion/      # Spring Security, roles, permisos y módulos
     │   │   ├── controlador/        # Rutas y vistas (MVC)
     │   │   ├── controller/         # Referencia histórica, sin uso
     │   │   └── modelo/             # Cliente, Producto, Pedido, ItemPedido y PlanSuscripcion
     │   └── resources
     │       ├── application.properties
     │       ├── static
-    │       │   ├── css/global.css
-    │       │   └── js/             # global.js, seguridad.js y explorador-data.js
-    │       └── templates/          # Páginas Thymeleaf
+    │       │   ├── css/            # design-system.css, tienda.css y admin.css
+    │       │   ├── img/marca/      # Sistema de identidad 3H (SVG y PNG)
+    │       │   └── js/             # Lógica, animaciones y datos del catálogo
+    │       └── templates/          # Páginas Thymeleaf y fragmentos compartidos
     └── test/java/...               # Pruebas automatizadas
 ```
 
@@ -168,7 +184,9 @@ sequenceDiagram
 | `/registro`, `/login` | Cuenta de cliente | Público |
 | `/perfil`, `/checkout`, `/recibo`, `/pago-suscripcion` | Área del cliente | Con sesión de cliente, comprobada en el navegador |
 | `/admin/login` | Acceso de administrador | Público |
-| `/admin` | Panel de administración | **Protegido por el servidor** |
+| `/admin` | Panel de administración | **Todo el equipo; cada sección según permisos** |
+| `/admin/modulos/{modulo}` | Módulos en desarrollo | **Según el permiso de cada módulo** |
+| `/admin/accesos` | Roles y permisos | **Solo con `roles.manage`** |
 
 ## 🚀 Instalación y ejecución
 
@@ -226,6 +244,9 @@ Si no la defines, la aplicación genera una clave temporal en cada arranque y la
 | `ADMIN_CORREO` | Correo para entrar al panel | `admin@lostreshermanos.com` |
 | `ADMIN_CLAVE` | Clave del administrador (12 caracteres o más) | Se genera una temporal en cada arranque |
 | `COOKIE_SEGURA` | Usa `true` si el sitio funciona con HTTPS | `false` |
+| `APP_EQUIPO_0_CORREO`, `APP_EQUIPO_0_ROL`, `APP_EQUIPO_0_CLAVE` | Miembro adicional del equipo. Usa 1, 2… para agregar más | Sin miembros adicionales |
+
+Roles disponibles para `APP_EQUIPO_N_ROL`: `ADMINISTRADOR`, `REGENTE`, `CAJERO` y `AUXILIAR`. La cuenta de `ADMIN_CORREO` es la del propietario.
 
 ### Pruebas
 
@@ -239,6 +260,7 @@ Si no la defines, la aplicación genera una clave temporal en cada arranque y la
 |---|---|
 | Credenciales en variables de entorno y BCrypt | Evita que la clave del administrador aparezca en el código |
 | Sesión en el servidor para `/admin` | Impide entrar al panel sin autenticarse |
+| Roles y permisos en Spring Security | Bloquea con 403 cada ruta sin permiso y omite del HTML las secciones no autorizadas |
 | Protección CSRF | Rechaza formularios de login y cierre de sesión enviados desde otros sitios |
 | Bloqueo tras 5 intentos fallidos durante 15 minutos | Frena los ataques de fuerza bruta contra el panel |
 | Hash PBKDF2-SHA256 con sal | Evita guardar las contraseñas de clientes en texto plano |
@@ -253,15 +275,17 @@ Si no la defines, la aplicación genera una clave temporal en cada arranque y la
 - **Las cuentas de cliente no se validan en el servidor:** una persona con conocimientos técnicos puede modificar su sesión o sus datos desde las herramientas del navegador.
 - **Precios sin verificación en el servidor:** el contenido del carrito se puede alterar antes de enviarlo por WhatsApp, por lo que la droguería debe confirmar cada pedido.
 - **La CSP permite scripts en línea:** las plantillas actuales los necesitan.
-- **Imágenes pendientes:** faltan el logo y las fotos de los productos.
+- **Roles de solo lectura:** el equipo se define con variables de entorno; crear roles o editar permisos desde el panel requiere base de datos.
+- **Los módulos de gestión están en desarrollo:** muestran su alcance, pero aún no tienen datos ni acciones.
+- **Fotos pendientes:** los productos usan ilustraciones hasta contar con las fotografías reales.
 - **Datos de pago de ejemplo:** revisa los números de cuenta y el NIT antes de cualquier uso real.
 
 ## 🗺️ Próximos pasos
 
-- [ ] Agregar el logo y las fotos de los productos.
-- [ ] Mejorar el diseño en celulares y corregir detalles visuales.
+- [ ] Agregar las fotos de los productos.
 - [ ] Incorporar una base de datos y una API en el servidor.
 - [ ] Validar cuentas, precios, pedidos y suscripciones en el servidor.
+- [ ] Construir los módulos de inventario, ventas, compras, caja, reportes y auditoría.
 - [ ] Publicar el sitio con HTTPS.
 
 ## 🌿 Ramas
@@ -269,7 +293,7 @@ Si no la defines, la aplicación genera una clave temporal en cada arranque y la
 | Rama | Propósito |
 |---|---|
 | `master` | Versión principal del proyecto |
-| `frontend` | Mejoras de diseño e interfaz |
+| `frontend` | Rediseño visual, identidad 3H y panel con roles |
 
 ## 👤 Autor
 

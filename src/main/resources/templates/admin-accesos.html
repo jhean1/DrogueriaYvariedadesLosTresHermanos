@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/admin :: cabeza('Roles y permisos')}"></head>
+<body class="panel" th:attr="data-permisos=${perfil.permisosComoTexto()}">
+  <div th:replace="~{fragments/admin :: lateral}"></div>
+  <th:block th:replace="~{fragments/admin :: velo}"></th:block>
+  <div class="panel-principal">
+    <header th:replace="~{fragments/admin :: superior('Roles y permisos')}"></header>
+    <main class="panel-contenido" id="contenido">
+      <div class="pagina-cabeza revelar">
+        <div>
+          <h1>Roles y permisos</h1>
+          <p>Estos son los permisos que Spring Security aplica hoy en cada ruta del panel.</p>
+        </div>
+      </div>
+
+      <div class="alerta alerta--info revelar">
+        <svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#info"/></svg>
+        <span><strong>Vista de solo lectura.</strong> Crear roles, editar permisos y desactivar cuentas desde aquí requiere base de datos. Hoy los usuarios del equipo se definen con variables de entorno.</span>
+      </div>
+
+      <section class="rejilla-roles" aria-label="Roles" data-escalonar>
+        <article class="tarjeta rol-tarjeta" th:each="r : ${roles}">
+          <h2 th:text="${r.nombre}">Rol</h2>
+          <p th:text="${r.descripcion}">Descripción</p>
+          <span class="insignia insignia--azul" th:text="${r.permisos.size()} + ' permisos'">0 permisos</span>
+        </article>
+      </section>
+
+      <section class="tarjeta revelar" aria-labelledby="titulo-usuarios">
+        <div class="tarjeta-cabeza"><h2 id="titulo-usuarios">Usuarios del equipo</h2><span class="insignia" th:text="${usuarios.size()}">1</span></div>
+        <div class="tabla-marco">
+          <table class="tabla tabla--fichas">
+            <thead><tr><th scope="col">Correo</th><th scope="col">Rol</th><th scope="col">Estado</th></tr></thead>
+            <tbody>
+              <tr th:each="u : ${usuarios}">
+                <td data-etiqueta="Correo"><strong th:text="${u.correo()}">correo</strong></td>
+                <td data-etiqueta="Rol" th:text="${u.rol().nombre}">Rol</td>
+                <td data-etiqueta="Estado"><span class="insignia insignia--exito"><span class="punto"></span>Activo</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="tarjeta revelar" aria-labelledby="titulo-matriz">
+        <div class="tarjeta-cabeza"><h2 id="titulo-matriz">Matriz de permisos</h2>
+          <span class="leyenda"><span class="insignia insignia--exito">Función activa</span><span class="insignia">Reservado para un módulo futuro</span></span>
+        </div>
+        <div class="tabla-marco">
+          <table class="tabla matriz">
+            <thead>
+              <tr><th scope="col">Permiso</th><th scope="col" th:each="r : ${roles}" th:text="${r.nombre}">Rol</th></tr>
+            </thead>
+            <tbody th:each="grupo : ${permisosPorModulo}">
+              <tr class="matriz-grupo"><th scope="rowgroup" th:attr="colspan=${roles.length + 1}" th:text="${grupo.key}">Módulo</th></tr>
+              <tr th:each="p : ${grupo.value}">
+                <th scope="row">
+                  <span th:text="${p.descripcion}">Descripción</span>
+                  <code th:text="${p.codigo}">codigo</code>
+                  <span class="insignia insignia--exito" th:if="${p.operativo}">Activa</span>
+                </th>
+                <td th:each="r : ${roles}" class="matriz-celda">
+                  <span th:if="${r.tiene(p)}" class="matriz-si"><svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#check"/></svg><span class="solo-lector">Permitido</span></span>
+                  <span th:unless="${r.tiene(p)}" class="matriz-no">–<span class="solo-lector">No permitido</span></span>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+  </div>
+  <script th:src="@{/js/seguridad.js}"></script>
+  <script th:src="@{/js/experiencia.js}"></script>
+  <script th:src="@{/js/panel.js}"></script>
+</body>
+</html>

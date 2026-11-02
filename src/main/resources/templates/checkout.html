@@ -1,271 +1,80 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="es">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Finalizar Pedido — Los Tres Hermanos</title>
-  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" th:href="@{/css/global.css}">
-  <style>
-    html, body { overflow-x: hidden; box-sizing: border-box; }
-    *, *::before, *::after { box-sizing: border-box; }
-    :root{
-      --azul:#1B2A6B;--azul-medio:#2D3E9E;--azul-claro:#4A5FD4;
-      --rojo:#C0102A;--rojo-vivo:#E8122F;--verde:#16a34a;
-      --gris-claro:#F4F5F9;--gris-medio:#DDE0EC;--gris-texto:#6B7280;--negro:#111827;
-      --grad-hero:linear-gradient(135deg,#1B2A6B 0%,#2D3E9E 50%,#C0102A 100%);
-      --grad-rojo:linear-gradient(135deg,#C0102A,#E8122F);
-      --grad-verde:linear-gradient(135deg,#16a34a,#22c55e);
-      --font-titulo:'Syne',sans-serif;--font-cuerpo:'DM Sans',sans-serif;
-      --trans:0.25s cubic-bezier(0.4,0,0.2,1);
-      --sombra-sm:0 2px 8px rgba(0,0,0,0.08);--sombra-md:0 8px 24px rgba(0,0,0,0.12);--sombra-lg:0 20px 48px rgba(0,0,0,0.15);
-    }
-    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
-    body{font-family:var(--font-cuerpo);background:var(--gris-claro);color:var(--negro);min-height:100vh;}
-    button{cursor:pointer;border:none;font-family:var(--font-cuerpo);}
-
-    /* NAVBAR */
-    .navbar{position:sticky;top:0;z-index:100;background:rgba(255,255,255,0.95);backdrop-filter:blur(16px);border-bottom:1px solid var(--gris-medio);box-shadow:var(--sombra-sm);}
-    .navbar-inner{max-width:1000px;margin:0 auto;padding:0 2rem;height:64px;display:flex;align-items:center;justify-content:space-between;}
-    .navbar-logo{display:flex;align-items:center;gap:0.75rem;font-family:var(--font-titulo);font-weight:800;font-size:1rem;color:var(--azul);}
-    .navbar-logo em{color:var(--rojo);font-style:normal;}
-
-    /* PROGRESS STEPS */
-    .steps-wrap{background:white;border-bottom:1px solid var(--gris-medio);padding:1rem 2rem;}
-    .steps{max-width:1000px;margin:0 auto;display:flex;align-items:center;gap:0;}
-    .step{display:flex;align-items:center;gap:0.5rem;flex:1;}
-    .step-circle{width:28px;height:28px;border-radius:50%;display:grid;place-items:center;font-size:0.75rem;font-weight:700;flex-shrink:0;}
-    .step.done .step-circle{background:var(--verde);color:white;}
-    .step.activo .step-circle{background:var(--azul);color:white;}
-    .step.pendiente .step-circle{background:var(--gris-claro);color:var(--gris-texto);border:1.5px solid var(--gris-medio);}
-    .step-label{font-size:0.78rem;font-weight:600;}
-    .step.done .step-label{color:var(--verde);}
-    .step.activo .step-label{color:var(--azul);}
-    .step.pendiente .step-label{color:var(--gris-texto);}
-    .step-linea{flex:1;height:2px;background:var(--gris-medio);margin:0 0.5rem;}
-    .step-linea.done{background:var(--verde);}
-
-    /* LAYOUT */
-    .checkout-layout{max-width:1000px;margin:2rem auto;padding:0 2rem 4rem;display:grid;grid-template-columns:1fr 340px;gap:2rem;align-items:start;}
-
-    /* PANEL */
-    .panel{background:white;border-radius:16px;border:1px solid var(--gris-medio);overflow:hidden;margin-bottom:1.5rem;}
-    .panel-header{padding:1.25rem 1.5rem;border-bottom:1px solid var(--gris-claro);display:flex;align-items:center;gap:0.75rem;}
-    .panel-header-icon{width:36px;height:36px;border-radius:9px;background:var(--grad-hero);display:grid;place-items:center;flex-shrink:0;}
-    .panel-header-icon svg{width:18px;height:18px;color:white;}
-    .panel-titulo{font-family:var(--font-titulo);font-weight:700;font-size:1rem;color:var(--azul);}
-    .panel-body{padding:1.5rem;}
-
-    /* ALERTA INVITADO */
-    .alerta-invitado{display:flex;align-items:flex-start;gap:1rem;padding:1.25rem;background:rgba(192,16,42,0.06);border:1.5px solid rgba(192,16,42,0.2);border-radius:12px;margin-bottom:1.5rem;}
-    .alerta-invitado svg{width:22px;height:22px;color:var(--rojo);flex-shrink:0;margin-top:2px;}
-    .alerta-invitado h3{font-family:var(--font-titulo);font-weight:700;font-size:0.95rem;color:var(--rojo);margin-bottom:0.35rem;}
-    .alerta-invitado p{font-size:0.83rem;color:var(--gris-texto);line-height:1.6;}
-    .alerta-invitado-btns{display:flex;gap:0.75rem;margin-top:0.85rem;flex-wrap:wrap;}
-    .btn-registro-link{display:inline-flex;align-items:center;gap:0.35rem;background:var(--grad-rojo);color:white;font-size:0.82rem;font-weight:700;padding:0.5rem 1rem;border-radius:99px;text-decoration:none;transition:transform var(--trans);}
-    .btn-registro-link:hover{transform:translateY(-1px);}
-    .btn-login-link{display:inline-flex;align-items:center;gap:0.35rem;background:white;color:var(--azul);font-size:0.82rem;font-weight:700;padding:0.5rem 1rem;border-radius:99px;border:1.5px solid var(--azul);text-decoration:none;transition:all var(--trans);}
-    .btn-login-link:hover{background:var(--azul);color:white;}
-
-    /* MODALIDAD */
-    .modalidad-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1.5rem;}
-    .modalidad-card{padding:1.5rem 1.25rem;border-radius:14px;border:2px solid var(--gris-medio);cursor:pointer;transition:all var(--trans);text-align:center;background:white;}
-    .modalidad-card:hover{border-color:var(--azul-claro);}
-    .modalidad-card.seleccionado{border-color:var(--azul);background:rgba(27,42,107,0.04);}
-    .modalidad-card.seleccionado .modalidad-icono{background:var(--grad-hero);}
-    .modalidad-icono{width:52px;height:52px;border-radius:12px;background:var(--gris-claro);display:grid;place-items:center;margin:0 auto 0.85rem;transition:background var(--trans);}
-    .modalidad-icono svg{width:26px;height:26px;color:var(--azul);}
-    .modalidad-card.seleccionado .modalidad-icono svg{color:white;}
-    .modalidad-nombre{font-family:var(--font-titulo);font-weight:700;font-size:0.95rem;color:var(--negro);margin-bottom:0.3rem;}
-    .modalidad-desc{font-size:0.78rem;color:var(--gris-texto);line-height:1.5;}
-
-    /* Dirección domicilio */
-    .dir-domicilio{background:var(--gris-claro);border-radius:12px;padding:1.25rem;border:1px solid var(--gris-medio);display:none;}
-    .dir-domicilio.visible{display:block;}
-    .dir-domicilio label{display:block;font-size:0.75rem;font-weight:700;color:var(--gris-texto);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:0.4rem;}
-    .dir-domicilio input{width:100%;padding:0.65rem 1rem;border:1.5px solid var(--gris-medio);border-radius:10px;font-family:var(--font-cuerpo);font-size:0.92rem;outline:none;transition:border-color var(--trans);background:white;}
-    .dir-domicilio input:focus{border-color:var(--azul-claro);}
-
-    /* Info recoger */
-    .info-tienda{background:rgba(22,163,74,0.06);border:1.5px solid rgba(22,163,74,0.2);border-radius:12px;padding:1.25rem;display:none;}
-    .info-tienda.visible{display:flex;align-items:flex-start;gap:0.85rem;}
-    .info-tienda svg{width:20px;height:20px;color:var(--verde);flex-shrink:0;margin-top:2px;}
-    .info-tienda-texto h4{font-weight:700;font-size:0.88rem;color:var(--verde);margin-bottom:0.3rem;}
-    .info-tienda-texto p{font-size:0.82rem;color:var(--gris-texto);line-height:1.6;}
-
-    /* RESUMEN PEDIDO */
-    .resumen-panel{background:white;border-radius:16px;border:1px solid var(--gris-medio);padding:1.5rem;position:sticky;top:80px;}
-    .resumen-titulo{font-family:var(--font-titulo);font-weight:800;font-size:1rem;color:var(--azul);margin-bottom:1.25rem;}
-    .resumen-items{display:flex;flex-direction:column;gap:0.6rem;margin-bottom:1.25rem;max-height:260px;overflow-y:auto;}
-    .resumen-item{display:flex;justify-content:space-between;align-items:center;gap:0.5rem;}
-    .resumen-item-nombre{font-size:0.85rem;color:var(--negro);flex:1;}
-    .resumen-item-qty{font-size:0.78rem;color:var(--gris-texto);background:var(--gris-claro);padding:0.15rem 0.45rem;border-radius:99px;}
-    .resumen-item-precio{font-size:0.85rem;font-weight:700;color:var(--azul);white-space:nowrap;}
-    .resumen-divider{border:none;border-top:1px dashed var(--gris-medio);margin:1rem 0;}
-    .resumen-total-row{display:flex;justify-content:space-between;font-size:0.85rem;color:var(--gris-texto);margin-bottom:0.4rem;}
-    .resumen-total-final{display:flex;justify-content:space-between;align-items:center;}
-    .resumen-total-label{font-family:var(--font-titulo);font-weight:700;font-size:1rem;color:var(--negro);}
-    .resumen-total-valor{font-family:var(--font-titulo);font-weight:800;font-size:1.4rem;color:var(--azul);}
-
-    .btn-confirmar{width:100%;margin-top:1.25rem;padding:0.9rem;background:var(--grad-verde);color:white;font-family:var(--font-titulo);font-weight:700;font-size:1rem;border-radius:12px;border:none;cursor:pointer;transition:transform var(--trans),box-shadow var(--trans),opacity var(--trans);box-shadow:0 6px 20px rgba(22,163,74,0.35);}
-    .btn-confirmar:hover{transform:translateY(-2px);box-shadow:0 10px 28px rgba(22,163,74,0.45);}
-    .btn-confirmar:disabled{opacity:0.4;cursor:not-allowed;transform:none;}
-
-    /* Toast */
-    .toast-wrap{position:fixed;bottom:2rem;right:2rem;z-index:9999;display:flex;flex-direction:column;gap:0.75rem;}
-    .toast{background:white;border-left:4px solid var(--verde);border-radius:12px;padding:0.85rem 1.1rem;font-size:0.85rem;font-weight:500;box-shadow:var(--sombra-md);animation:tIn 0.35s ease both;max-width:300px;}
-    .toast.err{border-left-color:var(--rojo);}
-    @keyframes tIn{from{transform:translateX(120%);opacity:0}to{transform:translateX(0);opacity:1}}
-    .toast.out{animation:tOut 0.3s ease forwards;}
-    @keyframes tOut{to{transform:translateX(120%);opacity:0}}
-
-    /* ── TV ── */
-    @media (min-width: 1400px) {
-      .checkout-layout { max-width: 1400px; }
-    }
-    /* ── Tablet ── */
-    @media (min-width: 768px) and (max-width: 1023px) {
-      .checkout-layout { grid-template-columns: 1fr; }
-      .resumen-panel { position: static; }
-      .modalidad-grid { grid-template-columns: 1fr 1fr; }
-    }
-    /* ── Móvil ── */
-    @media (max-width: 767px) {
-      .checkout-layout { grid-template-columns: 1fr; padding: 1.25rem 1rem 3rem; gap: 1.25rem; }
-      .steps-wrap { padding: 0.75rem 1rem; }
-      .step-label { font-size: 0.7rem; }
-      .modalidad-grid { grid-template-columns: 1fr; gap: 0.75rem; }
-      .modalidad-card { padding: 1.25rem 1rem; }
-      .resumen-panel { position: static; padding: 1.25rem; }
-      .navbar-inner { padding: 0 1rem; }
-    }
-    @media (max-width: 479px) {
-      .modalidad-grid { grid-template-columns: 1fr; }
-      .steps { gap: 0; }
-      .step-label { display: none; }
-    }
-  </style>
-</head>
+<head th:replace="~{fragments/tienda :: cabeza('Finalizar pedido', 'Confirma tu pedido en Los Tres Hermanos.')}"></head>
 <body>
+  <th:block th:replace="~{fragments/tienda :: barra}"></th:block>
 
-  <!-- NAVBAR -->
-  <nav class="navbar">
-    <div class="navbar-inner">
-      <div class="navbar-logo">
-        <span>Los <em>Tres</em> Hermanos</span>
-      </div>
-      <a th:href="@{/medicamentos}" style="font-size:0.82rem;color:var(--gris-texto);font-weight:500;">← Volver al catálogo</a>
-    </div>
-        <a th:href="@{/suscripciones}" class="nav-link-suscripcion-simple" style="font-size:0.8rem;font-weight:600;color:var(--rojo);margin-left:auto;padding:0.35rem 0.75rem;border:1.5px solid var(--rojo);border-radius:20px;text-decoration:none;">⭐ Suscripciones</a>
-    </nav>
+  <main id="contenido" class="contenedor checkout">
+    <ol class="pasos" aria-label="Progreso del pedido">
+      <li class="paso hecho"><span class="paso-circulo"><svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#check"/></svg></span><span>Carrito</span></li>
+      <li class="paso activo" aria-current="step"><span class="paso-circulo">2</span><span>Entrega</span></li>
+      <li class="paso"><span class="paso-circulo">3</span><span>Confirmación</span></li>
+    </ol>
 
-  <!-- STEPS -->
-  <div class="steps-wrap">
-    <div class="steps">
-      <div class="step done">
-        <div class="step-circle">✓</div>
-        <span class="step-label">Carrito</span>
-      </div>
-      <div class="step-linea done"></div>
-      <div class="step activo">
-        <div class="step-circle">2</div>
-        <span class="step-label">Entrega</span>
-      </div>
-      <div class="step-linea"></div>
-      <div class="step pendiente">
-        <div class="step-circle">3</div>
-        <span class="step-label">Confirmación</span>
-      </div>
-    </div>
-  </div>
+    <div class="checkout-layout">
+      <div class="checkout-principal entra" style="--i:0">
+        <h1>¿Cómo quieres recibir tu pedido?</h1>
 
-  <div class="checkout-layout">
-    <div>
-
-      <!-- Alerta si es invitado -->
-      <div class="alerta-invitado" id="alerta-invitado" style="display:none">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-        <div>
-          <h3>Debes registrarte para hacer un pedido</h3>
-          <p>Los clientes registrados pueden hacer pedidos, guardar su historial y recibir su factura. ¡Es gratis y solo toma 1 minuto!</p>
-          <div class="alerta-invitado-btns">
-            <a th:href="@{/registro}" class="btn-registro-link">Crear cuenta gratis →</a>
-            <a th:href="@{/login}" class="btn-login-link">Ya tengo cuenta</a>
+        <div class="alerta alerta--aviso alerta-invitado" id="alerta-invitado">
+          <svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#candado"/></svg>
+          <div>
+            <h2>Debes registrarte para hacer un pedido</h2>
+            <p>Los clientes registrados pueden hacer pedidos, guardar su historial y recibir su factura. Es gratis.</p>
+            <div class="alerta-acciones">
+              <a th:href="@{/registro}" class="btn btn--primario btn--sm">Crear cuenta gratis</a>
+              <a th:href="@{/login}" class="btn btn--secundario btn--sm">Ya tengo cuenta</a>
+            </div>
           </div>
         </div>
-      </div>
 
-      <!-- Modalidad de entrega -->
-      <div class="panel" id="panel-entrega">
-        <div class="panel-header">
-          <div class="panel-header-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
-          </div>
-          <span class="panel-titulo">¿Cómo quieres recibir tu pedido?</span>
-        </div>
-        <div class="panel-body">
+        <div class="panel-entrega" id="panel-entrega">
           <div class="modalidad-grid">
-            <div class="modalidad-card" id="card-tienda" onclick="seleccionarModalidad('tienda')">
-              <div class="modalidad-icono">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
-              </div>
-              <div class="modalidad-nombre">🏪 Recoger en tienda</div>
-              <div class="modalidad-desc">Tu pedido estará listo cuando llegues. Sin filas, sin esperas.</div>
+            <div class="modalidad-card" id="card-tienda" role="button" tabindex="0" onclick="seleccionarModalidad('tienda')">
+              <span class="modalidad-icono"><svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#tienda"/></svg></span>
+              <h2>Recoger en tienda</h2>
+              <p>Tu pedido estará listo cuando llegues.</p>
+              <span class="modalidad-check"><svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#check"/></svg></span>
             </div>
-            <div class="modalidad-card" id="card-domicilio" onclick="seleccionarModalidad('domicilio')">
-              <div class="modalidad-icono">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12H3l9-9 9 9h-2M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7"/></svg>
-              </div>
-              <div class="modalidad-nombre">🏠 Domicilio</div>
-              <div class="modalidad-desc">Te lo llevamos a tu dirección dentro de Arjona.</div>
+            <div class="modalidad-card" id="card-domicilio" role="button" tabindex="0" onclick="seleccionarModalidad('domicilio')">
+              <span class="modalidad-icono"><svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#camion"/></svg></span>
+              <h2>Domicilio</h2>
+              <p>Te lo llevamos a tu dirección dentro de Arjona.</p>
+              <span class="modalidad-check"><svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#check"/></svg></span>
             </div>
           </div>
 
-          <!-- Info recoger tienda -->
-          <div class="info-tienda" id="info-tienda">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
-            <div class="info-tienda-texto">
-              <h4>Tu pedido quedará listo en la droguería</h4>
-              <p>Dirección: Transversal 20 #14-52, Arjona, Bolívar.<br>Trae este comprobante o muéstralo desde tu teléfono.</p>
+          <div class="desplegable info-tienda" id="info-tienda">
+            <div class="alerta alerta--info">
+              <svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#tienda"/></svg>
+              <div><strong>Tu pedido quedará listo en la droguería</strong><br>Dirección: Transversal 20 #14-52, Arjona, Bolívar. Trae este comprobante o muéstralo desde tu teléfono.</div>
             </div>
           </div>
-
-          <!-- Dirección domicilio -->
-          <div class="dir-domicilio" id="dir-domicilio">
-            <label>Dirección de entrega</label>
-            <input type="text" id="input-direccion" placeholder="Ej: Calle 5 #10-20, Barrio Centro">
-            <p style="font-size:0.75rem;color:var(--gris-texto);margin-top:0.5rem;">Solo domicilios dentro de Arjona, Bolívar.</p>
+          <div class="desplegable dir-domicilio" id="dir-domicilio">
+            <div class="campo">
+              <label for="input-direccion">Dirección de entrega</label>
+              <div class="campo-icono"><svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#ubicacion"/></svg><input type="text" id="input-direccion" placeholder="Ej: Calle 5 #10-20, Barrio Centro" autocomplete="street-address"></div>
+              <p class="campo-ayuda">Solo domicilios dentro de Arjona, Bolívar.</p>
+            </div>
           </div>
         </div>
       </div>
 
+      <aside class="resumen-panel entra" style="--i:2" aria-label="Resumen del pedido">
+        <h2>Resumen del pedido</h2>
+        <div class="resumen-items" id="resumen-items"></div>
+        <div class="resumen-total-row"><span>Subtotal</span><span id="res-subtotal">$0</span></div>
+        <div class="resumen-total-row" id="res-desc-row"><span>Descuento</span><span id="res-descuento">-$0</span></div>
+        <div class="resumen-total-final"><span>Total</span><strong id="res-total">$0</strong></div>
+        <button class="btn btn--primario btn--lg btn--bloque" id="btn-confirmar" type="button" onclick="confirmarPedido()" disabled>
+          Confirmar pedido <svg class="ic ic-mueve" aria-hidden="true"><use href="/img/iconos.svg#flecha"/></svg>
+        </button>
+        <p class="resumen-nota"><svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#billete"/></svg> El pago se realiza en efectivo al recibir tu pedido.</p>
+      </aside>
     </div>
-
-    <!-- RESUMEN -->
-    <div class="resumen-panel">
-      <div class="resumen-titulo">Resumen del Pedido</div>
-      <div class="resumen-items" id="resumen-items"></div>
-      <hr class="resumen-divider">
-      <div class="resumen-total-row"><span>Subtotal</span><span id="res-subtotal">$0</span></div>
-      <div class="resumen-total-row" id="res-desc-row" style="display:none;color:var(--verde)"><span>Descuento</span><span id="res-descuento">-$0</span></div>
-      <div class="resumen-divider" style="margin:0.5rem 0;"></div>
-      <div class="resumen-total-final">
-        <span class="resumen-total-label">Total</span>
-        <span class="resumen-total-valor" id="res-total">$0</span>
-      </div>
-      <button class="btn-confirmar" id="btn-confirmar" onclick="confirmarPedido()" disabled>
-        Confirmar Pedido →
-      </button>
-      <p style="font-size:0.72rem;color:var(--gris-texto);text-align:center;margin-top:0.75rem;">
-        El pago se realiza en efectivo al recibir tu pedido.
-      </p>
-    </div>
-  </div>
+  </main>
 
   <div class="toast-wrap" id="toast-wrap"></div>
-
-  <script th:src="@{/js/seguridad.js}"></script>
-  <script th:src="@{/js/global.js}"></script>
+  <th:block th:replace="~{fragments/tienda :: scripts}"></th:block>
   <script>
     // ── Estado ────────────────────────────────────────────────
     const sesionCliente = JSON.parse(sessionStorage.getItem('lth_cliente') || 'null');
@@ -315,7 +124,7 @@
       const descRow = document.getElementById('res-desc-row');
       if (sus && sus.descuento > 0 && descRow) {
         descRow.style.display = 'flex';
-        descRow.style.color   = '#16a34a';
+        descRow.style.color   = 'var(--emerald-tinta)';
         document.getElementById('res-descuento').textContent =
           `✓ ${sus.descuento}% Plan ${sus.plan.charAt(0).toUpperCase()+sus.plan.slice(1)} incluido`;
       } else if (descRow) {

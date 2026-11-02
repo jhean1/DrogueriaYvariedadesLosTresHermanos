@@ -1,11 +1,12 @@
 package com.example.DrogueriaLosTresHermanos.controlador;
 
+import com.example.DrogueriaLosTresHermanos.configuracion.PerfilAdmin;
 import com.example.DrogueriaLosTresHermanos.modelo.PlanSuscripcion;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 
-import java.security.Principal;
 import java.util.Arrays;
 import java.util.List;
 
@@ -164,10 +165,13 @@ public class PaginaControlador {
 
     // ── Panel de administración ───────────────────────────────────────────────
     @GetMapping("/admin")
-    public String adminPanel(Model modelo, Principal administrador) {
+    public String adminPanel(Model modelo, Authentication autenticacion) {
+        PerfilAdmin perfil = PerfilAdmin.de(autenticacion);
         modelo.addAttribute("pagina", "admin");
         modelo.addAttribute("titulo", "Panel de Administración");
-        modelo.addAttribute("adminCorreo", administrador.getName());
+        modelo.addAttribute("adminCorreo", perfil.correo());
+        modelo.addAttribute("perfil", perfil);
+        modelo.addAttribute("seccionActiva", "resumen");
         return "admin";
     }
 

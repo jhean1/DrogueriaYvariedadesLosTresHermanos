@@ -1,321 +1,60 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="es">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Nosotros — Los Tres Hermanos</title>
-  <link rel="stylesheet" th:href="@{/css/global.css}">
-  <style>
-    html, body { overflow-x: hidden; box-sizing: border-box; }
-    *, *::before, *::after { box-sizing: border-box; }
-    body { background: var(--gris-claro); }
-    .page-header { background: var(--grad-hero); padding: 5rem 2rem 3rem; position: relative; overflow: hidden; }
-    .page-header::before { content:''; position:absolute; top:-40%; right:-5%; width:500px; height:500px; border-radius:50%; background:rgba(255,255,255,0.04); pointer-events:none; }
-    .page-header-inner { max-width:1280px; margin:0 auto; position:relative; z-index:1; }
-    .breadcrumb { display:flex; align-items:center; gap:0.5rem; font-size:0.82rem; color:rgba(255,255,255,0.6); margin-bottom:1.25rem; }
-    .breadcrumb a { color:rgba(255,255,255,0.6); transition:color var(--trans); }
-    .breadcrumb a:hover { color:white; }
-    .breadcrumb span { color:rgba(255,255,255,0.9); }
-    .page-header h1 { font-family:var(--font-titulo); font-size:clamp(2rem,4vw,3rem); font-weight:800; color:white; letter-spacing:-0.03em; margin-bottom:0.5rem; }
-    .page-header p { color:rgba(255,255,255,0.72); font-size:1rem; }
-
-    .nosotros-main { max-width:1280px; margin:0 auto; padding:3rem 2rem 5rem; display:flex; flex-direction:column; gap:3rem; }
-
-    /* Misión / Visión */
-    .mv-grid { display:grid; grid-template-columns:1fr 1fr; gap:1.5rem; }
-    .mv-card {
-      background: white; border-radius: var(--radio-xl);
-      padding: 2.5rem; border: 1px solid var(--gris-medio);
-      position: relative; overflow: hidden;
-      transition: transform var(--trans), box-shadow var(--trans);
-    }
-    .mv-card:hover { transform: translateY(-4px); box-shadow: var(--sombra-lg); }
-    .mv-card.mision { border-top: 4px solid var(--azul); }
-    .mv-card.vision  { border-top: 4px solid var(--rojo); }
-    .mv-eyebrow {
-      font-size: 0.72rem; font-weight: 700; text-transform: uppercase;
-      letter-spacing: 0.12em; margin-bottom: 0.75rem;
-    }
-    .mision .mv-eyebrow { color: var(--azul); }
-    .vision  .mv-eyebrow { color: var(--rojo); }
-    .mv-card h2 { font-family: var(--font-titulo); font-size: 1.5rem; font-weight: 800; color: var(--negro-suave); margin-bottom: 1rem; }
-    .mv-card p  { font-size: 0.95rem; color: var(--gris-texto); line-height: 1.8; }
-    .mv-deco {
-      position: absolute; bottom: -20px; right: -20px;
-      font-family: var(--font-titulo); font-size: 8rem; font-weight: 800;
-      line-height: 1; color: var(--gris-claro); user-select: none; pointer-events: none;
-    }
-
-    /* Valores */
-    .seccion-titulo-local {
-      font-family: var(--font-titulo); font-size: 1.8rem; font-weight: 800;
-      color: var(--azul); margin-bottom: 1.5rem; letter-spacing: -0.02em;
-    }
-
-    .valores-grid-grande {
-      display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1rem;
-    }
-
-    .valor-grande {
-      background: white; border-radius: var(--radio-lg);
-      padding: 1.75rem; border: 1px solid var(--gris-medio);
-      display: flex; align-items: flex-start; gap: 1rem;
-      transition: transform var(--trans), box-shadow var(--trans), border-color var(--trans);
-    }
-    .valor-grande:hover { transform: translateY(-4px); box-shadow: var(--sombra-md); border-color: var(--azul-claro); }
-
-    .valor-num {
-      font-family: var(--font-titulo); font-size: 2rem; font-weight: 800;
-      color: var(--gris-medio); line-height: 1; flex-shrink: 0; min-width: 2rem;
-    }
-    .valor-texto strong { display: block; font-family: var(--font-titulo); font-size: 0.98rem; font-weight: 700; color: var(--negro-suave); margin-bottom: 0.3rem; }
-    .valor-texto span { font-size: 0.82rem; color: var(--gris-texto); line-height: 1.5; }
-
-    /* Historia */
-    .historia-wrap {
-      background: white; border-radius: var(--radio-xl);
-      padding: 3rem; border: 1px solid var(--gris-medio);
-    }
-    .historia-wrap p { font-size: 0.98rem; color: var(--gris-texto); line-height: 1.9; }
-    .historia-wrap p + p { margin-top: 1rem; }
-
-    
-    @media (min-width: 1400px) {
-      .nosotros-grid { max-width: 1600px; }
-    }
-    @media (min-width: 768px) and (max-width: 1023px) {
-      .nosotros-grid { grid-template-columns: 1fr; }
-      .nosotros-img { max-height: 300px; }
-    }
-    @media (max-width: 767px) {
-      .page-header { padding: 4rem 1.25rem 2rem; }
-      .page-header h1 { font-size: 1.6rem; }
-      .nosotros-grid { grid-template-columns: 1fr; gap: 2rem; padding: 2rem 1.25rem; }
-      .nosotros-img { display: none; }
-      .valores-grid { grid-template-columns: 1fr 1fr; gap: 0.85rem; padding: 2rem 1.25rem; }
-      .equipo-grid { grid-template-columns: 1fr; padding: 2rem 1.25rem; }
-    }
-    @media (max-width: 479px) {
-      .valores-grid { grid-template-columns: 1fr; }
-    }
-  </style>
-</head>
+<head th:replace="~{fragments/tienda :: cabeza('Nosotros', 'La historia, misión y valores de Droguería y Variedades Los Tres Hermanos.')}"></head>
 <body>
-<script>(function(){try{var s=JSON.parse(sessionStorage.getItem('lth_cliente')||'null');if(s&&s.rol==='cliente'){var st=document.createElement('style');st.textContent='#btn-registrate{display:none!important}';document.head.appendChild(st);}}catch(e){}})();</script>
+  <th:block th:replace="~{fragments/tienda :: barra}"></th:block>
 
-  <nav class="navbar">
-    <div class="navbar-inner">
-      <a th:href="@{/}" class="navbar-logo">
-        <img th:src="@{/logo3.jpeg}" src="/logo3.jpeg" alt="Logo">
-        <span>Los <em>Tres</em> Hermanos</span>
-      </a>
-      <div class="navbar-nav" id="nav-menu">
-        <a th:href="@{/}"             class="nav-link">Inicio</a>
-        <a th:href="@{/medicamentos}" class="nav-link">Medicamentos</a>
-        <a th:href="@{/variedades}"           class="nav-link">Variedades</a>
-        <a th:href="@{/servicios}"            class="nav-link">Servicios</a>
-        <a th:href="@{/suscripciones}"      class="nav-link nav-link-suscripcion">⭐ Suscripciones</a>
-        <a th:href="@{/nosotros}"       class="nav-link active">Nosotros</a>
-        <a th:href="@{/contacto}"   class="nav-link">Contacto</a>
+  <main id="contenido">
+    <section class="cabecera contenedor cabecera--amplia">
+      <nav class="migas revelar" aria-label="Ruta"><a th:href="@{/}">Inicio</a><svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#chevron"/></svg><span aria-current="page">Nosotros</span></nav>
+      <h1 class="titulo-pagina revelar">Tres hermanos.<br>Un compromiso con <span class="resaltado">Arjona.</span></h1>
+    </section>
+
+    <section class="contenedor historia">
+      <img class="historia-simbolo revelar revelar--zoom" th:src="@{/img/marca/isotipo-3h.svg}" alt="" width="256" height="160">
+      <div class="historia-texto revelar">
+        <span class="ante">Nuestra historia</span>
+        <p class="historia-entrada">Droguería y Variedades Los Tres Hermanos nació del sueño de tres hermanos que querían brindar un servicio de salud accesible y de calidad a la comunidad de Arjona, Bolívar.</p>
+        <p>Con esfuerzo, dedicación y mucho amor por su tierra, pusieron en marcha un negocio que hoy es parte fundamental del tejido social del municipio.</p>
+        <p>A lo largo de los años, hemos crecido no solo en productos y servicios, sino en la confianza que nuestra comunidad ha depositado en nosotros. Cada cliente que nos visita se convierte en parte de nuestra familia, y eso es lo que nos impulsa a seguir mejorando cada día para ofrecerles lo mejor.</p>
       </div>
-      <div class="navbar-actions">
-        <a id="btn-mi-cuenta" class="btn-secundario" style="font-size:0.82rem;padding:0.45rem 1rem;cursor:pointer;" aria-label="Mi cuenta"
-           onclick="(function(){var s=JSON.parse(sessionStorage.getItem('lth_cliente')||'null');window.location.href=(s&&s.rol==='cliente')?'/perfil':'/login';})()">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-            <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/>
-          </svg>
-          Mi cuenta
-        </a>
+    </section>
 
-        <button class="btn-menu" id="btn-menu" aria-label="Menú" aria-expanded="false" aria-controls="nav-menu">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-            <line x1="4" y1="6" x2="20" y2="6"/>
-            <line x1="4" y1="12" x2="20" y2="12"/>
-            <line x1="4" y1="18" x2="20" y2="18"/>
-          </svg>
-        </button>
+    <section class="mision-vision">
+      <div class="contenedor mv-rejilla">
+        <article class="revelar revelar--izq">
+          <span class="ante ante--claro">Nuestra misión</span>
+          <h2>¿Por qué existimos?</h2>
+          <p>Somos una droguería comprometida con el bienestar de la comunidad de Arjona, Bolívar. Nuestra misión es brindar productos farmacéuticos y de primera necesidad de alta calidad, con atención cálida, precios justos y servicio oportuno que mejore la calidad de vida de cada persona que nos visita.</p>
+        </article>
+        <article class="revelar revelar--der">
+          <span class="ante ante--claro">Nuestra visión</span>
+          <h2>¿Hacia dónde vamos?</h2>
+          <p>Ser la droguería y tienda de variedades de referencia en Arjona y municipios vecinos, reconocida por su compromiso con la salud, la confianza de sus clientes y la innovación en el servicio. Queremos crecer junto a nuestra comunidad, ampliando nuestros productos y mejorando cada día la experiencia de compra.</p>
+        </article>
       </div>
-    </div>
-  </nav>
+    </section>
 
-  <div class="page-header">
-    <div class="page-header-inner">
-      <div class="breadcrumb">
-        <a th:href="@{/}">Inicio</a>
-        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
-        <span>Nosotros</span>
-      </div>
-      <h1>Quiénes Somos</h1>
-      <p>Conoce la historia y los valores detrás de Droguería Los Tres Hermanos</p>
-    </div>
-  </div>
-
-  <main class="nosotros-main">
-
-    <!-- Misión y Visión -->
-    <div class="mv-grid">
-      <div class="mv-card mision animar animar-delay-1">
-        <div class="mv-eyebrow">Nuestra Misión</div>
-        <h2>¿Por qué existimos?</h2>
-        <p>
-          Somos una droguería comprometida con el bienestar de la comunidad de Arjona, Bolívar.
-          Nuestra misión es brindar productos farmacéuticos y de primera necesidad de alta calidad,
-          con atención cálida, precios justos y servicio oportuno que mejore la calidad de vida
-          de cada persona que nos visita.
-        </p>
-        <div class="mv-deco">M</div>
-      </div>
-      <div class="mv-card vision animar animar-delay-2">
-        <div class="mv-eyebrow">Nuestra Visión</div>
-        <h2>¿Hacia dónde vamos?</h2>
-        <p>
-          Ser la droguería y tienda de variedades de referencia en Arjona y municipios vecinos,
-          reconocida por su compromiso con la salud, la confianza de sus clientes y la innovación
-          en el servicio. Queremos crecer junto a nuestra comunidad, ampliando nuestros productos
-          y mejorando cada día la experiencia de compra.
-        </p>
-        <div class="mv-deco">V</div>
-      </div>
-    </div>
-
-    <!-- Valores -->
-    <div>
-      <h2 class="seccion-titulo-local animar">Nuestros Valores</h2>
-      <div class="valores-grid-grande">
-        <div class="valor-grande animar animar-delay-1">
-          <span class="valor-num">01</span>
-          <div class="valor-texto">
-            <strong>Responsabilidad</strong>
-            <span>Cumplimos con nuestros compromisos y actuamos con seriedad en cada decisión.</span>
-          </div>
-        </div>
-        <div class="valor-grande animar animar-delay-2">
-          <span class="valor-num">02</span>
-          <div class="valor-texto">
-            <strong>Respeto</strong>
-            <span>Tratamos a cada cliente y colaborador con dignidad y consideración.</span>
-          </div>
-        </div>
-        <div class="valor-grande animar animar-delay-3">
-          <span class="valor-num">03</span>
-          <div class="valor-texto">
-            <strong>Honestidad</strong>
-            <span>Actuamos con transparencia y ética en todos nuestros procesos y transacciones.</span>
-          </div>
-        </div>
-        <div class="valor-grande animar animar-delay-4">
-          <span class="valor-num">04</span>
-          <div class="valor-texto">
-            <strong>Solidaridad</strong>
-            <span>Apoyamos a nuestra comunidad y trabajamos juntos por el bienestar común.</span>
-          </div>
-        </div>
-        <div class="valor-grande animar">
-          <span class="valor-num">05</span>
-          <div class="valor-texto">
-            <strong>Lealtad</strong>
-            <span>Construimos relaciones duraderas con nuestros clientes basadas en la confianza.</span>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Historia -->
-    <div class="historia-wrap animar">
-      <h2 class="seccion-titulo-local" style="margin-bottom:1.5rem">Nuestra Historia</h2>
-      <p>
-        Droguería y Variedades Los Tres Hermanos nació del sueño de tres hermanos que querían
-        brindar un servicio de salud accesible y de calidad a la comunidad de Arjona, Bolívar.
-        Con esfuerzo, dedicación y mucho amor por su tierra, pusieron en marcha un negocio
-        que hoy es parte fundamental del tejido social del municipio.
-      </p>
-      <p>
-        A lo largo de los años, hemos crecido no solo en productos y servicios, sino en la
-        confianza que nuestra comunidad ha depositado en nosotros. Cada cliente que nos visita
-        se convierte en parte de nuestra familia, y eso es lo que nos impulsa a seguir mejorando
-        cada día para ofrecerles lo mejor.
-      </p>
-    </div>
-
+    <section class="contenedor bloque" aria-labelledby="titulo-valores">
+      <header class="encabezado revelar">
+        <span class="ante">Nuestros valores</span>
+        <h2 id="titulo-valores" class="titulo-seccion">Cinco principios que no se negocian.</h2>
+      </header>
+      <ol class="valores-detalle" data-escalonar>
+        <li><span>01</span><h3>Responsabilidad</h3><p>Cumplimos con nuestros compromisos y actuamos con seriedad en cada decisión.</p></li>
+        <li><span>02</span><h3>Respeto</h3><p>Tratamos a cada cliente y colaborador con dignidad y consideración.</p></li>
+        <li><span>03</span><h3>Honestidad</h3><p>Actuamos con transparencia y ética en todos nuestros procesos y transacciones.</p></li>
+        <li><span>04</span><h3>Solidaridad</h3><p>Apoyamos a nuestra comunidad y trabajamos juntos por el bienestar común.</p></li>
+        <li><span>05</span><h3>Lealtad</h3><p>Construimos relaciones duraderas con nuestros clientes basadas en la confianza.</p></li>
+      </ol>
+    </section>
   </main>
 
-  <footer class="footer-global">
-    <div class="footer-inner">
-      <div class="footer-grid">
-        <div class="footer-marca">
-          <h3>Droguería y Variedades Los Tres Hermanos</h3>
-          <p>Tu farmacia de confianza en Arjona, Bolívar.</p>
-        </div>
-        <div class="footer-col">
-          <h4>Páginas</h4>
-          <ul>
-            <li><a th:href="@{/medicamentos}">Medicamentos</a></li>
-            <li><a th:href="@{/variedades}">Variedades</a></li>
-            <li><a th:href="@{/servicios}">Servicios</a></li>
-          </ul>
-        </div>
-        <div class="footer-col">
-          <h4>Contacto</h4>
-          <ul>
-            <li>
-              <div class="footer-contacto-fila">
-                <a href="https://wa.me/573225065554" target="_blank" rel="noopener" class="btn-contacto whatsapp" title="WhatsApp" aria-label="WhatsApp">
-                  <span class="btn-sign">
-                    <svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" style="fill:white;width:20px;height:20px;">
-                      <path d="M13.601 2.326A7.854 7.854 0 0 0 7.994 0C3.627 0 .068 3.558.064 7.926c0 1.399.366 2.76 1.057 3.965L0 16l4.204-1.102a7.933 7.933 0 0 0 3.79.965h.004c4.368 0 7.926-3.558 7.93-7.93A7.898 7.898 0 0 0 13.6 2.326zM7.994 14.521a6.573 6.573 0 0 1-3.356-.92l-.24-.144-2.494.654.666-2.433-.156-.251a6.56 6.56 0 0 1-1.007-3.505c0-3.626 2.957-6.584 6.591-6.584a6.56 6.56 0 0 1 4.66 1.931 6.557 6.557 0 0 1 1.928 4.66c-.004 3.639-2.961 6.592-6.592 6.592zm3.615-4.934c-.197-.099-1.17-.578-1.353-.646-.182-.065-.315-.099-.445.099-.133.197-.513.646-.627.775-.114.133-.232.148-.43.05-.197-.1-.836-.308-1.592-.985-.59-.525-.985-1.175-1.103-1.372-.114-.198-.011-.304.088-.403.087-.088.197-.232.296-.346.1-.114.133-.198.198-.33.065-.134.034-.248-.015-.347-.05-.099-.445-1.076-.612-1.47-.16-.389-.323-.335-.445-.34-.114-.007-.247-.007-.38-.007a.729.729 0 0 0-.529.247c-.182.198-.691.677-.691 1.654 0 .977.71 1.916.81 2.049.098.133 1.394 2.132 3.383 2.992.47.205.84.326 1.129.418.475.152.904.129 1.246.08.38-.058 1.171-.48 1.338-.943.164-.464.164-.86.114-.943-.049-.084-.182-.133-.38-.232z"/>
-                    </svg>
-                  </span>
-                  <span class="btn-label">WhatsApp</span>
-                </a>
-                <a href="tel:+573225065554" class="footer-contacto-texto">+57 322 506 5554</a>
-              </div>
-            </li>
-            <li>
-              <div class="footer-contacto-fila">
-                <a href="mailto:diazpajaro1208@gmail.com" class="btn-contacto gmail" title="Gmail" aria-label="Gmail">
-                  <span class="btn-sign">
-                    <svg viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg" width="22" height="22">
-                      <path fill="#EA4335" d="M6 40h6V22.8L4 17v21c0 1.1.9 2 2 2z"/>
-                      <path fill="#34A853" d="M36 40h6c1.1 0 2-.9 2-2V17l-8 5.8z"/>
-                      <path fill="#FBBC04" d="M36 10v12.8l8-5.8V11c0-2.5-2.8-3.9-4.8-2.4z"/>
-                      <path fill="#4285F4" d="M12 22.8V10l12 8.7 12-8.7v12.8L24 31.5z"/>
-                      <path fill="#C5221F" d="M4 11v6l8 5.8V10L9.8 8.6C7.8 7.1 4 8.5 4 11z"/>
-                    </svg>
-                  </span>
-                  <span class="btn-label">Gmail</span>
-                </a>
-                <a href="mailto:diazpajaro1208@gmail.com" class="footer-contacto-texto">diazpajaro1208@gmail.com</a>
-              </div>
-            </li>
-            <li>
-              <div class="footer-contacto-fila">
-                <a href="https://www.google.com/maps/search/?api=1&query=Diagonal+52+50A-755+Arjona+Bolivar+Colombia" target="_blank" rel="noopener" class="btn-contacto ubicacion" title="Ver en Maps" aria-label="Diagonal 52 50A-755">
-                  <span class="btn-sign">
-                    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" style="fill:white;width:20px;height:20px;">
-                      <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
-                    </svg>
-                  </span>
-                  <span class="btn-label">Ubicación</span>
-                </a>
-                <a th:href="@{/contacto}" class="footer-contacto-texto">Diagonal 52 50A-755</a>
-              </div>
-            </li>
-          </ul>
-        </div>
-      </div>
-      <div class="footer-bottom">
-        <span>© 2024 Droguería y Variedades Los Tres Hermanos</span>
-      </div>
-    </div>
-  </footer>
-
-  <script th:src="@{/js/seguridad.js}"></script>
-  <script th:src="@{/js/global.js}"></script>
+  <th:block th:replace="~{fragments/tienda :: pie}"></th:block>
+  <th:block th:replace="~{fragments/tienda :: carrito}"></th:block>
+  <th:block th:replace="~{fragments/tienda :: scripts}"></th:block>
   <script>
-    const btnMenu = document.getElementById('btn-menu');
-    const navMenu = document.getElementById('nav-menu');
-    btnMenu?.addEventListener('click', () => { const ab = navMenu.classList.toggle('abierto'); btnMenu.setAttribute('aria-expanded', ab); });
-    initAvatar({ perfilUrl: '/perfil', logoutUrl: '/' });
-</script>
+    document.addEventListener('DOMContentLoaded', () => initAvatar({ perfilUrl: '/perfil', logoutUrl: '/' }));
+  </script>
 </body>
 </html>

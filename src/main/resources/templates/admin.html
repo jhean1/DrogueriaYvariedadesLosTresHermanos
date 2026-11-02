@@ -1,936 +1,167 @@
 <!DOCTYPE html>
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
-<head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Panel Admin – Los Tres Hermanos</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com"/>
-  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet"/>
-  <style>
-    :root {
-      --azul: #1B2A6B;
-      --rojo: #C0102A;
-      --verde: #16a34a;
-      --amarillo: #d97706;
-      --gris: #f4f6fb;
-      --borde: #dde2f0;
-      --texto: #374151;
-      --radio: 12px;
-    }
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: 'DM Sans', sans-serif; background: var(--gris); color: var(--texto); }
+<head th:replace="~{fragments/admin :: cabeza('Panel')}"></head>
+<body class="panel" th:attr="data-permisos=${perfil.permisosComoTexto()}">
+  <div th:replace="~{fragments/admin :: lateral}"></div>
+  <th:block th:replace="~{fragments/admin :: velo}"></th:block>
 
-    /* ── Topbar ──────────────────────────────────────────── */
-    .admin-topbar {
-      background: var(--azul);
-      color: #fff;
-      padding: 0 1.5rem;
-      height: 56px;
-      display: flex; align-items: center; justify-content: space-between;
-      position: sticky; top: 0; z-index: 100;
-      box-shadow: 0 2px 12px rgba(0,0,0,0.22);
-    }
-    .topbar-logo {
-      font-family: 'Syne', sans-serif;
-      font-size: 1rem;
-      font-weight: 700;
-      display: flex; align-items: center; gap: 0.6rem;
-    }
-    .topbar-logo span { opacity: 0.65; font-size: 0.8rem; font-weight: 400; }
-    .topbar-acciones { display: flex; align-items: center; gap: 0.75rem; }
-    .topbar-admin-nombre {
-      font-size: 0.82rem; opacity: 0.75;
-    }
-    .btn-salir-admin {
-      background: rgba(255,255,255,0.12);
-      border: 1px solid rgba(255,255,255,0.22);
-      color: #fff;
-      padding: 0.35rem 0.85rem;
-      border-radius: 7px;
-      font-size: 0.8rem;
-      font-weight: 600;
-      cursor: pointer;
-      font-family: 'DM Sans', sans-serif;
-      transition: background 0.15s;
-    }
-    .btn-salir-admin:hover { background: rgba(255,255,255,0.22); }
+  <div class="panel-principal">
+    <header th:replace="~{fragments/admin :: superior('Resumen')}"></header>
 
-    /* ── Layout ──────────────────────────────────────────── */
-    .admin-layout {
-      display: grid;
-      grid-template-columns: 220px 1fr;
-      min-height: calc(100vh - 56px);
-    }
+    <main class="panel-contenido" id="contenido">
 
-    /* ── Sidebar ─────────────────────────────────────────── */
-    .admin-sidebar {
-      background: #fff;
-      border-right: 1px solid var(--borde);
-      padding: 1.25rem 0;
-    }
-    .sidebar-grupo { margin-bottom: 0.5rem; }
-    .sidebar-titulo {
-      font-size: 0.68rem;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.07em;
-      color: #9ca3af;
-      padding: 0 1.1rem 0.35rem;
-    }
-    .sidebar-item {
-      display: flex; align-items: center; gap: 0.6rem;
-      padding: 0.62rem 1.1rem;
-      font-size: 0.87rem;
-      font-weight: 500;
-      color: var(--texto);
-      cursor: pointer;
-      transition: all 0.15s;
-      border-left: 3px solid transparent;
-    }
-    .sidebar-item:hover { background: var(--gris); color: var(--azul); }
-    .sidebar-item.activo {
-      color: var(--azul);
-      background: #eef1fb;
-      border-left-color: var(--azul);
-      font-weight: 700;
-    }
-    .sidebar-item svg { opacity: 0.7; flex-shrink: 0; }
-    .sidebar-item.activo svg { opacity: 1; }
-    .sidebar-badge {
-      margin-left: auto;
-      background: var(--rojo);
-      color: #fff;
-      font-size: 0.68rem;
-      font-weight: 700;
-      border-radius: 10px;
-      padding: 0.1rem 0.45rem;
-      min-width: 18px;
-      text-align: center;
-    }
-
-    /* ── Contenido principal ─────────────────────────────── */
-    .admin-main {
-      padding: 1.75rem 2rem;
-      overflow-y: auto;
-    }
-
-    .seccion { display: none; }
-    .seccion.activa { display: block; }
-
-    .seccion-titulo {
-      font-family: 'Syne', sans-serif;
-      font-size: 1.2rem;
-      font-weight: 800;
-      color: var(--azul);
-      margin-bottom: 1.5rem;
-      display: flex; align-items: center; gap: 0.6rem;
-    }
-
-    /* ── Cards estadísticas ──────────────────────────────── */
-    .stats-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-      gap: 1rem;
-      margin-bottom: 1.75rem;
-    }
-    .stat-card {
-      background: #fff;
-      border: 1px solid var(--borde);
-      border-radius: var(--radio);
-      padding: 1.1rem 1.25rem;
-      box-shadow: 0 1px 6px rgba(27,42,107,0.05);
-    }
-    .stat-card-num {
-      font-family: 'Syne', sans-serif;
-      font-size: 1.8rem;
-      font-weight: 800;
-      color: var(--azul);
-      line-height: 1;
-      margin-bottom: 0.25rem;
-    }
-    .stat-card-label { font-size: 0.78rem; color: #6b7280; font-weight: 500; }
-
-    /* ── Tabla general ───────────────────────────────────── */
-    .tabla-wrap {
-      background: #fff;
-      border: 1px solid var(--borde);
-      border-radius: var(--radio);
-      overflow: hidden;
-      box-shadow: 0 1px 6px rgba(27,42,107,0.05);
-    }
-    .tabla-header {
-      padding: 1rem 1.25rem;
-      border-bottom: 1px solid var(--borde);
-      display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap;
-    }
-    .tabla-header h3 {
-      font-family: 'Syne', sans-serif;
-      font-size: 0.95rem;
-      font-weight: 700;
-      color: var(--azul);
-      margin-right: auto;
-    }
-    .input-buscar {
-      padding: 0.5rem 0.85rem;
-      border: 1.5px solid var(--borde);
-      border-radius: 7px;
-      font-size: 0.85rem;
-      font-family: 'DM Sans', sans-serif;
-      width: 220px;
-      transition: border-color 0.18s;
-    }
-    .input-buscar:focus { outline: none; border-color: var(--azul); }
-    table { width: 100%; border-collapse: collapse; }
-    th {
-      text-align: left; padding: 0.7rem 1rem;
-      font-size: 0.75rem; font-weight: 700; text-transform: uppercase;
-      letter-spacing: 0.05em; color: #9ca3af;
-      border-bottom: 1px solid var(--borde);
-      background: var(--gris);
-    }
-    td {
-      padding: 0.75rem 1rem;
-      font-size: 0.85rem;
-      border-bottom: 1px solid var(--borde);
-      vertical-align: middle;
-    }
-    tr:last-child td { border-bottom: none; }
-    tr:hover td { background: #fafbff; }
-    .tabla-vacia {
-      text-align: center;
-      color: #9ca3af;
-      padding: 2.5rem 1rem;
-      font-size: 0.87rem;
-    }
-
-    /* ── Badges de estado ────────────────────────────────── */
-    .badge {
-      display: inline-flex; align-items: center; gap: 0.3rem;
-      font-size: 0.75rem; font-weight: 700;
-      padding: 0.2rem 0.6rem;
-      border-radius: 20px;
-    }
-    .badge-pendiente  { background: #fef3c7; color: #92400e; }
-    .badge-aprobado   { background: #d1fae5; color: #065f46; }
-    .badge-rechazado  { background: #fee2e2; color: #991b1b; }
-    .badge-activo     { background: #dbeafe; color: #1e40af; }
-    .badge-sin-plan   { background: #f3f4f6; color: #6b7280; }
-
-    /* Semáforo de completitud */
-    .sem { font-size: 0.85rem; }
-
-    /* ── Acciones de tabla ───────────────────────────────── */
-    .btn-accion {
-      padding: 0.3rem 0.7rem;
-      border-radius: 6px;
-      font-size: 0.78rem;
-      font-weight: 600;
-      border: none;
-      cursor: pointer;
-      font-family: 'DM Sans', sans-serif;
-      transition: all 0.15s;
-      margin-right: 0.3rem;
-    }
-    .btn-aprobar  { background: #d1fae5; color: #065f46; }
-    .btn-aprobar:hover  { background: #a7f3d0; }
-    .btn-rechazar { background: #fee2e2; color: #991b1b; }
-    .btn-rechazar:hover { background: #fca5a5; }
-    .btn-ver      { background: #e0e7ff; color: #3730a3; }
-    .btn-ver:hover{ background: #c7d2fe; }
-    .btn-activar  { background: #dbeafe; color: #1e40af; }
-    .btn-activar:hover { background: #bfdbfe; }
-
-    /* ── Formulario crear cliente / admin ────────────────── */
-    .form-card {
-      background: #fff;
-      border: 1px solid var(--borde);
-      border-radius: var(--radio);
-      padding: 1.5rem;
-      box-shadow: 0 1px 6px rgba(27,42,107,0.05);
-      max-width: 520px;
-    }
-    .form-card h3 {
-      font-family: 'Syne', sans-serif;
-      font-size: 0.95rem;
-      font-weight: 700;
-      color: var(--azul);
-      margin-bottom: 1.25rem;
-    }
-    .campo-f { margin-bottom: 0.85rem; }
-    .campo-f label {
-      display: block;
-      font-size: 0.8rem; font-weight: 600; color: var(--texto);
-      margin-bottom: 0.3rem;
-    }
-    .campo-f input, .campo-f select {
-      width: 100%; padding: 0.6rem 0.85rem;
-      border: 1.5px solid var(--borde);
-      border-radius: 7px;
-      font-size: 0.87rem;
-      font-family: 'DM Sans', sans-serif;
-      color: #111;
-    }
-    .campo-f input:focus, .campo-f select:focus {
-      outline: none; border-color: var(--azul);
-    }
-    .btn-form {
-      background: var(--azul); color: #fff;
-      padding: 0.65rem 1.5rem;
-      border: none; border-radius: 8px;
-      font-family: 'Syne', sans-serif;
-      font-size: 0.9rem; font-weight: 700;
-      cursor: pointer; transition: background 0.15s;
-    }
-    .btn-form:hover { background: #24358a; }
-    .btn-form-sec {
-      background: transparent; color: var(--texto);
-      padding: 0.65rem 1.25rem;
-      border: 1.5px solid var(--borde); border-radius: 8px;
-      font-family: 'DM Sans', sans-serif;
-      font-size: 0.87rem; font-weight: 600;
-      cursor: pointer; margin-left: 0.5rem; transition: all 0.15s;
-    }
-    .btn-form-sec:hover { border-color: var(--azul); color: var(--azul); }
-
-    /* Alerta mensaje */
-    .msg-form {
-      border-radius: 8px; padding: 0.6rem 0.9rem;
-      font-size: 0.82rem; font-weight: 600;
-      margin-bottom: 0.9rem; display: none;
-    }
-    .msg-form.ok    { background: #d1fae5; color: #065f46; display: block; }
-    .msg-form.error { background: #fee2e2; color: #991b1b; display: block; }
-
-    /* Modal detalle solicitud */
-    .modal-overlay {
-      display: none; position: fixed; inset: 0;
-      background: rgba(0,0,0,0.5);
-      z-index: 200; align-items: center; justify-content: center;
-      padding: 1rem;
-    }
-    .modal-overlay.visible { display: flex; }
-    .modal-box {
-      background: #fff; border-radius: 14px;
-      max-width: 560px; width: 100%;
-      max-height: 90vh; overflow-y: auto;
-      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-    }
-    .modal-head {
-      padding: 1.25rem 1.5rem;
-      border-bottom: 1px solid var(--borde);
-      display: flex; align-items: center; justify-content: space-between;
-    }
-    .modal-head h3 {
-      font-family: 'Syne', sans-serif;
-      font-size: 1rem; font-weight: 800; color: var(--azul);
-    }
-    .btn-cerrar-modal {
-      background: none; border: none; cursor: pointer;
-      font-size: 1.2rem; color: #6b7280; padding: 0.2rem;
-    }
-    .modal-body { padding: 1.25rem 1.5rem; }
-    .detalle-fila {
-      display: flex; gap: 0.75rem;
-      padding: 0.5rem 0;
-      border-bottom: 1px solid var(--borde);
-      font-size: 0.85rem;
-    }
-    .detalle-fila:last-child { border: none; }
-    .detalle-key { color: #6b7280; font-weight: 600; min-width: 140px; flex-shrink: 0; }
-    .detalle-val { color: var(--texto); word-break: break-all; }
-    .foto-comprobante {
-      max-width: 100%; border-radius: 8px;
-      margin-top: 0.5rem; border: 1px solid var(--borde);
-    }
-    .modal-footer {
-      padding: 1rem 1.5rem;
-      border-top: 1px solid var(--borde);
-      display: flex; gap: 0.5rem; justify-content: flex-end;
-    }
-
-    /* Modal activar plan en tienda */
-    .plan-select-wrap {
-      display: grid; grid-template-columns: 1fr 1fr;
-      gap: 0.6rem; margin: 0.75rem 0;
-    }
-    .plan-opt {
-      border: 2px solid var(--borde);
-      border-radius: 8px; padding: 0.7rem 0.5rem;
-      text-align: center; cursor: pointer; font-size: 0.82rem;
-      font-weight: 600; color: var(--texto);
-      transition: all 0.15s;
-    }
-    .plan-opt:hover { border-color: var(--azul); color: var(--azul); background: #eef1fb; }
-    .plan-opt.sel { border-color: var(--azul); background: #e8ecf8; color: var(--azul); }
-
-    @media (max-width: 768px) {
-      .admin-layout { grid-template-columns: 1fr; }
-      .admin-sidebar { display: none; }
-      .admin-main { padding: 1rem; }
-    }
-  </style>
-</head>
-<body>
-
-  <!-- ── Topbar ──────────────────────────────────────────── -->
-  <div class="admin-topbar">
-    <div class="topbar-logo">
-      🏥 Panel Admin
-      <span>Los Tres Hermanos</span>
-    </div>
-    <div class="topbar-acciones">
-      <span class="topbar-admin-nombre" th:text="${adminCorreo}">Administrador</span>
-      <form method="post" th:action="@{/admin/logout}" style="margin:0;">
-        <button class="btn-salir-admin" type="submit">Salir</button>
-      </form>
-    </div>
-  </div>
-
-  <div class="admin-layout">
-
-    <!-- ── Sidebar ─────────────────────────────────────── -->
-    <aside class="admin-sidebar">
-      <div class="sidebar-grupo">
-        <div class="sidebar-titulo">General</div>
-        <div class="sidebar-item activo" onclick="irSeccion('resumen')">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
-          Resumen
-        </div>
-      </div>
-      <div class="sidebar-grupo">
-        <div class="sidebar-titulo">Pagos</div>
-        <div class="sidebar-item" onclick="irSeccion('solicitudes')">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-          Solicitudes
-          <span class="sidebar-badge" id="badge-pendientes">0</span>
-        </div>
-      </div>
-      <div class="sidebar-grupo">
-        <div class="sidebar-titulo">Clientes</div>
-        <div class="sidebar-item" onclick="irSeccion('clientes')">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>
-          Todos los clientes
-        </div>
-        <div class="sidebar-item" onclick="irSeccion('crear-cliente')">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="23" y1="11" x2="17" y2="11"/></svg>
-          Crear cliente
-        </div>
-        <div class="sidebar-item" onclick="irSeccion('activar-plan')">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-          Activar plan (tienda)
-        </div>
-      </div>
-    </aside>
-
-    <!-- ── Contenido ─────────────────────────────────────── -->
-    <main class="admin-main">
-
-      <!-- === RESUMEN === -->
-      <div class="seccion activa" id="sec-resumen">
-        <div class="seccion-titulo">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--azul)" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
-          Resumen del sistema
-        </div>
-        <div class="stats-grid" id="stats-grid">
-          <div class="stat-card"><div class="stat-card-num" id="stat-clientes">0</div><div class="stat-card-label">Clientes registrados</div></div>
-          <div class="stat-card"><div class="stat-card-num" id="stat-activos">0</div><div class="stat-card-label">Planes activos</div></div>
-          <div class="stat-card"><div class="stat-card-num" id="stat-pendientes">0</div><div class="stat-card-label">Pagos pendientes</div></div>
-          <div class="stat-card"><div class="stat-card-num" id="stat-aprobados">0</div><div class="stat-card-label">Pagos aprobados</div></div>
-        </div>
-
-        <div class="tabla-wrap">
-          <div class="tabla-header">
-            <h3>⏳ Solicitudes pendientes recientes</h3>
+      <!-- Resumen -->
+      <section class="seccion activa" id="sec-resumen" aria-labelledby="titulo-resumen">
+        <div class="pagina-cabeza">
+          <div>
+            <p class="saludo" id="saludo">Hola</p>
+            <h1 id="titulo-resumen">Resumen de la droguería</h1>
           </div>
-          <div id="tabla-recientes-wrap"></div>
+          <span class="insignia insignia--azul" th:text="${perfil.rol().nombre}">Rol</span>
         </div>
-      </div>
 
-      <!-- === SOLICITUDES === -->
-      <div class="seccion" id="sec-solicitudes">
-        <div class="seccion-titulo">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--azul)" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-          Solicitudes de pago
+        <div class="alerta alerta--info aviso-datos" th:if="${perfil.operaPagos() or perfil.operaClientes()}">
+          <svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#info"/></svg>
+          <span>Estos datos se leen de este navegador. Solo incluyen cuentas y solicitudes registradas en este equipo, hasta que el sistema tenga base de datos.</span>
         </div>
-        <div class="tabla-wrap">
-          <div class="tabla-header">
-            <h3>Todas las solicitudes</h3>
-            <input class="input-buscar" type="search" placeholder="Buscar por nombre, correo…" oninput="filtrarSolicitudes(this.value)" id="busca-sol"/>
+
+        <div class="rejilla-kpi" id="stats-grid" th:if="${perfil.operaPagos() or perfil.operaClientes()}" data-escalonar>
+          <article class="kpi" th:if="${perfil.operaClientes()}"><span class="kpi-icono"><svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#usuarios"/></svg></span><strong class="kpi-valor" id="stat-clientes">0</strong><span class="kpi-etiqueta">Clientes registrados</span></article>
+          <article class="kpi" th:if="${perfil.operaClientes()}"><span class="kpi-icono kpi-icono--verde"><svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#estrella"/></svg></span><strong class="kpi-valor" id="stat-activos">0</strong><span class="kpi-etiqueta">Planes activos</span></article>
+          <article class="kpi" th:if="${perfil.operaPagos()}"><span class="kpi-icono kpi-icono--ambar"><svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#reloj"/></svg></span><strong class="kpi-valor" id="stat-pendientes">0</strong><span class="kpi-etiqueta">Pagos pendientes</span></article>
+          <article class="kpi" th:if="${perfil.operaPagos()}"><span class="kpi-icono kpi-icono--azul"><svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#check"/></svg></span><strong class="kpi-valor" id="stat-aprobados">0</strong><span class="kpi-etiqueta">Pagos aprobados</span></article>
+          <article class="kpi" th:if="${perfil.puede('sales.view')}"><span class="kpi-icono kpi-icono--vino"><svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#recibo"/></svg></span><strong class="kpi-valor" id="stat-pedidos">0</strong><span class="kpi-etiqueta">Pedidos web</span></article>
+        </div>
+
+        <div class="rejilla-graficas" th:if="${perfil.operaPagos()}">
+          <article class="tarjeta revelar">
+            <div class="tarjeta-cabeza"><h2>Estado de las solicitudes</h2></div>
+            <div class="tarjeta-cuerpo" id="grafica-estados"></div>
+          </article>
+          <article class="tarjeta revelar">
+            <div class="tarjeta-cabeza"><h2>Solicitudes por plan</h2></div>
+            <div class="tarjeta-cuerpo" id="grafica-planes"></div>
+          </article>
+        </div>
+
+        <article class="tarjeta revelar" th:if="${perfil.operaPagos()}">
+          <div class="tarjeta-cabeza"><h2>Solicitudes pendientes recientes</h2></div>
+          <div id="tabla-recientes-wrap"></div>
+        </article>
+
+        <article class="tarjeta revelar" th:if="${perfil.operaPagos() or perfil.puede('sales.view')}">
+          <div class="tarjeta-cabeza"><h2>Actividad reciente</h2></div>
+          <div class="tarjeta-cuerpo" id="actividad-reciente"></div>
+        </article>
+
+        <section class="revelar" th:unless="${perfil.operaPagos() or perfil.operaClientes()}" aria-labelledby="titulo-mis-modulos">
+          <h2 id="titulo-mis-modulos" class="subtitulo-panel">Tus módulos</h2>
+          <div class="rejilla-modulos">
+            <a class="tarjeta tarjeta--viva modulo-acceso" th:each="m : ${perfil.modulos()}" th:href="@{${m.ruta}}">
+              <span class="kpi-icono"><svg class="ic" aria-hidden="true"><use th:href="'/img/iconos.svg#' + ${m.icono}"/></svg></span>
+              <h3 th:text="${m.nombre}">Módulo</h3>
+              <p th:text="${m.descripcion}">Descripción</p>
+              <span class="insignia insignia--aviso">En desarrollo</span>
+            </a>
+          </div>
+        </section>
+      </section>
+
+      <!-- Solicitudes -->
+      <section class="seccion" id="sec-solicitudes" th:if="${perfil.operaPagos()}" aria-labelledby="titulo-solicitudes">
+        <div class="pagina-cabeza"><h1 id="titulo-solicitudes">Solicitudes de pago</h1></div>
+        <article class="tarjeta">
+          <div class="tarjeta-cabeza">
+            <h2>Todas las solicitudes</h2>
+            <div class="filtro-tabla"><svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#buscar"/></svg><label class="solo-lector" for="busca-sol">Filtrar solicitudes</label><input class="input-buscar" type="search" placeholder="Nombre, correo o referencia" oninput="filtrarSolicitudes(this.value)" id="busca-sol"></div>
           </div>
           <div id="tabla-solicitudes-wrap"></div>
-        </div>
-      </div>
+        </article>
+      </section>
 
-      <!-- === CLIENTES === -->
-      <div class="seccion" id="sec-clientes">
-        <div class="seccion-titulo">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--azul)" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
-          Clientes registrados
-        </div>
-        <div class="tabla-wrap">
-          <div class="tabla-header">
-            <h3>Búsqueda de clientes</h3>
-            <input class="input-buscar" type="search" placeholder="Nombre, correo, teléfono…" oninput="filtrarClientes(this.value)" id="busca-cli"/>
+      <!-- Clientes -->
+      <section class="seccion" id="sec-clientes" th:if="${perfil.operaClientes()}" aria-labelledby="titulo-clientes">
+        <div class="pagina-cabeza"><h1 id="titulo-clientes">Clientes registrados</h1></div>
+        <article class="tarjeta">
+          <div class="tarjeta-cabeza">
+            <h2>Búsqueda de clientes</h2>
+            <div class="filtro-tabla"><svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#buscar"/></svg><label class="solo-lector" for="busca-cli">Filtrar clientes</label><input class="input-buscar" type="search" placeholder="Nombre, correo o teléfono" oninput="filtrarClientes(this.value)" id="busca-cli"></div>
           </div>
           <div id="tabla-clientes-wrap"></div>
-        </div>
-      </div>
+        </article>
+      </section>
 
-      <!-- === CREAR CLIENTE === -->
-      <div class="seccion" id="sec-crear-cliente">
-        <div class="seccion-titulo">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--azul)" stroke-width="2"><path d="M16 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="23" y1="11" x2="17" y2="11"/></svg>
-          Crear nuevo cliente
-        </div>
-        <div class="form-card">
-          <h3>📋 Datos del cliente</h3>
-          <div class="msg-form" id="msg-crear-cli"></div>
-          <div class="campo-f"><label>Nombre completo *</label><input type="text" id="nc-nombre" placeholder="Juan García"/></div>
-          <div class="campo-f"><label>Correo electrónico *</label><input type="email" id="nc-correo" placeholder="cliente@ejemplo.com"/></div>
-          <div class="campo-f"><label>Teléfono</label><input type="tel" id="nc-telefono" placeholder="300 123 4567"/></div>
-          <div class="campo-f"><label>Dirección</label><input type="text" id="nc-direccion" placeholder="Cra. 5 #10-22, Arjona"/></div>
-          <div class="campo-f"><label>Contraseña temporal *</label><input type="text" id="nc-clave" placeholder="Mín. 8 caracteres" autocomplete="off"/></div>
-          <div style="margin-top:1rem;">
-            <button class="btn-form" onclick="crearCliente()">Crear cliente</button>
-            <button class="btn-form-sec" onclick="limpiarFormCliente()">Limpiar</button>
+      <!-- Crear cliente -->
+      <section class="seccion" id="sec-crear-cliente" th:if="${perfil.puede('customers.create')}" aria-labelledby="titulo-crear-cliente">
+        <div class="pagina-cabeza"><h1 id="titulo-crear-cliente">Crear nuevo cliente</h1></div>
+        <article class="tarjeta form-card">
+          <div class="tarjeta-cuerpo">
+            <div class="msg-form" id="msg-crear-cli" role="status"></div>
+            <div class="rejilla-form">
+              <div class="campo"><label for="nc-nombre">Nombre completo *</label><input type="text" id="nc-nombre" placeholder="Juan García"></div>
+              <div class="campo"><label for="nc-correo">Correo electrónico *</label><input type="email" id="nc-correo" placeholder="cliente@ejemplo.com"></div>
+              <div class="campo"><label for="nc-telefono">Teléfono</label><input type="tel" id="nc-telefono" placeholder="300 123 4567"></div>
+              <div class="campo"><label for="nc-direccion">Dirección</label><input type="text" id="nc-direccion" placeholder="Cra. 5 #10-22, Arjona"></div>
+              <div class="campo todo"><label for="nc-clave">Contraseña temporal *</label><input type="text" id="nc-clave" placeholder="Mín. 8 caracteres" autocomplete="off"></div>
+            </div>
+            <div class="form-acciones">
+              <button class="btn btn--primario" type="button" onclick="crearCliente()">Crear cliente</button>
+              <button class="btn btn--fantasma" type="button" onclick="limpiarFormCliente()">Limpiar</button>
+            </div>
           </div>
-        </div>
-      </div>
+        </article>
+      </section>
 
-      <!-- === ACTIVAR PLAN (TIENDA) === -->
-      <div class="seccion" id="sec-activar-plan">
-        <div class="seccion-titulo">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--azul)" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-          Activar plan en tienda
-        </div>
-        <p style="font-size:0.88rem; color:#6b7280; margin-bottom:1.25rem;">Busca al cliente por nombre, correo o teléfono y activa su plan después de recibir el pago en efectivo.</p>
-
-        <div class="tabla-wrap" style="margin-bottom:1.5rem;">
-          <div class="tabla-header">
-            <h3>Buscar cliente</h3>
-            <input class="input-buscar" type="search" placeholder="Nombre, correo o teléfono…" oninput="buscarClienteActivar(this.value)" id="busca-act"/>
+      <!-- Activar plan -->
+      <section class="seccion" id="sec-activar-plan" th:if="${perfil.puede('subscriptions.activate')}" aria-labelledby="titulo-activar">
+        <div class="pagina-cabeza"><div><h1 id="titulo-activar">Activar plan en tienda</h1><p>Busca al cliente y activa su plan después de recibir el pago en efectivo.</p></div></div>
+        <article class="tarjeta">
+          <div class="tarjeta-cabeza">
+            <h2>Buscar cliente</h2>
+            <div class="filtro-tabla"><svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#buscar"/></svg><label class="solo-lector" for="busca-act">Buscar cliente</label><input class="input-buscar" type="search" placeholder="Nombre, correo o teléfono" oninput="buscarClienteActivar(this.value)" id="busca-act"></div>
           </div>
           <div id="tabla-busca-activar"></div>
-        </div>
+        </article>
 
-        <!-- Panel activación (oculto hasta seleccionar) -->
-        <div id="panel-activacion" style="display:none;">
-          <div class="form-card">
-            <h3>⭐ Activar plan para: <span id="activar-cliente-nombre" style="color:var(--azul)"></span></h3>
-            <div class="msg-form" id="msg-activar"></div>
-            <p style="font-size:0.85rem; color:#6b7280; margin-bottom:0.75rem;">Selecciona el plan:</p>
+        <article class="tarjeta form-card" id="panel-activacion" style="display:none;">
+          <div class="tarjeta-cabeza"><h2>Activar plan para: <span id="activar-cliente-nombre" class="resaltado"></span></h2></div>
+          <div class="tarjeta-cuerpo">
+            <div class="msg-form" id="msg-activar" role="status"></div>
+            <p class="campo-etiqueta">Selecciona el plan</p>
             <div class="plan-select-wrap" id="planes-activar">
-              <div class="plan-opt" onclick="selPlan('Básico',4900,3)">⭐ Básico<br><small>$4.900</small></div>
-              <div class="plan-opt" onclick="selPlan('Estándar',9900,5)">⭐⭐ Estándar<br><small>$9.900</small></div>
-              <div class="plan-opt" onclick="selPlan('Regular',14900,10)">🥇 Regular<br><small>$14.900</small></div>
-              <div class="plan-opt" onclick="selPlan('Premium',19900,15)">👑 Premium<br><small>$19.900</small></div>
+              <button class="plan-opt" type="button" onclick="selPlan('Básico',4900,3)"><strong>Básico</strong><small>$4.900 · 3%</small></button>
+              <button class="plan-opt" type="button" onclick="selPlan('Estándar',9900,5)"><strong>Estándar</strong><small>$9.900 · 5%</small></button>
+              <button class="plan-opt" type="button" onclick="selPlan('Regular',14900,10)"><strong>Regular</strong><small>$14.900 · 10%</small></button>
+              <button class="plan-opt" type="button" onclick="selPlan('Premium',19900,15)"><strong>Premium</strong><small>$19.900 · 15%</small></button>
             </div>
-            <div class="campo-f" style="margin-top:0.75rem;">
-              <label>Nota de pago (efectivo)</label>
-              <input type="text" id="activar-nota" placeholder="Ej: Pagó en efectivo $14.900 – 21/10/2026"/>
-            </div>
-            <div style="margin-top:0.85rem;">
-              <button class="btn-form" onclick="activarPlanAdmin()">✓ Activar plan</button>
-              <button class="btn-form-sec" onclick="cancelarActivacion()">Cancelar</button>
+            <div class="campo"><label for="activar-nota">Nota de pago (efectivo)</label><input type="text" id="activar-nota" placeholder="Ej: Pagó en efectivo $14.900"></div>
+            <div class="form-acciones">
+              <button class="btn btn--primario" type="button" onclick="activarPlanAdmin()"><svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#check"/></svg> Activar plan</button>
+              <button class="btn btn--fantasma" type="button" onclick="cancelarActivacion()">Cancelar</button>
             </div>
           </div>
-        </div>
-      </div>
-
+        </article>
+      </section>
     </main>
   </div>
 
-  <!-- ── Modal detalle solicitud ─────────────────────────── -->
-  <div class="modal-overlay" id="modal-solicitud">
-    <div class="modal-box">
-      <div class="modal-head">
-        <h3>📋 Detalle de solicitud</h3>
-        <button class="btn-cerrar-modal" onclick="cerrarModal()">✕</button>
+  <div class="modal-velo" id="modal-solicitud" role="dialog" aria-modal="true" aria-labelledby="modal-solicitud-titulo" th:if="${perfil.operaPagos()}">
+    <div class="modal">
+      <div class="modal-cabeza">
+        <h2 id="modal-solicitud-titulo">Detalle de solicitud</h2>
+        <button class="btn-icono" type="button" onclick="cerrarModal()" aria-label="Cerrar"><svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#cerrar"/></svg></button>
       </div>
-      <div class="modal-body" id="modal-body-sol"><!-- relleno por JS --></div>
-      <div class="modal-footer">
-        <button class="btn-accion btn-rechazar" onclick="accionSolicitudModal('rechazado')">✕ Rechazar</button>
-        <button class="btn-accion btn-aprobar"  onclick="accionSolicitudModal('aprobado')">✓ Aprobar y activar</button>
+      <div class="modal-cuerpo" id="modal-body-sol"></div>
+      <div class="modal-pie" th:if="${perfil.puede('subscriptions.approve')}">
+        <button class="btn btn--peligro" type="button" onclick="accionSolicitudModal('rechazado')">Rechazar</button>
+        <button class="btn btn--exito" type="button" onclick="accionSolicitudModal('aprobado')"><svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#check"/></svg> Aprobar y activar</button>
       </div>
     </div>
   </div>
 
   <script th:src="@{/js/seguridad.js}"></script>
-  <script>
-  // ══════════════════════════════════════════════════════
-  //  admin.js  —  Panel de administración (cliente localStorage)
-  //  El acceso a esta página lo controla el servidor (Spring Security).
-  // ══════════════════════════════════════════════════════
-
-  const CLIENTES_KEY = 'lth_clientes';
-  const SOL_KEY      = 'lth_solicitudes';
-  const SUS_KEY      = 'lth_suscripcion';
-  const esc          = Seguridad.esc;
-
-  let solicitudActualId = null;
-  let clienteActivarId  = null;
-  let planActivarSel    = null;
-
-  // ── Helpers de localStorage ──────────────────────────
-  function getClientes() {
-    try { return JSON.parse(localStorage.getItem(CLIENTES_KEY)) || []; } catch { return []; }
-  }
-  function setClientes(arr) { localStorage.setItem(CLIENTES_KEY, JSON.stringify(arr)); }
-
-  function getSolicitudes() {
-    try { return JSON.parse(localStorage.getItem(SOL_KEY)) || []; } catch { return []; }
-  }
-  function setSolicitudes(arr) { localStorage.setItem(SOL_KEY, JSON.stringify(arr)); }
-
-  // ── Semáforo de completitud de solicitud ─────────────
-  function semaforo(sol) {
-    const tiene = (x) => x && String(x).trim();
-    const obligatorios = tiene(sol.referencia) && tiene(sol.fecha) && tiene(sol.titular);
-    const opcionales   = tiene(sol.aprobacion) || tiene(sol.foto) || tiene(sol.nota);
-    if (obligatorios && opcionales) return { icono: '🟢', label: 'Completo' };
-    if (obligatorios)               return { icono: '🟡', label: 'Parcial' };
-    return                                 { icono: '🔴', label: 'Mínimo' };
-  }
-
-  // ── Inicializar ──────────────────────────────────────
-  document.addEventListener('DOMContentLoaded', function() {
-    actualizarResumen();
-    renderTablaRecientes();
-    actualizarBadgePendientes();
-  });
-
-  // Los botones de las tablas llevan sus datos en atributos data-*. Así, un nombre
-  // o id manipulado no puede convertirse en código, como sí ocurría con onclick.
-  document.addEventListener('click', function(e) {
-    const boton = e.target.closest('[data-accion]');
-    if (!boton) return;
-    const { accion, id, estado } = boton.dataset;
-    if (accion === 'ver-solicitud')       verSolicitud(id);
-    if (accion === 'estado-solicitud')    accionSolicitud(id, estado);
-    if (accion === 'activar-cliente')     irActivarPorCliente(id);
-    if (accion === 'preparar-activacion') {
-      const cliente = getClientes().find(c => c.id === id);
-      if (cliente) prepararActivacion(cliente.id, cliente.nombre);
-    }
-  });
-
-  // ── Navegación ───────────────────────────────────────
-  function irSeccion(id) {
-    document.querySelectorAll('.seccion').forEach(s => s.classList.remove('activa'));
-    document.querySelectorAll('.sidebar-item').forEach(s => s.classList.remove('activo'));
-    document.getElementById('sec-' + id)?.classList.add('activa');
-    // Solo resalta el menú cuando el clic viene de un elemento del sidebar.
-    event?.target?.closest?.('.sidebar-item')?.classList.add('activo');
-
-    if (id === 'solicitudes') renderTablaSolicitudes(getSolicitudes());
-    if (id === 'clientes')    renderTablaClientes(getClientes());
-    if (id === 'activar-plan') { renderTablaBuscaActivar(getClientes()); }
-  }
-
-  // ── Resumen ──────────────────────────────────────────
-  function actualizarResumen() {
-    const clientes = getClientes();
-    const sols     = getSolicitudes();
-    const activos  = clientes.filter(c => {
-      try {
-        const sus = JSON.parse(localStorage.getItem('lth_sus_' + c.id) || 'null');
-        return sus && sus.estado === 'activo';
-      } catch { return false; }
-    });
-    document.getElementById('stat-clientes').textContent  = clientes.length;
-    document.getElementById('stat-activos').textContent   = activos.length;
-    document.getElementById('stat-pendientes').textContent = sols.filter(s => s.estado === 'pendiente').length;
-    document.getElementById('stat-aprobados').textContent  = sols.filter(s => s.estado === 'aprobado').length;
-  }
-
-  function actualizarBadgePendientes() {
-    const n = getSolicitudes().filter(s => s.estado === 'pendiente').length;
-    document.getElementById('badge-pendientes').textContent = n;
-  }
-
-  // ── Tabla recientes ───────────────────────────────────
-  function renderTablaRecientes() {
-    const sols = getSolicitudes().filter(s => s.estado === 'pendiente').slice(-5).reverse();
-    const wrap = document.getElementById('tabla-recientes-wrap');
-    if (!sols.length) { wrap.innerHTML = '<div class="tabla-vacia">No hay solicitudes pendientes ✅</div>'; return; }
-    wrap.innerHTML = tablaHTML(sols, true);
-  }
-
-  // ── Tabla solicitudes ─────────────────────────────────
-  function renderTablaSolicitudes(sols) {
-    document.getElementById('tabla-solicitudes-wrap').innerHTML = tablaHTML(sols, false);
-  }
-
-  function filtrarSolicitudes(q) {
-    const qq = q.toLowerCase();
-    const f  = getSolicitudes().filter(s =>
-      (s.clienteNombre||'').toLowerCase().includes(qq) ||
-      (s.clienteCorreo||'').toLowerCase().includes(qq) ||
-      (s.referencia||'').toLowerCase().includes(qq) ||
-      (s.id||'').toLowerCase().includes(qq)
-    );
-    renderTablaSolicitudes(f);
-  }
-
-  function tablaHTML(sols, mini) {
-    if (!sols.length) return '<div class="tabla-vacia">No hay solicitudes que mostrar.</div>';
-    const nombres = { nequi:'Nequi', daviplata:'Daviplata', pse:'PSE', bancolombia:'Bancolombia', tienda:'En tienda' };
-    const rows = sols.map(s => {
-      const sem = semaforo(s);
-      const badgeClass = { pendiente:'badge-pendiente', aprobado:'badge-aprobado', rechazado:'badge-rechazado' }[s.estado] || 'badge-sin-plan';
-      return `<tr>
-        <td><strong>${esc(s.clienteNombre||'–')}</strong><br><small style="color:#9ca3af">${esc(s.clienteCorreo)}</small></td>
-        <td>Plan ${esc(s.plan)}</td>
-        <td>${esc(nombres[s.metodo]||s.metodo)}</td>
-        <td><span class="sem">${sem.icono}</span> ${sem.label}</td>
-        <td><span class="badge ${badgeClass}">${esc(s.estado)}</span></td>
-        <td>${esc(String(s.fechaSolicitud||'').split('T')[0]||'–')}</td>
-        <td>
-          <button class="btn-accion btn-ver" data-accion="ver-solicitud" data-id="${esc(s.id)}">Ver</button>
-          ${s.estado === 'pendiente' ? `
-            <button class="btn-accion btn-aprobar" data-accion="estado-solicitud" data-estado="aprobado" data-id="${esc(s.id)}">✓</button>
-            <button class="btn-accion btn-rechazar" data-accion="estado-solicitud" data-estado="rechazado" data-id="${esc(s.id)}">✕</button>` : ''}
-        </td>
-      </tr>`;
-    }).join('');
-    return `<table>
-      <thead><tr>
-        <th>Cliente</th><th>Plan</th><th>Método</th><th>Completitud</th><th>Estado</th><th>Fecha</th><th>Acción</th>
-      </tr></thead>
-      <tbody>${rows}</tbody>
-    </table>`;
-  }
-
-  // ── Ver detalle solicitud ─────────────────────────────
-  function verSolicitud(id) {
-    const sol = getSolicitudes().find(s => s.id === id);
-    if (!sol) return;
-    solicitudActualId = id;
-    const sem = semaforo(sol);
-    const nombres = { nequi:'Nequi', daviplata:'Daviplata', pse:'PSE', bancolombia:'Bancolombia', tienda:'En tienda' };
-    const plan = Seguridad.planCanonico(sol.plan);
-    const foto = Seguridad.imagenDataSegura(sol.foto);
-    document.getElementById('modal-body-sol').innerHTML = `
-      <div class="detalle-fila"><div class="detalle-key">N.° solicitud</div><div class="detalle-val">${esc(sol.id)}</div></div>
-      <div class="detalle-fila"><div class="detalle-key">Cliente</div><div class="detalle-val">${esc(sol.clienteNombre)} (${esc(sol.clienteCorreo)})</div></div>
-      <div class="detalle-fila"><div class="detalle-key">Plan</div><div class="detalle-val">${plan ? `Plan ${esc(plan.nombre)} – $${plan.precio.toLocaleString('es-CO')}` : '⚠️ Plan no válido'}</div></div>
-      <div class="detalle-fila"><div class="detalle-key">Método de pago</div><div class="detalle-val">${esc(nombres[sol.metodo]||sol.metodo)}</div></div>
-      <div class="detalle-fila"><div class="detalle-key">Referencia</div><div class="detalle-val">${esc(sol.referencia||'–')}</div></div>
-      <div class="detalle-fila"><div class="detalle-key">Fecha del pago</div><div class="detalle-val">${esc(sol.fecha||'–')}</div></div>
-      <div class="detalle-fila"><div class="detalle-key">Titular</div><div class="detalle-val">${esc(sol.titular||'–')}</div></div>
-      <div class="detalle-fila"><div class="detalle-key">N.° aprobación</div><div class="detalle-val">${esc(sol.aprobacion||'No proporcionado')}</div></div>
-      <div class="detalle-fila"><div class="detalle-key">Nota</div><div class="detalle-val">${esc(sol.nota||'–')}</div></div>
-      <div class="detalle-fila"><div class="detalle-key">Completitud</div><div class="detalle-val">${sem.icono} ${sem.label}</div></div>
-      <div class="detalle-fila"><div class="detalle-key">Estado</div><div class="detalle-val">${esc(sol.estado)}</div></div>
-      ${foto ? `<div class="detalle-fila"><div class="detalle-key">Foto comprobante</div><div class="detalle-val"><img class="foto-comprobante" src="${esc(foto)}" alt="Comprobante"/></div></div>` : ''}
-    `;
-    document.getElementById('modal-solicitud').classList.add('visible');
-  }
-  function cerrarModal() {
-    document.getElementById('modal-solicitud').classList.remove('visible');
-    solicitudActualId = null;
-  }
-
-  // ── Aprobar / rechazar ────────────────────────────────
-  function accionSolicitud(id, nuevoEstado) {
-    const sols = getSolicitudes();
-    const idx  = sols.findIndex(s => s.id === id);
-    if (idx === -1) return;
-
-    // El precio y el descuento salen de la tabla oficial, no de la solicitud,
-    // porque el cliente puede alterarla antes de enviarla.
-    const plan = Seguridad.planCanonico(sols[idx].plan);
-    if (nuevoEstado === 'aprobado' && !plan) {
-      alert('La solicitud tiene un plan no válido y no se puede aprobar.');
-      return;
-    }
-
-    sols[idx].estado = nuevoEstado;
-    setSolicitudes(sols);
-
-    if (nuevoEstado === 'aprobado') {
-      // Activar plan para el cliente
-      const sol = sols[idx];
-      const clientes = getClientes();
-      const cli = clientes.find(c => c.id === sol.clienteId || c.correo === sol.clienteCorreo);
-      if (cli) {
-        const ahora = new Date(); const venc = new Date(ahora); venc.setDate(venc.getDate()+30);
-        localStorage.setItem('lth_sus_' + cli.id, JSON.stringify({
-          plan: plan.clave, descuento: plan.descuento, precio: plan.precio,
-          fecha: ahora.toISOString(), fechaVencimiento: venc.toISOString(), estado: 'activo'
-        }));
-      }
-    }
-    actualizarResumen();
-    actualizarBadgePendientes();
-    renderTablaSolicitudes(getSolicitudes());
-    renderTablaRecientes();
-  }
-  function accionSolicitudModal(estado) {
-    if (solicitudActualId) { accionSolicitud(solicitudActualId, estado); cerrarModal(); }
-  }
-
-  // ── Tabla clientes ────────────────────────────────────
-  function renderTablaClientes(lista) {
-    const wrap = document.getElementById('tabla-clientes-wrap');
-    if (!lista.length) { wrap.innerHTML = '<div class="tabla-vacia">No hay clientes registrados aún.</div>'; return; }
-    const rows = lista.map(c => {
-      const sus = null; // en producción: leer por id
-      return `<tr>
-        <td><strong>${esc(c.nombre||'–')}</strong></td>
-        <td>${esc(c.correo||'–')}</td>
-        <td>${esc(c.telefono||'–')}</td>
-        <td>${esc(c.direccion||'–')}</td>
-        <td><span class="badge badge-sin-plan">Sin plan</span></td>
-        <td>
-          <button class="btn-accion btn-activar" data-accion="activar-cliente" data-id="${esc(c.id)}">Activar plan</button>
-        </td>
-      </tr>`;
-    }).join('');
-    wrap.innerHTML = `<table>
-      <thead><tr><th>Nombre</th><th>Correo</th><th>Teléfono</th><th>Dirección</th><th>Plan</th><th>Acción</th></tr></thead>
-      <tbody>${rows}</tbody>
-    </table>`;
-  }
-
-  function filtrarClientes(q) {
-    const qq = q.toLowerCase();
-    const f  = getClientes().filter(c =>
-      (c.nombre||'').toLowerCase().includes(qq) ||
-      (c.correo||'').toLowerCase().includes(qq) ||
-      (c.telefono||'').includes(q)
-    );
-    renderTablaClientes(f);
-  }
-
-  // ── Crear cliente ─────────────────────────────────────
-  async function crearCliente() {
-    const nombre   = document.getElementById('nc-nombre').value.trim();
-    const correo    = document.getElementById('nc-correo').value.trim().toLowerCase();
-    const telefono  = document.getElementById('nc-telefono').value.trim();
-    const direccion = document.getElementById('nc-direccion').value.trim();
-    const clave     = document.getElementById('nc-clave').value;
-    const msg       = document.getElementById('msg-crear-cli');
-
-    msg.className = 'msg-form';
-    if (!nombre || !correo || !clave) { msg.className='msg-form error'; msg.textContent='Nombre, correo y contraseña son obligatorios.'; return; }
-    if (clave.length < 8)            { msg.className='msg-form error'; msg.textContent='La contraseña debe tener al menos 8 caracteres.'; return; }
-    if (!Seguridad.criptoDisponible()) { msg.className='msg-form error'; msg.textContent='Crear clientes requiere una conexión segura (HTTPS).'; return; }
-
-    await Seguridad.listo;
-    const credencial = await Seguridad.crearCredencial(clave);
-    const clientes = getClientes();
-    if (clientes.find(c => String(c.correo).toLowerCase() === correo)) {
-      msg.className='msg-form error'; msg.textContent='Ya existe un cliente con ese correo.'; return;
-    }
-
-    const nuevo = {
-      id: 'cli-' + Date.now(), nombre, correo, telefono, direccion, credencial, rol: 'cliente',
-      creadoPorAdmin: true, fechaCreacion: new Date().toISOString()
-    };
-    clientes.push(nuevo);
-    setClientes(clientes);
-    msg.className='msg-form ok'; msg.textContent=`✓ Cliente "${nombre}" creado correctamente.`;
-    limpiarFormCliente();
-    actualizarResumen();
-  }
-
-  function limpiarFormCliente() {
-    ['nc-nombre','nc-correo','nc-telefono','nc-direccion','nc-clave'].forEach(id => {
-      document.getElementById(id).value = '';
-    });
-  }
-
-  // ── Activar plan (tienda) ─────────────────────────────
-  function renderTablaBuscaActivar(lista) {
-    const wrap = document.getElementById('tabla-busca-activar');
-    if (!lista.length) { wrap.innerHTML = '<div class="tabla-vacia">No hay clientes aún.</div>'; return; }
-    const rows = lista.map(c => `<tr>
-      <td><strong>${esc(c.nombre)}</strong></td>
-      <td>${esc(c.correo)}</td>
-      <td>${esc(c.telefono||'–')}</td>
-      <td><button class="btn-accion btn-activar" data-accion="preparar-activacion" data-id="${esc(c.id)}">Seleccionar</button></td>
-    </tr>`).join('');
-    wrap.innerHTML = `<table><thead><tr><th>Nombre</th><th>Correo</th><th>Teléfono</th><th></th></tr></thead><tbody>${rows}</tbody></table>`;
-  }
-
-  function buscarClienteActivar(q) {
-    const qq = q.toLowerCase();
-    const f  = getClientes().filter(c =>
-      (c.nombre||'').toLowerCase().includes(qq) ||
-      (c.correo||'').toLowerCase().includes(qq) ||
-      (c.telefono||'').includes(q)
-    );
-    renderTablaBuscaActivar(f);
-  }
-
-  function prepararActivacion(id, nombre) {
-    clienteActivarId  = id;
-    planActivarSel    = null;
-    document.getElementById('activar-cliente-nombre').textContent = nombre;
-    document.getElementById('panel-activacion').style.display = 'block';
-    document.getElementById('msg-activar').className = 'msg-form';
-    document.querySelectorAll('.plan-opt').forEach(e => e.classList.remove('sel'));
-    document.getElementById('activar-nota').value = '';
-    document.getElementById('panel-activacion').scrollIntoView({ behavior:'smooth' });
-  }
-
-  function irActivarPorCliente(id) {
-    const cli = getClientes().find(c => c.id === id);
-    if (!cli) return;
-    irSeccion('activar-plan');
-    setTimeout(() => prepararActivacion(cli.id, cli.nombre), 100);
-  }
-
-  function selPlan(nombre, precio, descuento) {
-    planActivarSel = { nombre, precio, descuento };
-    document.querySelectorAll('.plan-opt').forEach(e => e.classList.remove('sel'));
-    event.currentTarget.classList.add('sel');
-  }
-
-  function activarPlanAdmin() {
-    const msg = document.getElementById('msg-activar');
-    msg.className = 'msg-form';
-    if (!clienteActivarId)  { msg.className='msg-form error'; msg.textContent='Selecciona un cliente primero.'; return; }
-    if (!planActivarSel)    { msg.className='msg-form error'; msg.textContent='Selecciona un plan.'; return; }
-
-    const ahora = new Date(); const venc = new Date(ahora); venc.setDate(venc.getDate()+30);
-    const sus = {
-      plan: planActivarSel.nombre, descuento: planActivarSel.descuento,
-      precio: planActivarSel.precio,
-      fecha: ahora.toISOString(), fechaVencimiento: venc.toISOString(),
-      estado: 'activo', activadoEnTienda: true,
-      nota: document.getElementById('activar-nota').value || 'Pago en efectivo – tienda'
-    };
-    localStorage.setItem('lth_sus_' + clienteActivarId, JSON.stringify(sus));
-
-    // También registrar solicitud
-    const cli = getClientes().find(c => c.id === clienteActivarId);
-    const sols = getSolicitudes();
-    sols.push({
-      id: 'SOL-' + Date.now(), clienteId: clienteActivarId,
-      clienteNombre: cli?.nombre||'', clienteCorreo: cli?.correo||'',
-      plan: planActivarSel.nombre, descuento: planActivarSel.descuento,
-      precio: planActivarSel.precio, metodo: 'tienda',
-      referencia: 'Pago efectivo tienda', fecha: ahora.toISOString().split('T')[0],
-      titular: cli?.nombre||'', nota: sus.nota,
-      estado: 'aprobado', fechaSolicitud: ahora.toISOString()
-    });
-    setSolicitudes(sols);
-    actualizarResumen();
-    actualizarBadgePendientes();
-
-    msg.className='msg-form ok';
-    msg.textContent=`✓ Plan "${planActivarSel.nombre}" activado para ${cli?.nombre||clienteActivarId}.`;
-    planActivarSel = null;
-    document.querySelectorAll('.plan-opt').forEach(e => e.classList.remove('sel'));
-  }
-
-  function cancelarActivacion() {
-    document.getElementById('panel-activacion').style.display = 'none';
-    clienteActivarId = null; planActivarSel = null;
-  }
-
-  </script>
+  <script th:src="@{/js/experiencia.js}"></script>
+  <script th:src="@{/js/panel.js}"></script>
+  <script th:src="@{/js/admin.js}"></script>
 </body>
 </html>

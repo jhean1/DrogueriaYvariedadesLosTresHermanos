@@ -3,10 +3,12 @@ package com.example.DrogueriaLosTresHermanos.configuracion;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -22,11 +24,12 @@ import java.util.Base64;
 /**
  * Seguridad del lado del servidor.
  *
- * Protege el panel /admin con sesión de servidor y credenciales fuera del código.
- * Las demás rutas siguen siendo públicas porque hoy las cuentas de clientes,
- * pedidos y suscripciones viven en el navegador; no hay datos que proteger aquí.
+ * Protege el panel /admin con sesión de servidor, credenciales fuera del código y
+ * permisos por ruta. Las demás rutas siguen siendo públicas porque hoy las cuentas de
+ * clientes, pedidos y suscripciones viven en el navegador.
  */
 @Configuration
+@EnableConfigurationProperties(EquipoProperties.class)
 public class SeguridadConfig {
 
     private static final Logger log = LoggerFactory.getLogger(SeguridadConfig.class);
@@ -53,10 +56,15 @@ public class SeguridadConfig {
     @Bean
     SecurityFilterChain cadenaDeSeguridad(HttpSecurity http, LimiteIntentosLogin limite) throws Exception {
         http
-            .authorizeHttpRequests(rutas -> rutas
-                .requestMatchers("/admin/login").permitAll()
-                .requestMatchers("/admin", "/admin/**").hasRole("ADMIN")
-                .anyRequest().permitAll())
+            .authorizeHttpRequests(rutas -> {
+                rutas.requestMatchers("/admin/login").permitAll();
+                rutas.requestMatchers("/admin/accesos").hasAuthority(Permiso.ROLES_GESTIONAR.getCodigo());
+                for (ModuloGestion modulo : ModuloGestion.values()) {
+                    rutas.requestMatchers(modulo.getRuta()).hasAuthority(modulo.getPermiso().getCodigo());
+                }
+                rutas.requestMatchers("/admin", "/admin/**").hasAuthority(Permiso.DASHBOARD_VER.getCodigo());
+                rutas.anyRequest().permitAll();
+            })
             .formLogin(login -> login
                 .loginPage("/admin/login")
                 .loginProcessingUrl("/admin/login")
@@ -85,11 +93,26 @@ public class SeguridadConfig {
     @Bean
     UserDetailsService usuariosAdmin(@Value("${app.admin.correo}") String correo,
                                      @Value("${app.admin.clave:}") String clave,
+                                     EquipoProperties equipo,
                                      PasswordEncoder codificador) {
-        return new InMemoryUserDetailsManager(User.withUsername(correo)
-            .password(codificador.encode(resolverClave(clave)))
-            .roles("ADMIN")
-            .build());
+        InMemoryUserDetailsManager usuarios = new InMemoryUserDetailsManager(
+            usuario(correo, resolverClave(clave), RolSistema.PROPIETARIO, codificador));
+
+        for (EquipoProperties.Miembro miembro : equipo.equipo()) {
+            if (miembro.correo() == null || miembro.correo().isBlank() || miembro.rol() == null) {
+                throw new IllegalStateException("Cada miembro del equipo necesita correo y rol.");
+            }
+            validarClave(miembro.clave(), "La clave de " + miembro.correo());
+            usuarios.createUser(usuario(miembro.correo(), miembro.clave(), miembro.rol(), codificador));
+        }
+        return usuarios;
+    }
+
+    private static UserDetails usuario(String correo, String clave, RolSistema rol, PasswordEncoder codificador) {
+        return User.withUsername(correo)
+            .password(codificador.encode(clave))
+            .authorities(rol.autoridades())
+            .build();
     }
 
     private static String resolverClave(String clave) {
@@ -99,15 +122,19 @@ public class SeguridadConfig {
                 generada);
             return generada;
         }
-        if (clave.length() < LONGITUD_MINIMA_CLAVE) {
+        validarClave(clave, "ADMIN_CLAVE");
+        return clave;
+    }
+
+    private static void validarClave(String clave, String nombre) {
+        if (clave == null || clave.length() < LONGITUD_MINIMA_CLAVE) {
             throw new IllegalStateException(
-                "ADMIN_CLAVE debe tener al menos " + LONGITUD_MINIMA_CLAVE + " caracteres.");
+                nombre + " debe tener al menos " + LONGITUD_MINIMA_CLAVE + " caracteres.");
         }
         if (clave.getBytes(StandardCharsets.UTF_8).length > LONGITUD_MAXIMA_BCRYPT) {
             throw new IllegalStateException(
-                "ADMIN_CLAVE no puede superar " + LONGITUD_MAXIMA_BCRYPT + " bytes.");
+                nombre + " no puede superar " + LONGITUD_MAXIMA_BCRYPT + " bytes.");
         }
-        return clave;
     }
 
     private static String generarClave() {

@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/admin :: cabeza(${modulo.nombre})}"></head>
+<body class="panel" th:attr="data-permisos=${perfil.permisosComoTexto()}">
+  <div th:replace="~{fragments/admin :: lateral}"></div>
+  <th:block th:replace="~{fragments/admin :: velo}"></th:block>
+  <div class="panel-principal">
+    <header th:replace="~{fragments/admin :: superior(${modulo.nombre})}"></header>
+    <main class="panel-contenido" id="contenido">
+      <section class="modulo-futuro revelar">
+        <span class="modulo-icono"><svg class="ic" aria-hidden="true"><use th:href="'/img/iconos.svg#' + ${modulo.icono}"/></svg></span>
+        <span class="insignia insignia--aviso"><svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#construccion"/></svg> En desarrollo</span>
+        <h1 th:text="${modulo.nombre}">Módulo</h1>
+        <p th:text="${modulo.descripcion}">Descripción</p>
+      </section>
+
+      <section class="tarjeta revelar" aria-labelledby="titulo-capacidades">
+        <div class="tarjeta-cabeza"><h2 id="titulo-capacidades">Qué incluirá este módulo</h2></div>
+        <ul class="capacidades">
+          <li th:each="c : ${modulo.capacidades}"><svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#reloj"/></svg><span th:text="${c}">Capacidad</span></li>
+        </ul>
+      </section>
+
+      <div class="alerta alerta--info revelar">
+        <svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#info"/></svg>
+        <span>Este módulo aún no tiene datos ni acciones. Requiere base de datos y lógica en el servidor. Tu acceso a esta vista ya está controlado por el permiso <code th:text="${modulo.permiso.codigo}">permiso</code>.</span>
+      </div>
+    </main>
+  </div>
+  <script th:src="@{/js/seguridad.js}"></script>
+  <script th:src="@{/js/experiencia.js}"></script>
+  <script th:src="@{/js/panel.js}"></script>
+</body>
+</html>

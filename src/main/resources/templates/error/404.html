@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head th:replace="~{fragments/tienda :: cabeza('Página no encontrada', 'La página que buscas no existe.')}"></head>
+<body class="pagina-error">
+  <main class="error-pagina">
+    <img th:src="@{/img/marca/isotipo-3h.svg}" alt="" width="128" height="80">
+    <p class="error-codigo">404</p>
+    <h1>No encontramos esta página</h1>
+    <p>Puede que el enlace haya cambiado o que ya no exista.</p>
+    <a th:href="@{/}" class="btn btn--primario">Ir al inicio</a>
+  </main>
+</body>
+</html>

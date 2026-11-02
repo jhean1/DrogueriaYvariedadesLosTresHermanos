@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head th:replace="~{fragments/tienda :: cabeza('Acceso restringido', 'No tienes permiso para ver esta página.')}"></head>
+<body class="pagina-error">
+  <main class="error-pagina">
+    <span class="vacio-icono"><svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#candado"/></svg></span>
+    <p class="error-codigo">403</p>
+    <h1>No tienes permiso para ver esta sección</h1>
+    <p>Tu rol no incluye este módulo. Si crees que deberías tener acceso, pídelo al propietario.</p>
+    <a th:href="@{/admin}" class="btn btn--primario">Volver al panel</a>
+  </main>
+</body>
+</html>

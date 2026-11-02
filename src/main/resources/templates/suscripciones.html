@@ -1,804 +1,190 @@
 <!DOCTYPE html>
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Suscripciones · Droguería Los Tres Hermanos</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" th:href="@{/css/global.css}">
-  <style>
-    html, body { overflow-x: hidden; box-sizing: border-box; }
-    *, *::before, *::after { box-sizing: border-box; }
+<head th:replace="~{fragments/tienda :: cabeza('Suscripciones', 'Planes de suscripción con descuento en medicamentos y variedades.')}"></head>
+<body class="sobre-oscuro">
+  <th:block th:replace="~{fragments/tienda :: barra}"></th:block>
 
-    /* ── Hero suscripciones ── */
-    .sus-hero {
-      background: var(--grad-hero);
-      padding: 5rem 2rem 4rem;
-      text-align: center;
-      position: relative;
-      overflow: hidden;
-    }
-    .sus-hero-inner { max-width: 1280px; margin: 0 auto; position: relative; z-index: 1; }
-    .sus-hero .breadcrumb { display: flex; align-items: center; justify-content: center; gap: 0.5rem; font-size: 0.82rem; color: rgba(255,255,255,0.6); margin-bottom: 1.25rem; }
-    .sus-hero .breadcrumb a { color: rgba(255,255,255,0.6); transition: color var(--trans); text-decoration: none; }
-    .sus-hero .breadcrumb a:hover { color: white; }
-    .sus-hero .breadcrumb span { color: rgba(255,255,255,0.9); }
-    .sus-hero::before {
-      content: '';
-      position: absolute;
-      width: 500px; height: 500px;
-      background: rgba(255,255,255,0.04);
-      border-radius: 50%;
-      top: -150px; right: -100px;
-    }
-    .sus-hero h1 {
-      font-family: 'Syne', sans-serif;
-      font-size: clamp(2rem, 5vw, 3.2rem);
-      font-weight: 800;
-      color: #fff;
-      margin-bottom: 1rem;
-    }
-    .sus-hero h1 span { color: var(--rojo); }
-    .sus-hero p {
-      color: rgba(255,255,255,0.82);
-      font-size: 1.05rem;
-      max-width: 540px;
-      margin: 0 auto 1.5rem;
-    }
-    .sus-badge-activo {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.5rem;
-      background: rgba(255,255,255,0.15);
-      border: 1px solid rgba(255,255,255,0.3);
-      color: #fff;
-      padding: 0.5rem 1.25rem;
-      border-radius: 50px;
-      font-size: 0.85rem;
-      font-weight: 600;
-      backdrop-filter: blur(6px);
-    }
-    .sus-badge-activo .dot {
-      width: 8px; height: 8px;
-      background: #4ade80;
-      border-radius: 50%;
-      animation: pulse-dot 2s infinite;
-    }
-    @keyframes pulse-dot {
-      0%,100% { opacity:1; transform:scale(1); }
-      50%      { opacity:0.6; transform:scale(1.4); }
-    }
-
-    /* ── Grid de planes ── */
-    .planes-section {
-      padding: 4rem 1.5rem 5rem;
-      background: var(--gris-claro);
-    }
-    .planes-titulo {
-      text-align: center;
-      margin-bottom: 2.5rem;
-    }
-    .planes-titulo h2 {
-      font-family: 'Syne', sans-serif;
-      font-size: clamp(1.5rem,4vw,2.2rem);
-      font-weight: 800;
-      color: var(--azul);
-    }
-    .planes-titulo p {
-      color: var(--gris-texto);
-      margin-top: 0.5rem;
-    }
-
-    .planes-grid {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 1.25rem;
-      max-width: 1300px;
-      margin: 0 auto;
-    }
-
-    /* ── Tarjeta plan ── */
-    .plan-card {
-      background: #fff;
-      border-radius: 20px;
-      padding: 2rem 1.75rem 2.25rem;
-      border: 2px solid var(--gris-medio);
-      position: relative;
-      transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
-      display: flex;
-      flex-direction: column;
-      gap: 0;
-      animation: fadeUp 0.6s ease both;
-    }
-    .plan-card:nth-child(1) { animation-delay: 0.1s; }
-    .plan-card:nth-child(2) { animation-delay: 0.2s; }
-    .plan-card:nth-child(3) { animation-delay: 0.3s; }
-
-    .plan-card:hover {
-      transform: translateY(-8px);
-      box-shadow: 0 20px 50px rgba(27,42,107,0.15);
-      border-color: var(--azul);
-    }
-
-    /* Plan popular — destacado */
-    .plan-card.popular {
-      border-color: var(--azul);
-      background: var(--azul);
-      transform: scale(1.04);
-    }
-    .plan-card.popular:hover {
-      transform: scale(1.04) translateY(-8px);
-      box-shadow: 0 24px 60px rgba(27,42,107,0.35);
-    }
-    .plan-card.popular .plan-nombre,
-    .plan-card.popular .plan-precio,
-    .plan-card.popular .plan-precio-periodo,
-    .plan-card.popular .plan-desc,
-    .plan-card.popular .plan-beneficio { color: #fff; }
-    .plan-card.popular .plan-beneficio::before { color: #4ade80; }
-    .plan-card.popular .plan-divider { background: rgba(255,255,255,0.2); }
-    .plan-card.popular .plan-precio sup { color: rgba(255,255,255,0.8); }
-
-    .badge-popular {
-      position: absolute;
-      top: -14px;
-      left: 50%;
-      transform: translateX(-50%);
-      background: var(--rojo);
-      color: #fff;
-      font-size: 0.72rem;
-      font-weight: 700;
-      letter-spacing: 0.05em;
-      padding: 0.3rem 1rem;
-      border-radius: 50px;
-      white-space: nowrap;
-      text-transform: uppercase;
-    }
-
-    .plan-icono {
-      font-size: 2.2rem;
-      margin-bottom: 0.75rem;
-    }
-    .plan-nombre {
-      font-family: 'Syne', sans-serif;
-      font-size: 1.25rem;
-      font-weight: 700;
-      color: var(--azul);
-      margin-bottom: 0.25rem;
-    }
-    .plan-desc {
-      font-size: 0.82rem;
-      color: var(--gris-texto);
-      margin-bottom: 1.25rem;
-      line-height: 1.5;
-    }
-    .plan-precio {
-      font-family: 'Syne', sans-serif;
-      font-size: 2.5rem;
-      font-weight: 800;
-      color: var(--azul);
-      line-height: 1;
-      margin-bottom: 0.2rem;
-    }
-    .plan-precio sup {
-      font-size: 1rem;
-      font-weight: 600;
-      vertical-align: super;
-      color: var(--gris-texto);
-    }
-    .plan-precio-periodo {
-      font-size: 0.78rem;
-      color: var(--gris-texto);
-      margin-bottom: 1.5rem;
-    }
-    .plan-divider {
-      height: 1px;
-      background: var(--gris-medio);
-      margin-bottom: 1.25rem;
-    }
-    .plan-beneficios {
-      list-style: none;
-      padding: 0;
-      margin: 0 0 2rem;
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      gap: 0.6rem;
-    }
-    .plan-beneficio {
-      font-size: 0.88rem;
-      color: var(--gris-texto);
-      display: flex;
-      align-items: flex-start;
-      gap: 0.5rem;
-    }
-    .plan-beneficio::before {
-      content: '✓';
-      color: var(--azul);
-      font-weight: 700;
-      flex-shrink: 0;
-      margin-top: 0.05rem;
-    }
-    .plan-beneficio.no::before {
-      content: '×';
-      color: #ccc;
-    }
-    .plan-beneficio.no { opacity: 0.5; }
-
-    /* Botones de plan */
-    .btn-plan {
-      display: block;
-      width: 100%;
-      padding: 0.9rem;
-      border-radius: 12px;
-      font-family: 'Syne', sans-serif;
-      font-size: 0.92rem;
-      font-weight: 700;
-      text-align: center;
-      border: none;
-      cursor: pointer;
-      transition: transform 0.2s, box-shadow 0.2s, background 0.2s;
-      text-decoration: none;
-    }
-    .btn-plan:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,0,0,0.15); }
-    .btn-plan:active { transform: translateY(0); }
-
-    .btn-plan-basico {
-      background: var(--gris-claro);
-      color: var(--azul);
-      border: 2px solid var(--gris-medio);
-    }
-    .btn-plan-basico:hover { background: var(--gris-medio); }
-
-    .btn-plan-regular {
-      background: var(--rojo);
-      color: #fff;
-    }
-    .btn-plan-regular:hover { background: #a00d22; }
-
-    .btn-plan-premium {
-      background: #fff;
-      color: var(--azul);
-      border: 2px solid rgba(255,255,255,0.5);
-    }
-    .btn-plan-premium:hover { background: rgba(255,255,255,0.9); }
-
-    /* ── Plan activo banner ── */
-    .plan-activo-banner {
-      display: none;
-      max-width: 700px;
-      margin: 0 auto 2rem;
-      background: #ecfdf5;
-      border: 1.5px solid #4ade80;
-      border-radius: 14px;
-      padding: 1rem 1.5rem;
-      align-items: center;
-      gap: 1rem;
-      flex-wrap: wrap;
-    }
-    .plan-activo-banner.visible { display: flex; }
-    .plan-activo-banner .icon { font-size: 1.75rem; }
-    .plan-activo-banner .texto { flex: 1; }
-    .plan-activo-banner .texto strong { color: #166534; font-weight: 700; display: block; }
-    .plan-activo-banner .texto span { color: #4b5563; font-size: 0.85rem; }
-    .btn-cancelar-plan {
-      background: none;
-      border: 1.5px solid #ef4444;
-      color: #ef4444;
-      padding: 0.4rem 1rem;
-      border-radius: 8px;
-      font-size: 0.8rem;
-      font-weight: 600;
-      cursor: pointer;
-      transition: background 0.2s, color 0.2s;
-    }
-    .btn-cancelar-plan:hover { background: #ef4444; color: #fff; }
-
-    /* ── Sección comparativa ── */
-    .comparativa-section {
-      padding: 4rem 1.5rem;
-      background: #fff;
-    }
-    .comparativa-section h2 {
-      font-family: 'Syne', sans-serif;
-      font-size: clamp(1.4rem,3vw,2rem);
-      font-weight: 800;
-      color: var(--azul);
-      text-align: center;
-      margin-bottom: 2rem;
-    }
-    .tabla-comparativa {
-      max-width: 900px;
-      margin: 0 auto;
-      border-radius: 16px;
-      overflow: hidden;
-      box-shadow: var(--sombra-lg);
-    }
-    .tabla-comparativa table {
-      width: 100%;
-      border-collapse: collapse;
-    }
-    .tabla-comparativa th {
-      background: var(--azul);
-      color: #fff;
-      padding: 1rem;
-      font-family: 'Syne', sans-serif;
-      font-weight: 700;
-      font-size: 0.9rem;
-      text-align: center;
-    }
-    .tabla-comparativa th:first-child { text-align: left; }
-    .tabla-comparativa td {
-      padding: 0.9rem 1rem;
-      font-size: 0.88rem;
-      color: var(--gris-texto);
-      text-align: center;
-      border-bottom: 1px solid var(--gris-medio);
-    }
-    .tabla-comparativa td:first-child { text-align: left; font-weight: 500; color: var(--azul); }
-    .tabla-comparativa tr:last-child td { border-bottom: none; }
-    .tabla-comparativa tr:nth-child(even) td { background: var(--gris-claro); }
-    .check-si  { color: #16a34a; font-size: 1.1rem; font-weight: 700; }
-    .check-no  { color: #d1d5db; font-size: 1.1rem; }
-    .check-val { color: var(--azul); font-weight: 700; }
-
-    /* ── FAQ ── */
-    .faq-section {
-      padding: 4rem 1.5rem 5rem;
-      background: var(--gris-claro);
-      max-width: 800px;
-      margin: 0 auto;
-    }
-    .faq-section h2 {
-      font-family: 'Syne', sans-serif;
-      font-size: clamp(1.4rem,3vw,2rem);
-      font-weight: 800;
-      color: var(--azul);
-      text-align: center;
-      margin-bottom: 2rem;
-    }
-    .faq-item {
-      background: #fff;
-      border-radius: 12px;
-      margin-bottom: 0.75rem;
-      overflow: hidden;
-      border: 1px solid var(--gris-medio);
-    }
-    .faq-pregunta {
-      width: 100%;
-      text-align: left;
-      padding: 1rem 1.25rem;
-      background: none;
-      border: none;
-      font-family: 'DM Sans', sans-serif;
-      font-size: 0.95rem;
-      font-weight: 600;
-      color: var(--azul);
-      cursor: pointer;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 1rem;
-      transition: background 0.2s;
-    }
-    .faq-pregunta:hover { background: var(--gris-claro); }
-    .faq-pregunta .chevron {
-      transition: transform 0.3s;
-      flex-shrink: 0;
-      font-style: normal;
-    }
-    .faq-item.abierto .chevron { transform: rotate(180deg); }
-    .faq-respuesta {
-      max-height: 0;
-      overflow: hidden;
-      transition: max-height 0.35s ease, padding 0.2s;
-      padding: 0 1.25rem;
-      font-size: 0.88rem;
-      color: var(--gris-texto);
-      line-height: 1.65;
-    }
-    .faq-item.abierto .faq-respuesta {
-      max-height: 200px;
-      padding: 0 1.25rem 1rem;
-    }
-
-    /* ── Modal suscripción ── */
-    .modal-sus-overlay {
-      position: fixed; inset: 0;
-      background: rgba(0,0,0,0.5);
-      z-index: 2000;
-      display: none;
-      align-items: center;
-      justify-content: center;
-      padding: 1rem;
-    }
-    .modal-sus-overlay.visible { display: flex; }
-    .modal-sus {
-      background: #fff;
-      border-radius: 20px;
-      padding: 2.5rem 2rem;
-      max-width: 420px;
-      width: 100%;
-      text-align: center;
-      animation: fadeUp 0.3s ease;
-    }
-    .modal-sus .icono-modal { font-size: 3rem; margin-bottom: 1rem; }
-    .modal-sus h3 {
-      font-family: 'Syne', sans-serif;
-      font-size: 1.4rem;
-      font-weight: 800;
-      color: var(--azul);
-      margin-bottom: 0.5rem;
-    }
-    .modal-sus p { color: var(--gris-texto); font-size: 0.9rem; margin-bottom: 1.5rem; }
-    .modal-sus .descuento-badge {
-      display: inline-block;
-      background: #dcfce7;
-      color: #166534;
-      font-weight: 700;
-      font-size: 1.1rem;
-      padding: 0.5rem 1.5rem;
-      border-radius: 50px;
-      margin-bottom: 1.5rem;
-    }
-    .modal-sus-btns { display: flex; gap: 0.75rem; }
-    .modal-sus-btns button {
-      flex: 1;
-      padding: 0.85rem;
-      border-radius: 10px;
-      font-family: 'Syne', sans-serif;
-      font-weight: 700;
-      font-size: 0.88rem;
-      cursor: pointer;
-      border: none;
-      transition: opacity 0.2s;
-    }
-    .modal-sus-btns button:hover { opacity: 0.88; }
-    .btn-confirmar-sus { background: var(--azul); color: #fff; }
-    .btn-cancelar-sus { background: var(--gris-medio); color: var(--azul); }
-
-    /* ── Responsive ── */
-    @media (min-width: 1400px) {
-      .planes-grid { max-width: 1400px; gap: 1.5rem; }
-    }
-    @media (max-width: 1199px) {
-      .planes-grid { grid-template-columns: repeat(2, 1fr); max-width: 720px; }
-      .plan-card.popular { transform: none; }
-      .plan-card.popular:hover { transform: translateY(-8px); }
-    }
-    @media (max-width: 767px) {
-      .planes-grid { grid-template-columns: 1fr; max-width: 420px; }
-      .sus-hero { padding: 4rem 1.25rem 3rem; }
-      .planes-section { padding: 2.5rem 1rem 3rem; }
-      .comparativa-section { padding: 2.5rem 1rem; overflow-x: auto; }
-      .tabla-comparativa { min-width: 600px; }
-      .faq-section { padding: 2.5rem 1rem 3rem; }
-    }
-  </style>
-</head>
-<body>
-<script>(function(){try{var s=JSON.parse(sessionStorage.getItem('lth_cliente')||'null');if(s&&s.rol==='cliente'){var st=document.createElement('style');st.textContent='#btn-registrate{display:none!important}';document.head.appendChild(st);}}catch(e){}})();</script>
-
-  <!-- NAVBAR -->
-  <nav class="navbar" role="navigation" aria-label="Menú principal">
-    <div class="navbar-inner">
-      <a th:href="@{/}" class="navbar-logo" aria-label="Ir al inicio">
-        <img th:src="@{/logo3.jpeg}" src="/logo3.jpeg" alt="Logo">
-        <span>Los <em>Tres</em> Hermanos</span>
-      </a>
-      <div class="navbar-nav" id="nav-menu">
-        <a th:href="@{/}"              class="nav-link">Inicio</a>
-        <a th:href="@{/medicamentos}"  class="nav-link">Medicamentos</a>
-        <a th:href="@{/variedades}"    class="nav-link">Variedades</a>
-        <a th:href="@{/servicios}"     class="nav-link">Servicios</a>
-        <a th:href="@{/suscripciones}" class="nav-link nav-link-suscripcion active">⭐ Suscripciones</a>
-        <a th:href="@{/nosotros}"      class="nav-link">Nosotros</a>
-        <a th:href="@{/contacto}"      class="nav-link">Contacto</a>
+  <main id="contenido">
+    <section class="sus-hero">
+      <div class="hero-fondo" aria-hidden="true"><div class="hero-aura" data-paralaje="-.4"></div><div class="hero-rejilla"></div></div>
+      <div class="contenedor sus-hero-interior">
+        <div id="badge-hero-activo"></div>
+        <nav class="migas migas--claras entra" style="--i:0" aria-label="Ruta"><a th:href="@{/}">Inicio</a><svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#chevron"/></svg><span aria-current="page">Suscripciones</span></nav>
+        <h1 class="hero-titulo hero-titulo--centro">
+          <span class="linea"><span class="entra-linea" style="--i:1">Compra lo de siempre.</span></span>
+          <span class="linea"><span class="entra-linea hero-acento" style="--i:2">Paga menos.</span></span>
+        </h1>
+        <p class="hero-desc entra" style="--i:4">Suscríbete y obtén descuentos automáticos en todos tus medicamentos y variedades.</p>
       </div>
-      <div class="navbar-actions">
-        <a id="btn-registrate" th:href="@{/registro}" class="btn-secundario hide-mobile" style="font-size:0.82rem;padding:0.45rem 1rem;">Regístrate</a>
-        <a id="btn-mi-cuenta" class="btn-secundario" style="font-size:0.82rem;padding:0.45rem 1rem;cursor:pointer;" aria-label="Mi cuenta"
-           onclick="(function(){var s=JSON.parse(sessionStorage.getItem('lth_cliente')||'null');window.location.href=(s&&s.rol==='cliente')?'/perfil':'/login';})()">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-            <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/>
-          </svg>
-          Mi cuenta
-        </a>
-        <button class="btn-menu" id="btn-menu" aria-label="Abrir menú" aria-expanded="false" aria-controls="nav-menu">
-          <span></span><span></span><span></span>
-        </button>
-      </div>
-    </div>
-  </nav>
-<script>(function(){try{var s=JSON.parse(sessionStorage.getItem('lth_cliente')||'null');if(s&&s.rol==='cliente'){var b=document.getElementById('btn-registrate');if(b)b.style.display='none';}}catch(e){}})();</script>
+    </section>
 
-  <!-- HERO -->
-  <section class="sus-hero">
-    <div class="sus-hero-inner">
-      <div id="badge-hero-activo"></div>
-      <nav class="breadcrumb" aria-label="Ruta">
-        <a th:href="@{/}">Inicio</a>
-        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
-        <span>Suscripciones</span>
-      </nav>
-      <h1>Elige tu plan<br><span>Tres Hermanos</span></h1>
-      <p>Suscríbete y obtén descuentos automáticos en todos tus medicamentos y variedades. Sin complicaciones.</p>
-    </div>
-  </section>
-
-  <!-- PLANES -->
-  <section class="planes-section">
-    <div class="planes-titulo">
-      <h2>Nuestros planes</h2>
-      <p>Compra una suscripción y el descuento se aplica automáticamente en toda la tienda</p>
-    </div>
-
-    <!-- Banner plan activo -->
-    <div class="plan-activo-banner" id="banner-plan-activo">
-      <div class="icon">🎉</div>
-      <div class="texto">
-        <strong id="banner-plan-nombre">Plan activo</strong>
-        <span id="banner-plan-desc">Tu descuento está activo en toda la tienda</span>
-      </div>
-      <div style="display:flex;gap:0.5rem;flex-wrap:wrap;">
-        <button class="btn-cancelar-plan" onclick="renovarPlan()" style="background:rgba(255,255,255,0.15);border:1.5px solid rgba(255,255,255,0.4);">🔄 Renovar</button>
-        <button class="btn-cancelar-plan" onclick="cancelarSuscripcion()">✕ Cancelar</button>
-      </div>
-    </div>
-
-    <!-- Alerta vencimiento próximo -->
-    <div id="alerta-vencimiento" style="display:none;align-items:center;gap:1rem;background:#fef3c7;border:1.5px solid #f59e0b;border-radius:12px;padding:1rem 1.5rem;margin-bottom:1.5rem;">
-      <span style="font-size:1.5rem;">⏰</span>
-      <span class="alerta-venc-txt" style="color:#92400e;font-weight:600;flex:1;"></span>
-      <button onclick="renovarPlan()" style="background:#f59e0b;color:#fff;border:none;border-radius:8px;padding:0.5rem 1rem;font-weight:700;cursor:pointer;">Renovar ahora</button>
-    </div>
-
-    <div class="planes-grid">
-
-      <!-- PLAN BÁSICO — $4.900 · 3% -->
-      <div class="plan-card" data-plan="basico" data-descuento="3" data-precio="4900">
-        <div class="plan-icono">🌱</div>
-        <div class="plan-nombre">Básico</div>
-        <div class="plan-desc">Empieza a ahorrar en tus compras de la droguería.</div>
-        <div class="plan-precio"><sup>$</sup>4.900</div>
-        <div class="plan-precio-periodo">COP · por mes</div>
-        <div class="plan-divider"></div>
-        <ul class="plan-beneficios">
-          <li class="plan-beneficio">Acceso completo al catálogo</li>
-          <li class="plan-beneficio">Pedidos por WhatsApp</li>
-          <li class="plan-beneficio"><strong>3% de descuento</strong> en todos los productos</li>
-          <li class="plan-beneficio no">Domicilio prioritario</li>
-          <li class="plan-beneficio no">Ofertas anticipadas</li>
-          <li class="plan-beneficio no">Acceso exclusivo</li>
-        </ul>
-        <button class="btn-plan btn-plan-basico" onclick="seleccionarPlan('basico',3,4900)">Suscribirme por $4.900</button>
+    <section class="contenedor planes-seccion" aria-label="Planes">
+      <div class="plan-activo-banner" id="banner-plan-activo">
+        <span class="banner-icono"><svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#check"/></svg></span>
+        <div class="banner-texto">
+          <strong id="banner-plan-nombre">Plan activo</strong>
+          <span id="banner-plan-desc">Tu descuento está activo en toda la tienda</span>
+        </div>
+        <div class="banner-acciones">
+          <button class="btn btn--secundario btn--sm" type="button" onclick="renovarPlan()"><svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#refrescar"/></svg> Renovar</button>
+          <button class="btn btn--peligro btn--sm" type="button" onclick="cancelarSuscripcion()">Cancelar</button>
+        </div>
       </div>
 
-      <!-- PLAN ESTÁNDAR — $9.900 · 5% -->
-      <div class="plan-card" data-plan="estandar" data-descuento="5" data-precio="9900">
-        <div class="plan-icono">💊</div>
-        <div class="plan-nombre">Estándar</div>
-        <div class="plan-desc">Ahorra más en tus medicamentos y variedades del mes.</div>
-        <div class="plan-precio"><sup>$</sup>9.900</div>
-        <div class="plan-precio-periodo">COP · por mes</div>
-        <div class="plan-divider"></div>
-        <ul class="plan-beneficios">
-          <li class="plan-beneficio">Acceso completo al catálogo</li>
-          <li class="plan-beneficio">Pedidos por WhatsApp</li>
-          <li class="plan-beneficio"><strong>5% de descuento</strong> en todos los productos</li>
-          <li class="plan-beneficio no">Domicilio prioritario</li>
-          <li class="plan-beneficio no">Ofertas anticipadas</li>
-          <li class="plan-beneficio no">Acceso exclusivo</li>
-        </ul>
-        <button class="btn-plan" style="background:var(--azul);color:#fff;" onclick="seleccionarPlan('estandar',5,9900)">Suscribirme por $9.900</button>
+      <div id="alerta-vencimiento" class="alerta alerta--aviso">
+        <svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#reloj"/></svg>
+        <span class="alerta-venc-txt"></span>
+        <button class="btn btn--secundario btn--sm" type="button" onclick="renovarPlan()">Renovar ahora</button>
       </div>
 
-      <!-- PLAN REGULAR — $14.900 · 10% · MÁS POPULAR -->
-      <div class="plan-card popular" data-plan="regular" data-descuento="10" data-precio="14900">
-        <div class="badge-popular">⭐ Más popular</div>
-        <div class="plan-icono">🏥</div>
-        <div class="plan-nombre">Regular</div>
-        <div class="plan-desc">Domicilio prioritario y descuento ampliado para clientes frecuentes.</div>
-        <div class="plan-precio"><sup>$</sup>14.900</div>
-        <div class="plan-precio-periodo">COP · por mes</div>
-        <div class="plan-divider"></div>
-        <ul class="plan-beneficios">
-          <li class="plan-beneficio">Acceso completo al catálogo</li>
-          <li class="plan-beneficio">Pedidos por WhatsApp</li>
-          <li class="plan-beneficio"><strong>10% de descuento</strong> en todos los productos</li>
-          <li class="plan-beneficio">Domicilio prioritario</li>
-          <li class="plan-beneficio no">Ofertas anticipadas</li>
-          <li class="plan-beneficio no">Acceso exclusivo</li>
-        </ul>
-        <button class="btn-plan btn-plan-regular" onclick="seleccionarPlan('regular',10,14900)">Suscribirme por $14.900</button>
+      <div class="planes-grid" data-escalonar>
+        <article class="plan-card" data-plan="basico" data-descuento="3" data-precio="4900" data-brillo>
+          <span class="plan-icono"><svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#brote"/></svg></span>
+          <h2 class="plan-nombre">Básico</h2>
+          <p class="plan-desc">Empieza a ahorrar en tus compras de la droguería.</p>
+          <div class="plan-precio"><sup>$</sup>4.900<small>COP por mes</small></div>
+          <div class="plan-descuento"><strong>3%</strong> de descuento en todos los productos</div>
+          <ul class="plan-beneficios">
+            <li class="plan-beneficio">Acceso completo al catálogo</li>
+            <li class="plan-beneficio">Pedidos por WhatsApp</li>
+          </ul>
+          <button class="btn btn--secundario btn--bloque btn-plan" type="button" onclick="seleccionarPlan('basico',3,4900)">Suscribirme</button>
+        </article>
+        <article class="plan-card" data-plan="estandar" data-descuento="5" data-precio="9900" data-brillo>
+          <span class="plan-icono"><svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#capsula"/></svg></span>
+          <h2 class="plan-nombre">Estándar</h2>
+          <p class="plan-desc">Ahorra más en tus medicamentos y variedades del mes.</p>
+          <div class="plan-precio"><sup>$</sup>9.900<small>COP por mes</small></div>
+          <div class="plan-descuento"><strong>5%</strong> de descuento en todos los productos</div>
+          <ul class="plan-beneficios">
+            <li class="plan-beneficio">Acceso completo al catálogo</li>
+            <li class="plan-beneficio">Pedidos por WhatsApp</li>
+          </ul>
+          <button class="btn btn--secundario btn--bloque btn-plan" type="button" onclick="seleccionarPlan('estandar',5,9900)">Suscribirme</button>
+        </article>
+        <article class="plan-card popular" data-plan="regular" data-descuento="10" data-precio="14900" data-brillo>
+          <span class="badge-popular">Recomendado</span>
+          <span class="plan-icono"><svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#hospital"/></svg></span>
+          <h2 class="plan-nombre">Regular</h2>
+          <p class="plan-desc">Domicilio prioritario y descuento ampliado para clientes frecuentes.</p>
+          <div class="plan-precio"><sup>$</sup>14.900<small>COP por mes</small></div>
+          <div class="plan-descuento"><strong>10%</strong> de descuento en todos los productos</div>
+          <ul class="plan-beneficios">
+            <li class="plan-beneficio">Acceso completo al catálogo</li>
+            <li class="plan-beneficio">Pedidos por WhatsApp</li>
+            <li class="plan-beneficio">Domicilio prioritario</li>
+          </ul>
+          <button class="btn btn--primario btn--bloque btn-plan" type="button" onclick="seleccionarPlan('regular',10,14900)">Suscribirme</button>
+        </article>
+        <article class="plan-card" data-plan="premium" data-descuento="15" data-precio="19900" data-brillo>
+          <span class="plan-icono plan-icono--vino"><svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#corona"/></svg></span>
+          <h2 class="plan-nombre">Premium</h2>
+          <p class="plan-desc">Máximo ahorro, domicilio prioritario y acceso exclusivo a ofertas.</p>
+          <div class="plan-precio"><sup>$</sup>19.900<small>COP por mes</small></div>
+          <div class="plan-descuento"><strong>15%</strong> de descuento en todos los productos</div>
+          <ul class="plan-beneficios">
+            <li class="plan-beneficio">Acceso completo al catálogo</li>
+            <li class="plan-beneficio">Pedidos por WhatsApp</li>
+            <li class="plan-beneficio">Domicilio prioritario</li>
+            <li class="plan-beneficio">Acceso anticipado a ofertas</li>
+            <li class="plan-beneficio">Acceso exclusivo a lanzamientos</li>
+          </ul>
+          <button class="btn btn--oscuro btn--bloque btn-plan" type="button" onclick="seleccionarPlan('premium',15,19900)">Suscribirme</button>
+        </article>
       </div>
+    </section>
 
-      <!-- PLAN PREMIUM — $19.900 · 15% -->
-      <div class="plan-card" data-plan="premium" data-descuento="15" data-precio="19900">
-        <div class="plan-icono">👑</div>
-        <div class="plan-nombre">Premium</div>
-        <div class="plan-desc">Máximo ahorro, domicilio prioritario y acceso exclusivo a ofertas.</div>
-        <div class="plan-precio"><sup>$</sup>19.900</div>
-        <div class="plan-precio-periodo">COP · por mes</div>
-        <div class="plan-divider"></div>
-        <ul class="plan-beneficios">
-          <li class="plan-beneficio">Acceso completo al catálogo</li>
-          <li class="plan-beneficio">Pedidos por WhatsApp</li>
-          <li class="plan-beneficio"><strong>15% de descuento</strong> en todos los productos</li>
-          <li class="plan-beneficio">Domicilio prioritario</li>
-          <li class="plan-beneficio">Acceso anticipado a ofertas</li>
-          <li class="plan-beneficio">Acceso exclusivo a lanzamientos</li>
-        </ul>
-        <button class="btn-plan" style="background:var(--azul);color:#fff;" onclick="seleccionarPlan('premium',15,19900)">Suscribirme por $19.900</button>
-      </div>
-
-    </div>
-  </section>
-
-  <!-- COMPARATIVA -->
-  <section class="comparativa-section">
-    <h2>Comparativa de planes</h2>
-    <div style="overflow-x:auto;">
-      <div class="tabla-comparativa">
-        <table>
-          <thead>
-            <tr>
-              <th>Beneficio</th>
-              <th>Básico</th>
-              <th>Estándar</th>
-              <th>Regular</th>
-              <th>Premium</th>
-            </tr>
-          </thead>
+    <section class="contenedor bloque" aria-labelledby="titulo-comparativa">
+      <header class="encabezado revelar">
+        <span class="ante">Comparativa</span>
+        <h2 id="titulo-comparativa" class="titulo-seccion">Todos los planes, lado a lado.</h2>
+      </header>
+      <div class="tarjeta tabla-marco revelar">
+        <table class="tabla tabla-comparativa">
+          <thead><tr><th scope="col">Beneficio</th><th scope="col">Básico</th><th scope="col">Estándar</th><th scope="col">Regular</th><th scope="col">Premium</th></tr></thead>
           <tbody>
-            <tr>
-              <td>Acceso al catálogo</td>
-              <td><span class="check-si">✓</span></td>
-              <td><span class="check-si">✓</span></td>
-              <td><span class="check-si">✓</span></td>
-              <td><span class="check-si">✓</span></td>
-            </tr>
-            <tr>
-              <td>Pedidos por WhatsApp</td>
-              <td><span class="check-si">✓</span></td>
-              <td><span class="check-si">✓</span></td>
-              <td><span class="check-si">✓</span></td>
-              <td><span class="check-si">✓</span></td>
-            </tr>
-            <tr>
-              <td>Descuento en productos</td>
-              <td><span class="check-val">3%</span></td>
-              <td><span class="check-val">5%</span></td>
-              <td><span class="check-val">10%</span></td>
-              <td><span class="check-val">15%</span></td>
-            </tr>
-            <tr>
-              <td>Domicilio prioritario</td>
-              <td><span class="check-no">×</span></td>
-              <td><span class="check-no">×</span></td>
-              <td><span class="check-si">✓</span></td>
-              <td><span class="check-si">✓</span></td>
-            </tr>
-            <tr>
-              <td>Ofertas anticipadas</td>
-              <td><span class="check-no">×</span></td>
-              <td><span class="check-no">×</span></td>
-              <td><span class="check-no">×</span></td>
-              <td><span class="check-si">✓</span></td>
-            </tr>
-            <tr>
-              <td>Acceso exclusivo</td>
-              <td><span class="check-no">×</span></td>
-              <td><span class="check-no">×</span></td>
-              <td><span class="check-no">×</span></td>
-              <td><span class="check-si">✓</span></td>
-            </tr>
-            <tr>
-              <td>Precio mensual</td>
-              <td><span class="check-val">$4.900</span></td>
-              <td><span class="check-val">$9.900</span></td>
-              <td><span class="check-val">$14.900</span></td>
-              <td><span class="check-val">$19.900</span></td>
-            </tr>
+            <tr><th scope="row">Acceso al catálogo</th><td class="si">Incluido</td><td class="si">Incluido</td><td class="si">Incluido</td><td class="si">Incluido</td></tr>
+            <tr><th scope="row">Pedidos por WhatsApp</th><td class="si">Incluido</td><td class="si">Incluido</td><td class="si">Incluido</td><td class="si">Incluido</td></tr>
+            <tr><th scope="row">Descuento en productos</th><td class="valor">3%</td><td class="valor">5%</td><td class="valor">10%</td><td class="valor">15%</td></tr>
+            <tr><th scope="row">Domicilio prioritario</th><td class="no">No incluido</td><td class="no">No incluido</td><td class="si">Incluido</td><td class="si">Incluido</td></tr>
+            <tr><th scope="row">Ofertas anticipadas</th><td class="no">No incluido</td><td class="no">No incluido</td><td class="no">No incluido</td><td class="si">Incluido</td></tr>
+            <tr><th scope="row">Acceso exclusivo</th><td class="no">No incluido</td><td class="no">No incluido</td><td class="no">No incluido</td><td class="si">Incluido</td></tr>
+            <tr><th scope="row">Precio mensual</th><td class="valor">$4.900</td><td class="valor">$9.900</td><td class="valor">$14.900</td><td class="valor">$19.900</td></tr>
           </tbody>
         </table>
       </div>
-    </div>
-  </section>
-
-  <!-- FAQ -->
-  <div style="background:var(--gris-claro);padding:0 1.5rem 5rem;">
-    <section class="faq-section">
-      <h2>Preguntas frecuentes</h2>
-
-      <div class="faq-item">
-        <button class="faq-pregunta" onclick="toggleFaq(this)">
-          ¿Cómo se aplica el descuento?
-          <em class="chevron">▾</em>
-        </button>
-        <div class="faq-respuesta">
-          Al suscribirte, el descuento se guarda automáticamente. Cuando entres al catálogo de medicamentos o variedades, verás el precio original tachado y el precio con descuento en color rojo. El carrito también calcula el total ya con el descuento aplicado.
-        </div>
-      </div>
-
-      <div class="faq-item">
-        <button class="faq-pregunta" onclick="toggleFaq(this)">
-          ¿Puedo cancelar mi suscripción?
-          <em class="chevron">▾</em>
-        </button>
-        <div class="faq-respuesta">
-          Sí, puedes cancelar desde esta misma página haciendo clic en "Cancelar plan". Al cancelar, vuelves al plan Básico gratuito y los precios se muestran normalmente sin descuento.
-        </div>
-      </div>
-
-      <div class="faq-item">
-        <button class="faq-pregunta" onclick="toggleFaq(this)">
-          ¿El descuento aplica a todos los productos?
-          <em class="chevron">▾</em>
-        </button>
-        <div class="faq-respuesta">
-          Sí, el descuento aplica a todos los medicamentos y variedades de la tienda. Se calcula sobre el precio de cada presentación o producto al momento de agregar al carrito.
-        </div>
-      </div>
-
-      <div class="faq-item">
-        <button class="faq-pregunta" onclick="toggleFaq(this)">
-          ¿Cómo pago la suscripción?
-          <em class="chevron">▾</em>
-        </button>
-        <div class="faq-respuesta">
-          El pago se coordina directamente con la droguería a través de WhatsApp o en el local. Una vez confirmado el pago, el equipo activa tu plan en el sistema.
-        </div>
-      </div>
-
     </section>
-  </div>
 
-  <!-- MODAL CONFIRMACIÓN -->
-  <!-- ALERTA: sesión requerida -->
-  <div class="modal-sus-overlay" id="alerta-sesion">
-    <div class="modal-sus">
-      <div class="icono-modal">🔐</div>
-      <h3>Inicia sesión primero</h3>
-      <p id="alerta-sesion-msg">Para suscribirte necesitas iniciar sesión o registrarte.</p>
-      <div class="modal-sus-btns" style="flex-wrap:wrap;">
-        <button class="btn-cancelar-sus" onclick="cerrarAlertaSesion()">Cancelar</button>
-        <button class="btn-confirmar-sus" onclick="irAlLogin()" style="background:var(--azul);">Iniciar sesión</button>
-        <button class="btn-confirmar-sus" onclick="irAlRegistro()" style="background:var(--rojo);margin-top:0.5rem;width:100%;">Crear cuenta gratis</button>
+    <section class="bloque bloque--tono" aria-labelledby="titulo-faq">
+      <div class="contenedor faq-rejilla">
+        <header class="revelar">
+          <span class="ante">Preguntas frecuentes</span>
+          <h2 id="titulo-faq" class="titulo-seccion">Lo que suelen preguntarnos.</h2>
+        </header>
+        <div class="faq-lista revelar">
+          <div class="faq-item">
+            <button class="faq-pregunta" type="button" onclick="toggleFaq(this)">¿Cómo se aplica el descuento?<svg class="ic chevron" aria-hidden="true"><use href="/img/iconos.svg#chevron-abajo"/></svg></button>
+            <div class="faq-respuesta"><div>Cuando el equipo aprueba tu pago, el descuento se activa en tu cuenta. En los catálogos verás el precio original tachado junto al precio con descuento, y el carrito calcula el total con ese precio.</div></div>
+          </div>
+          <div class="faq-item">
+            <button class="faq-pregunta" type="button" onclick="toggleFaq(this)">¿Puedo cancelar mi suscripción?<svg class="ic chevron" aria-hidden="true"><use href="/img/iconos.svg#chevron-abajo"/></svg></button>
+            <div class="faq-respuesta"><div>Sí, desde esta página o desde tu perfil. Tu descuento sigue vigente hasta que termine el período que ya pagaste.</div></div>
+          </div>
+          <div class="faq-item">
+            <button class="faq-pregunta" type="button" onclick="toggleFaq(this)">¿El descuento aplica a todos los productos?<svg class="ic chevron" aria-hidden="true"><use href="/img/iconos.svg#chevron-abajo"/></svg></button>
+            <div class="faq-respuesta"><div>Sí, aplica a todos los medicamentos y variedades de la tienda. Se calcula sobre el precio de cada presentación o producto al agregarlo al carrito.</div></div>
+          </div>
+          <div class="faq-item">
+            <button class="faq-pregunta" type="button" onclick="toggleFaq(this)">¿Cómo pago la suscripción?<svg class="ic chevron" aria-hidden="true"><use href="/img/iconos.svg#chevron-abajo"/></svg></button>
+            <div class="faq-respuesta"><div>Puedes pagar por Nequi, Daviplata, PSE o Bancolombia y enviar tu comprobante, o pagar en efectivo en la tienda. Cuando el pago se verifica, el equipo activa tu plan por 30 días.</div></div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <div class="modal-velo" id="alerta-sesion" role="dialog" aria-modal="true" aria-labelledby="alerta-sesion-titulo">
+    <div class="modal modal--centrado">
+      <div class="modal-cuerpo">
+        <span class="modal-icono"><svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#candado"/></svg></span>
+        <h2 id="alerta-sesion-titulo">Inicia sesión primero</h2>
+        <p id="alerta-sesion-msg">Para suscribirte necesitas iniciar sesión o registrarte.</p>
+      </div>
+      <div class="modal-pie">
+        <button class="btn btn--fantasma" type="button" onclick="cerrarAlertaSesion()">Cancelar</button>
+        <button class="btn btn--secundario" type="button" onclick="irAlLogin()">Iniciar sesión</button>
+        <button class="btn btn--primario" type="button" onclick="irAlRegistro()">Crear cuenta gratis</button>
       </div>
     </div>
   </div>
 
-  <!-- MODAL: confirmar plan -->
-  <div class="modal-sus-overlay" id="modal-sus">
-    <div class="modal-sus">
-      <div class="icono-modal" id="modal-icono">💊</div>
-      <h3 id="modal-titulo">Plan Regular</h3>
-      <p id="modal-texto">¿Quieres activar este plan? El descuento se aplicará automáticamente en toda la tienda.</p>
-      <div class="descuento-badge" id="modal-descuento-badge">5% de descuento</div>
-      <div class="modal-sus-btns">
-        <button class="btn-cancelar-sus" onclick="cerrarModal()">Cancelar</button>
-        <button class="btn-confirmar-sus" id="btn-confirmar-sus" onclick="confirmarPlan()">¡Activar plan!</button>
+  <div class="modal-velo" id="modal-sus" role="dialog" aria-modal="true" aria-labelledby="modal-titulo">
+    <div class="modal modal--centrado">
+      <div class="modal-cuerpo">
+        <span class="modal-icono" id="modal-icono"></span>
+        <h2 id="modal-titulo">Plan Regular</h2>
+        <p id="modal-texto">¿Quieres activar este plan?</p>
+        <div class="insignia insignia--exito descuento-badge" id="modal-descuento-badge">5% de descuento</div>
+      </div>
+      <div class="modal-pie">
+        <button class="btn btn--fantasma" type="button" onclick="cerrarModal()">Cancelar</button>
+        <button class="btn btn--primario" id="btn-confirmar-sus" type="button" onclick="confirmarPlan()">Continuar al pago <svg class="ic ic-mueve" aria-hidden="true"><use href="/img/iconos.svg#flecha"/></svg></button>
       </div>
     </div>
   </div>
 
-  <!-- FOOTER -->
-  <footer class="footer" id="footer-global"></footer>
-
-  <script th:src="@{/js/seguridad.js}"></script>
-  <script th:src="@{/js/global.js}"></script>
+  <th:block th:replace="~{fragments/tienda :: pie}"></th:block>
+  <th:block th:replace="~{fragments/tienda :: carrito}"></th:block>
+  <th:block th:replace="~{fragments/tienda :: scripts}"></th:block>
   <script>
     // ── Estado del plan seleccionado pendiente de confirmar ──
     let planPendiente = null;
 
     const PLANES_INFO = {
-      basico:   { icono:'🌱',  nombre:'Plan Básico',    descuento:3,  precio:4900  },
-      estandar: { icono:'💊',  nombre:'Plan Estándar',  descuento:5,  precio:9900  },
-      regular:  { icono:'🏥',  nombre:'Plan Regular',   descuento:10, precio:14900 },
-      premium:  { icono:'👑',  nombre:'Plan Premium',   descuento:15, precio:19900 }
+      basico:   { icono:'brote',  nombre:'Plan Básico',    descuento:3,  precio:4900  },
+      estandar: { icono:'capsula',  nombre:'Plan Estándar',  descuento:5,  precio:9900  },
+      regular:  { icono:'hospital',  nombre:'Plan Regular',   descuento:10, precio:14900 },
+      premium:  { icono:'corona',  nombre:'Plan Premium',   descuento:15, precio:19900 }
     };
 
     // ── Abrir modal de confirmación ──
@@ -829,11 +215,11 @@
 
       planPendiente = { nombre, descuento, precio };
 
-      document.getElementById('modal-icono').textContent           = info.icono;
+      document.getElementById('modal-icono').innerHTML = Experiencia.icono(info.icono);
       document.getElementById('modal-titulo').textContent          = info.nombre;
       document.getElementById('modal-descuento-badge').textContent = descuento + '% de descuento';
       document.getElementById('modal-texto').textContent =
-        `¿Quieres activar el ${info.nombre}? Tu descuento del ${descuento}% se aplicará automáticamente en toda la tienda.`;
+        `Para activar el ${info.nombre} envía tu comprobante de pago. Cuando se apruebe, tu descuento del ${descuento}% se aplicará en toda la tienda.`;
 
       document.getElementById('modal-sus').classList.add('visible');
     }
@@ -923,7 +309,7 @@
       const alertaVenc = document.getElementById('alerta-vencimiento');
 
       if (sus) {
-        const info = PLANES_INFO[sus.plan] || { nombre: sus.plan, icono: '⭐' };
+        const info = PLANES_INFO[sus.plan] || { nombre: sus.plan, icono: 'estrella' };
 
         // Calcular días restantes
         let diasRestantes = null;
@@ -945,7 +331,7 @@
         document.getElementById('banner-plan-desc').textContent =
           `${sus.descuento}% de descuento activo en toda la tienda${fechaTexto}`;
         badgeHero.innerHTML =
-          `<div class="sus-badge-activo"><span class="dot"></span>${info.nombre} activo · ${sus.descuento}% descuento${fechaTexto}</div><br><br>`;
+          `<div class="sus-badge-activo"><span class="dot"></span>${info.nombre} activo · ${sus.descuento}% descuento${fechaTexto}</div>`;
 
         // Alerta de vencimiento próximo (≤5 días)
         if (alertaVenc && diasRestantes !== null && diasRestantes <= 5) {
@@ -964,10 +350,10 @@
       }
 
       // Resaltar la tarjeta del plan activo con borde verde
-      document.querySelectorAll('.plan-card').forEach(card => card.style.outline = '');
+      document.querySelectorAll('.plan-card').forEach(card => card.classList.remove('plan-actual'));
       if (sus) {
         const cardActiva = document.querySelector(`.plan-card[data-plan="${sus.plan}"]`);
-        if (cardActiva) cardActiva.style.outline = '3px solid #4ade80';
+        if (cardActiva) cardActiva.classList.add('plan-actual');
       }
     }
 

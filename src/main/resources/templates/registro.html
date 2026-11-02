@@ -1,339 +1,85 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="es">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Crear Cuenta — Los Tres Hermanos</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" th:href="@{/css/global.css}">
-  <style>
-    html, body { overflow-x: hidden; box-sizing: border-box; }
-    *, *::before, *::after { box-sizing: border-box; }
-    :root{
-      --azul:#1B2A6B;--azul-medio:#2D3E9E;--azul-claro:#4A5FD4;
-      --rojo:#C0102A;--rojo-vivo:#E8122F;--verde:#16a34a;
-      --gris-claro:#F4F5F9;--gris-medio:#DDE0EC;--gris-texto:#6B7280;--negro:#111827;
-      --grad-hero:linear-gradient(135deg,#1B2A6B 0%,#2D3E9E 50%,#C0102A 100%);
-      --grad-rojo:linear-gradient(135deg,#C0102A,#E8122F);
-      --font-titulo:'Syne',sans-serif;--font-cuerpo:'DM Sans',sans-serif;
-      --trans:0.28s cubic-bezier(0.4,0,0.2,1);
-      --sombra-sm:0 2px 8px rgba(0,0,0,0.08);--sombra-md:0 8px 32px rgba(0,0,0,0.12);--sombra-lg:0 20px 60px rgba(0,0,0,0.15);
-    }
-    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
-    body{font-family:var(--font-cuerpo);background:var(--gris-claro);min-height:100vh;display:flex;flex-direction:column;}
-
-    /* NAVBAR */
-    .navbar{background:white;border-bottom:1px solid var(--gris-medio);box-shadow:var(--sombra-sm);}
-    .navbar-inner{max-width:1100px;margin:0 auto;padding:0 2rem;height:64px;display:flex;align-items:center;justify-content:space-between;}
-    .navbar-logo{display:flex;align-items:center;gap:0.75rem;font-family:var(--font-titulo);font-weight:800;font-size:1rem;color:var(--azul);text-decoration:none;}
-    .navbar-logo img{width:38px;height:38px;border-radius:50%;object-fit:cover;border:2px solid var(--gris-medio);}
-    .navbar-logo em{color:var(--rojo);font-style:normal;}
-    .navbar-link{font-size:0.85rem;font-weight:600;color:var(--gris-texto);text-decoration:none;transition:color var(--trans);}
-    .navbar-link:hover{color:var(--azul);}
-
-    /* LAYOUT */
-    .page-wrap{flex:1;display:grid;grid-template-columns:1fr 1fr;min-height:calc(100vh - 64px);}
-
-    /* PANEL IZQUIERDO */
-    .panel-izq{background:var(--grad-hero);padding:4rem 3rem;display:flex;flex-direction:column;justify-content:center;position:relative;overflow:hidden;}
-    .panel-izq::before{content:'';position:absolute;top:-30%;right:-15%;width:400px;height:400px;border-radius:50%;background:rgba(255,255,255,0.05);pointer-events:none;}
-    .panel-izq::after{content:'';position:absolute;bottom:-20%;left:-10%;width:300px;height:300px;border-radius:50%;background:rgba(232,18,47,0.1);pointer-events:none;}
-    .izq-content{position:relative;z-index:1;}
-    .izq-logo{display:flex;align-items:center;gap:0.85rem;margin-bottom:3rem;}
-    .izq-logo-icon{width:48px;height:48px;border-radius:12px;background:rgba(255,255,255,0.15);border:1.5px solid rgba(255,255,255,0.25);display:grid;place-items:center;overflow:hidden;}
-    .izq-logo-icon img{width:100%;height:100%;object-fit:cover;border-radius:10px;}
-    .izq-logo-text{font-family:var(--font-titulo);font-weight:800;font-size:1rem;color:white;line-height:1.3;}
-    .izq-logo-text span{color:rgba(255,255,255,0.55);font-weight:400;font-size:0.75rem;display:block;}
-    .izq-titulo{font-family:var(--font-titulo);font-size:clamp(1.8rem,3vw,2.6rem);font-weight:800;color:white;line-height:1.15;letter-spacing:-0.03em;margin-bottom:1rem;}
-    .izq-titulo em{font-style:normal;color:#FCA5A5;}
-    .izq-desc{font-size:0.92rem;color:rgba(255,255,255,0.7);line-height:1.75;max-width:360px;margin-bottom:2.5rem;}
-    .beneficios{display:flex;flex-direction:column;gap:0.85rem;}
-    .beneficio{display:flex;align-items:center;gap:0.85rem;}
-    .beneficio-icon{width:36px;height:36px;border-radius:9px;background:rgba(255,255,255,0.12);display:grid;place-items:center;flex-shrink:0;}
-    .beneficio-icon svg{width:18px;height:18px;color:white;}
-    .beneficio-texto{font-size:0.88rem;color:rgba(255,255,255,0.8);line-height:1.4;}
-    .beneficio-texto strong{color:white;display:block;font-size:0.9rem;}
-
-    /* PANEL DERECHO */
-    .panel-der{background:white;padding:3rem 3rem;display:flex;flex-direction:column;justify-content:center;overflow-y:auto;}
-    .form-titulo{font-family:var(--font-titulo);font-size:1.5rem;font-weight:800;color:var(--azul);letter-spacing:-0.02em;margin-bottom:0.3rem;}
-    .form-subtitulo{font-size:0.88rem;color:var(--gris-texto);margin-bottom:2rem;}
-
-    /* FORM GRID */
-    .form-row{display:grid;grid-template-columns:1fr 1fr;gap:0.85rem;}
-    .form-grupo{display:flex;flex-direction:column;gap:0.35rem;margin-bottom:0.75rem;}
-    .form-grupo.full{grid-column:1/-1;}
-    .field-label{font-size:0.72rem;font-weight:700;color:var(--gris-texto);text-transform:uppercase;letter-spacing:0.08em;}
-
-    .field{display:flex;align-items:center;gap:0.6rem;border-radius:10px;padding:0.7rem 1rem;background:var(--gris-claro);border:1.5px solid var(--gris-medio);transition:border-color var(--trans),box-shadow var(--trans);}
-    .field:focus-within{border-color:var(--azul-claro);box-shadow:0 0 0 3px rgba(74,95,212,0.1);background:white;}
-    .field.error{border-color:var(--rojo-vivo)!important;background:rgba(192,16,42,0.02);}
-    .field-icon{width:15px;height:15px;color:var(--gris-texto);flex-shrink:0;}
-    .field:focus-within .field-icon{color:var(--azul-claro);}
-    .field input{background:none;border:none;outline:none;width:100%;color:var(--negro);font-family:var(--font-cuerpo);font-size:0.92rem;}
-    .field input::placeholder{color:#9CA3AF;}
-    .btn-ojo{background:none;border:none;cursor:pointer;color:var(--gris-texto);padding:0;line-height:0;transition:color var(--trans);}
-    .btn-ojo:hover{color:var(--azul);}
-    .btn-ojo svg{width:15px;height:15px;}
-
-    /* Términos */
-    .terminos-wrap{display:flex;align-items:flex-start;gap:0.75rem;padding:1rem;background:var(--gris-claro);border-radius:10px;border:1.5px solid var(--gris-medio);margin:0.5rem 0 1.25rem;transition:border-color var(--trans);}
-    .terminos-wrap.error{border-color:var(--rojo-vivo);}
-    .terminos-wrap input[type=checkbox]{width:17px;height:17px;margin-top:2px;flex-shrink:0;accent-color:var(--rojo-vivo);cursor:pointer;}
-    .terminos-texto{font-size:0.82rem;color:var(--gris-texto);line-height:1.6;}
-    .terminos-texto a{color:var(--azul);font-weight:600;text-decoration:underline;cursor:pointer;}
-    .terminos-texto a:hover{color:var(--rojo);}
-
-    /* Error msg */
-    .error-msg{display:none;align-items:center;gap:0.4rem;font-size:0.78rem;color:var(--rojo);margin-bottom:0.75rem;padding:0.6rem 0.85rem;background:rgba(192,16,42,0.06);border-radius:8px;border:1px solid rgba(192,16,42,0.15);}
-    .error-msg.visible{display:flex;}
-    .error-msg svg{width:14px;height:14px;flex-shrink:0;}
-
-    /* Botón */
-    .btn-registrar{width:100%;padding:0.9rem;background:var(--grad-rojo);color:white;font-family:var(--font-titulo);font-weight:700;font-size:0.98rem;border-radius:10px;border:none;cursor:pointer;transition:transform var(--trans),box-shadow var(--trans),opacity var(--trans);box-shadow:0 6px 20px rgba(192,16,42,0.3);}
-    .btn-registrar:hover{transform:translateY(-2px);box-shadow:0 10px 28px rgba(192,16,42,0.4);}
-    .btn-registrar:disabled{opacity:0.45;cursor:not-allowed;transform:none;}
-    .btn-spinner{display:none;width:18px;height:18px;border:2px solid rgba(255,255,255,0.3);border-top-color:white;border-radius:50%;animation:girar 0.7s linear infinite;margin:0 auto;}
-    @keyframes girar{to{transform:rotate(360deg)}}
-    .btn-spinner.visible{display:block;}
-    .btn-texto{transition:opacity var(--trans);}
-
-    .divider{display:flex;align-items:center;gap:0.75rem;margin:1.25rem 0;}
-    .divider::before,.divider::after{content:'';flex:1;height:1px;background:var(--gris-medio);}
-    .divider span{font-size:0.75rem;color:var(--gris-texto);white-space:nowrap;}
-
-    .btn-invitado{width:100%;padding:0.75rem;background:transparent;color:var(--gris-texto);border:1.5px solid var(--gris-medio);border-radius:10px;font-family:var(--font-cuerpo);font-size:0.88rem;font-weight:500;cursor:pointer;transition:all var(--trans);}
-    .btn-invitado:hover{border-color:var(--azul);color:var(--azul);}
-
-    .links-bottom{text-align:center;font-size:0.83rem;color:var(--gris-texto);margin-top:1.25rem;}
-    .links-bottom a{color:var(--azul);font-weight:600;text-decoration:none;transition:color var(--trans);}
-    .links-bottom a:hover{color:var(--rojo);}
-
-    /* MODAL TÉRMINOS */
-    .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.45);z-index:999;display:none;align-items:center;justify-content:center;padding:2rem;}
-    .modal-overlay.visible{display:flex;}
-    .modal{background:white;border-radius:16px;max-width:580px;width:100%;max-height:80vh;display:flex;flex-direction:column;box-shadow:var(--sombra-lg);animation:modalIn 0.3s cubic-bezier(0.34,1.2,0.64,1) both;}
-    @keyframes modalIn{from{transform:scale(0.95) translateY(20px);opacity:0}to{transform:scale(1) translateY(0);opacity:1}}
-    .modal-header{padding:1.5rem 1.75rem;border-bottom:1px solid var(--gris-medio);display:flex;align-items:center;justify-content:space-between;}
-    .modal-header h2{font-family:var(--font-titulo);font-size:1.1rem;font-weight:800;color:var(--azul);}
-    .btn-cerrar-modal{background:var(--gris-claro);border:none;width:32px;height:32px;border-radius:50%;display:grid;place-items:center;cursor:pointer;transition:background var(--trans);}
-    .btn-cerrar-modal:hover{background:var(--gris-medio);}
-    .btn-cerrar-modal svg{width:16px;height:16px;color:var(--gris-texto);}
-    .modal-body{padding:1.75rem;overflow-y:auto;flex:1;}
-    .modal-body h3{font-family:var(--font-titulo);font-size:0.92rem;font-weight:700;color:var(--azul);margin:1.25rem 0 0.5rem;}
-    .modal-body h3:first-child{margin-top:0;}
-    .modal-body p{font-size:0.85rem;color:var(--gris-texto);line-height:1.75;margin-bottom:0.5rem;}
-    .modal-footer{padding:1.25rem 1.75rem;border-top:1px solid var(--gris-medio);display:flex;justify-content:flex-end;gap:0.75rem;}
-    .btn-aceptar-terminos{padding:0.65rem 1.5rem;background:var(--grad-rojo);color:white;font-family:var(--font-titulo);font-weight:700;font-size:0.9rem;border-radius:99px;border:none;cursor:pointer;transition:transform var(--trans);box-shadow:0 4px 12px rgba(192,16,42,0.3);}
-    .btn-aceptar-terminos:hover{transform:translateY(-1px);}
-
-    /* Toast */
-    .toast-wrap{position:fixed;bottom:2rem;right:2rem;z-index:9999;display:flex;flex-direction:column;gap:0.75rem;}
-    .toast{background:white;border-left:4px solid var(--verde);border-radius:12px;padding:0.85rem 1.1rem;font-size:0.85rem;font-weight:500;box-shadow:var(--sombra-md);animation:tIn 0.35s ease both;max-width:300px;color:var(--negro);}
-    .toast.err{border-left-color:var(--rojo);}
-    @keyframes tIn{from{transform:translateX(120%);opacity:0}to{transform:translateX(0);opacity:1}}
-    .toast.out{animation:tOut 0.3s ease forwards;}
-    @keyframes tOut{to{transform:translateX(120%);opacity:0}}
-
-    /* FOOTER */
-    footer{background:var(--azul);color:rgba(255,255,255,0.6);text-align:center;padding:1.25rem;font-size:0.78rem;}
-
-    /* ── TV ── */
-    @media (min-width: 1400px) {
-      .page-wrap { grid-template-columns: 1fr 1.2fr; }
-      .panel-der { padding: 4rem; }
-    }
-    /* ── Tablet ── */
-    @media (min-width: 768px) and (max-width: 1023px) {
-      .page-wrap { grid-template-columns: 1fr; }
-      .panel-izq { display: none; }
-      .panel-der { padding: 3rem 2rem; }
-    }
-    /* ── Móvil ── */
-    @media (max-width: 767px) {
-      .page-wrap { grid-template-columns: 1fr; }
-      .panel-izq { display: none; }
-      .panel-der { padding: 2rem 1.25rem; }
-      .form-row { grid-template-columns: 1fr; }
-      .navbar-inner { padding: 0 1rem; }
-    }
-    @media (max-width: 479px) {
-      .panel-der { padding: 1.5rem 1rem; }
-    }
-  </style>
-</head>
-<body>
-
-  <!-- NAVBAR -->
-  <nav class="navbar">
-    <div class="navbar-inner">
-      <a th:href="@{/}" class="navbar-logo">
-        <img th:src="@{/logo3.jpeg}" src="/logo3.jpeg" alt="Logo">
-        <span>Los <em>Tres</em> Hermanos</span>
-      </a>
-      <div style="display:flex;align-items:center;gap:1.25rem;">
-        <a th:href="@{/suscripciones}" style="font-size:0.82rem;font-weight:700;color:var(--rojo);padding:0.32rem 0.85rem;border:1.5px solid var(--rojo);border-radius:20px;text-decoration:none;transition:background 0.2s,color 0.2s;" onmouseover="this.style.background='var(--rojo)';this.style.color='#fff'" onmouseout="this.style.background='';this.style.color='var(--rojo)'">⭐ Suscripciones</a>
-        <a th:href="@{/login}" class="navbar-link">¿Ya tienes cuenta? Inicia sesión →</a>
+<head th:replace="~{fragments/tienda :: cabeza('Crear cuenta', 'Crea tu cuenta gratis en Los Tres Hermanos.')}"></head>
+<body class="pagina-auth">
+  <main class="auth auth--registro">
+    <aside class="auth-marca" aria-hidden="true">
+      <div class="hero-fondo"><div class="hero-aura" data-paralaje="-.4"></div><div class="hero-rejilla"></div></div>
+      <a th:href="@{/}" class="auth-logo" tabindex="-1"><img th:src="@{/img/marca/logo-horizontal-oscuro.svg}" alt="" width="330" height="50"></a>
+      <div class="auth-marca-texto">
+        <h2 class="entra" style="--i:1">Crea tu cuenta y compra con más comodidad.</h2>
+        <ul class="auth-puntos entra" style="--i:3">
+          <li><svg class="ic"><use href="/img/iconos.svg#documento"/></svg>Historial de pedidos y facturas</li>
+          <li><svg class="ic"><use href="/img/iconos.svg#casa"/></svg>Pedidos a domicilio en Arjona</li>
+          <li><svg class="ic"><use href="/img/iconos.svg#corazon"/></svg>Tus productos favoritos a mano</li>
+        </ul>
       </div>
-    </div>
-  </nav>
+      <img class="auth-simbolo" th:src="@{/img/marca/isotipo-reducido-oscuro.svg}" alt="" data-paralaje=".6">
+    </aside>
 
-  <div class="page-wrap">
+    <section class="auth-panel">
+      <a th:href="@{/}" class="auth-logo-movil"><img th:src="@{/img/marca/logo-horizontal.svg}" alt="Los Tres Hermanos, ir al inicio" width="290" height="44"></a>
+      <div class="auth-formulario auth-formulario--ancho entra" style="--i:0">
+        <nav class="migas" aria-label="Ruta"><a th:href="@{/}">Inicio</a><svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#chevron"/></svg><span aria-current="page">Crear cuenta</span></nav>
+        <h1>Crear mi cuenta</h1>
+        <p class="auth-sub">Completa tus datos para registrarte. Es gratis.</p>
 
-    <!-- PANEL IZQUIERDO -->
-    <div class="panel-izq">
-      <div class="izq-content">
-        <div class="izq-logo">
-          <div class="izq-logo-icon">
-            <img th:src="@{/logo3.jpeg}" src="/logo3.jpeg" alt="Logo">
-          </div>
-          <div class="izq-logo-text">
-            Los Tres Hermanos
-            <span>Droguería y Variedades · Arjona, Bolívar</span>
-          </div>
+        <div class="rejilla-form">
+          <div class="campo"><label for="input-nombre">Nombre completo</label>
+            <div class="campo-icono field" id="f-nombre"><svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#usuario"/></svg><input type="text" id="input-nombre" placeholder="Ej: María González" autocomplete="name"></div></div>
+          <div class="campo"><label for="input-correo">Correo electrónico</label>
+            <div class="campo-icono field" id="f-correo"><svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#correo"/></svg><input type="email" id="input-correo" placeholder="tu@correo.com" autocomplete="email"></div></div>
+          <div class="campo"><label for="input-telefono">Teléfono</label>
+            <div class="campo-icono field" id="f-telefono"><svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#telefono"/></svg><input type="tel" id="input-telefono" placeholder="+57 300 000 0000" autocomplete="tel"></div></div>
+          <div class="campo"><label for="input-direccion">Dirección de entrega</label>
+            <div class="campo-icono field" id="f-direccion"><svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#ubicacion"/></svg><input type="text" id="input-direccion" placeholder="Calle, barrio, ciudad" autocomplete="street-address"></div></div>
+          <div class="campo"><label for="input-pass">Contraseña</label>
+            <div class="campo-icono field" id="f-pass"><svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#candado"/></svg><input type="password" id="input-pass" placeholder="Mínimo 8 caracteres" autocomplete="new-password">
+              <button type="button" class="btn-ojo" aria-label="Mostrar u ocultar contraseña" onclick="toggleOjo('input-pass','ojo1-c','ojo1-a')"><svg id="ojo1-c" class="ic" aria-hidden="true"><use href="/img/iconos.svg#ojo-no"/></svg><svg id="ojo1-a" class="ic" style="display:none" aria-hidden="true"><use href="/img/iconos.svg#ojo"/></svg></button></div></div>
+          <div class="campo"><label for="input-pass2">Confirmar contraseña</label>
+            <div class="campo-icono field" id="f-pass2"><svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#candado"/></svg><input type="password" id="input-pass2" placeholder="Repite tu contraseña" autocomplete="new-password">
+              <button type="button" class="btn-ojo" aria-label="Mostrar u ocultar contraseña" onclick="toggleOjo('input-pass2','ojo2-c','ojo2-a')"><svg id="ojo2-c" class="ic" aria-hidden="true"><use href="/img/iconos.svg#ojo-no"/></svg><svg id="ojo2-a" class="ic" style="display:none" aria-hidden="true"><use href="/img/iconos.svg#ojo"/></svg></button></div></div>
         </div>
-        <h1 class="izq-titulo">Tu salud,<br>nuestra <em>prioridad</em></h1>
-        <p class="izq-desc">Crea tu cuenta y accede a una experiencia de compra más cómoda, rápida y personalizada.</p>
-        <div class="beneficios">
-          <div class="beneficio">
-            <div class="beneficio-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
-            <div class="beneficio-texto"><strong>Historial de pedidos</strong>Consulta todos tus pedidos anteriores y facturas.</div>
-          </div>
-          <div class="beneficio">
-            <div class="beneficio-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></div>
-            <div class="beneficio-texto"><strong>Pedido a domicilio</strong>Recibe tus productos en la puerta de tu casa.</div>
-          </div>
-          <div class="beneficio">
-            <div class="beneficio-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg></div>
-            <div class="beneficio-texto"><strong>Productos favoritos</strong>Guarda los productos que más usas para pedirlos fácil.</div>
-          </div>
+
+        <div class="terminos-wrap" id="terminos-wrap">
+          <input type="checkbox" id="acepto-terminos" onchange="actualizarBoton()">
+          <label for="acepto-terminos">He leído y acepto los <button type="button" class="enlace" onclick="abrirTerminos('terminos')">Términos y Condiciones</button> y la <button type="button" class="enlace" onclick="abrirTerminos('privacidad')">Política de Privacidad</button> de Droguería y Variedades Los Tres Hermanos.</label>
         </div>
-      </div>
-    </div>
 
-    <!-- PANEL DERECHO -->
-    <div class="panel-der">
-      <nav aria-label="Breadcrumb" style="margin-bottom:1.5rem;">
-        <ol style="display:flex;align-items:center;gap:0.5rem;list-style:none;font-size:0.78rem;color:var(--gris-texto);">
-          <li><a th:href="@{/}" style="color:var(--gris-texto);text-decoration:none;transition:color 0.2s;" onmouseover="this.style.color='var(--azul)'" onmouseout="this.style.color='var(--gris-texto)'">Inicio</a></li>
-          <li style="color:var(--gris-medio);">›</li>
-          <li style="color:var(--azul);font-weight:600;">Crear Cuenta</li>
-        </ol>
-      </nav>
-      <h1 class="form-titulo">Crear mi cuenta</h1>
-      <p class="form-subtitulo">Completa tus datos para registrarte. Es gratis.</p>
-
-      <div class="form-row">
-        <div class="form-grupo">
-          <span class="field-label">Nombre completo</span>
-          <div class="field" id="f-nombre">
-            <svg class="field-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-            <input type="text" id="input-nombre" placeholder="Ej: María González" autocomplete="name">
-          </div>
+        <div class="alerta alerta--peligro error-msg" id="error-reg" role="alert">
+          <svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#alerta"/></svg>
+          <span id="error-reg-texto"></span>
         </div>
-        <div class="form-grupo">
-          <span class="field-label">Correo electrónico</span>
-          <div class="field" id="f-correo">
-            <svg class="field-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
-            <input type="email" id="input-correo" placeholder="tu@correo.com" autocomplete="email">
-          </div>
-        </div>
-        <div class="form-grupo">
-          <span class="field-label">Teléfono</span>
-          <div class="field" id="f-telefono">
-            <svg class="field-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.81a19.79 19.79 0 01-3.07-8.67A2 2 0 012 0h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L6.09 7.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 16.92z"/></svg>
-            <input type="tel" id="input-telefono" placeholder="+57 300 000 0000" autocomplete="tel">
-          </div>
-        </div>
-        <div class="form-grupo">
-          <span class="field-label">Dirección de entrega</span>
-          <div class="field" id="f-direccion">
-            <svg class="field-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
-            <input type="text" id="input-direccion" placeholder="Calle, barrio, ciudad" autocomplete="street-address">
-          </div>
-        </div>
-        <div class="form-grupo">
-          <span class="field-label">Contraseña</span>
-          <div class="field" id="f-pass">
-            <svg class="field-icon" viewBox="0 0 16 16" fill="currentColor"><path d="M8 1a2 2 0 012 2v4H6V3a2 2 0 012-2zm3 6V3a3 3 0 00-6 0v4a2 2 0 00-2 2v5a2 2 0 002 2h6a2 2 0 002-2V9a2 2 0 00-2-2z"/></svg>
-            <input type="password" id="input-pass" placeholder="Mínimo 8 caracteres" autocomplete="new-password">
-            <button type="button" class="btn-ojo" onclick="toggleOjo('input-pass','ojo1-c','ojo1-a')">
-              <svg id="ojo1-c" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
-              <svg id="ojo1-a" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:none"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-            </button>
-          </div>
-        </div>
-        <div class="form-grupo">
-          <span class="field-label">Confirmar contraseña</span>
-          <div class="field" id="f-pass2">
-            <svg class="field-icon" viewBox="0 0 16 16" fill="currentColor"><path d="M8 1a2 2 0 012 2v4H6V3a2 2 0 012-2zm3 6V3a3 3 0 00-6 0v4a2 2 0 00-2 2v5a2 2 0 002 2h6a2 2 0 002-2V9a2 2 0 00-2-2z"/></svg>
-            <input type="password" id="input-pass2" placeholder="Repite tu contraseña">
-            <button type="button" class="btn-ojo" onclick="toggleOjo('input-pass2','ojo2-c','ojo2-a')">
-              <svg id="ojo2-c" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
-              <svg id="ojo2-a" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:none"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-            </button>
-          </div>
-        </div>
-      </div>
 
-      <!-- Términos -->
-      <div class="terminos-wrap" id="terminos-wrap">
-        <input type="checkbox" id="acepto-terminos" onchange="actualizarBoton()">
-        <span class="terminos-texto">
-          He leído y acepto los
-          <a onclick="abrirTerminos('terminos')">Términos y Condiciones</a>
-          y la
-          <a onclick="abrirTerminos('privacidad')">Política de Privacidad</a>
-          de Droguería y Variedades Los Tres Hermanos.
-        </span>
-      </div>
-
-      <div class="error-msg" id="error-reg">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-        <span id="error-reg-texto"></span>
-      </div>
-
-      <button class="btn-registrar" id="btn-registrar" onclick="registrar()" disabled>
-        <span class="btn-texto">Crear mi cuenta</span>
-        <span class="btn-spinner" id="spin-reg"></span>
-      </button>
-
-      <div class="divider"><span>o</span></div>
-
-      <button class="btn-invitado" onclick="entrarComoInvitado()">
-        Continuar como invitado (solo explorar)
-      </button>
-
-      <div class="links-bottom">
-        ¿Ya tienes cuenta? <a th:href="@{/login}">Iniciar sesión</a>
-        &nbsp;·&nbsp;
-        <a th:href="@{/}">← Volver al sitio</a>
-      </div>
-    </div>
-  </div>
-
-  <!-- MODAL TÉRMINOS Y CONDICIONES -->
-  <div class="modal-overlay" id="modal-terminos">
-    <div class="modal">
-      <div class="modal-header">
-        <h2 id="modal-titulo">Términos y Condiciones</h2>
-        <button class="btn-cerrar-modal" onclick="cerrarModal()">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        <button class="btn btn--primario btn--lg btn--bloque btn-registrar" id="btn-registrar" type="button" onclick="registrar()" disabled>
+          <span class="btn-texto">Crear mi cuenta</span>
+          <span class="btn-spinner" id="spin-reg"></span>
         </button>
+
+        <div class="divisor"><span>o</span></div>
+        <button class="btn btn--secundario btn--bloque btn-invitado" type="button" onclick="entrarComoInvitado()">Continuar como invitado</button>
+        <p class="auth-pie">¿Ya tienes cuenta? <a th:href="@{/login}">Iniciar sesión</a></p>
       </div>
-      <div class="modal-body" id="modal-contenido"></div>
-      <div class="modal-footer">
-        <button class="btn-cerrar-modal" onclick="cerrarModal()" style="width:auto;padding:0.55rem 1.25rem;border-radius:99px;font-size:0.85rem;font-weight:600;color:var(--gris-texto);">Cerrar</button>
-        <button class="btn-aceptar-terminos" onclick="aceptarDesdeModal()">Aceptar y cerrar</button>
+    </section>
+  </main>
+
+  <div class="modal-velo" id="modal-terminos" role="dialog" aria-modal="true" aria-labelledby="modal-titulo">
+    <div class="modal">
+      <div class="modal-cabeza">
+        <h2 id="modal-titulo">Términos y Condiciones</h2>
+        <button class="btn-icono btn-cerrar-modal" type="button" onclick="cerrarModal()" aria-label="Cerrar"><svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#cerrar"/></svg></button>
+      </div>
+      <div class="modal-cuerpo" id="modal-contenido"></div>
+      <div class="modal-pie">
+        <button class="btn btn--fantasma" type="button" onclick="cerrarModal()">Cerrar</button>
+        <button class="btn btn--primario" type="button" onclick="aceptarDesdeModal()">Aceptar y cerrar</button>
       </div>
     </div>
   </div>
-
-  <footer>© 2024 Droguería y Variedades Los Tres Hermanos · Arjona, Bolívar</footer>
   <div class="toast-wrap" id="toast-wrap"></div>
 
   <script th:src="@{/js/seguridad.js}"></script>
+  <script th:src="@{/js/experiencia.js}"></script>
   <script>
     const TERMINOS_CONTENIDO = {
       terminos: {
