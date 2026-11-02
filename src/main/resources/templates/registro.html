@@ -1,12 +1,15 @@
 <!DOCTYPE html>
-<html lang="es">
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Crear Cuenta — Los Tres Hermanos</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/global.css}">
   <style>
+    html, body { overflow-x: hidden; box-sizing: border-box; }
+    *, *::before, *::after { box-sizing: border-box; }
     :root{
       --azul:#1B2A6B;--azul-medio:#2D3E9E;--azul-claro:#4A5FD4;
       --rojo:#C0102A;--rojo-vivo:#E8122F;--verde:#16a34a;
@@ -165,11 +168,14 @@
   <!-- NAVBAR -->
   <nav class="navbar">
     <div class="navbar-inner">
-      <a href="index.html" class="navbar-logo">
-        <img src="logo3.jpeg" alt="Logo" onerror="this.style.display='none'">
+      <a th:href="@{/}" class="navbar-logo">
+        <img th:src="@{/logo3.jpeg}" src="/logo3.jpeg" alt="Logo">
         <span>Los <em>Tres</em> Hermanos</span>
       </a>
-      <a href="login-cliente.html" class="navbar-link">¿Ya tienes cuenta? Inicia sesión →</a>
+      <div style="display:flex;align-items:center;gap:1.25rem;">
+        <a th:href="@{/suscripciones}" style="font-size:0.82rem;font-weight:700;color:var(--rojo);padding:0.32rem 0.85rem;border:1.5px solid var(--rojo);border-radius:20px;text-decoration:none;transition:background 0.2s,color 0.2s;" onmouseover="this.style.background='var(--rojo)';this.style.color='#fff'" onmouseout="this.style.background='';this.style.color='var(--rojo)'">⭐ Suscripciones</a>
+        <a th:href="@{/login}" class="navbar-link">¿Ya tienes cuenta? Inicia sesión →</a>
+      </div>
     </div>
   </nav>
 
@@ -180,7 +186,7 @@
       <div class="izq-content">
         <div class="izq-logo">
           <div class="izq-logo-icon">
-            <img src="logo3.jpeg" alt="Logo" onerror="this.style.display='none'">
+            <img th:src="@{/logo3.jpeg}" src="/logo3.jpeg" alt="Logo">
           </div>
           <div class="izq-logo-text">
             Los Tres Hermanos
@@ -210,7 +216,7 @@
     <div class="panel-der">
       <nav aria-label="Breadcrumb" style="margin-bottom:1.5rem;">
         <ol style="display:flex;align-items:center;gap:0.5rem;list-style:none;font-size:0.78rem;color:var(--gris-texto);">
-          <li><a href="index.html" style="color:var(--gris-texto);text-decoration:none;transition:color 0.2s;" onmouseover="this.style.color='var(--azul)'" onmouseout="this.style.color='var(--gris-texto)'">Inicio</a></li>
+          <li><a th:href="@{/}" style="color:var(--gris-texto);text-decoration:none;transition:color 0.2s;" onmouseover="this.style.color='var(--azul)'" onmouseout="this.style.color='var(--gris-texto)'">Inicio</a></li>
           <li style="color:var(--gris-medio);">›</li>
           <li style="color:var(--azul);font-weight:600;">Crear Cuenta</li>
         </ol>
@@ -251,7 +257,7 @@
           <span class="field-label">Contraseña</span>
           <div class="field" id="f-pass">
             <svg class="field-icon" viewBox="0 0 16 16" fill="currentColor"><path d="M8 1a2 2 0 012 2v4H6V3a2 2 0 012-2zm3 6V3a3 3 0 00-6 0v4a2 2 0 00-2 2v5a2 2 0 002 2h6a2 2 0 002-2V9a2 2 0 00-2-2z"/></svg>
-            <input type="password" id="input-pass" placeholder="Mínimo 6 caracteres">
+            <input type="password" id="input-pass" placeholder="Mínimo 8 caracteres" autocomplete="new-password">
             <button type="button" class="btn-ojo" onclick="toggleOjo('input-pass','ojo1-c','ojo1-a')">
               <svg id="ojo1-c" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
               <svg id="ojo1-a" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:none"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
@@ -300,9 +306,9 @@
       </button>
 
       <div class="links-bottom">
-        ¿Ya tienes cuenta? <a href="login-cliente.html">Iniciar sesión</a>
+        ¿Ya tienes cuenta? <a th:href="@{/login}">Iniciar sesión</a>
         &nbsp;·&nbsp;
-        <a href="index.html">← Volver al sitio</a>
+        <a th:href="@{/}">← Volver al sitio</a>
       </div>
     </div>
   </div>
@@ -327,6 +333,7 @@
   <footer>© 2024 Droguería y Variedades Los Tres Hermanos · Arjona, Bolívar</footer>
   <div class="toast-wrap" id="toast-wrap"></div>
 
+  <script th:src="@{/js/seguridad.js}"></script>
   <script>
     const TERMINOS_CONTENIDO = {
       terminos: {
@@ -433,7 +440,7 @@
     async function registrar() {
       limpiarErrores();
       const nombre    = document.getElementById('input-nombre').value.trim();
-      const correo    = document.getElementById('input-correo').value.trim();
+      const correo    = document.getElementById('input-correo').value.trim().toLowerCase();
       const telefono  = document.getElementById('input-telefono').value.trim();
       const direccion = document.getElementById('input-direccion').value.trim();
       const pass      = document.getElementById('input-pass').value;
@@ -444,25 +451,31 @@
       if (!correo || !correo.includes('@')) { mostrarError(['f-correo'], 'Ingresa un correo válido.'); return; }
       if (!telefono)  { mostrarError(['f-telefono'],  'El teléfono es obligatorio.'); return; }
       if (!direccion) { mostrarError(['f-direccion'], 'La dirección es obligatoria.'); return; }
-      if (pass.length < 6) { mostrarError(['f-pass'], 'La contraseña debe tener mínimo 6 caracteres.'); return; }
+      if (pass.length < 8) { mostrarError(['f-pass'], 'La contraseña debe tener mínimo 8 caracteres.'); return; }
       if (pass !== pass2)  { mostrarError(['f-pass','f-pass2'], 'Las contraseñas no coinciden.'); return; }
       if (!terminos) { document.getElementById('terminos-wrap').classList.add('error'); mostrarError([], 'Debes aceptar los términos y condiciones.'); return; }
 
+      if (!Seguridad.criptoDisponible()) {
+        mostrarError([], 'El registro requiere una conexión segura (HTTPS).'); return;
+      }
+      await Seguridad.listo;
+
       const clientes = JSON.parse(localStorage.getItem('lth_clientes') || '[]');
-      if (clientes.find(c => c.correo === correo)) {
+      if (clientes.find(c => String(c.correo).toLowerCase() === correo)) {
         mostrarError(['f-correo'], 'Ya existe una cuenta con ese correo.'); return;
       }
 
       const btn   = document.getElementById('btn-registrar');
       const spin  = document.getElementById('spin-reg');
       const texto = btn.querySelector('.btn-texto');
-      btn.disabled = true; texto.style.display = 'none'; spin.classList.add('visible');
+      // Mostrar spinner (el botón permanece enabled para no bloquear si hay error)
+      texto.style.display = 'none'; spin.classList.add('visible');
       await new Promise(r => setTimeout(r, 700));
 
       const nuevoCliente = {
         id:        'CLI-' + Date.now().toString(36).toUpperCase(),
         nombre, correo, telefono, direccion,
-        password:  pass,
+        credencial: await Seguridad.crearCredencial(pass),
         rol:       'cliente',
         fechaReg:  new Date().toLocaleString('es-CO'),
         pedidos:   [],
@@ -471,27 +484,37 @@
       clientes.push(nuevoCliente);
       localStorage.setItem('lth_clientes', JSON.stringify(clientes));
 
+      // Marcar que recién se registró para que perfil.html no dispare re-check
       sessionStorage.setItem('lth_cliente', JSON.stringify({
         id: nuevoCliente.id, nombre, correo, telefono, direccion, rol: 'cliente'
       }));
+      sessionStorage.setItem('lth_recien_registro', '1');
 
       toast('✓ ¡Cuenta creada exitosamente!');
-      setTimeout(() => { window.location.href = 'explorador-drogueria.html'; }, 1200);
+      // Deshabilitar el botón SOLO después de guardar correctamente
+      btn.disabled = true;
+
+      // Redirigir a la página de retorno si viene de suscripciones, si no al perfil
+      const params  = new URLSearchParams(window.location.search);
+      const destino = Seguridad.rutaRetornoSegura(params.get('retorno'), '/perfil');
+      setTimeout(() => { window.location.href = destino; }, 1200);
     }
 
     function entrarComoInvitado() {
       sessionStorage.setItem('lth_cliente', JSON.stringify({ rol: 'invitado', nombre: 'Invitado' }));
-      window.location.href = 'explorador-drogueria.html';
+      window.location.href = '/';
     }
 
-    // Si ya hay sesión activa
+    // Si ya hay sesión activa de cliente (pero NO recién registrado — ese flujo lo maneja registrar())
     const sc = sessionStorage.getItem('lth_cliente');
-    if (sc) {
+    if (sc && !sessionStorage.getItem('lth_recien_registro')) {
       try {
         const c = JSON.parse(sc);
-        if (c.rol === 'cliente') window.location.href = 'perfil-cliente.html';
+        if (c.rol === 'cliente') window.location.href = '/perfil';
       } catch {}
     }
+    // Limpiar flag de recién registrado al cargar la página de registro
+    sessionStorage.removeItem('lth_recien_registro');
   </script>
 </body>
 </html>

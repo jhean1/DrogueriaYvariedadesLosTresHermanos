@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Acceso Administrador – Los Tres Hermanos</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --azul: #1B2A6B;
+      --rojo: #C0102A;
+      --gris: #f4f6fb;
+      --borde: #dde2f0;
+      --texto: #374151;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: linear-gradient(135deg, #0f1b4d 0%, #1B2A6B 60%, #2d3f8a 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem;
+    }
+
+    .admin-login-wrap {
+      width: 100%;
+      max-width: 420px;
+    }
+
+    /* Logo / cabecera */
+    .admin-logo {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+    .admin-logo-shield {
+      width: 72px; height: 72px;
+      background: rgba(255,255,255,0.12);
+      border: 2px solid rgba(255,255,255,0.22);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 2rem;
+      margin: 0 auto 0.75rem;
+    }
+    .admin-logo h1 {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.3rem;
+      font-weight: 800;
+      color: #fff;
+      margin-bottom: 0.2rem;
+    }
+    .admin-logo p {
+      font-size: 0.82rem;
+      color: rgba(255,255,255,0.6);
+    }
+
+    /* Tarjeta */
+    .admin-card {
+      background: #fff;
+      border-radius: 16px;
+      padding: 2rem 2rem 2.25rem;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.35);
+    }
+    .admin-card h2 {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--azul);
+      margin-bottom: 1.5rem;
+      display: flex; align-items: center; gap: 0.5rem;
+    }
+
+    /* Campos */
+    .campo-grupo { margin-bottom: 1rem; }
+    .campo-label {
+      display: block;
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--texto);
+      margin-bottom: 0.35rem;
+    }
+    .campo-input {
+      width: 100%;
+      padding: 0.7rem 0.9rem;
+      border: 1.5px solid var(--borde);
+      border-radius: 8px;
+      font-size: 0.92rem;
+      font-family: 'DM Sans', sans-serif;
+      color: #111;
+      transition: border-color 0.18s;
+    }
+    .campo-input:focus {
+      outline: none;
+      border-color: var(--azul);
+      box-shadow: 0 0 0 3px rgba(27,42,107,0.08);
+    }
+    .campo-input.error { border-color: var(--rojo); }
+
+    /* Input password con ojo */
+    .pwd-wrap { position: relative; }
+    .pwd-wrap .campo-input { padding-right: 2.6rem; }
+    .btn-ojo {
+      position: absolute; right: 0.7rem; top: 50%;
+      transform: translateY(-50%);
+      background: none; border: none; cursor: pointer;
+      color: #9ca3af; padding: 0.2rem;
+      display: flex; align-items: center;
+    }
+    .btn-ojo:hover { color: var(--azul); }
+
+    /* Mensaje error */
+    .msg-error {
+      background: #fee2e2;
+      color: #991b1b;
+      border: 1px solid #fca5a5;
+      border-radius: 8px;
+      padding: 0.65rem 1rem;
+      font-size: 0.83rem;
+      font-weight: 600;
+      margin-bottom: 1rem;
+      display: none;
+    }
+    .msg-error.visible { display: block; }
+
+    /* Botón */
+    .btn-login-admin {
+      width: 100%;
+      padding: 0.85rem;
+      background: var(--azul);
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      font-family: 'Syne', sans-serif;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background 0.18s;
+      margin-top: 0.5rem;
+    }
+    .btn-login-admin:hover { background: #24358a; }
+    .btn-login-admin:active { transform: scale(0.99); }
+
+    /* Link volver */
+    .admin-volver {
+      text-align: center;
+      margin-top: 1.25rem;
+      font-size: 0.82rem;
+      color: rgba(255,255,255,0.6);
+    }
+    .admin-volver a {
+      color: rgba(255,255,255,0.85);
+      text-decoration: none;
+      font-weight: 600;
+    }
+    .admin-volver a:hover { text-decoration: underline; }
+
+    /* Alerta acceso solo local */
+    .alerta-local {
+      background: #fffbeb;
+      border: 1px solid #fde68a;
+      border-radius: 10px;
+      padding: 0.75rem 1rem;
+      font-size: 0.8rem;
+      color: #92400e;
+      margin-bottom: 1.25rem;
+      display: flex; align-items: flex-start; gap: 0.5rem;
+    }
+    .alerta-local svg { flex-shrink: 0; margin-top: 0.1rem; }
+  </style>
+</head>
+<body>
+  <div class="admin-login-wrap">
+
+    <div class="admin-logo">
+      <div class="admin-logo-shield">🛡️</div>
+      <h1>Panel de Administración</h1>
+      <p>Droguería y Variedades Los Tres Hermanos</p>
+    </div>
+
+    <div class="admin-card">
+      <h2>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--azul)" stroke-width="2.2">
+          <rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/>
+        </svg>
+        Acceso restringido
+      </h2>
+
+      <div class="alerta-local">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+          <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+        </svg>
+        <span>Acceso exclusivo para el personal autorizado de la droguería.</span>
+      </div>
+
+      <div class="msg-error visible" th:if="${param.error}">Usuario o contraseña incorrectos.</div>
+      <div class="msg-error visible" th:if="${param.bloqueado}">Demasiados intentos fallidos. Espera 15 minutos e inténtalo de nuevo.</div>
+
+      <form method="post" th:action="@{/admin/login}">
+        <div class="campo-grupo">
+          <label class="campo-label" for="admin-correo">Correo administrador</label>
+          <input class="campo-input" type="email" id="admin-correo" name="correo"
+                 autocomplete="username" required/>
+        </div>
+
+        <div class="campo-grupo">
+          <label class="campo-label" for="admin-clave">Contraseña</label>
+          <div class="pwd-wrap">
+            <input class="campo-input" type="password" id="admin-clave" name="clave"
+                   placeholder="••••••••" autocomplete="current-password" required/>
+            <button type="button" class="btn-ojo" onclick="toggleClave()">
+              <svg id="ojo-icono" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <button class="btn-login-admin" type="submit">Ingresar al panel</button>
+      </form>
+    </div>
+
+    <div class="admin-volver">
+      <a th:href="@{/}">← Volver al sitio</a>
+    </div>
+
+  </div>
+
+  <script th:src="@{/js/seguridad.js}"></script>
+  <script>
+  function toggleClave() {
+    const inp = document.getElementById('admin-clave');
+    inp.type  = inp.type === 'password' ? 'text' : 'password';
+  }
+  </script>
+</body>
+</html>

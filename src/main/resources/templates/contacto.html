@@ -1,11 +1,13 @@
 <!DOCTYPE html>
-<html lang="es">
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Contacto — Los Tres Hermanos</title>
-  <link rel="stylesheet" href="global.css">
+  <link rel="stylesheet" th:href="@{/css/global.css}">
   <style>
+    html, body { overflow-x: hidden; box-sizing: border-box; }
+    *, *::before, *::after { box-sizing: border-box; }
     body { background: var(--gris-claro); }
     .page-header { background: var(--grad-hero); padding: 5rem 2rem 3rem; position: relative; overflow: hidden; }
     .page-header::before { content:''; position:absolute; top:-40%; right:-5%; width:500px; height:500px; border-radius:50%; background:rgba(255,255,255,0.04); pointer-events:none; }
@@ -113,23 +115,26 @@
   </style>
 </head>
 <body>
+<script>(function(){try{var s=JSON.parse(sessionStorage.getItem('lth_cliente')||'null');if(s&&s.rol==='cliente'){var st=document.createElement('style');st.textContent='#btn-registrate{display:none!important}';document.head.appendChild(st);}}catch(e){}})();</script>
 
   <nav class="navbar">
     <div class="navbar-inner">
-      <a href="index.html" class="navbar-logo">
-        <img src="logo3.jpeg" alt="Logo">
+      <a th:href="@{/}" class="navbar-logo">
+        <img th:src="@{/logo3.jpeg}" src="/logo3.jpeg" alt="Logo">
         <span>Los <em>Tres</em> Hermanos</span>
       </a>
       <div class="navbar-nav" id="nav-menu">
-        <a href="index.html"             class="nav-link">Inicio</a>
-        <a href="explorador-drogueria.html" class="nav-link">Medicamentos</a>
-        <a href="variedades.html"           class="nav-link">Variedades</a>
-        <a href="servicios.html"            class="nav-link">Servicios</a>
-        <a href="somos-nosotros.html"       class="nav-link">Nosotros</a>
-        <a href="contacto-drogueria.html"   class="nav-link active">Contacto</a>
+        <a th:href="@{/}"             class="nav-link">Inicio</a>
+        <a th:href="@{/medicamentos}" class="nav-link">Medicamentos</a>
+        <a th:href="@{/variedades}"           class="nav-link">Variedades</a>
+        <a th:href="@{/servicios}"            class="nav-link">Servicios</a>
+        <a th:href="@{/suscripciones}"      class="nav-link nav-link-suscripcion">⭐ Suscripciones</a>
+        <a th:href="@{/nosotros}"       class="nav-link">Nosotros</a>
+        <a th:href="@{/contacto}"   class="nav-link active">Contacto</a>
       </div>
       <div class="navbar-actions">
-        <a href="login-cliente.html" id="btn-mi-cuenta" class="btn-secundario" style="font-size:0.82rem;padding:0.45rem 1rem;" aria-label="Mi cuenta">
+        <a id="btn-mi-cuenta" class="btn-secundario" style="font-size:0.82rem;padding:0.45rem 1rem;cursor:pointer;" aria-label="Mi cuenta"
+           onclick="(function(){var s=JSON.parse(sessionStorage.getItem('lth_cliente')||'null');window.location.href=(s&&s.rol==='cliente')?'/perfil':'/login';})()">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
             <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/>
           </svg>
@@ -150,7 +155,7 @@
   <div class="page-header">
     <div class="page-header-inner">
       <div class="breadcrumb">
-        <a href="index.html">Inicio</a>
+        <a th:href="@{/}">Inicio</a>
         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
         <span>Contacto</span>
       </div>
@@ -313,9 +318,9 @@
         <div class="footer-col">
           <h4>Páginas</h4>
           <ul>
-            <li><a href="explorador-drogueria.html">Medicamentos</a></li>
-            <li><a href="variedades.html">Variedades</a></li>
-            <li><a href="servicios.html">Servicios</a></li>
+            <li><a th:href="@{/medicamentos}">Medicamentos</a></li>
+            <li><a th:href="@{/variedades}">Variedades</a></li>
+            <li><a th:href="@{/servicios}">Servicios</a></li>
           </ul>
         </div>
         <div class="footer-col">
@@ -361,7 +366,7 @@
                   </span>
                   <span class="btn-label">Ubicación</span>
                 </a>
-                <a href="contacto-drogueria.html" class="footer-contacto-texto">Diagonal 52 50A-755</a>
+                <a th:href="@{/contacto}" class="footer-contacto-texto">Diagonal 52 50A-755</a>
               </div>
             </li>
           </ul>
@@ -373,7 +378,8 @@
     </div>
   </footer>
 
-  <script src="global.js"></script>
+  <script th:src="@{/js/seguridad.js}"></script>
+  <script th:src="@{/js/global.js}"></script>
   <script>
     const btnMenu = document.getElementById('btn-menu');
     const navMenu = document.getElementById('nav-menu');
@@ -385,7 +391,7 @@
     // ── WhatsApp con mensaje prellenado ───────────────────────
     document.getElementById('btn-whatsapp-directo')?.addEventListener('click', () => {
       const msg = '¡Hola! Me comunico desde la página web de la Droguería Los Tres Hermanos. Quisiera hacerles una consulta.';
-      window.open(`https://wa.me/573225065554?text=${encodeURIComponent(msg)}`, '_blank');
+      window.open(`https://wa.me/573225065554?text=${encodeURIComponent(msg)}`, '_blank', 'noopener');
     });
 
     // ── Formulario de contacto ────────────────────────────────
@@ -406,14 +412,14 @@
         `📋 Asunto: ${asunto || 'Sin asunto'}\n\n` +
         `💬 Mensaje:\n${mensaje}`;
 
-      window.open(`https://wa.me/573225065554?text=${encodeURIComponent(msg)}`, '_blank');
+      window.open(`https://wa.me/573225065554?text=${encodeURIComponent(msg)}`, '_blank', 'noopener');
       this.reset();
       Toast.mostrar('✅ Mensaje enviado por WhatsApp');
     });
 
     // Avatar
     document.addEventListener('DOMContentLoaded', () => {
-      initAvatar({ perfilUrl: 'perfil-cliente.html', logoutUrl: 'index.html' });
+      initAvatar({ perfilUrl: '/perfil', logoutUrl: '/' });
     });
   </script>
 </body>

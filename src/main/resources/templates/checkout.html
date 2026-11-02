@@ -1,11 +1,14 @@
 <!DOCTYPE html>
-<html lang="es">
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Finalizar Pedido — Los Tres Hermanos</title>
   <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/global.css}">
   <style>
+    html, body { overflow-x: hidden; box-sizing: border-box; }
+    *, *::before, *::after { box-sizing: border-box; }
     :root{
       --azul:#1B2A6B;--azul-medio:#2D3E9E;--azul-claro:#4A5FD4;
       --rojo:#C0102A;--rojo-vivo:#E8122F;--verde:#16a34a;
@@ -151,9 +154,10 @@
       <div class="navbar-logo">
         <span>Los <em>Tres</em> Hermanos</span>
       </div>
-      <a href="explorador-drogueria.html" style="font-size:0.82rem;color:var(--gris-texto);font-weight:500;">← Volver al catálogo</a>
+      <a th:href="@{/medicamentos}" style="font-size:0.82rem;color:var(--gris-texto);font-weight:500;">← Volver al catálogo</a>
     </div>
-  </nav>
+        <a th:href="@{/suscripciones}" class="nav-link-suscripcion-simple" style="font-size:0.8rem;font-weight:600;color:var(--rojo);margin-left:auto;padding:0.35rem 0.75rem;border:1.5px solid var(--rojo);border-radius:20px;text-decoration:none;">⭐ Suscripciones</a>
+    </nav>
 
   <!-- STEPS -->
   <div class="steps-wrap">
@@ -185,8 +189,8 @@
           <h3>Debes registrarte para hacer un pedido</h3>
           <p>Los clientes registrados pueden hacer pedidos, guardar su historial y recibir su factura. ¡Es gratis y solo toma 1 minuto!</p>
           <div class="alerta-invitado-btns">
-            <a href="registro.html" class="btn-registro-link">Crear cuenta gratis →</a>
-            <a href="login-cliente.html" class="btn-login-link">Ya tengo cuenta</a>
+            <a th:href="@{/registro}" class="btn-registro-link">Crear cuenta gratis →</a>
+            <a th:href="@{/login}" class="btn-login-link">Ya tengo cuenta</a>
           </div>
         </div>
       </div>
@@ -260,10 +264,12 @@
 
   <div class="toast-wrap" id="toast-wrap"></div>
 
+  <script th:src="@{/js/seguridad.js}"></script>
+  <script th:src="@{/js/global.js}"></script>
   <script>
     // ── Estado ────────────────────────────────────────────────
     const sesionCliente = JSON.parse(sessionStorage.getItem('lth_cliente') || 'null');
-    const carrito       = JSON.parse(localStorage.getItem('drogueria_carrito') || '[]');
+    const carrito       = Carrito.obtener();
     let modalidadSel    = null;
 
     // ── Verificar sesión ──────────────────────────────────────
@@ -285,7 +291,7 @@
       setTimeout(() => { el.classList.add('out'); el.addEventListener('animationend', () => el.remove()); }, 3500);
     }
 
-    function fmt(v) { return '$' + v.toLocaleString('es-CO'); }
+    const fmt = window.formatPrecio;
 
     // ── Render resumen ────────────────────────────────────────
     function renderResumen() {
@@ -294,16 +300,29 @@
         body.innerHTML = '<p style="color:var(--gris-texto);font-size:0.85rem;text-align:center">Carrito vacío</p>';
         return;
       }
-      const subtotal = carrito.reduce((s,i) => s + i.precio * i.cantidad, 0);
+      const total = carrito.reduce((s,i) => s + i.precio * i.cantidad, 0);
       body.innerHTML = carrito.map(item => `
         <div class="resumen-item">
-          <span class="resumen-item-nombre">${item.nombre}</span>
-          <span class="resumen-item-qty">x${item.cantidad}</span>
+          <span class="resumen-item-nombre">${Seguridad.esc(item.nombre)}</span>
+          <span class="resumen-item-qty">x${Seguridad.esc(item.cantidad)}</span>
           <span class="resumen-item-precio">${fmt(item.precio * item.cantidad)}</span>
         </div>
       `).join('');
-      document.getElementById('res-subtotal').textContent = fmt(subtotal);
-      document.getElementById('res-total').textContent    = fmt(subtotal);
+      document.getElementById('res-subtotal').textContent = fmt(total);
+
+      // Mostrar badge de suscripción si hay descuento activo
+      const sus = window.Suscripcion ? window.Suscripcion.obtener() : null;
+      const descRow = document.getElementById('res-desc-row');
+      if (sus && sus.descuento > 0 && descRow) {
+        descRow.style.display = 'flex';
+        descRow.style.color   = '#16a34a';
+        document.getElementById('res-descuento').textContent =
+          `✓ ${sus.descuento}% Plan ${sus.plan.charAt(0).toUpperCase()+sus.plan.slice(1)} incluido`;
+      } else if (descRow) {
+        descRow.style.display = 'none';
+      }
+
+      document.getElementById('res-total').textContent = fmt(total);
     }
 
     // ── Seleccionar modalidad ─────────────────────────────────
@@ -369,14 +388,18 @@
         `_Pedido realizado desde la página web._`;
 
       // Abrir WhatsApp y redirigir al recibo
-      window.open(`https://wa.me/573225065554?text=${encodeURIComponent(msgWA)}`, '_blank');
+      window.open(`https://wa.me/573225065554?text=${encodeURIComponent(msgWA)}`, '_blank', 'noopener');
 
       toast('✓ Pedido confirmado. Generando factura...');
-      setTimeout(() => { window.location.href = 'recibo.html'; }, 1200);
+      setTimeout(() => { window.location.href = '/recibo'; }, 1200);
     }
 
     // ── Init ──────────────────────────────────────────────────
-    document.addEventListener('DOMContentLoaded', renderResumen);
+    document.addEventListener('DOMContentLoaded', () => {
+      protegerRuta();
+      renderResumen();
+      initAvatar({ perfilUrl: '/perfil', logoutUrl: '/' });
+    });
   </script>
 </body>
 </html>

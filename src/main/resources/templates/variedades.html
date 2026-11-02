@@ -1,11 +1,13 @@
 <!DOCTYPE html>
-<html lang="es">
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Variedades — Los Tres Hermanos</title>
-  <link rel="stylesheet" href="global.css">
+  <link rel="stylesheet" th:href="@{/css/global.css}">
   <style>
+    html, body { overflow-x: hidden; box-sizing: border-box; }
+    *, *::before, *::after { box-sizing: border-box; }
     body { background: var(--gris-claro); }
 
     .page-header {
@@ -58,6 +60,7 @@
       border: 1px solid var(--gris-medio);
       transition: transform var(--trans), box-shadow var(--trans), border-color var(--trans);
       display: flex; flex-direction: column; position: relative;
+      opacity: 1;
     }
     .var-card:hover { transform: translateY(-5px); box-shadow: var(--sombra-lg); border-color: var(--azul-claro); }
 
@@ -94,6 +97,8 @@
       padding: 0.85rem 1.1rem; border-top: 1px solid var(--gris-claro); gap: 0.5rem;
     }
     .var-precio { font-family: var(--font-titulo); font-weight: 800; font-size: 1.1rem; color: var(--azul); }
+    .var-precio-original { font-size: 0.75rem; color: var(--gris-texto); text-decoration: line-through; display: block; }
+    .var-precio.con-descuento { color: var(--rojo); }
     .btn-agregar-var {
       display: flex; align-items: center; gap: 0.35rem;
       background: var(--azul); color: white; font-size: 0.8rem; font-weight: 600;
@@ -204,24 +209,26 @@
   </style>
 </head>
 <body>
+<script>(function(){try{var s=JSON.parse(sessionStorage.getItem('lth_cliente')||'null');if(s&&s.rol==='cliente'){var st=document.createElement('style');st.textContent='#btn-registrate{display:none!important}';document.head.appendChild(st);}}catch(e){}})();</script>
 
   <!-- NAVBAR -->
   <nav class="navbar">
     <div class="navbar-inner">
-      <a href="index.html" class="navbar-logo">
-        <img src="logo3.jpeg" alt="Logo">
+      <a th:href="@{/}" class="navbar-logo">
+        <img th:src="@{/logo3.jpeg}" src="/logo3.jpeg" alt="Logo">
         <span>Los <em>Tres</em> Hermanos</span>
       </a>
       <div class="navbar-nav" id="nav-menu">
-        <a href="index.html"             class="nav-link">Inicio</a>
-        <a href="explorador-drogueria.html" class="nav-link">Medicamentos</a>
-        <a href="variedades.html"           class="nav-link active">Variedades</a>
-        <a href="servicios.html"            class="nav-link">Servicios</a>
-        <a href="somos-nosotros.html"       class="nav-link">Nosotros</a>
-        <a href="contacto-drogueria.html"   class="nav-link">Contacto</a>
+        <a th:href="@{/}"             class="nav-link">Inicio</a>
+        <a th:href="@{/medicamentos}" class="nav-link">Medicamentos</a>
+        <a th:href="@{/variedades}"           class="nav-link active">Variedades</a>
+        <a th:href="@{/servicios}"            class="nav-link">Servicios</a>
+        <a th:href="@{/suscripciones}"      class="nav-link nav-link-suscripcion">⭐ Suscripciones</a>
+        <a th:href="@{/nosotros}"       class="nav-link">Nosotros</a>
+        <a th:href="@{/contacto}"   class="nav-link">Contacto</a>
       </div>
       <div class="navbar-actions">
-        <button class="btn-carrito-nav" id="btn-abrir-carrito">
+        <button class="btn-carrito-nav" id="btn-abrir-carrito" onclick="abrirDrawer()">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
             <circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/>
             <path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 002-1.61L23 6H6"/>
@@ -229,7 +236,8 @@
           <span>Carrito</span>
           <span class="badge badge-carrito" style="display:none">0</span>
         </button>
-        <a href="login-cliente.html" id="btn-mi-cuenta" class="btn-secundario" style="font-size:0.82rem;padding:0.45rem 1rem;" aria-label="Mi cuenta">
+        <a id="btn-mi-cuenta" class="btn-secundario" style="font-size:0.82rem;padding:0.45rem 1rem;cursor:pointer;" aria-label="Mi cuenta"
+           onclick="(function(){var s=JSON.parse(sessionStorage.getItem('lth_cliente')||'null');window.location.href=(s&&s.rol==='cliente')?'/perfil':'/login';})()">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
             <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/>
           </svg>
@@ -251,7 +259,7 @@
   <div class="page-header">
     <div class="page-header-inner">
       <div class="breadcrumb">
-        <a href="index.html">Inicio</a>
+        <a th:href="@{/}">Inicio</a>
         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
         <span>Variedades</span>
       </div>
@@ -275,7 +283,7 @@
   </div>
 
   <!-- FAB -->
-  <button class="fab-carrito" id="fab-carrito" aria-label="Abrir carrito">
+  <button class="fab-carrito" id="fab-carrito" aria-label="Abrir carrito" onclick="abrirDrawer()">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
       <circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/>
       <path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 002-1.61L23 6H6"/>
@@ -284,7 +292,7 @@
   </button>
 
   <!-- DRAWER -->
-  <div class="drawer-overlay" id="drawer-overlay"></div>
+  <div class="drawer-overlay" id="drawer-overlay" onclick="cerrarDrawer()"></div>
   <aside class="carrito-drawer" id="carrito-drawer">
     <div class="drawer-header">
       <h2>
@@ -294,7 +302,7 @@
         </svg>
         Mi Carrito
       </h2>
-      <button class="btn-cerrar-drawer" id="btn-cerrar-drawer">
+      <button class="btn-cerrar-drawer" id="btn-cerrar-drawer" onclick="cerrarDrawer()">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
           <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
         </svg>
@@ -306,7 +314,7 @@
         <span class="total-label">Total</span>
         <span class="total-valor" id="total-valor">$0</span>
       </div>
-      <button class="btn-comprar" id="btn-comprar">Finalizar Compra →</button>
+      <button class="btn-comprar" id="btn-comprar" onclick="window.location.href='/checkout'">Finalizar Compra →</button>
     </div>
   </aside>
 
@@ -321,9 +329,9 @@
         <div class="footer-col">
           <h4>Páginas</h4>
           <ul>
-            <li><a href="explorador-drogueria.html">Medicamentos</a></li>
-            <li><a href="servicios.html">Servicios</a></li>
-            <li><a href="contacto-drogueria.html">Contacto</a></li>
+            <li><a th:href="@{/medicamentos}">Medicamentos</a></li>
+            <li><a th:href="@{/servicios}">Servicios</a></li>
+            <li><a th:href="@{/contacto}">Contacto</a></li>
           </ul>
         </div>
         <div class="footer-col">
@@ -369,7 +377,7 @@
                   </span>
                   <span class="btn-label">Ubicación</span>
                 </a>
-                <a href="contacto-drogueria.html" class="footer-contacto-texto">Diagonal 52 50A-755</a>
+                <a th:href="@{/contacto}" class="footer-contacto-texto">Diagonal 52 50A-755</a>
               </div>
             </li>
           </ul>
@@ -381,7 +389,8 @@
     </div>
   </footer>
 
-  <script src="global.js"></script>
+  <script th:src="@{/js/seguridad.js}"></script>
+  <script th:src="@{/js/global.js}"></script>
   <script>
     const VARIEDADES = [
       { id:101, nombre:"Perfume Elegance",       cat:"perfumes",  precio:45000, imagen:"perfume1.jfif" },
@@ -398,13 +407,22 @@
     ];
 
     const CAT_LABELS = { perfumes:'Perfume', utiles:'Útil Escolar', cuidado:'Cuidado Personal' };
+    // Helper: precio con descuento de suscripción
+    function renderVarPrecio(precio) {
+      const desc = window.Suscripcion ? window.Suscripcion.descuento() : 0;
+      if (!desc) return `<span class="var-precio">${formatPrecio(precio)}</span>`;
+      const precioDesc = Math.round(precio * (1 - desc / 100));
+      return `<span class="var-precio-original">${formatPrecio(precio)}</span>
+              <span class="var-precio con-descuento">${formatPrecio(precioDesc)}</span>`;
+    }
+
     let filtroActivo = 'all';
 
     function render() {
       const lista = filtroActivo === 'all' ? VARIEDADES : VARIEDADES.filter(v => v.cat === filtroActivo);
       const grid = document.getElementById('variedades-grid');
       grid.innerHTML = lista.map((v,i) => `
-        <div class="var-card animar" style="animation-delay:${i*0.04}s">
+        <div class="var-card">
           <div class="var-img-wrap">
             <div class="img-ph-bg">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
@@ -420,7 +438,7 @@
             <div class="var-nombre">${v.nombre}</div>
           </div>
           <div class="var-footer">
-            <span class="var-precio">${formatPrecio(v.precio)}</span>
+            <div style="display:flex;flex-direction:column;justify-content:center;">${renderVarPrecio(v.precio)}</div>
             <button class="btn-agregar-var" data-id="${v.id}" aria-label="Agregar ${v.nombre}">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
                 <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
@@ -431,11 +449,13 @@
         </div>
       `).join('');
 
-      grid.querySelectorAll('.animar').forEach(el => { el.style.animationPlayState = 'running'; });
       grid.querySelectorAll('.btn-agregar-var').forEach(btn => {
         btn.addEventListener('click', () => {
           const v = VARIEDADES.find(p => p.id === +btn.dataset.id);
-          if (v) Carrito.agregar({ id: v.id, nombre: v.nombre, precio: v.precio, imagen: v.imagen });
+          if (v) {
+            const precioFinal = window.Suscripcion ? window.Suscripcion.aplicar(v.precio) : v.precio;
+            Carrito.agregar({ id: v.id, nombre: v.nombre, precio: precioFinal, imagen: v.imagen });
+          }
           renderDrawer();
         });
       });
@@ -467,18 +487,19 @@
         </div>`;
         footer.style.display = 'none'; return;
       }
+      const esc = Seguridad.esc;
       body.innerHTML = items.map(item => `
         <div class="carrito-item">
-          <img class="carrito-item-img" src="${item.imagen}" alt="${item.nombre}" onerror="this.style.opacity='0';this.parentElement.style.background='var(--azul)'">
+          <img class="carrito-item-img" src="${esc(item.imagen)}" alt="${esc(item.nombre)}" onerror="this.style.opacity='0';this.parentElement.style.background='var(--azul)'">
           <div class="carrito-item-info">
-            <div class="carrito-item-nombre">${item.nombre}</div>
+            <div class="carrito-item-nombre">${esc(item.nombre)}</div>
             <div class="carrito-item-precio">${formatPrecio(item.precio)}</div>
           </div>
           <div class="carrito-item-controles">
-            <button class="btn-qty" data-id="${item.id}" data-delta="-1">−</button>
-            <span class="qty-num">${item.cantidad}</span>
-            <button class="btn-qty" data-id="${item.id}" data-delta="1">+</button>
-            <button class="btn-eliminar-item" data-eliminar="${item.id}" title="Eliminar producto">
+            <button class="btn-qty" data-id="${esc(item.id)}" data-delta="-1">−</button>
+            <span class="qty-num">${esc(item.cantidad)}</span>
+            <button class="btn-qty" data-id="${esc(item.id)}" data-delta="1">+</button>
+            <button class="btn-eliminar-item" data-eliminar="${esc(item.id)}" title="Eliminar producto">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
                 <polyline points="3 6 5 6 21 6"/>
                 <path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/>
@@ -505,20 +526,6 @@
 
     document.addEventListener('DOMContentLoaded', () => {
       render();
-      document.getElementById('btn-abrir-carrito').addEventListener('click', abrirDrawer);
-      document.getElementById('fab-carrito').addEventListener('click', abrirDrawer);
-      document.getElementById('btn-cerrar-drawer').addEventListener('click', cerrarDrawer);
-      document.getElementById('drawer-overlay').addEventListener('click', cerrarDrawer);
-      document.getElementById('btn-comprar').addEventListener('click', () => {
-        // El carrito se vacía en recibo.html después de leer los items
-        // Verificar si está logueado
-        const sc = JSON.parse(sessionStorage.getItem('lth_cliente') || 'null');
-        if (!sc || sc.rol === 'invitado') {
-          window.location.href = 'checkout.html';
-        } else {
-          window.location.href = 'checkout.html';
-        }
-      });
       document.querySelectorAll('.chip-filtro').forEach(chip => {
         chip.addEventListener('click', () => {
           document.querySelectorAll('.chip-filtro').forEach(c => c.classList.remove('activo'));
@@ -534,7 +541,7 @@
 </script>
 <script>
   document.addEventListener('DOMContentLoaded', () => {
-    initAvatar({ perfilUrl: 'perfil-cliente.html', logoutUrl: 'index.html' });
+    initAvatar({ perfilUrl: '/perfil', logoutUrl: '/' });
   });
   </script>
 </body>

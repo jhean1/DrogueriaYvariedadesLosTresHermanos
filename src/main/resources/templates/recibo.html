@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="es">
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Recibo de Compra — Los Tres Hermanos</title>
-  <link rel="stylesheet" href="global.css">
+  <link rel="stylesheet" th:href="@{/css/global.css}">
   <style>
     body { background: var(--gris-claro); }
 
@@ -186,12 +186,13 @@
   <!-- NAVBAR (no se imprime) -->
   <nav class="navbar">
     <div class="navbar-inner">
-      <a href="index.html" class="navbar-logo">
-        <img src="logo3.jpeg" alt="Logo">
+      <a th:href="@{/}" class="navbar-logo">
+        <img th:src="@{/logo3.jpeg}" src="/logo3.jpeg" alt="Logo">
         <span>Los <em>Tres</em> Hermanos</span>
       </a>
     </div>
-  </nav>
+        <a th:href="@{/suscripciones}" class="nav-link-suscripcion-simple" style="font-size:0.8rem;font-weight:600;color:var(--rojo);margin-left:auto;padding:0.35rem 0.75rem;border:1.5px solid var(--rojo);border-radius:20px;text-decoration:none;">⭐ Suscripciones</a>
+    </nav>
 
   <div class="recibo-wrap">
 
@@ -211,7 +212,7 @@
         </svg>
         Enviar por WhatsApp
       </button>
-      <a href="index.html" class="btn-secundario">
+      <a th:href="@{/}" class="btn-secundario">
         ← Volver al inicio
       </a>
     </div>
@@ -309,12 +310,14 @@
     </div>
   </div>
 
-  <script src="global.js"></script>
+  <script th:src="@{/js/seguridad.js}"></script>
+  <script th:src="@{/js/global.js}"></script>
   <script>
     // ── Número único de pedido ────────────────────────────────
     function generarNumPedido() {
       const ts   = Date.now().toString(36).toUpperCase();
-      const rand = Math.random().toString(36).substring(2,6).toUpperCase();
+      const aleatorio = crypto.getRandomValues(new Uint32Array(1))[0];
+      const rand = aleatorio.toString(36).toUpperCase().padStart(7, '0');
       return `LTH-${ts}-${rand}`;
     }
 
@@ -329,7 +332,7 @@
     // ── Cargar recibo ─────────────────────────────────────────
     document.addEventListener('DOMContentLoaded', () => {
       // Leer carrito guardado ANTES de vaciarlo
-      const items = JSON.parse(localStorage.getItem('drogueria_carrito') || '[]');
+      const items = Carrito.obtener();
       const numPedido = generarNumPedido();
       const fecha     = new Date();
 
@@ -356,10 +359,10 @@
         subtotal += sub;
         return `<tr>
           <td>
-            <span class="prod-nombre">${item.nombre}</span>
+            <span class="prod-nombre">${Seguridad.esc(item.nombre)}</span>
             <span class="prod-unit">${formatPrecio(item.precio)} c/u</span>
           </td>
-          <td style="text-align:center">${item.cantidad}</td>
+          <td style="text-align:center">${Seguridad.esc(item.cantidad)}</td>
           <td style="text-align:right">${formatPrecio(item.precio)}</td>
           <td>${formatPrecio(sub)}</td>
         </tr>`;
@@ -384,11 +387,13 @@
           `_Pedido realizado desde la página web._`;
 
         const url = `https://wa.me/573225065554?text=${encodeURIComponent(msg)}`;
-        window.open(url, '_blank');
+        window.open(url, '_blank', 'noopener');
       });
 
       // Vaciar carrito después de generar el recibo
       localStorage.removeItem('drogueria_carrito');
+      protegerRuta();
+      initAvatar({ perfilUrl: '/perfil', logoutUrl: '/' });
     });
   </script>
 </body>

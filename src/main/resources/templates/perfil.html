@@ -1,11 +1,14 @@
 <!DOCTYPE html>
-<html lang="es">
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Mi Cuenta — Los Tres Hermanos</title>
   <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/global.css}">
   <style>
+    html, body { overflow-x: hidden; box-sizing: border-box; }
+    *, *::before, *::after { box-sizing: border-box; }
     :root{
       --azul:#1B2A6B;--azul-medio:#2D3E9E;--azul-claro:#4A5FD4;
       --rojo:#C0102A;--rojo-vivo:#E8122F;--verde:#16a34a;--amarillo:#d97706;
@@ -116,6 +119,85 @@
     @keyframes tIn{from{transform:translateX(120%);opacity:0}to{transform:translateX(0);opacity:1}}
     .toast.out{animation:tOut 0.3s ease forwards;}
     @keyframes tOut{to{transform:translateX(120%);opacity:0}}
+
+    /* ── PANEL SUSCRIPCIÓN ── */
+    .sus-panel-activo {
+      background: linear-gradient(135deg, var(--azul) 0%, #2D3E9E 100%);
+      border-radius: 16px; padding: 1.75rem; color: #fff;
+      margin-bottom: 1.25rem; position: relative; overflow: hidden;
+    }
+    .sus-panel-activo::before {
+      content: ''; position: absolute; top: -30%; right: -5%;
+      width: 240px; height: 240px; border-radius: 50%;
+      background: rgba(255,255,255,0.05); pointer-events: none;
+    }
+    .sus-panel-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem; flex-wrap: wrap; margin-bottom: 1.25rem; }
+    .sus-panel-nombre { font-family: var(--font-titulo); font-size: 1.3rem; font-weight: 800; }
+    .sus-panel-badge {
+      display: inline-flex; align-items: center; gap: 0.35rem;
+      background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.25);
+      border-radius: 99px; padding: 0.3rem 0.75rem;
+      font-size: 0.75rem; font-weight: 700;
+    }
+    .sus-panel-info { display: flex; gap: 2rem; flex-wrap: wrap; margin-bottom: 1.25rem; }
+    .sus-panel-dato { font-size: 0.83rem; opacity: 0.8; }
+    .sus-panel-dato strong { display: block; font-size: 1.1rem; opacity: 1; font-family: var(--font-titulo); }
+    .sus-panel-alerta {
+      background: rgba(251,191,36,0.18); border: 1px solid rgba(251,191,36,0.4);
+      border-radius: 10px; padding: 0.7rem 1rem;
+      font-size: 0.82rem; font-weight: 600; color: #fef3c7;
+      margin-bottom: 1.1rem; display: none;
+    }
+    .sus-panel-alerta.visible { display: block; }
+    .sus-acciones { display: flex; gap: 0.75rem; flex-wrap: wrap; }
+    .btn-sus-renovar {
+      display: inline-flex; align-items: center; gap: 0.4rem;
+      background: rgba(255,255,255,0.15); border: 1.5px solid rgba(255,255,255,0.35);
+      color: #fff; padding: 0.55rem 1.1rem;
+      border-radius: 99px; font-size: 0.85rem; font-weight: 700;
+      font-family: var(--font-cuerpo); cursor: pointer; transition: background 0.18s;
+    }
+    .btn-sus-renovar:hover { background: rgba(255,255,255,0.28); }
+    .btn-sus-cancelar {
+      display: inline-flex; align-items: center; gap: 0.4rem;
+      background: transparent; border: 1.5px solid rgba(255,255,255,0.25);
+      color: rgba(255,255,255,0.75); padding: 0.55rem 1.1rem;
+      border-radius: 99px; font-size: 0.85rem; font-weight: 600;
+      font-family: var(--font-cuerpo); cursor: pointer; transition: all 0.18s;
+    }
+    .btn-sus-cancelar:hover { background: rgba(192,16,42,0.3); border-color: rgba(255,255,255,0.4); color: #fff; }
+
+    .sus-panel-pendiente {
+      background: #fffbeb; border: 1.5px solid #fde68a; border-radius: 14px;
+      padding: 1.5rem; margin-bottom: 1.25rem; text-align: center;
+    }
+    .sus-panel-pendiente h3 { font-family: var(--font-titulo); color: #92400e; font-size: 1rem; margin-bottom: 0.4rem; }
+    .sus-panel-pendiente p { font-size: 0.84rem; color: #78350f; }
+
+    .sus-panel-vacio {
+      background: var(--gris-claro); border: 1.5px dashed var(--gris-medio);
+      border-radius: 14px; padding: 2rem; text-align: center; margin-bottom: 1.25rem;
+    }
+    .sus-panel-vacio h3 { font-family: var(--font-titulo); color: var(--negro); margin-bottom: 0.4rem; }
+    .sus-panel-vacio p { font-size: 0.84rem; color: var(--gris-texto); margin-bottom: 1rem; }
+    .btn-ver-planes {
+      display: inline-flex; align-items: center; gap: 0.4rem;
+      background: var(--grad-rojo); color: #fff; font-size: 0.85rem; font-weight: 700;
+      padding: 0.6rem 1.25rem; border-radius: 99px; text-decoration: none;
+      box-shadow: 0 4px 12px rgba(192,16,42,0.3); transition: transform 0.2s;
+    }
+    .btn-ver-planes:hover { transform: translateY(-1px); }
+
+    .sus-historial-titulo { font-family: var(--font-titulo); font-size: 0.88rem; font-weight: 700; color: var(--azul); margin-bottom: 0.75rem; }
+    .sus-historial-item {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 0.75rem 0; border-bottom: 1px solid var(--gris-medio);
+      font-size: 0.83rem;
+    }
+    .sus-historial-item:last-child { border: none; }
+    .sus-estado-aprobado { color: var(--verde); font-weight: 700; }
+    .sus-estado-pendiente { color: var(--amarillo); font-weight: 700; }
+    .sus-estado-rechazado { color: var(--rojo); font-weight: 700; }
 
     /* ── VISOR DE FACTURAS ── */
     .visor-overlay{
@@ -286,12 +368,17 @@
   <!-- NAVBAR -->
   <nav class="navbar">
     <div class="navbar-inner">
-      <a href="index.html" class="navbar-logo">
-        <img src="logo3.jpeg" alt="Logo" onerror="this.style.display='none'">
+      <a th:href="@{/}" class="navbar-logo">
+        <img th:src="@{/logo3.jpeg}" src="/logo3.jpeg" alt="Logo">
         <span>Los <em>Tres</em> Hermanos</span>
       </a>
       <div class="navbar-actions">
-        <a href="explorador-drogueria.html" style="font-size:0.82rem;font-weight:600;color:var(--azul);padding:0.45rem 0.9rem;border-radius:99px;background:var(--gris-claro);border:1.5px solid var(--gris-medio);">
+        <a th:href="@{/suscripciones}" style="display:inline-flex;align-items:center;gap:0.35rem;font-size:0.82rem;font-weight:700;color:var(--rojo);padding:0.45rem 0.9rem;border-radius:99px;background:transparent;border:1.5px solid var(--rojo);text-decoration:none;transition:all 0.2s;"
+           onmouseover="this.style.background='var(--rojo)';this.style.color='white'"
+           onmouseout="this.style.background='transparent';this.style.color='var(--rojo)'">
+          ⭐ Suscripciones
+        </a>
+        <a th:href="@{/medicamentos}" style="font-size:0.82rem;font-weight:600;color:var(--azul);padding:0.45rem 0.9rem;border-radius:99px;background:var(--gris-claro);border:1.5px solid var(--gris-medio);text-decoration:none;">
           Ver catálogo
         </a>
         <button class="btn-salir" onclick="cerrarSesion()">
@@ -318,7 +405,7 @@
   <div style="background:white;border-bottom:1px solid var(--gris-medio);padding:0.65rem 2rem;">
     <div style="max-width:1100px;margin:0 auto;">
       <ol style="display:flex;align-items:center;gap:0.5rem;list-style:none;font-size:0.78rem;color:var(--gris-texto);">
-        <li><a href="index.html" style="color:var(--gris-texto);text-decoration:none;" onmouseover="this.style.color='var(--azul)'" onmouseout="this.style.color='var(--gris-texto)'">Inicio</a></li>
+        <li><a th:href="@{/}" style="color:var(--gris-texto);text-decoration:none;" onmouseover="this.style.color='var(--azul)'" onmouseout="this.style.color='var(--gris-texto)'">Inicio</a></li>
         <li style="color:var(--gris-medio);">›</li>
         <li style="color:var(--azul);font-weight:600;">Mi Cuenta</li>
       </ol>
@@ -330,6 +417,7 @@
     <div class="tabs-inner">
       <button class="tab activo" data-sec="pedidos">Mis Pedidos</button>
       <button class="tab" data-sec="favoritos">Favoritos</button>
+      <button class="tab" data-sec="suscripcion">Mi Suscripción</button>
       <button class="tab" data-sec="perfil">Mi Perfil</button>
       <button class="tab" data-sec="seguridad">Seguridad</button>
     </div>
@@ -349,7 +437,7 @@
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
             <h3>Sin pedidos todavía</h3>
             <p>Cuando hagas tu primer pedido aparecerá aquí.</p>
-            <a href="explorador-drogueria.html">Ver catálogo →</a>
+            <a th:href="@{/medicamentos}">Ver catálogo →</a>
           </div>
         </div>
       </div>
@@ -365,7 +453,7 @@
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
               <h3>Sin favoritos aún</h3>
               <p>Agrega productos a favoritos desde el catálogo.</p>
-              <a href="explorador-drogueria.html">Explorar productos →</a>
+              <a th:href="@{/medicamentos}">Explorar productos →</a>
             </div>
           </div>
         </div>
@@ -441,7 +529,7 @@
             </div>
             <div class="form-grupo">
               <label>Nueva contraseña</label>
-              <input type="password" id="pass-nueva" placeholder="Mínimo 6 caracteres">
+              <input type="password" id="pass-nueva" placeholder="Mínimo 8 caracteres" autocomplete="new-password">
             </div>
             <div class="form-grupo">
               <label>Confirmar nueva contraseña</label>
@@ -483,6 +571,24 @@
       </div>
     </div>
 
+    <!-- ══ MI SUSCRIPCIÓN ══ -->
+    <div class="seccion" id="sec-suscripcion">
+
+      <!-- Panel principal (se rellena dinámicamente) -->
+      <div id="sus-panel-main"></div>
+
+      <!-- Historial de solicitudes -->
+      <div class="panel">
+        <div class="panel-header">
+          <span class="panel-titulo">Historial de pagos</span>
+        </div>
+        <div class="panel-body" id="sus-historial-body">
+          <p style="font-size:0.85rem;color:var(--gris-texto);">Sin registros de pago.</p>
+        </div>
+      </div>
+
+    </div><!-- /sec-suscripcion -->
+
   </div><!-- /content -->
 
   <!-- VISOR DE FACTURAS -->
@@ -510,11 +616,19 @@
 
   <div class="toast-wrap" id="toast-wrap"></div>
 
+  <script th:src="@{/js/seguridad.js}"></script>
   <script>
+    const esc = Seguridad.esc;
+
     // ── Verificar sesión cliente ──────────────────────────────
+    // Limpiar flag de registro para no bloquear futuras visitas a /registro
+    sessionStorage.removeItem('lth_recien_registro');
+
     const sesion = JSON.parse(sessionStorage.getItem('lth_cliente') || 'null');
     if (!sesion || sesion.rol !== 'cliente') {
-      window.location.href = 'login-cliente.html';
+      window.location.href = '/login';
+      // Detener ejecución del resto del script
+      throw new Error('Sin sesión — redirigiendo a login');
     }
 
     // ── Cargar datos del cliente ──────────────────────────────
@@ -523,16 +637,32 @@
       return clientes.find(c => c.id === sesion.id) || null;
     }
 
+    function set(id, prop, val) {
+      const el = document.getElementById(id);
+      if (el) el[prop] = val;
+    }
+
     function inicializar() {
-      const c = getClienteCompleto();
-      if (!c) return;
-      document.getElementById('avatar-inicial').textContent = c.nombre[0].toUpperCase();
-      document.getElementById('perfil-nombre').textContent  = c.nombre;
-      document.getElementById('perfil-correo').textContent  = c.correo;
-      document.getElementById('edit-nombre').value          = c.nombre;
-      document.getElementById('edit-telefono').value          = c.telefono  || '';
-      document.getElementById('edit-direccion').value         = c.direccion || '';
-      document.getElementById('correo-actual-display').value  = c.correo;
+      // Primero intenta obtener el cliente completo de localStorage
+      // Si no está (recién registrado o desfase), usa los datos de sesión directamente
+      const c = getClienteCompleto() || {
+        id:        sesion.id,
+        nombre:    sesion.nombre    || '',
+        correo:    sesion.correo    || '',
+        telefono:  sesion.telefono  || '',
+        direccion: sesion.direccion || '',
+        pedidos:   [],
+        favoritos: []
+      };
+
+      const nombreInicial = (c.nombre || '?')[0].toUpperCase();
+      set('avatar-inicial',        'textContent', nombreInicial);
+      set('perfil-nombre',         'textContent', c.nombre   || 'Mi cuenta');
+      set('perfil-correo',         'textContent', c.correo   || '');
+      set('edit-nombre',           'value',       c.nombre   || '');
+      set('edit-telefono',         'value',       c.telefono || '');
+      set('edit-direccion',        'value',       c.direccion || '');
+      set('correo-actual-display', 'value',       c.correo   || '');
       renderPedidos(c);
       renderFavoritos(c);
     }
@@ -557,7 +687,20 @@
       setTimeout(() => { el.classList.add('out'); el.addEventListener('animationend', () => el.remove()); }, 3000);
     }
 
-    function fmt(v) { return '$' + v.toLocaleString('es-CO'); }
+    function fmt(v) { return '$' + (Number(v) || 0).toLocaleString('es-CO'); }
+
+    // Los botones generados llevan sus datos en data-*, nunca en onclick,
+    // para que un valor manipulado no pueda ejecutarse como código.
+    document.addEventListener('click', (e) => {
+      const boton = e.target.closest('[data-accion]');
+      if (!boton) return;
+      const { accion, id } = boton.dataset;
+      if (accion === 'ver-factura')      verFactura(id);
+      if (accion === 'quitar-favorito')  quitarFavorito(id);
+      if (accion === 'cerrar-visor')     cerrarVisor();
+      if (accion === 'imprimir-factura') imprimirFactura(visorPedidos[visorIndex]);
+      if (accion === 'ir-visor')         irVisor(Number(id));
+    });
 
     // ── Render pedidos ────────────────────────────────────────
     function renderPedidos(c) {
@@ -566,6 +709,7 @@
       const pedidos = todasVentas.filter(v => v.clienteId === c.id).reverse();
       const body    = document.getElementById('pedidos-body');
       const count   = document.getElementById('pedidos-count');
+      if (!body || !count) return;
       count.textContent = pedidos.length + ' pedido' + (pedidos.length !== 1 ? 's' : '');
 
       if (!pedidos.length) {
@@ -573,7 +717,7 @@
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
           <h3>Sin pedidos todavía</h3>
           <p>Cuando hagas tu primer pedido aparecerá aquí.</p>
-          <a href="explorador-drogueria.html">Ver catálogo →</a>
+          <a th:href="@{/medicamentos}">Ver catálogo →</a>
         </div>`;
         return;
       }
@@ -581,15 +725,15 @@
       body.innerHTML = pedidos.map(p => `
         <div class="pedido-card">
           <div class="pedido-top">
-            <span class="pedido-id">${p.id}</span>
-            <span class="pedido-fecha">${p.fecha}</span>
+            <span class="pedido-id">${esc(p.id)}</span>
+            <span class="pedido-fecha">${esc(p.fecha)}</span>
             <span class="pedido-total">${fmt(p.total)}</span>
           </div>
           <div class="pedido-items">
             ${p.productos.map(item => `
               <div class="pedido-item-row">
-                <span class="pedido-item-nombre">${item.nombre}</span>
-                <span class="pedido-item-qty">x${item.cantidad} · ${fmt(item.precio * item.cantidad)}</span>
+                <span class="pedido-item-nombre">${esc(item.nombre)}</span>
+                <span class="pedido-item-qty">x${esc(item.cantidad)} · ${fmt(item.precio * item.cantidad)}</span>
               </div>
             `).join('')}
           </div>
@@ -597,7 +741,7 @@
             <span class="badge ${p.modalidad === 'domicilio' ? 'badge-domicilio' : 'badge-tienda'}">
               ${p.modalidad === 'domicilio' ? '🏠 Domicilio' : '🏪 Recoger en tienda'}
             </span>
-            <button class="btn-ver-factura" onclick="verFactura('${p.id}')">
+            <button class="btn-ver-factura" data-accion="ver-factura" data-id="${esc(p.id)}">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
               Ver factura
             </button>
@@ -610,21 +754,22 @@
     function renderFavoritos(c) {
       const favs = c.favoritos || [];
       const grid = document.getElementById('favoritos-grid');
+      if (!grid) return;
       if (!favs.length) {
         grid.innerHTML = `<div class="vacio" style="grid-column:1/-1">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
           <h3>Sin favoritos aún</h3>
           <p>Agrega productos desde el catálogo.</p>
-          <a href="explorador-drogueria.html">Explorar productos →</a>
+          <a th:href="@{/medicamentos}">Explorar productos →</a>
         </div>`;
         return;
       }
       grid.innerHTML = favs.map(f => `
         <div class="fav-card">
-          <button class="btn-quitar-fav" onclick="quitarFavorito(${f.id})" title="Quitar de favoritos">
+          <button class="btn-quitar-fav" data-accion="quitar-favorito" data-id="${esc(f.id)}" title="Quitar de favoritos">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
           </button>
-          <div class="fav-nombre">${f.nombre}</div>
+          <div class="fav-nombre">${esc(f.nombre)}</div>
           <div class="fav-precio">${fmt(f.precio)}</div>
         </div>
       `).join('');
@@ -658,17 +803,19 @@
 
     // ── Cambiar correo ────────────────────────────────────────
     // ⚠️ PREPARADO PARA BD: fetch('/api/clientes/'+sesion.id+'/correo', { method:'PUT', ... })
-    function cambiarCorreo() {
-      const nuevoCorreo = document.getElementById('edit-correo-nuevo').value.trim();
+    async function cambiarCorreo() {
+      const nuevoCorreo = document.getElementById('edit-correo-nuevo').value.trim().toLowerCase();
       const passConfirm = document.getElementById('correo-pass-confirm').value;
       if (!nuevoCorreo || !passConfirm) { toast('Completa todos los campos', false); return; }
       if (!nuevoCorreo.includes('@'))   { toast('Ingresa un correo válido', false); return; }
 
+      if (!Seguridad.criptoDisponible()) { toast('Esta acción requiere una conexión segura (HTTPS)', false); return; }
+      await Seguridad.listo;
       const clientes = JSON.parse(localStorage.getItem('lth_clientes') || '[]');
       const idx = clientes.findIndex(c => c.id === sesion.id);
       if (idx === -1) { toast('Error', false); return; }
-      if (clientes[idx].password !== passConfirm) { toast('Contraseña incorrecta', false); return; }
-      if (clientes.find(c => c.correo === nuevoCorreo && c.id !== sesion.id)) {
+      if (!await Seguridad.verificarCredencial(passConfirm, clientes[idx].credencial)) { toast('Contraseña incorrecta', false); return; }
+      if (clientes.find(c => String(c.correo).toLowerCase() === nuevoCorreo && c.id !== sesion.id)) {
         toast('Ese correo ya está en uso por otra cuenta', false); return;
       }
 
@@ -687,21 +834,23 @@
 
     // ── Cambiar contraseña ────────────────────────────────────
     // ⚠️ PREPARADO PARA BD: fetch('/api/clientes/'+sesion.id+'/password', { method:'PUT', ... })
-    function cambiarPassword() {
+    async function cambiarPassword() {
       const actual  = document.getElementById('pass-actual').value;
       const nueva   = document.getElementById('pass-nueva').value;
       const nueva2  = document.getElementById('pass-nueva2').value;
       if (!actual || !nueva || !nueva2) { toast('Completa todos los campos', false); return; }
-      if (nueva.length < 6)  { toast('La nueva contraseña debe tener mínimo 6 caracteres', false); return; }
+      if (nueva.length < 8)  { toast('La nueva contraseña debe tener mínimo 8 caracteres', false); return; }
       if (nueva !== nueva2)  { toast('Las contraseñas no coinciden', false); return; }
       if (actual === nueva)  { toast('La nueva contraseña debe ser diferente a la actual', false); return; }
 
+      if (!Seguridad.criptoDisponible()) { toast('Esta acción requiere una conexión segura (HTTPS)', false); return; }
+      await Seguridad.listo;
       const clientes = JSON.parse(localStorage.getItem('lth_clientes') || '[]');
       const idx = clientes.findIndex(c => c.id === sesion.id);
       if (idx === -1) { toast('Error', false); return; }
-      if (clientes[idx].password !== actual) { toast('La contraseña actual es incorrecta', false); return; }
+      if (!await Seguridad.verificarCredencial(actual, clientes[idx].credencial)) { toast('La contraseña actual es incorrecta', false); return; }
 
-      clientes[idx].password = nueva;
+      clientes[idx].credencial = await Seguridad.crearCredencial(nueva);
       localStorage.setItem('lth_clientes', JSON.stringify(clientes));
       document.getElementById('pass-actual').value  = '';
       document.getElementById('pass-nueva').value   = '';
@@ -713,20 +862,30 @@
 
     // ── Eliminar cuenta ───────────────────────────────────────
     // ⚠️ PREPARADO PARA BD: fetch('/api/clientes/'+sesion.id, { method:'DELETE' })
-    function eliminarCuenta() {
+    async function eliminarCuenta() {
       if (!confirm('¿Estás seguro? Esta acción eliminará tu cuenta y todos tus datos permanentemente.')) return;
       const pass = prompt('Ingresa tu contraseña para confirmar:');
       if (!pass) return;
 
+      if (!Seguridad.criptoDisponible()) { toast('Esta acción requiere una conexión segura (HTTPS)', false); return; }
+      await Seguridad.listo;
       const clientes = JSON.parse(localStorage.getItem('lth_clientes') || '[]');
       const cliente  = clientes.find(c => c.id === sesion.id);
-      if (!cliente || cliente.password !== pass) { toast('Contraseña incorrecta', false); return; }
+      if (!cliente || !await Seguridad.verificarCredencial(pass, cliente.credencial)) { toast('Contraseña incorrecta', false); return; }
 
       const nuevosClientes = clientes.filter(c => c.id !== sesion.id);
       localStorage.setItem('lth_clientes', JSON.stringify(nuevosClientes));
+
+      // Cumple lo prometido al cliente: también se borran sus demás datos.
+      const ajenos = (clave) => JSON.parse(localStorage.getItem(clave) || '[]').filter(r => r.clienteId !== sesion.id);
+      localStorage.setItem('lth_ventas', JSON.stringify(ajenos('lth_ventas')));
+      localStorage.setItem('lth_solicitudes', JSON.stringify(ajenos('lth_solicitudes')));
+      localStorage.removeItem('lth_sus_' + sesion.id);
+      localStorage.removeItem('lth_foto_' + sesion.id);
+      localStorage.removeItem('lth_suscripcion');
       sessionStorage.removeItem('lth_cliente');
       toast('Cuenta eliminada. Redirigiendo...');
-      setTimeout(() => { window.location.href = 'index.html'; }, 1500);
+      setTimeout(() => { window.location.href = '/'; }, 1500);
     }
 
     // ── Quitar favorito ───────────────────────────────────────
@@ -734,7 +893,7 @@
       const clientes = JSON.parse(localStorage.getItem('lth_clientes') || '[]');
       const idx = clientes.findIndex(c => c.id === sesion.id);
       if (idx === -1) return;
-      clientes[idx].favoritos = (clientes[idx].favoritos || []).filter(f => f.id !== id);
+      clientes[idx].favoritos = (clientes[idx].favoritos || []).filter(f => String(f.id) !== String(id));
       localStorage.setItem('lth_clientes', JSON.stringify(clientes));
       renderFavoritos(clientes[idx]);
       toast('Eliminado de favoritos');
@@ -744,8 +903,6 @@
     let visorPedidos = [];
     let visorIndex   = 0;
     let touchStartX  = 0;
-
-    function fmt(v) { return '$' + v.toLocaleString('es-CO'); }
 
     function verFactura(id) {
       const ventas = JSON.parse(localStorage.getItem('lth_ventas') || '[]');
@@ -779,26 +936,26 @@
       document.getElementById('visor-factura').innerHTML = `
         <div class="visor-header">
           <div class="visor-header-info">
-            <div class="visor-num-pedido">Pedido ${p.id}</div>
+            <div class="visor-num-pedido">Pedido ${esc(p.id)}</div>
             <div class="visor-total">${fmt(total)}</div>
-            <div class="visor-fecha">${p.fecha}</div>
+            <div class="visor-fecha">${esc(p.fecha)}</div>
           </div>
-          <button class="btn-cerrar-visor" onclick="cerrarVisor()" aria-label="Cerrar visor">
+          <button class="btn-cerrar-visor" data-accion="cerrar-visor" aria-label="Cerrar visor">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
               <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
             </svg>
           </button>
         </div>
         <div class="visor-body">
-          <div class="visor-modalidad ${p.modalidad||'tienda'}">
-            ${p.modalidad === 'domicilio' ? '🏠 Domicilio: ' + (p.direccion||'') : '🏪 Recoger en tienda'}
+          <div class="visor-modalidad ${esc(p.modalidad||'tienda')}">
+            ${p.modalidad === 'domicilio' ? '🏠 Domicilio: ' + esc(p.direccion) : '🏪 Recoger en tienda'}
           </div>
           <div class="visor-productos-titulo">Productos del pedido</div>
           ${p.productos.map(item => `
             <div class="visor-producto-row">
-              <span class="visor-prod-nombre">${item.nombre}</span>
+              <span class="visor-prod-nombre">${esc(item.nombre)}</span>
               <div class="visor-prod-detalle">
-                <span class="visor-prod-qty">x${item.cantidad}</span>
+                <span class="visor-prod-qty">x${esc(item.cantidad)}</span>
                 <span class="visor-prod-precio">${fmt(item.precio * item.cantidad)}</span>
               </div>
             </div>
@@ -809,7 +966,7 @@
           </div>
         </div>
         <div class="visor-footer">
-          <button class="btn-imprimir-visor" onclick="imprimirFactura(${JSON.stringify(p).replace(/"/g,'&quot;')})">
+          <button class="btn-imprimir-visor" data-accion="imprimir-factura">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <polyline points="6 9 6 2 18 2 18 9"/>
               <path d="M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2"/>
@@ -834,7 +991,7 @@
       const indEl = document.getElementById('visor-indicador');
       indEl.innerHTML = visorPedidos.map((_, i) =>
         `<div class="visor-punto ${i === visorIndex ? 'activo' : ''}"
-              onclick="irVisor(${i})" title="Ir a pedido ${i+1}"></div>`
+              data-accion="ir-visor" data-id="${i}" title="Ir a pedido ${i+1}"></div>`
       ).join('');
     }
 
@@ -854,7 +1011,7 @@
       localStorage.setItem('drogueria_carrito', JSON.stringify(
         pedido.productos.map(i => ({ id:i.id, nombre:i.nombre, precio:i.precio, cantidad:i.cantidad }))
       ));
-      window.open('recibo.html', '_blank');
+      window.open('/recibo', '_blank');
     }
 
     // Navegación con teclado
@@ -901,7 +1058,7 @@
     // ── Cerrar sesión ─────────────────────────────────────────
     function cerrarSesion() {
       sessionStorage.removeItem('lth_cliente');
-      window.location.href = 'index.html';
+      window.location.href = '/';
     }
 
     // ── Medidor fortaleza contraseña ─────────────────────────
@@ -910,7 +1067,7 @@
       const bar   = document.getElementById('pass-strength-bar');
       const label = document.getElementById('pass-strength-label');
       let score   = 0;
-      if (pass.length >= 6)  score++;
+      if (pass.length >= 8)  score++;
       if (pass.length >= 10) score++;
       if (/[A-Z]/.test(pass)) score++;
       if (/[0-9]/.test(pass)) score++;
@@ -924,8 +1081,237 @@
       label.style.color    = colors[score] || '#9CA3AF';
     });
 
+    // ══════════════════════════════════════════════════════════
+    // ── SUSCRIPCIÓN ───────────────────────────────────────────
+    // ══════════════════════════════════════════════════════════
+
+    /** Obtiene la suscripción activa para este cliente.
+     *  Prioridad: admin la activó (lth_sus_{id}) > autoservicio (lth_suscripcion)
+     */
+    function obtenerSuscripcion() {
+      const adminKey = 'lth_sus_' + sesion.id;
+      const adminSus  = JSON.parse(localStorage.getItem(adminKey) || 'null');
+      if (adminSus && adminSus.estado === 'activo') return { ...adminSus, fuente: 'admin' };
+
+      const selfSus = JSON.parse(localStorage.getItem('lth_suscripcion') || 'null');
+      if (selfSus) return { ...selfSus, fuente: 'self' };
+
+      return null;
+    }
+
+    function diasRestantes(fechaVencimiento) {
+      if (!fechaVencimiento) return null;
+      const hoy = new Date(); hoy.setHours(0,0,0,0);
+      const fin = new Date(fechaVencimiento); fin.setHours(0,0,0,0);
+      return Math.ceil((fin - hoy) / 86400000);
+    }
+
+    function fmtFecha(iso) {
+      if (!iso) return '—';
+      const d = new Date(iso);
+      return d.toLocaleDateString('es-CO', { day: '2-digit', month: 'long', year: 'numeric' });
+    }
+
+    function renderSuscripcion() {
+      const sus   = obtenerSuscripcion();
+      const panel = document.getElementById('sus-panel-main');
+
+      if (!sus) {
+        // Sin suscripción
+        panel.innerHTML = `
+          <div class="sus-panel-vacio">
+            <h3>Sin plan activo</h3>
+            <p>Suscríbete para obtener descuentos exclusivos y beneficios adicionales.</p>
+            <a href="/suscripciones" class="btn-ver-planes">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+              Ver planes disponibles
+            </a>
+          </div>`;
+        renderHistorialSolicitudes();
+        return;
+      }
+
+      if (sus.estado === 'pendiente') {
+        // Pago pendiente de aprobación
+        panel.innerHTML = `
+          <div class="sus-panel-pendiente">
+            <h3>⏳ Pago en revisión</h3>
+            <p>Tu solicitud de suscripción al plan <strong>${esc(sus.plan)}</strong> está siendo revisada.<br>
+               El equipo la aprobará en máximo 24 horas.</p>
+          </div>`;
+        renderHistorialSolicitudes();
+        return;
+      }
+
+      if (sus.estado === 'rechazado') {
+        panel.innerHTML = `
+          <div class="sus-panel-pendiente" style="background:#fff5f5;border-color:#fca5a5;">
+            <h3 style="color:#991b1b;">✕ Solicitud rechazada</h3>
+            <p style="color:#7f1d1d;">Tu pago del plan <strong>${esc(sus.plan)}</strong> fue rechazado.<br>
+               Puedes volver a intentarlo o contactar a la droguería.</p>
+            <a href="/suscripciones" class="btn-ver-planes" style="margin-top:1rem;display:inline-flex;">Ver planes →</a>
+          </div>`;
+        renderHistorialSolicitudes();
+        return;
+      }
+
+      // Plan activo
+      const dias = diasRestantes(sus.fechaVencimiento);
+      const porVencer = dias !== null && dias <= 5 && dias >= 0;
+      const vencido   = dias !== null && dias < 0;
+
+      if (vencido) {
+        // Cancelar automáticamente si venció
+        if (sus.fuente === 'self') {
+          const s = JSON.parse(localStorage.getItem('lth_suscripcion') || '{}');
+          s.estado = 'cancelado';
+          localStorage.setItem('lth_suscripcion', JSON.stringify(s));
+        }
+        panel.innerHTML = `
+          <div class="sus-panel-pendiente" style="background:#fff5f5;border-color:#fca5a5;">
+            <h3 style="color:#991b1b;">Plan vencido</h3>
+            <p style="color:#7f1d1d;">Tu plan <strong>${esc(sus.plan)}</strong> venció el ${esc(fmtFecha(sus.fechaVencimiento))}.<br>
+               Renueva para seguir disfrutando los descuentos.</p>
+            <a href="/suscripciones" class="btn-ver-planes" style="margin-top:1rem;display:inline-flex;">Renovar plan →</a>
+          </div>`;
+        renderHistorialSolicitudes();
+        return;
+      }
+
+      const descuento = Number(sus.descuento) || 0;
+      const precio    = Number(sus.precio)    || 0;
+
+      panel.innerHTML = `
+        <div class="sus-panel-activo">
+          <div class="sus-panel-header">
+            <div>
+              <div style="font-size:0.75rem;opacity:0.7;margin-bottom:0.3rem;font-weight:600;text-transform:uppercase;letter-spacing:0.07em;">Plan activo</div>
+              <div class="sus-panel-nombre">Plan ${esc(sus.plan)}</div>
+            </div>
+            <div class="sus-panel-badge">
+              <span style="width:7px;height:7px;border-radius:50%;background:#4ade80;animation:parpadeo 1.5s infinite;"></span>
+              Activo
+            </div>
+          </div>
+
+          ${porVencer ? `<div class="sus-panel-alerta visible">⚠️ Tu plan vence en ${dias} día${dias !== 1 ? 's' : ''}. ¡Renueva pronto!</div>` : ''}
+
+          <div class="sus-panel-info">
+            <div class="sus-panel-dato">
+              Descuento
+              <strong>${descuento}%</strong>
+            </div>
+            <div class="sus-panel-dato">
+              Precio
+              <strong>$${precio.toLocaleString('es-CO')}/mes</strong>
+            </div>
+            <div class="sus-panel-dato">
+              Activado
+              <strong>${fmtFecha(sus.fecha)}</strong>
+            </div>
+            <div class="sus-panel-dato">
+              Vence
+              <strong>${fmtFecha(sus.fechaVencimiento)}</strong>
+            </div>
+            ${dias !== null ? `
+            <div class="sus-panel-dato">
+              Días restantes
+              <strong>${dias} día${dias !== 1 ? 's' : ''}</strong>
+            </div>` : ''}
+          </div>
+
+          <div class="sus-acciones">
+            <button class="btn-sus-renovar" onclick="renovarPlan()">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/>
+                <path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/>
+              </svg>
+              Renovar plan
+            </button>
+            <button class="btn-sus-cancelar" onclick="cancelarPlan()">
+              Cancelar suscripción
+            </button>
+          </div>
+        </div>`;
+
+      renderHistorialSolicitudes();
+    }
+
+    function renovarPlan() {
+      // Guarda el plan actual en sessionStorage para pre-seleccionarlo
+      const sus = obtenerSuscripcion();
+      if (sus) {
+        sessionStorage.setItem('lth_plan_pago', JSON.stringify({
+          plan: sus.plan, descuento: sus.descuento, precio: sus.precio
+        }));
+      }
+      window.location.href = '/suscripciones';
+    }
+
+    function cancelarPlan() {
+      if (!confirm('¿Seguro que deseas cancelar tu suscripción? Perderás tus descuentos al finalizar el período.')) return;
+
+      const adminKey = 'lth_sus_' + sesion.id;
+      const adminSus = JSON.parse(localStorage.getItem(adminKey) || 'null');
+
+      if (adminSus && adminSus.estado === 'activo') {
+        adminSus.estado = 'cancelado';
+        localStorage.setItem(adminKey, JSON.stringify(adminSus));
+      } else {
+        const s = JSON.parse(localStorage.getItem('lth_suscripcion') || '{}');
+        s.estado = 'cancelado';
+        localStorage.setItem('lth_suscripcion', JSON.stringify(s));
+      }
+
+      toast('Suscripción cancelada. Tus descuentos se desactivarán al vencer el período.');
+      renderSuscripcion();
+    }
+
+    function renderHistorialSolicitudes() {
+      const todasSolicitudes = JSON.parse(localStorage.getItem('lth_solicitudes') || '[]');
+      const misSolicitudes   = todasSolicitudes
+        .filter(s => s.clienteId === sesion.id)
+        .sort((a, b) => new Date(b.fechaSolicitud) - new Date(a.fechaSolicitud));
+
+      const body = document.getElementById('sus-historial-body');
+
+      if (!misSolicitudes.length) {
+        body.innerHTML = `<p style="font-size:0.85rem;color:var(--gris-texto);">Sin registros de pago.</p>`;
+        return;
+      }
+
+      const estadoClass = { aprobado: 'sus-estado-aprobado', pendiente: 'sus-estado-pendiente', rechazado: 'sus-estado-rechazado' };
+      const estadoLabel = { aprobado: '✓ Aprobado', pendiente: '⏳ Pendiente', rechazado: '✕ Rechazado' };
+
+      body.innerHTML = `
+        <div class="sus-historial-titulo">Solicitudes de pago</div>
+        ${misSolicitudes.map(s => `
+          <div class="sus-historial-item">
+            <div>
+              <div style="font-weight:600;font-size:0.85rem;">${esc(s.plan)} · ${fmt(s.precio)}</div>
+              <div style="font-size:0.78rem;color:var(--gris-texto);">${esc(s.metodo)} · ${esc(s.id)}</div>
+            </div>
+            <div style="text-align:right;">
+              <div class="${esc(estadoClass[s.estado])}">${esc(estadoLabel[s.estado] || s.estado)}</div>
+              <div style="font-size:0.75rem;color:var(--gris-texto);">${fmtFecha(s.fechaSolicitud)}</div>
+            </div>
+          </div>
+        `).join('')}`;
+    }
+
+    // Renderizar cuando el usuario hace clic en la pestaña Suscripción
+    document.querySelectorAll('.tab').forEach(tab => {
+      if (tab.dataset.sec === 'suscripcion') {
+        tab.addEventListener('click', renderSuscripcion);
+      }
+    });
+
     // ── Init ──────────────────────────────────────────────────
-    document.addEventListener('DOMContentLoaded', inicializar);
+    document.addEventListener('DOMContentLoaded', () => {
+      // sesion ya fue verificada al inicio del script — no necesitamos protegerRuta()
+      try { inicializar(); } catch(e) { console.error('Error en inicializar():', e); }
+      try { verificarVencimientoSuscripcion(); } catch(e) {}
+    });
   </script>
 </body>
 </html>

@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="es">
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Droguería y Variedades Los Tres Hermanos</title>
-  <link rel="stylesheet" href="global.css">
+  <link rel="stylesheet" th:href="@{/css/global.css}">
   <style>
     /* ── HERO ── */
     .hero {
@@ -412,17 +412,22 @@
     /* ── RESPONSIVE ── */
     /* ── TV (1400px+) ── */
     @media (min-width: 1400px) {
-      .hero { padding: 7rem 6rem 5rem; }
+      .hero { padding: 7rem 6rem 5rem; gap: 6rem; }
       .hero-titulo { font-size: 4rem; }
       .hero-desc { font-size: 1.15rem; }
-      .categorias-grid { grid-template-columns: repeat(4,1fr); max-width: 1600px; }
-      .stats-grid { max-width: 1600px; grid-template-columns: repeat(4,1fr); }
-      .trust-grid { max-width: 1600px; }
+      .categorias-grid, .stats-grid, .trust-grid { max-width: 1600px; }
+      .stats-grid { grid-template-columns: repeat(4,1fr); }
     }
 
     /* ── Tablet (768px – 1023px) ── */
     @media (min-width: 768px) and (max-width: 1023px) {
-      .hero { grid-template-columns: 1fr; padding: 5rem 2.5rem 3rem; text-align: center; gap: 2rem; }
+      .hero {
+        grid-template-columns: 1fr;
+        padding: 5rem 2.5rem 3rem;
+        text-align: center;
+        gap: 2rem;
+        min-height: auto;
+      }
       .hero-img { display: none; }
       .hero-titulo { font-size: clamp(2rem,5vw,3rem); }
       .hero-botones { justify-content: center; }
@@ -434,60 +439,116 @@
     /* ── Móvil (< 768px) ── */
     @media (max-width: 767px) {
       .hero {
-        grid-template-columns: 1fr;
+        grid-template-columns: 1fr !important;
         padding: 4rem 1.25rem 3rem;
         text-align: center;
-        gap: 2rem;
+        gap: 1.5rem;
         min-height: auto;
+        width: 100%;
+        box-sizing: border-box;
       }
-      .hero-img { display: none; }
-      .hero-titulo { font-size: clamp(1.75rem,7vw,2.5rem); }
-      .hero-desc { font-size: 0.92rem; }
-      .hero-botones { flex-direction: column; align-items: center; gap: 0.75rem; }
-      .hero-botones a, .hero-botones button { width: 100%; max-width: 280px; text-align: center; justify-content: center; }
-      .hero-badge { font-size: 0.72rem; }
-      .categorias-grid { grid-template-columns: 1fr 1fr; gap: 0.85rem; padding: 2rem 1.25rem; }
+      .hero-content { width: 100%; }
+      .hero-img { display: none !important; }
+      .hero-titulo { font-size: clamp(1.75rem,8vw,2.4rem); line-height: 1.2; }
+      .hero-desc { font-size: 0.9rem; padding: 0 0.5rem; }
+      .hero-botones {
+        flex-direction: column;
+        align-items: center;
+        gap: 0.75rem;
+        width: 100%;
+      }
+      .hero-botones a,
+      .hero-botones button {
+        width: 100%;
+        max-width: 300px;
+        text-align: center;
+        justify-content: center;
+      }
+      .hero-badge { font-size: 0.72rem; margin-bottom: 1rem; }
+      .categorias-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 0.85rem;
+        padding: 2rem 1.25rem;
+      }
       .cat-card { padding: 1.25rem 1rem; }
-      .cat-card h3 { font-size: 0.92rem; }
+      .cat-card h3 { font-size: 0.88rem; }
+      .cat-card p { font-size: 0.78rem; }
       .stats-section { padding: 2.5rem 1.25rem; }
-      .stats-grid { grid-template-columns: repeat(2,1fr); gap: 1rem; }
+      .stats-grid {
+        grid-template-columns: repeat(2,1fr);
+        gap: 1rem;
+      }
       .stat-numero { font-size: 2rem; }
+      .stat-label { font-size: 0.72rem; }
       .trust-section { padding: 2.5rem 1.25rem; }
       .trust-grid { grid-template-columns: 1fr; gap: 1rem; }
       .cta-section { padding: 3rem 1.25rem; }
       .cta-section h2 { font-size: 1.5rem; }
+      .cta-section p { font-size: 0.9rem; }
+
+      /* Navbar en móvil */
+      .navbar-inner {
+        padding: 0 0.75rem;
+        height: 56px;
+      }
+      .navbar-logo { font-size: 0.82rem; gap: 0.4rem; }
+      .navbar-logo img { width: 30px; height: 30px; }
+      .navbar-actions {
+        gap: 0.3rem;
+      }
+      .navbar-actions .btn-secundario {
+        font-size: 0.7rem !important;
+        padding: 0.3rem 0.55rem !important;
+      }
     }
 
     /* ── Móvil pequeño (< 480px) ── */
     @media (max-width: 479px) {
       .hero { padding: 3.5rem 1rem 2.5rem; }
+      .hero-titulo { font-size: clamp(1.5rem,7vw,2rem); }
       .categorias-grid { grid-template-columns: 1fr; }
       .stats-grid { grid-template-columns: 1fr 1fr; }
+      .navbar-actions .btn-secundario:first-child { display: none; } /* Ocultar Regístrate en muy pequeños */
     }
   </style>
 </head>
 <body>
+<script>
+  // Ocultar botón Regístrate INMEDIATAMENTE con CSS si hay sesión activa
+  (function() {
+    try {
+      var s = JSON.parse(sessionStorage.getItem('lth_cliente') || 'null');
+      if (s && s.rol === 'cliente') {
+        var st = document.createElement('style');
+        st.textContent = '#btn-registrate{display:none!important}';
+        document.head.appendChild(st);
+      }
+    } catch(e) {}
+  })();
+</script>
 
   <!-- ── NAVBAR ── -->
   <nav class="navbar" role="navigation" aria-label="Menú principal">
     <div class="navbar-inner">
-      <a href="index.html" class="navbar-logo" aria-label="Ir al inicio">
-        <img src="logo3.jpeg" alt="Logo Droguería Los Tres Hermanos">
+      <a th:href="@{/}" class="navbar-logo" aria-label="Ir al inicio">
+        <img th:src="@{/logo3.jpeg}" src="/logo3.jpeg" alt="Logo Droguería Los Tres Hermanos">
         <span>Los <em>Tres</em> Hermanos</span>
       </a>
 
       <div class="navbar-nav" id="nav-menu">
-        <a href="index.html"                        class="nav-link active">Inicio</a>
-        <a href="explorador-drogueria.html" class="nav-link">Medicamentos</a>
-        <a href="variedades.html"           class="nav-link">Variedades</a>
-        <a href="servicios.html"            class="nav-link">Servicios</a>
-        <a href="somos-nosotros.html"       class="nav-link">Nosotros</a>
-        <a href="contacto-drogueria.html"   class="nav-link">Contacto</a>
+        <a th:href="@{/}"                        class="nav-link active">Inicio</a>
+        <a th:href="@{/medicamentos}" class="nav-link">Medicamentos</a>
+        <a th:href="@{/variedades}"           class="nav-link">Variedades</a>
+        <a th:href="@{/servicios}"            class="nav-link">Servicios</a>
+        <a th:href="@{/suscripciones}"      class="nav-link nav-link-suscripcion">⭐ Suscripciones</a>
+        <a th:href="@{/nosotros}"       class="nav-link">Nosotros</a>
+        <a th:href="@{/contacto}"   class="nav-link">Contacto</a>
       </div>
 
       <div class="navbar-actions">
-        <a href="registro.html" class="btn-secundario" style="font-size:0.82rem;padding:0.45rem 1rem;">Regístrate</a>
-        <a href="login-cliente.html" id="btn-mi-cuenta" class="btn-secundario" style="font-size:0.82rem;padding:0.45rem 1rem;" aria-label="Mi cuenta">
+        <a th:href="@{/registro}" id="btn-registrate" class="btn-secundario hide-mobile" style="font-size:0.82rem;padding:0.45rem 1rem;">Regístrate</a>
+        <a id="btn-mi-cuenta" class="btn-secundario" style="font-size:0.82rem;padding:0.45rem 1rem;cursor:pointer;" aria-label="Mi cuenta"
+           onclick="(function(){var s=JSON.parse(sessionStorage.getItem('lth_cliente')||'null');window.location.href=(s&&s.rol==='cliente')?'/perfil':'/login';})()">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
             <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/>
           </svg>
@@ -503,6 +564,18 @@
       </div>
     </div>
   </nav>
+  <script>
+    // Este script corre justo después del navbar — el botón ya existe en el DOM
+    (function() {
+      try {
+        var s = JSON.parse(sessionStorage.getItem('lth_cliente') || 'null');
+        if (s && s.rol === 'cliente') {
+          var btn = document.getElementById('btn-mi-cuenta');
+          if (btn) { btn.href = '/perfil'; }
+        }
+      } catch(e) {}
+    })();
+  </script>
 
   <!-- ── HERO ── -->
   <section class="hero" aria-label="Bienvenida">
@@ -523,13 +596,13 @@
       </p>
 
       <div class="hero-botones">
-        <a href="explorador-drogueria.html" class="btn-primario">
+        <a th:href="@{/medicamentos}" class="btn-primario">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
             <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
           </svg>
           Ver Medicamentos
         </a>
-        <a href="contacto-drogueria.html" class="btn-secundario">
+        <a th:href="@{/contacto}" class="btn-secundario">
           Contactarnos
         </a>
       </div>
@@ -580,7 +653,7 @@
       </div>
 
       <div class="servicios-grid">
-        <a href="explorador-drogueria.html" class="servicio-card animar animar-delay-1" style="color:inherit">
+        <a th:href="@{/medicamentos}" class="servicio-card animar animar-delay-1" style="color:inherit">
           <div class="servicio-icono">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <path d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0H5m14 0h2M5 21H3M9 7h1m-1 4h1m4-4h1m-1 4h1"/>
@@ -590,7 +663,7 @@
           <div class="servicio-desc">Amplio catálogo de medicamentos con búsqueda por nombre o categoría.</div>
         </a>
 
-        <a href="variedades.html" class="servicio-card animar animar-delay-2" style="color:inherit">
+        <a th:href="@{/variedades}" class="servicio-card animar animar-delay-2" style="color:inherit">
           <div class="servicio-icono">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <path d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/>
@@ -600,7 +673,7 @@
           <div class="servicio-desc">Perfumes, útiles escolares, desodorantes, alcohol y más productos.</div>
         </a>
 
-        <a href="servicios.html" class="servicio-card animar animar-delay-3" style="color:inherit">
+        <a th:href="@{/servicios}" class="servicio-card animar animar-delay-3" style="color:inherit">
           <div class="servicio-icono">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12" y2="18"/>
@@ -610,7 +683,7 @@
           <div class="servicio-desc">Recarga tu saldo y compra minutos de manera rápida y segura.</div>
         </a>
 
-        <a href="servicios.html" class="servicio-card animar animar-delay-4" style="color:inherit">
+        <a th:href="@{/servicios}" class="servicio-card animar animar-delay-4" style="color:inherit">
           <div class="servicio-icono">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <path d="M7 21h10M12 21V13M3 13h18M7 13V7a1 1 0 011-1h8a1 1 0 011 1v6"/>
@@ -631,7 +704,7 @@
           <h2>¿Necesitas un medicamento ahora?</h2>
           <p>Explora nuestro catálogo completo. Filtra por categoría, precio o calificación y encuentra lo que buscas en segundos.</p>
         </div>
-        <a href="explorador-drogueria.html" class="btn-primario">
+        <a th:href="@{/medicamentos}" class="btn-primario">
           Explorar Catálogo →
         </a>
       </div>
@@ -681,10 +754,10 @@
         <div class="footer-col">
           <h4>Navegación</h4>
           <ul>
-            <li><a href="explorador-drogueria.html">Medicamentos</a></li>
-            <li><a href="variedades.html">Variedades</a></li>
-            <li><a href="servicios.html">Servicios</a></li>
-            <li><a href="somos-nosotros.html">Nosotros</a></li>
+            <li><a th:href="@{/medicamentos}">Medicamentos</a></li>
+            <li><a th:href="@{/variedades}">Variedades</a></li>
+            <li><a th:href="@{/servicios}">Servicios</a></li>
+            <li><a th:href="@{/nosotros}">Nosotros</a></li>
           </ul>
         </div>
         <div class="footer-col">
@@ -730,7 +803,7 @@
                   </span>
                   <span class="btn-label">Ubicación</span>
                 </a>
-                <a href="contacto-drogueria.html" class="footer-contacto-texto">Diagonal 52 50A-755</a>
+                <a th:href="@{/contacto}" class="footer-contacto-texto">Diagonal 52 50A-755</a>
               </div>
             </li>
           </ul>
@@ -760,7 +833,8 @@
     </div>
   </div>
 
-  <script src="global.js"></script>
+  <script th:src="@{/js/seguridad.js}"></script>
+  <script th:src="@{/js/global.js}"></script>
   <script>
     // Hamburguesa
     const btnMenu = document.getElementById('btn-menu');
@@ -815,8 +889,24 @@
     document.getElementById('modal-terminos').addEventListener('click', function(e) {
       if (e.target === this) cerrarTerminos();
     });
-    document.addEventListener('DOMContentLoaded', () => {
-      initAvatar({ perfilUrl: 'perfil-cliente.html', logoutUrl: 'index.html' });
+
+    // ── Navbar: sesión activa → ocultar Regístrate, Mi cuenta va a /perfil
+    document.addEventListener('DOMContentLoaded', function() {
+      try {
+        var s = JSON.parse(sessionStorage.getItem('lth_cliente') || 'null');
+        var btnReg   = document.getElementById('btn-registrate');
+        var btnCuenta = document.getElementById('btn-mi-cuenta');
+
+        if (s && s.rol === 'cliente') {
+          // Ocultar Regístrate
+          if (btnReg) btnReg.style.display = 'none';
+          // Mi cuenta apunta a /perfil — garantía absoluta
+          if (btnCuenta) btnCuenta.href = '/perfil';
+        }
+      } catch(e) {}
+
+      // Dropdown avatar (mejora visual — si falla, el href=/perfil ya funciona)
+      try { initAvatar({ perfilUrl: '/perfil', logoutUrl: '/' }); } catch(e) {}
     });
   </script>
 </body>
