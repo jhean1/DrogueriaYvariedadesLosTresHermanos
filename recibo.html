@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; frame-src https://www.google.com; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Confirmación de pedido · Los Tres Hermanos</title>
+  <meta name="description" content="Recibo de tu pedido en Los Tres Hermanos.">
+  <meta name="theme-color" content="#101B35">
+  <link rel="icon" type="image/svg+xml" href="/DrogueriaYvariedadesLosTresHermanos/img/marca/favicon.svg">
+  <link rel="icon" type="image/png" sizes="32x32" href="/DrogueriaYvariedadesLosTresHermanos/img/marca/favicon-32.png">
+  <link rel="apple-touch-icon" href="/DrogueriaYvariedadesLosTresHermanos/img/marca/apple-touch-icon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;family=Sora:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/DrogueriaYvariedadesLosTresHermanos/css/design-system.css">
+  <link rel="stylesheet" href="/DrogueriaYvariedadesLosTresHermanos/css/tienda.css">
+  <script>
+    document.documentElement.classList.add('js');
+    try {
+      var s = JSON.parse(sessionStorage.getItem('lth_cliente') || 'null');
+      if (s && s.rol === 'cliente') document.documentElement.classList.add('con-sesion');
+    } catch (e) {}
+  </script>
+</head>
+<body>
+  
+  <a class="saltar" href="#contenido">Saltar al contenido</a>
+  <header class="navbar no-imprimir" role="banner">
+    <div class="navbar-inner contenedor">
+      <a href="/DrogueriaYvariedadesLosTresHermanos/" class="navbar-logo" aria-label="Los Tres Hermanos, ir al inicio">
+        <img class="logo-claro" src="/DrogueriaYvariedadesLosTresHermanos/img/marca/logo-horizontal.svg" alt="" width="290" height="44">
+        <img class="logo-oscuro" src="/DrogueriaYvariedadesLosTresHermanos/img/marca/logo-horizontal-oscuro.svg" alt="" width="290" height="44">
+      </a>
+
+      <div class="barra-velo" id="barra-velo"></div>
+      <nav class="navbar-nav" id="nav-menu" aria-label="Menú principal">
+        <div class="menu-cabeza">
+          <img src="/DrogueriaYvariedadesLosTresHermanos/img/marca/isotipo-3h.svg" alt="" width="64" height="40">
+          <button class="btn-icono" id="btn-cerrar-menu" type="button" aria-label="Cerrar menú"><svg class="ic" aria-hidden="true"><use href="/DrogueriaYvariedadesLosTresHermanos/img/iconos.svg#cerrar"/></svg></button>
+        </div>
+        <a href="/DrogueriaYvariedadesLosTresHermanos/" class="nav-link">Inicio</a>
+        <a href="/DrogueriaYvariedadesLosTresHermanos/medicamentos" class="nav-link">Medicamentos</a>
+        <a href="/DrogueriaYvariedadesLosTresHermanos/variedades" class="nav-link">Variedades</a>
+        <a href="/DrogueriaYvariedadesLosTresHermanos/servicios" class="nav-link">Servicios</a>
+        <a href="/DrogueriaYvariedadesLosTresHermanos/suscripciones" class="nav-link">Suscripciones</a>
+        <a href="/DrogueriaYvariedadesLosTresHermanos/nosotros" class="nav-link">Nosotros</a>
+        <a href="/DrogueriaYvariedadesLosTresHermanos/contacto" class="nav-link">Contacto</a>
+        <a href="/DrogueriaYvariedadesLosTresHermanos/registro" class="btn btn--primario menu-registro" id="btn-registrate-menu">Crear cuenta</a>
+      </nav>
+
+      <div class="navbar-actions">
+        <a href="/DrogueriaYvariedadesLosTresHermanos/registro" id="btn-registrate" class="btn btn--fantasma btn--sm">Regístrate</a>
+        <a href="/DrogueriaYvariedadesLosTresHermanos/login" id="btn-mi-cuenta" class="btn btn--secundario btn--sm" aria-label="Mi cuenta">
+          <svg class="ic" aria-hidden="true"><use href="/DrogueriaYvariedadesLosTresHermanos/img/iconos.svg#usuario"/></svg>
+          <span class="etiqueta-cuenta">Mi cuenta</span>
+        </a>
+        <button class="btn-carrito-nav btn-icono" id="btn-abrir-carrito" type="button" onclick="abrirDrawer()" aria-label="Abrir carrito">
+          <svg class="ic" aria-hidden="true"><use href="/DrogueriaYvariedadesLosTresHermanos/img/iconos.svg#carrito"/></svg>
+          <span class="badge-carrito" style="display:none">0</span>
+        </button>
+        <button class="btn-menu btn-icono" id="btn-menu" type="button" aria-label="Abrir menú" aria-expanded="false" aria-controls="nav-menu">
+          <svg class="ic" aria-hidden="true"><use href="/DrogueriaYvariedadesLosTresHermanos/img/iconos.svg#menu"/></svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+
+  <main id="contenido" class="contenedor recibo-wrap">
+    <div class="acciones-imprimir no-imprimir entra" style="--i:0">
+      <button class="btn btn--primario" type="button" onclick="window.print()"><svg class="ic" aria-hidden="true"><use href="/DrogueriaYvariedadesLosTresHermanos/img/iconos.svg#imprimir"/></svg> Imprimir recibo</button>
+      <button class="btn btn--secundario" type="button" id="btn-whatsapp"><svg class="ic" aria-hidden="true"><use href="/DrogueriaYvariedadesLosTresHermanos/img/iconos.svg#whatsapp"/></svg> Enviar por WhatsApp</button>
+      <a href="/DrogueriaYvariedadesLosTresHermanos/" class="btn btn--fantasma"><svg class="ic" aria-hidden="true"><use href="/DrogueriaYvariedadesLosTresHermanos/img/iconos.svg#flecha-izq"/></svg> Volver al inicio</a>
+    </div>
+
+    <article class="recibo entra" id="recibo-content" style="--i:1">
+      <header class="recibo-header">
+        <img src="/DrogueriaYvariedadesLosTresHermanos/img/marca/logo-horizontal.svg" alt="Droguería y Variedades Los Tres Hermanos" width="290" height="44">
+        <p>Diagonal 52 50A-755, Arjona, Bolívar · +57 322 506 5554</p>
+        <span class="recibo-check"><svg class="ic" aria-hidden="true"><use href="/DrogueriaYvariedadesLosTresHermanos/img/iconos.svg#check"/></svg></span>
+        <h1>¡Compra realizada con éxito!</h1>
+        <div class="recibo-num" id="recibo-numero">Cargando...</div>
+      </header>
+
+      <div class="recibo-body">
+        <dl class="recibo-info-grid">
+          <div><dt>Fecha y hora</dt><dd id="recibo-fecha">—</dd></div>
+          <div><dt>N.° de pedido</dt><dd id="recibo-id">—</dd></div>
+          <div><dt>Total de productos</dt><dd id="recibo-items">—</dd></div>
+          <div><dt>Método de pago</dt><dd>Efectivo en tienda</dd></div>
+        </dl>
+
+        <h2>Detalle del pedido</h2>
+        <div class="tabla-marco">
+          <table class="tabla tabla-productos">
+            <thead><tr><th scope="col">Producto</th><th scope="col">Cant.</th><th scope="col">Precio unit.</th><th scope="col">Subtotal</th></tr></thead>
+            <tbody id="tabla-body"></tbody>
+          </table>
+        </div>
+
+        <div class="totales-wrap">
+          <div class="total-linea"><span>Subtotal</span><span id="total-subtotal">$0</span></div>
+          <div class="total-linea"><span>IVA (0%, medicamentos exentos)</span><span>$0</span></div>
+          <div class="total-linea grande"><span>Total a pagar</span><strong id="total-final">$0</strong></div>
+        </div>
+      </div>
+
+      <footer class="recibo-footer">
+        <span class="insignia insignia--exito"><svg class="ic" aria-hidden="true"><use href="/DrogueriaYvariedadesLosTresHermanos/img/iconos.svg#escudo"/></svg> Pedido confirmado</span>
+        <p>Gracias por comprar en <strong>Droguería y Variedades Los Tres Hermanos</strong>. Conserva este recibo como comprobante de tu pedido.</p>
+        <p>Preguntas: <a href="https://wa.me/573225065554" target="_blank" rel="noopener">+57 322 506 5554</a> · <a href="mailto:diazpajaro1208@gmail.com">diazpajaro1208@gmail.com</a></p>
+      </footer>
+    </article>
+  </main>
+
+  
+  <div class="drawer-overlay no-imprimir" id="drawer-overlay" onclick="cerrarDrawer()"></div>
+  <aside class="carrito-drawer no-imprimir" id="carrito-drawer" role="dialog" aria-modal="true" aria-labelledby="titulo-carrito">
+    <div class="drawer-header">
+      <h2 id="titulo-carrito">Mi carrito</h2>
+      <button class="btn-cerrar-drawer btn-icono" id="btn-cerrar-drawer" type="button" onclick="cerrarDrawer()" aria-label="Cerrar carrito">
+        <svg class="ic" aria-hidden="true"><use href="/DrogueriaYvariedadesLosTresHermanos/img/iconos.svg#cerrar"/></svg>
+      </button>
+    </div>
+    <div class="drawer-body" id="drawer-body"></div>
+    <div class="drawer-footer" id="drawer-footer" style="display:none">
+      <div class="total-row">
+        <span class="total-label">Total</span>
+        <span class="total-valor" id="total-valor">$0</span>
+      </div>
+      <button class="btn btn--primario btn--lg btn--bloque" id="btn-comprar" type="button" onclick="window.location.href='/DrogueriaYvariedadesLosTresHermanos/checkout'">
+        Finalizar compra <svg class="ic ic-mueve" aria-hidden="true"><use href="/DrogueriaYvariedadesLosTresHermanos/img/iconos.svg#flecha"/></svg>
+      </button>
+    </div>
+  </aside>
+
+  
+  <script src="/DrogueriaYvariedadesLosTresHermanos/js/seguridad.js"></script>
+  <script src="/DrogueriaYvariedadesLosTresHermanos/js/global.js"></script>
+  <script src="/DrogueriaYvariedadesLosTresHermanos/js/experiencia.js"></script>
+  <script src="/DrogueriaYvariedadesLosTresHermanos/js/legal.js"></script>
+  <script src="/DrogueriaYvariedadesLosTresHermanos/js/carrito-ui.js"></script>
+
+  <script>
+    // ── Número único de pedido ────────────────────────────────
+    function generarNumPedido() {
+      const ts   = Date.now().toString(36).toUpperCase();
+      const aleatorio = crypto.getRandomValues(new Uint32Array(1))[0];
+      const rand = aleatorio.toString(36).toUpperCase().padStart(7, '0');
+      return `LTH-${ts}-${rand}`;
+    }
+
+    // ── Formatear fecha ───────────────────────────────────────
+    function formatFecha(d) {
+      return d.toLocaleString('es-CO', {
+        day:'2-digit', month:'long', year:'numeric',
+        hour:'2-digit', minute:'2-digit'
+      });
+    }
+
+    // ── Cargar recibo ─────────────────────────────────────────
+    document.addEventListener('DOMContentLoaded', () => {
+      // Leer carrito guardado ANTES de vaciarlo
+      const items = Carrito.obtener();
+      const numPedido = generarNumPedido();
+      const fecha     = new Date();
+
+      // Llenar encabezado
+      document.getElementById('recibo-numero').textContent = numPedido;
+      document.getElementById('recibo-id').textContent     = numPedido;
+      document.getElementById('recibo-fecha').textContent  = formatFecha(fecha);
+      document.getElementById('recibo-items').textContent  =
+        items.reduce((s,i) => s + i.cantidad, 0) + ' unidades';
+
+      // Si no hay items (entró directo a la página)
+      if (!items.length) {
+        document.getElementById('tabla-body').innerHTML = `
+          <tr><td colspan="4" style="text-align:center;padding:2rem">
+            No hay productos en este pedido.
+          </td></tr>`;
+        return;
+      }
+
+      // Tabla de productos
+      let subtotal = 0;
+      const filas = items.map(item => {
+        const sub = item.precio * item.cantidad;
+        subtotal += sub;
+        return `<tr>
+          <td>
+            <span class="prod-nombre">${Seguridad.esc(item.nombre)}</span>
+            <span class="prod-unit">${formatPrecio(item.precio)} c/u</span>
+          </td>
+          <td style="text-align:center">${Seguridad.esc(item.cantidad)}</td>
+          <td style="text-align:right">${formatPrecio(item.precio)}</td>
+          <td>${formatPrecio(sub)}</td>
+        </tr>`;
+      }).join('');
+
+      document.getElementById('tabla-body').innerHTML = filas;
+      document.getElementById('total-subtotal').textContent = formatPrecio(subtotal);
+      document.getElementById('total-final').textContent    = formatPrecio(subtotal);
+
+      // ── WhatsApp ──────────────────────────────────────────
+      document.getElementById('btn-whatsapp').addEventListener('click', () => {
+        const lineas = items.map(i =>
+          `• ${i.nombre} x${i.cantidad} = ${formatPrecio(i.precio * i.cantidad)}`
+        ).join('\n');
+
+        const msg =
+          `🧾 *NUEVO PEDIDO — Los Tres Hermanos*\n` +
+          `📋 N° Pedido: *${numPedido}*\n` +
+          `📅 Fecha: ${formatFecha(fecha)}\n\n` +
+          `*Productos:*\n${lineas}\n\n` +
+          `💰 *TOTAL: ${formatPrecio(subtotal)}*\n\n` +
+          `_Pedido realizado desde la página web._`;
+
+        const url = `https://wa.me/573225065554?text=${encodeURIComponent(msg)}`;
+        window.open(url, '_blank', 'noopener');
+      });
+
+      // Vaciar carrito después de generar el recibo
+      localStorage.removeItem('drogueria_carrito');
+      protegerRuta();
+      initAvatar({ perfilUrl: '/DrogueriaYvariedadesLosTresHermanos/perfil', logoutUrl: '/DrogueriaYvariedadesLosTresHermanos/' });
+    });
+  </script>
+  <script src="/DrogueriaYvariedadesLosTresHermanos/js/modo-estatico.js"></script>
+</body>
+</html>

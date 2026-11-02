@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; frame-src https://www.google.com; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Página no encontrada · Los Tres Hermanos</title>
+  <meta name="description" content="La página que buscas no existe.">
+  <meta name="theme-color" content="#101B35">
+  <link rel="icon" type="image/svg+xml" href="/DrogueriaYvariedadesLosTresHermanos/img/marca/favicon.svg">
+  <link rel="icon" type="image/png" sizes="32x32" href="/DrogueriaYvariedadesLosTresHermanos/img/marca/favicon-32.png">
+  <link rel="apple-touch-icon" href="/DrogueriaYvariedadesLosTresHermanos/img/marca/apple-touch-icon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;family=Sora:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/DrogueriaYvariedadesLosTresHermanos/css/design-system.css">
+  <link rel="stylesheet" href="/DrogueriaYvariedadesLosTresHermanos/css/tienda.css">
+  <script>
+    document.documentElement.classList.add('js');
+    try {
+      var s = JSON.parse(sessionStorage.getItem('lth_cliente') || 'null');
+      if (s && s.rol === 'cliente') document.documentElement.classList.add('con-sesion');
+    } catch (e) {}
+  </script>
+</head>
+<body class="pagina-error">
+  <main class="error-pagina">
+    <img src="/DrogueriaYvariedadesLosTresHermanos/img/marca/isotipo-3h.svg" alt="" width="128" height="80">
+    <p class="error-codigo">404</p>
+    <h1>No encontramos esta página</h1>
+    <p>Puede que el enlace haya cambiado o que ya no exista.</p>
+    <a href="/DrogueriaYvariedadesLosTresHermanos/" class="btn btn--primario">Ir al inicio</a>
+  </main>
+  <script src="/DrogueriaYvariedadesLosTresHermanos/js/modo-estatico.js"></script>
+</body>
+</html>

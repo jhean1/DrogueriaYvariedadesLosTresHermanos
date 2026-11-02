@@ -1,0 +1,955 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; frame-src https://www.google.com; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Mi cuenta · Los Tres Hermanos</title>
+  <meta name="description" content="Gestiona tu cuenta, pedidos y suscripción en Los Tres Hermanos.">
+  <meta name="theme-color" content="#101B35">
+  <link rel="icon" type="image/svg+xml" href="/DrogueriaYvariedadesLosTresHermanos/img/marca/favicon.svg">
+  <link rel="icon" type="image/png" sizes="32x32" href="/DrogueriaYvariedadesLosTresHermanos/img/marca/favicon-32.png">
+  <link rel="apple-touch-icon" href="/DrogueriaYvariedadesLosTresHermanos/img/marca/apple-touch-icon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;family=Sora:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/DrogueriaYvariedadesLosTresHermanos/css/design-system.css">
+  <link rel="stylesheet" href="/DrogueriaYvariedadesLosTresHermanos/css/tienda.css">
+  <script>
+    document.documentElement.classList.add('js');
+    try {
+      var s = JSON.parse(sessionStorage.getItem('lth_cliente') || 'null');
+      if (s && s.rol === 'cliente') document.documentElement.classList.add('con-sesion');
+    } catch (e) {}
+  </script>
+</head>
+<body class="sobre-oscuro perfil">
+  
+  <a class="saltar" href="#contenido">Saltar al contenido</a>
+  <header class="navbar no-imprimir" role="banner">
+    <div class="navbar-inner contenedor">
+      <a href="/DrogueriaYvariedadesLosTresHermanos/" class="navbar-logo" aria-label="Los Tres Hermanos, ir al inicio">
+        <img class="logo-claro" src="/DrogueriaYvariedadesLosTresHermanos/img/marca/logo-horizontal.svg" alt="" width="290" height="44">
+        <img class="logo-oscuro" src="/DrogueriaYvariedadesLosTresHermanos/img/marca/logo-horizontal-oscuro.svg" alt="" width="290" height="44">
+      </a>
+
+      <div class="barra-velo" id="barra-velo"></div>
+      <nav class="navbar-nav" id="nav-menu" aria-label="Menú principal">
+        <div class="menu-cabeza">
+          <img src="/DrogueriaYvariedadesLosTresHermanos/img/marca/isotipo-3h.svg" alt="" width="64" height="40">
+          <button class="btn-icono" id="btn-cerrar-menu" type="button" aria-label="Cerrar menú"><svg class="ic" aria-hidden="true"><use href="/DrogueriaYvariedadesLosTresHermanos/img/iconos.svg#cerrar"/></svg></button>
+        </div>
+        <a href="/DrogueriaYvariedadesLosTresHermanos/" class="nav-link">Inicio</a>
+        <a href="/DrogueriaYvariedadesLosTresHermanos/medicamentos" class="nav-link">Medicamentos</a>
+        <a href="/DrogueriaYvariedadesLosTresHermanos/variedades" class="nav-link">Variedades</a>
+        <a href="/DrogueriaYvariedadesLosTresHermanos/servicios" class="nav-link">Servicios</a>
+        <a href="/DrogueriaYvariedadesLosTresHermanos/suscripciones" class="nav-link">Suscripciones</a>
+        <a href="/DrogueriaYvariedadesLosTresHermanos/nosotros" class="nav-link">Nosotros</a>
+        <a href="/DrogueriaYvariedadesLosTresHermanos/contacto" class="nav-link">Contacto</a>
+        <a href="/DrogueriaYvariedadesLosTresHermanos/registro" class="btn btn--primario menu-registro" id="btn-registrate-menu">Crear cuenta</a>
+      </nav>
+
+      <div class="navbar-actions">
+        <a href="/DrogueriaYvariedadesLosTresHermanos/registro" id="btn-registrate" class="btn btn--fantasma btn--sm">Regístrate</a>
+        <a href="/DrogueriaYvariedadesLosTresHermanos/login" id="btn-mi-cuenta" class="btn btn--secundario btn--sm" aria-label="Mi cuenta">
+          <svg class="ic" aria-hidden="true"><use href="/DrogueriaYvariedadesLosTresHermanos/img/iconos.svg#usuario"/></svg>
+          <span class="etiqueta-cuenta">Mi cuenta</span>
+        </a>
+        <button class="btn-carrito-nav btn-icono" id="btn-abrir-carrito" type="button" onclick="abrirDrawer()" aria-label="Abrir carrito">
+          <svg class="ic" aria-hidden="true"><use href="/DrogueriaYvariedadesLosTresHermanos/img/iconos.svg#carrito"/></svg>
+          <span class="badge-carrito" style="display:none">0</span>
+        </button>
+        <button class="btn-menu btn-icono" id="btn-menu" type="button" aria-label="Abrir menú" aria-expanded="false" aria-controls="nav-menu">
+          <svg class="ic" aria-hidden="true"><use href="/DrogueriaYvariedadesLosTresHermanos/img/iconos.svg#menu"/></svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+
+  <main id="contenido">
+    <section class="perfil-hero">
+      <div class="hero-fondo" aria-hidden="true"><div class="hero-rejilla"></div></div>
+      <div class="contenedor perfil-hero-interior">
+        <div class="avatar-grande entra" id="avatar-inicial" style="--i:0">?</div>
+        <div class="perfil-info entra" style="--i:1">
+          <nav class="migas migas--claras" aria-label="Ruta"><a href="/DrogueriaYvariedadesLosTresHermanos/">Inicio</a><svg class="ic" aria-hidden="true"><use href="/DrogueriaYvariedadesLosTresHermanos/img/iconos.svg#chevron"/></svg><span aria-current="page">Mi cuenta</span></nav>
+          <h1 id="perfil-nombre">Cargando...</h1>
+          <p id="perfil-correo">—</p>
+        </div>
+        <button class="btn btn--vidrio btn--sm perfil-salir entra" style="--i:2" type="button" onclick="cerrarSesion()"><svg class="ic" aria-hidden="true"><use href="/DrogueriaYvariedadesLosTresHermanos/img/iconos.svg#salir"/></svg> Cerrar sesión</button>
+      </div>
+    </section>
+
+    <div class="tabs-wrap">
+      <div class="contenedor pestanas" role="tablist" aria-label="Secciones de mi cuenta">
+        <button class="tab activo" data-sec="pedidos" type="button"><svg class="ic" aria-hidden="true"><use href="/DrogueriaYvariedadesLosTresHermanos/img/iconos.svg#recibo"/></svg>Mis pedidos</button>
+        <button class="tab" data-sec="favoritos" type="button"><svg class="ic" aria-hidden="true"><use href="/DrogueriaYvariedadesLosTresHermanos/img/iconos.svg#corazon"/></svg>Favoritos</button>
+        <button class="tab" data-sec="suscripcion" type="button"><svg class="ic" aria-hidden="true"><use href="/DrogueriaYvariedadesLosTresHermanos/img/iconos.svg#estrella"/></svg>Mi suscripción</button>
+        <button class="tab" data-sec="perfil" type="button"><svg class="ic" aria-hidden="true"><use href="/DrogueriaYvariedadesLosTresHermanos/img/iconos.svg#usuario"/></svg>Mi perfil</button>
+        <button class="tab" data-sec="seguridad" type="button"><svg class="ic" aria-hidden="true"><use href="/DrogueriaYvariedadesLosTresHermanos/img/iconos.svg#candado"/></svg>Seguridad</button>
+      </div>
+    </div>
+
+    <div class="contenedor perfil-contenido">
+      <div class="seccion activa" id="sec-pedidos">
+        <div class="tarjeta">
+          <div class="tarjeta-cabeza"><h2>Historial de pedidos</h2><span class="insignia" id="pedidos-count">0 pedidos</span></div>
+          <div class="tarjeta-cuerpo" id="pedidos-body"></div>
+        </div>
+      </div>
+
+      <div class="seccion" id="sec-favoritos">
+        <div class="tarjeta">
+          <div class="tarjeta-cabeza"><h2>Productos favoritos</h2></div>
+          <div class="tarjeta-cuerpo"><div class="favoritos-grid" id="favoritos-grid"></div></div>
+        </div>
+      </div>
+
+      <div class="seccion" id="sec-perfil">
+        <div class="tarjeta">
+          <div class="tarjeta-cabeza"><h2>Datos personales</h2></div>
+          <div class="tarjeta-cuerpo rejilla-form">
+            <div class="campo"><label for="edit-nombre">Nombre completo</label><input type="text" id="edit-nombre" placeholder="Tu nombre completo" autocomplete="name"></div>
+            <div class="campo"><label for="edit-telefono">Teléfono</label><input type="tel" id="edit-telefono" placeholder="+57 300 000 0000" autocomplete="tel"></div>
+            <div class="campo todo"><label for="edit-direccion">Dirección de entrega</label><input type="text" id="edit-direccion" placeholder="Calle, barrio, ciudad" autocomplete="street-address"></div>
+            <div class="todo"><button class="btn btn--primario" type="button" onclick="guardarPerfil()"><svg class="ic" aria-hidden="true"><use href="/DrogueriaYvariedadesLosTresHermanos/img/iconos.svg#check"/></svg> Guardar datos personales</button></div>
+          </div>
+        </div>
+        <div class="tarjeta">
+          <div class="tarjeta-cabeza"><h2>Cambiar correo electrónico</h2></div>
+          <div class="tarjeta-cuerpo rejilla-form">
+            <div class="campo"><label for="correo-actual-display">Correo actual</label><input type="email" id="correo-actual-display" disabled></div>
+            <div class="campo"><label for="edit-correo-nuevo">Nuevo correo</label><input type="email" id="edit-correo-nuevo" placeholder="nuevo@correo.com" autocomplete="email"></div>
+            <div class="campo todo"><label for="correo-pass-confirm">Confirma tu contraseña para cambiar el correo</label><input type="password" id="correo-pass-confirm" placeholder="Tu contraseña actual" autocomplete="current-password"></div>
+            <div class="todo"><button class="btn btn--primario" type="button" onclick="cambiarCorreo()"><svg class="ic" aria-hidden="true"><use href="/DrogueriaYvariedadesLosTresHermanos/img/iconos.svg#correo"/></svg> Actualizar correo</button></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="seccion" id="sec-seguridad">
+        <div class="tarjeta">
+          <div class="tarjeta-cabeza"><h2>Cambiar contraseña</h2></div>
+          <div class="tarjeta-cuerpo rejilla-form">
+            <div class="campo todo"><label for="pass-actual">Contraseña actual</label><input type="password" id="pass-actual" placeholder="Tu contraseña actual" autocomplete="current-password"></div>
+            <div class="campo"><label for="pass-nueva">Nueva contraseña</label><input type="password" id="pass-nueva" placeholder="Mínimo 8 caracteres" autocomplete="new-password"></div>
+            <div class="campo"><label for="pass-nueva2">Confirmar nueva contraseña</label><input type="password" id="pass-nueva2" placeholder="Repite la nueva contraseña" autocomplete="new-password"></div>
+            <div class="todo fortaleza"><div class="fortaleza-pista"><div id="pass-strength-bar"></div></div><span id="pass-strength-label" role="status"></span></div>
+            <div class="todo"><button class="btn btn--primario" type="button" onclick="cambiarPassword()"><svg class="ic" aria-hidden="true"><use href="/DrogueriaYvariedadesLosTresHermanos/img/iconos.svg#candado"/></svg> Cambiar contraseña</button></div>
+          </div>
+        </div>
+        <div class="tarjeta tarjeta--peligro">
+          <div class="tarjeta-cabeza"><h2>Eliminar cuenta</h2></div>
+          <div class="tarjeta-cuerpo">
+            <p>Si eliminas tu cuenta, todos tus datos, historial de pedidos y favoritos serán borrados permanentemente. Esta acción no se puede deshacer.</p>
+            <button class="btn btn--peligro" type="button" onclick="eliminarCuenta()"><svg class="ic" aria-hidden="true"><use href="/DrogueriaYvariedadesLosTresHermanos/img/iconos.svg#papelera"/></svg> Eliminar mi cuenta</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="seccion" id="sec-suscripcion">
+        <div id="sus-panel-main"></div>
+        <div class="tarjeta">
+          <div class="tarjeta-cabeza"><h2>Historial de pagos</h2></div>
+          <div class="tarjeta-cuerpo" id="sus-historial-body"></div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <div class="visor-overlay" id="visor-overlay" role="dialog" aria-modal="true" aria-label="Visor de facturas">
+    <div class="visor-wrap" id="visor-wrap">
+      <span class="visor-counter" id="visor-counter"></span>
+      <button class="visor-nav-btn" id="visor-prev" type="button" aria-label="Factura anterior" disabled><svg class="ic" aria-hidden="true"><use href="/DrogueriaYvariedadesLosTresHermanos/img/iconos.svg#flecha-izq"/></svg></button>
+      <div class="visor-factura" id="visor-factura"></div>
+      <button class="visor-nav-btn" id="visor-next" type="button" aria-label="Siguiente factura"><svg class="ic" aria-hidden="true"><use href="/DrogueriaYvariedadesLosTresHermanos/img/iconos.svg#flecha"/></svg></button>
+      <div class="visor-indicador" id="visor-indicador"></div>
+    </div>
+  </div>
+  <div class="toast-wrap" id="toast-wrap"></div>
+
+  
+  <footer class="footer-global no-imprimir" role="contentinfo">
+    <div class="contenedor">
+      <div class="pie-cta revelar">
+        <div>
+          <h2>¿Tienes una consulta?</h2>
+          <p>Escríbenos por WhatsApp y te atendemos directamente desde la droguería.</p>
+        </div>
+        <a class="btn btn--claro btn--lg" href="https://wa.me/573225065554" target="_blank" rel="noopener">
+          <svg class="ic" aria-hidden="true"><use href="/DrogueriaYvariedadesLosTresHermanos/img/iconos.svg#whatsapp"/></svg> Escribir por WhatsApp
+        </a>
+      </div>
+      <div class="footer-grid">
+        <div class="footer-marca">
+          <img src="/DrogueriaYvariedadesLosTresHermanos/img/marca/logo-vertical-oscuro.svg" alt="Droguería y Variedades Los Tres Hermanos" width="200" height="133">
+          <p>Medicamentos, variedades y servicios para las familias de Arjona, Bolívar.</p>
+        </div>
+        <div class="footer-col">
+          <h3>Tienda</h3>
+          <ul>
+            <li><a href="/DrogueriaYvariedadesLosTresHermanos/medicamentos">Medicamentos</a></li>
+            <li><a href="/DrogueriaYvariedadesLosTresHermanos/variedades">Variedades</a></li>
+            <li><a href="/DrogueriaYvariedadesLosTresHermanos/suscripciones">Suscripciones</a></li>
+            <li><a href="/DrogueriaYvariedadesLosTresHermanos/servicios">Servicios</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h3>La droguería</h3>
+          <ul>
+            <li><a href="/DrogueriaYvariedadesLosTresHermanos/nosotros">Quiénes somos</a></li>
+            <li><a href="/DrogueriaYvariedadesLosTresHermanos/contacto">Contacto</a></li>
+            <li><a href="/DrogueriaYvariedadesLosTresHermanos/login">Mi cuenta</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h3>Contacto</h3>
+          <ul class="pie-contacto">
+            <li><a href="tel:+573225065554"><svg class="ic" aria-hidden="true"><use href="/DrogueriaYvariedadesLosTresHermanos/img/iconos.svg#telefono"/></svg>+57 322 506 5554</a></li>
+            <li><a href="mailto:diazpajaro1208@gmail.com"><svg class="ic" aria-hidden="true"><use href="/DrogueriaYvariedadesLosTresHermanos/img/iconos.svg#correo"/></svg>diazpajaro1208@gmail.com</a></li>
+            <li><a href="https://www.google.com/maps/search/?api=1&amp;query=Diagonal+52+50A-755+Arjona+Bolivar+Colombia" target="_blank" rel="noopener"><svg class="ic" aria-hidden="true"><use href="/DrogueriaYvariedadesLosTresHermanos/img/iconos.svg#ubicacion"/></svg>Diagonal 52 50A-755, Arjona</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <span>© 2026 Droguería y Variedades Los Tres Hermanos</span>
+        <div>
+          <button type="button" onclick="abrirTerminos('terminos')">Términos de servicio</button>
+          <button type="button" onclick="abrirTerminos('privacidad')">Política de privacidad</button>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <div class="modal-velo no-imprimir" id="modal-terminos" role="dialog" aria-modal="true" aria-labelledby="modal-terminos-titulo">
+    <div class="modal">
+      <div class="modal-cabeza">
+        <h2 id="modal-terminos-titulo"></h2>
+        <button class="btn-icono" type="button" onclick="cerrarTerminos()" aria-label="Cerrar"><svg class="ic" aria-hidden="true"><use href="/DrogueriaYvariedadesLosTresHermanos/img/iconos.svg#cerrar"/></svg></button>
+      </div>
+      <div class="modal-cuerpo" id="modal-terminos-body"></div>
+      <div class="modal-pie"><button class="btn btn--primario" type="button" onclick="cerrarTerminos()">Cerrar</button></div>
+    </div>
+  </div>
+
+  
+  <div class="drawer-overlay no-imprimir" id="drawer-overlay" onclick="cerrarDrawer()"></div>
+  <aside class="carrito-drawer no-imprimir" id="carrito-drawer" role="dialog" aria-modal="true" aria-labelledby="titulo-carrito">
+    <div class="drawer-header">
+      <h2 id="titulo-carrito">Mi carrito</h2>
+      <button class="btn-cerrar-drawer btn-icono" id="btn-cerrar-drawer" type="button" onclick="cerrarDrawer()" aria-label="Cerrar carrito">
+        <svg class="ic" aria-hidden="true"><use href="/DrogueriaYvariedadesLosTresHermanos/img/iconos.svg#cerrar"/></svg>
+      </button>
+    </div>
+    <div class="drawer-body" id="drawer-body"></div>
+    <div class="drawer-footer" id="drawer-footer" style="display:none">
+      <div class="total-row">
+        <span class="total-label">Total</span>
+        <span class="total-valor" id="total-valor">$0</span>
+      </div>
+      <button class="btn btn--primario btn--lg btn--bloque" id="btn-comprar" type="button" onclick="window.location.href='/DrogueriaYvariedadesLosTresHermanos/checkout'">
+        Finalizar compra <svg class="ic ic-mueve" aria-hidden="true"><use href="/DrogueriaYvariedadesLosTresHermanos/img/iconos.svg#flecha"/></svg>
+      </button>
+    </div>
+  </aside>
+
+  
+  <script src="/DrogueriaYvariedadesLosTresHermanos/js/seguridad.js"></script>
+  <script src="/DrogueriaYvariedadesLosTresHermanos/js/global.js"></script>
+  <script src="/DrogueriaYvariedadesLosTresHermanos/js/experiencia.js"></script>
+  <script src="/DrogueriaYvariedadesLosTresHermanos/js/legal.js"></script>
+  <script src="/DrogueriaYvariedadesLosTresHermanos/js/carrito-ui.js"></script>
+
+  <script>
+    const esc = Seguridad.esc;
+
+    // ── Verificar sesión cliente ──────────────────────────────
+    // Limpiar flag de registro para no bloquear futuras visitas a /registro
+    sessionStorage.removeItem('lth_recien_registro');
+
+    const sesion = JSON.parse(sessionStorage.getItem('lth_cliente') || 'null');
+    if (!sesion || sesion.rol !== 'cliente') {
+      window.location.href = '/DrogueriaYvariedadesLosTresHermanos/login';
+      // Detener ejecución del resto del script
+      throw new Error('Sin sesión — redirigiendo a login');
+    }
+
+    // ── Cargar datos del cliente ──────────────────────────────
+    function getClienteCompleto() {
+      const clientes = JSON.parse(localStorage.getItem('lth_clientes') || '[]');
+      return clientes.find(c => c.id === sesion.id) || null;
+    }
+
+    function set(id, prop, val) {
+      const el = document.getElementById(id);
+      if (el) el[prop] = val;
+    }
+
+    function inicializar() {
+      // Primero intenta obtener el cliente completo de localStorage
+      // Si no está (recién registrado o desfase), usa los datos de sesión directamente
+      const c = getClienteCompleto() || {
+        id:        sesion.id,
+        nombre:    sesion.nombre    || '',
+        correo:    sesion.correo    || '',
+        telefono:  sesion.telefono  || '',
+        direccion: sesion.direccion || '',
+        pedidos:   [],
+        favoritos: []
+      };
+
+      const nombreInicial = (c.nombre || '?')[0].toUpperCase();
+      set('avatar-inicial',        'textContent', nombreInicial);
+      set('perfil-nombre',         'textContent', c.nombre   || 'Mi cuenta');
+      set('perfil-correo',         'textContent', c.correo   || '');
+      set('edit-nombre',           'value',       c.nombre   || '');
+      set('edit-telefono',         'value',       c.telefono || '');
+      set('edit-direccion',        'value',       c.direccion || '');
+      set('correo-actual-display', 'value',       c.correo   || '');
+      renderPedidos(c);
+      renderFavoritos(c);
+    }
+
+    // ── Tabs ──────────────────────────────────────────────────
+    document.querySelectorAll('.tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('activo'));
+        tab.classList.add('activo');
+        document.querySelectorAll('.seccion').forEach(s => s.classList.remove('activa'));
+        document.getElementById('sec-' + tab.dataset.sec).classList.add('activa');
+      });
+    });
+
+    // ── Toast ─────────────────────────────────────────────────
+    function toast(msg, ok=true) {
+      const wrap = document.getElementById('toast-wrap');
+      const el   = document.createElement('div');
+      el.className = 'toast' + (ok ? '' : ' err');
+      el.textContent = msg;
+      wrap.appendChild(el);
+      setTimeout(() => { el.classList.add('out'); el.addEventListener('animationend', () => el.remove()); }, 3000);
+    }
+
+    function fmt(v) { return '$' + (Number(v) || 0).toLocaleString('es-CO'); }
+
+    // Los botones generados llevan sus datos en data-*, nunca en onclick,
+    // para que un valor manipulado no pueda ejecutarse como código.
+    document.addEventListener('click', (e) => {
+      const boton = e.target.closest('[data-accion]');
+      if (!boton) return;
+      const { accion, id } = boton.dataset;
+      if (accion === 'ver-factura')      verFactura(id);
+      if (accion === 'quitar-favorito')  quitarFavorito(id);
+      if (accion === 'cerrar-visor')     cerrarVisor();
+      if (accion === 'imprimir-factura') imprimirFactura(visorPedidos[visorIndex]);
+      if (accion === 'ir-visor')         irVisor(Number(id));
+    });
+
+    // ── Render pedidos ────────────────────────────────────────
+    function renderPedidos(c) {
+      // Los pedidos del cliente están en lth_ventas con su id
+      const todasVentas = JSON.parse(localStorage.getItem('lth_ventas') || '[]');
+      const pedidos = todasVentas.filter(v => v.clienteId === c.id).reverse();
+      const body    = document.getElementById('pedidos-body');
+      const count   = document.getElementById('pedidos-count');
+      if (!body || !count) return;
+      count.textContent = pedidos.length + ' pedido' + (pedidos.length !== 1 ? 's' : '');
+
+      if (!pedidos.length) {
+        body.innerHTML = `<div class="vacio"><div class="vacio-icono"><svg class="ic" aria-hidden="true"><use href="/DrogueriaYvariedadesLosTresHermanos/img/iconos.svg#recibo"/></svg></div><h3>Sin pedidos todavía</h3><p>Cuando hagas tu primer pedido aparecerá aquí.</p><a class="btn btn--secundario btn--sm" href="/DrogueriaYvariedadesLosTresHermanos/medicamentos">Ver catálogo</a></div>`;
+        return;
+      }
+
+      body.innerHTML = pedidos.map(p => `
+        <div class="pedido-card">
+          <div class="pedido-top">
+            <span class="pedido-id">${esc(p.id)}</span>
+            <span class="pedido-fecha">${esc(p.fecha)}</span>
+            <span class="pedido-total">${fmt(p.total)}</span>
+          </div>
+          <div class="pedido-items">
+            ${p.productos.map(item => `
+              <div class="pedido-item-row">
+                <span class="pedido-item-nombre">${esc(item.nombre)}</span>
+                <span class="pedido-item-qty">x${esc(item.cantidad)} · ${fmt(item.precio * item.cantidad)}</span>
+              </div>
+            `).join('')}
+          </div>
+          <div class="pedido-footer">
+            <span class="badge ${p.modalidad === 'domicilio' ? 'badge-domicilio' : 'badge-tienda'}">
+              ${p.modalidad === 'domicilio' ? 'Domicilio' : 'Recoger en tienda'}
+            </span>
+            <button class="btn-ver-factura" data-accion="ver-factura" data-id="${esc(p.id)}">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+              Ver factura
+            </button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    // ── Render favoritos ──────────────────────────────────────
+    function renderFavoritos(c) {
+      const favs = c.favoritos || [];
+      const grid = document.getElementById('favoritos-grid');
+      if (!grid) return;
+      if (!favs.length) {
+        grid.innerHTML = `<div class="vacio vacio--ancho"><div class="vacio-icono"><svg class="ic" aria-hidden="true"><use href="/DrogueriaYvariedadesLosTresHermanos/img/iconos.svg#corazon"/></svg></div><h3>Sin favoritos aún</h3><p>Aquí verás los productos que guardes.</p><a class="btn btn--secundario btn--sm" href="/DrogueriaYvariedadesLosTresHermanos/medicamentos">Explorar productos</a></div>`;
+        return;
+      }
+      grid.innerHTML = favs.map(f => `
+        <div class="fav-card">
+          <button class="btn-quitar-fav" data-accion="quitar-favorito" data-id="${esc(f.id)}" title="Quitar de favoritos">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          </button>
+          <div class="fav-nombre">${esc(f.nombre)}</div>
+          <div class="fav-precio">${fmt(f.precio)}</div>
+        </div>
+      `).join('');
+    }
+
+    // ── Guardar datos personales ──────────────────────────────
+    // ⚠️ PREPARADO PARA BD: fetch('/api/clientes/'+sesion.id, { method:'PUT', body:... })
+    function guardarPerfil() {
+      const nombre    = document.getElementById('edit-nombre').value.trim();
+      const telefono  = document.getElementById('edit-telefono').value.trim();
+      const direccion = document.getElementById('edit-direccion').value.trim();
+      if (!nombre)    { toast('El nombre es obligatorio', false); return; }
+      if (!telefono)  { toast('El teléfono es obligatorio', false); return; }
+      if (!direccion) { toast('La dirección es obligatoria', false); return; }
+
+      const clientes = JSON.parse(localStorage.getItem('lth_clientes') || '[]');
+      const idx = clientes.findIndex(c => c.id === sesion.id);
+      if (idx === -1) { toast('Error al guardar', false); return; }
+
+      clientes[idx].nombre    = nombre;
+      clientes[idx].telefono  = telefono;
+      clientes[idx].direccion = direccion;
+      localStorage.setItem('lth_clientes', JSON.stringify(clientes));
+
+      const nuevaSesion = { ...sesion, nombre, telefono, direccion };
+      sessionStorage.setItem('lth_cliente', JSON.stringify(nuevaSesion));
+      document.getElementById('perfil-nombre').textContent  = nombre;
+      document.getElementById('avatar-inicial').textContent = nombre[0].toUpperCase();
+      toast('✓ Datos personales actualizados');
+    }
+
+    // ── Cambiar correo ────────────────────────────────────────
+    // ⚠️ PREPARADO PARA BD: fetch('/api/clientes/'+sesion.id+'/correo', { method:'PUT', ... })
+    async function cambiarCorreo() {
+      const nuevoCorreo = document.getElementById('edit-correo-nuevo').value.trim().toLowerCase();
+      const passConfirm = document.getElementById('correo-pass-confirm').value;
+      if (!nuevoCorreo || !passConfirm) { toast('Completa todos los campos', false); return; }
+      if (!nuevoCorreo.includes('@'))   { toast('Ingresa un correo válido', false); return; }
+
+      if (!Seguridad.criptoDisponible()) { toast('Esta acción requiere una conexión segura (HTTPS)', false); return; }
+      await Seguridad.listo;
+      const clientes = JSON.parse(localStorage.getItem('lth_clientes') || '[]');
+      const idx = clientes.findIndex(c => c.id === sesion.id);
+      if (idx === -1) { toast('Error', false); return; }
+      if (!await Seguridad.verificarCredencial(passConfirm, clientes[idx].credencial)) { toast('Contraseña incorrecta', false); return; }
+      if (clientes.find(c => String(c.correo).toLowerCase() === nuevoCorreo && c.id !== sesion.id)) {
+        toast('Ese correo ya está en uso por otra cuenta', false); return;
+      }
+
+      const correoAnterior = clientes[idx].correo;
+      clientes[idx].correo = nuevoCorreo;
+      localStorage.setItem('lth_clientes', JSON.stringify(clientes));
+
+      const nuevaSesion = { ...sesion, correo: nuevoCorreo };
+      sessionStorage.setItem('lth_cliente', JSON.stringify(nuevaSesion));
+      document.getElementById('perfil-correo').textContent       = nuevoCorreo;
+      document.getElementById('correo-actual-display').value     = nuevoCorreo;
+      document.getElementById('edit-correo-nuevo').value         = '';
+      document.getElementById('correo-pass-confirm').value       = '';
+      toast('✓ Correo actualizado correctamente');
+    }
+
+    // ── Cambiar contraseña ────────────────────────────────────
+    // ⚠️ PREPARADO PARA BD: fetch('/api/clientes/'+sesion.id+'/password', { method:'PUT', ... })
+    async function cambiarPassword() {
+      const actual  = document.getElementById('pass-actual').value;
+      const nueva   = document.getElementById('pass-nueva').value;
+      const nueva2  = document.getElementById('pass-nueva2').value;
+      if (!actual || !nueva || !nueva2) { toast('Completa todos los campos', false); return; }
+      if (nueva.length < 8)  { toast('La nueva contraseña debe tener mínimo 8 caracteres', false); return; }
+      if (nueva !== nueva2)  { toast('Las contraseñas no coinciden', false); return; }
+      if (actual === nueva)  { toast('La nueva contraseña debe ser diferente a la actual', false); return; }
+
+      if (!Seguridad.criptoDisponible()) { toast('Esta acción requiere una conexión segura (HTTPS)', false); return; }
+      await Seguridad.listo;
+      const clientes = JSON.parse(localStorage.getItem('lth_clientes') || '[]');
+      const idx = clientes.findIndex(c => c.id === sesion.id);
+      if (idx === -1) { toast('Error', false); return; }
+      if (!await Seguridad.verificarCredencial(actual, clientes[idx].credencial)) { toast('La contraseña actual es incorrecta', false); return; }
+
+      clientes[idx].credencial = await Seguridad.crearCredencial(nueva);
+      localStorage.setItem('lth_clientes', JSON.stringify(clientes));
+      document.getElementById('pass-actual').value  = '';
+      document.getElementById('pass-nueva').value   = '';
+      document.getElementById('pass-nueva2').value  = '';
+      document.getElementById('pass-strength-bar').style.width = '0%';
+      document.getElementById('pass-strength-label').textContent = '';
+      toast('✓ Contraseña actualizada correctamente');
+    }
+
+    // ── Eliminar cuenta ───────────────────────────────────────
+    // ⚠️ PREPARADO PARA BD: fetch('/api/clientes/'+sesion.id, { method:'DELETE' })
+    async function eliminarCuenta() {
+      if (!confirm('¿Estás seguro? Esta acción eliminará tu cuenta y todos tus datos permanentemente.')) return;
+      const pass = prompt('Ingresa tu contraseña para confirmar:');
+      if (!pass) return;
+
+      if (!Seguridad.criptoDisponible()) { toast('Esta acción requiere una conexión segura (HTTPS)', false); return; }
+      await Seguridad.listo;
+      const clientes = JSON.parse(localStorage.getItem('lth_clientes') || '[]');
+      const cliente  = clientes.find(c => c.id === sesion.id);
+      if (!cliente || !await Seguridad.verificarCredencial(pass, cliente.credencial)) { toast('Contraseña incorrecta', false); return; }
+
+      const nuevosClientes = clientes.filter(c => c.id !== sesion.id);
+      localStorage.setItem('lth_clientes', JSON.stringify(nuevosClientes));
+
+      // Cumple lo prometido al cliente: también se borran sus demás datos.
+      const ajenos = (clave) => JSON.parse(localStorage.getItem(clave) || '[]').filter(r => r.clienteId !== sesion.id);
+      localStorage.setItem('lth_ventas', JSON.stringify(ajenos('lth_ventas')));
+      localStorage.setItem('lth_solicitudes', JSON.stringify(ajenos('lth_solicitudes')));
+      localStorage.removeItem('lth_sus_' + sesion.id);
+      localStorage.removeItem('lth_foto_' + sesion.id);
+      localStorage.removeItem('lth_suscripcion');
+      sessionStorage.removeItem('lth_cliente');
+      toast('Cuenta eliminada. Redirigiendo...');
+      setTimeout(() => { window.location.href = '/DrogueriaYvariedadesLosTresHermanos/'; }, 1500);
+    }
+
+    // ── Quitar favorito ───────────────────────────────────────
+    function quitarFavorito(id) {
+      const clientes = JSON.parse(localStorage.getItem('lth_clientes') || '[]');
+      const idx = clientes.findIndex(c => c.id === sesion.id);
+      if (idx === -1) return;
+      clientes[idx].favoritos = (clientes[idx].favoritos || []).filter(f => String(f.id) !== String(id));
+      localStorage.setItem('lth_clientes', JSON.stringify(clientes));
+      renderFavoritos(clientes[idx]);
+      toast('Eliminado de favoritos');
+    }
+
+    // ── VISOR DE FACTURAS ────────────────────────────────────
+    let visorPedidos = [];
+    let visorIndex   = 0;
+    let touchStartX  = 0;
+
+    function verFactura(id) {
+      const ventas = JSON.parse(localStorage.getItem('lth_ventas') || '[]');
+      const misPedidos = ventas.filter(v => v.clienteId === sesion.id).reverse();
+      if (!misPedidos.length) return;
+      visorPedidos = misPedidos;
+      visorIndex   = misPedidos.findIndex(v => v.id === id);
+      if (visorIndex === -1) visorIndex = 0;
+      abrirVisor();
+    }
+
+    function abrirVisor() {
+      document.getElementById('visor-overlay').classList.add('visible');
+      document.body.style.overflow = 'hidden';
+      renderVisor('none');
+      actualizarNavVisor();
+    }
+
+    function cerrarVisor() {
+      document.getElementById('visor-overlay').classList.remove('visible');
+      document.body.style.overflow = '';
+    }
+
+    function renderVisor(direccion) {
+      const p    = visorPedidos[visorIndex];
+      const total = p.total || p.productos.reduce((s,i)=>s+i.precio*i.cantidad,0);
+
+      const animClass = direccion === 'izq' ? 'slide-izq'
+                      : direccion === 'der' ? 'slide-der' : '';
+
+      document.getElementById('visor-factura').innerHTML = `
+        <div class="visor-header">
+          <div class="visor-header-info">
+            <div class="visor-num-pedido">Pedido ${esc(p.id)}</div>
+            <div class="visor-total">${fmt(total)}</div>
+            <div class="visor-fecha">${esc(p.fecha)}</div>
+          </div>
+          <button class="btn-cerrar-visor" data-accion="cerrar-visor" aria-label="Cerrar visor">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+            </svg>
+          </button>
+        </div>
+        <div class="visor-body">
+          <div class="visor-modalidad ${esc(p.modalidad||'tienda')}">
+            ${p.modalidad === 'domicilio' ? 'Domicilio: ' + esc(p.direccion) : 'Recoger en tienda'}
+          </div>
+          <div class="visor-productos-titulo">Productos del pedido</div>
+          ${p.productos.map(item => `
+            <div class="visor-producto-row">
+              <span class="visor-prod-nombre">${esc(item.nombre)}</span>
+              <div class="visor-prod-detalle">
+                <span class="visor-prod-qty">x${esc(item.cantidad)}</span>
+                <span class="visor-prod-precio">${fmt(item.precio * item.cantidad)}</span>
+              </div>
+            </div>
+          `).join('')}
+          <div class="visor-total-row">
+            <span class="visor-total-label">Total pagado</span>
+            <span class="visor-total-valor">${fmt(total)}</span>
+          </div>
+        </div>
+        <div class="visor-footer">
+          <button class="btn-imprimir-visor" data-accion="imprimir-factura">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="6 9 6 2 18 2 18 9"/>
+              <path d="M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2"/>
+              <rect x="6" y="14" width="12" height="8"/>
+            </svg>
+            Imprimir factura
+          </button>
+        </div>`;
+
+      // Animación
+      const el = document.getElementById('visor-factura');
+      el.classList.remove('slide-izq','slide-der');
+      if (animClass) {
+        void el.offsetWidth; // reflow
+        el.classList.add(animClass);
+      }
+
+      // Contador e indicador
+      document.getElementById('visor-counter').textContent =
+        `${visorIndex + 1} de ${visorPedidos.length}`;
+
+      const indEl = document.getElementById('visor-indicador');
+      indEl.innerHTML = visorPedidos.map((_, i) =>
+        `<div class="visor-punto ${i === visorIndex ? 'activo' : ''}"
+              data-accion="ir-visor" data-id="${i}" title="Ir a pedido ${i+1}"></div>`
+      ).join('');
+    }
+
+    function actualizarNavVisor() {
+      document.getElementById('visor-prev').disabled = visorIndex === 0;
+      document.getElementById('visor-next').disabled = visorIndex === visorPedidos.length - 1;
+    }
+
+    function irVisor(idx) {
+      const dir = idx > visorIndex ? 'izq' : 'der';
+      visorIndex = idx;
+      renderVisor(dir);
+      actualizarNavVisor();
+    }
+
+    function imprimirFactura(pedido) {
+      localStorage.setItem('drogueria_carrito', JSON.stringify(
+        pedido.productos.map(i => ({ id:i.id, nombre:i.nombre, precio:i.precio, cantidad:i.cantidad }))
+      ));
+      window.open('/DrogueriaYvariedadesLosTresHermanos/recibo', '_blank');
+    }
+
+    // Navegación con teclado
+    document.addEventListener('keydown', (e) => {
+      const overlay = document.getElementById('visor-overlay');
+      if (!overlay.classList.contains('visible')) return;
+      if (e.key === 'ArrowRight' && visorIndex < visorPedidos.length - 1) {
+        visorIndex++; renderVisor('izq'); actualizarNavVisor();
+      } else if (e.key === 'ArrowLeft' && visorIndex > 0) {
+        visorIndex--; renderVisor('der'); actualizarNavVisor();
+      } else if (e.key === 'Escape') {
+        cerrarVisor();
+      }
+    });
+
+    // Swipe táctil (móvil)
+    document.getElementById('visor-overlay').addEventListener('touchstart', (e) => {
+      touchStartX = e.touches[0].clientX;
+    }, { passive: true });
+
+    document.getElementById('visor-overlay').addEventListener('touchend', (e) => {
+      const diff = touchStartX - e.changedTouches[0].clientX;
+      if (Math.abs(diff) < 40) return; // ignorar toques pequeños
+      if (diff > 0 && visorIndex < visorPedidos.length - 1) {
+        visorIndex++; renderVisor('izq'); actualizarNavVisor();
+      } else if (diff < 0 && visorIndex > 0) {
+        visorIndex--; renderVisor('der'); actualizarNavVisor();
+      }
+    }, { passive: true });
+
+    // Cerrar al hacer clic en overlay
+    document.getElementById('visor-overlay').addEventListener('click', (e) => {
+      if (e.target === document.getElementById('visor-overlay')) cerrarVisor();
+    });
+
+    // Botones prev/next
+    document.getElementById('visor-prev').addEventListener('click', () => {
+      if (visorIndex > 0) { visorIndex--; renderVisor('der'); actualizarNavVisor(); }
+    });
+    document.getElementById('visor-next').addEventListener('click', () => {
+      if (visorIndex < visorPedidos.length - 1) { visorIndex++; renderVisor('izq'); actualizarNavVisor(); }
+    });
+
+    // ── Cerrar sesión ─────────────────────────────────────────
+    function cerrarSesion() {
+      sessionStorage.removeItem('lth_cliente');
+      window.location.href = '/DrogueriaYvariedadesLosTresHermanos/';
+    }
+
+    // ── Medidor fortaleza contraseña ─────────────────────────
+    document.getElementById('pass-nueva')?.addEventListener('input', function() {
+      const pass  = this.value;
+      const bar   = document.getElementById('pass-strength-bar');
+      const label = document.getElementById('pass-strength-label');
+      let score   = 0;
+      if (pass.length >= 8)  score++;
+      if (pass.length >= 10) score++;
+      if (/[A-Z]/.test(pass)) score++;
+      if (/[0-9]/.test(pass)) score++;
+      if (/[^A-Za-z0-9]/.test(pass)) score++;
+      const pct    = (score / 5) * 100;
+      const colors = ['','#ef4444','#f97316','#eab308','#22c55e','#16a34a'];
+      const labels = ['','Muy débil','Débil','Regular','Fuerte','¡Muy fuerte!'];
+      bar.style.width      = pct + '%';
+      bar.style.background = colors[score] || '#ef4444';
+      label.textContent    = pass ? (labels[score] || '') : '';
+      label.style.color    = colors[score] || '#9CA3AF';
+    });
+
+    // ══════════════════════════════════════════════════════════
+    // ── SUSCRIPCIÓN ───────────────────────────────────────────
+    // ══════════════════════════════════════════════════════════
+
+    /** Obtiene la suscripción activa para este cliente.
+     *  Prioridad: admin la activó (lth_sus_{id}) > autoservicio (lth_suscripcion)
+     */
+    function obtenerSuscripcion() {
+      const adminKey = 'lth_sus_' + sesion.id;
+      const adminSus  = JSON.parse(localStorage.getItem(adminKey) || 'null');
+      if (adminSus && adminSus.estado === 'activo') return { ...adminSus, fuente: 'admin' };
+
+      const selfSus = JSON.parse(localStorage.getItem('lth_suscripcion') || 'null');
+      if (selfSus) return { ...selfSus, fuente: 'self' };
+
+      return null;
+    }
+
+    function diasRestantes(fechaVencimiento) {
+      if (!fechaVencimiento) return null;
+      const hoy = new Date(); hoy.setHours(0,0,0,0);
+      const fin = new Date(fechaVencimiento); fin.setHours(0,0,0,0);
+      return Math.ceil((fin - hoy) / 86400000);
+    }
+
+    function fmtFecha(iso) {
+      if (!iso) return '—';
+      const d = new Date(iso);
+      return d.toLocaleDateString('es-CO', { day: '2-digit', month: 'long', year: 'numeric' });
+    }
+
+    function renderSuscripcion() {
+      const sus   = obtenerSuscripcion();
+      const panel = document.getElementById('sus-panel-main');
+
+      if (!sus) {
+        // Sin suscripción
+        panel.innerHTML = `
+          <div class="sus-panel-vacio">
+            <h3>Sin plan activo</h3>
+            <p>Suscríbete para obtener descuentos exclusivos y beneficios adicionales.</p>
+            <a href="/DrogueriaYvariedadesLosTresHermanos/suscripciones" class="btn-ver-planes">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+              Ver planes disponibles
+            </a>
+          </div>`;
+        renderHistorialSolicitudes();
+        return;
+      }
+
+      if (sus.estado === 'pendiente') {
+        // Pago pendiente de aprobación
+        panel.innerHTML = `
+          <div class="sus-panel-pendiente">
+            <h3>Pago en revisión</h3>
+            <p>Tu solicitud de suscripción al plan <strong>${esc(sus.plan)}</strong> está siendo revisada.<br>
+               El equipo la aprobará en máximo 24 horas.</p>
+          </div>`;
+        renderHistorialSolicitudes();
+        return;
+      }
+
+      if (sus.estado === 'rechazado') {
+        panel.innerHTML = `
+          <div class="sus-panel-pendiente sus-panel-peligro">
+            <h3>Solicitud rechazada</h3>
+            <p>Tu pago del plan <strong>${esc(sus.plan)}</strong> fue rechazado.<br>
+               Puedes volver a intentarlo o contactar a la droguería.</p>
+            <a href="/DrogueriaYvariedadesLosTresHermanos/suscripciones" class="btn-ver-planes">Ver planes →</a>
+          </div>`;
+        renderHistorialSolicitudes();
+        return;
+      }
+
+      // Plan activo
+      const dias = diasRestantes(sus.fechaVencimiento);
+      const porVencer = dias !== null && dias <= 5 && dias >= 0;
+      const vencido   = dias !== null && dias < 0;
+
+      if (vencido) {
+        // Cancelar automáticamente si venció
+        if (sus.fuente === 'self') {
+          const s = JSON.parse(localStorage.getItem('lth_suscripcion') || '{}');
+          s.estado = 'cancelado';
+          localStorage.setItem('lth_suscripcion', JSON.stringify(s));
+        }
+        panel.innerHTML = `
+          <div class="sus-panel-pendiente sus-panel-peligro">
+            <h3>Plan vencido</h3>
+            <p>Tu plan <strong>${esc(sus.plan)}</strong> venció el ${esc(fmtFecha(sus.fechaVencimiento))}.<br>
+               Renueva para seguir disfrutando los descuentos.</p>
+            <a href="/DrogueriaYvariedadesLosTresHermanos/suscripciones" class="btn-ver-planes">Renovar plan →</a>
+          </div>`;
+        renderHistorialSolicitudes();
+        return;
+      }
+
+      const descuento = Number(sus.descuento) || 0;
+      const precio    = Number(sus.precio)    || 0;
+
+      panel.innerHTML = `
+        <div class="sus-panel-activo">
+          <div class="sus-panel-header">
+            <div>
+              <div class="sus-panel-ante">Plan activo</div>
+              <div class="sus-panel-nombre">Plan ${esc(sus.plan)}</div>
+            </div>
+            <div class="sus-panel-badge">
+              <span class="punto punto--vivo"></span>
+              Activo
+            </div>
+          </div>
+
+          ${porVencer ? `<div class="sus-panel-alerta visible">Tu plan vence en ${dias} día${dias !== 1 ? 's' : ''}. ¡Renueva pronto!</div>` : ''}
+
+          <div class="sus-panel-info">
+            <div class="sus-panel-dato">
+              Descuento
+              <strong>${descuento}%</strong>
+            </div>
+            <div class="sus-panel-dato">
+              Precio
+              <strong>$${precio.toLocaleString('es-CO')}/mes</strong>
+            </div>
+            <div class="sus-panel-dato">
+              Activado
+              <strong>${fmtFecha(sus.fecha)}</strong>
+            </div>
+            <div class="sus-panel-dato">
+              Vence
+              <strong>${fmtFecha(sus.fechaVencimiento)}</strong>
+            </div>
+            ${dias !== null ? `
+            <div class="sus-panel-dato">
+              Días restantes
+              <strong>${dias} día${dias !== 1 ? 's' : ''}</strong>
+            </div>` : ''}
+          </div>
+
+          <div class="sus-acciones">
+            <button class="btn-sus-renovar" onclick="renovarPlan()">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/>
+                <path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/>
+              </svg>
+              Renovar plan
+            </button>
+            <button class="btn-sus-cancelar" onclick="cancelarPlan()">
+              Cancelar suscripción
+            </button>
+          </div>
+        </div>`;
+
+      renderHistorialSolicitudes();
+    }
+
+    function renovarPlan() {
+      // Guarda el plan actual en sessionStorage para pre-seleccionarlo
+      const sus = obtenerSuscripcion();
+      if (sus) {
+        sessionStorage.setItem('lth_plan_pago', JSON.stringify({
+          plan: sus.plan, descuento: sus.descuento, precio: sus.precio
+        }));
+      }
+      window.location.href = '/DrogueriaYvariedadesLosTresHermanos/suscripciones';
+    }
+
+    function cancelarPlan() {
+      if (!confirm('¿Seguro que deseas cancelar tu suscripción? Perderás tus descuentos al finalizar el período.')) return;
+
+      const adminKey = 'lth_sus_' + sesion.id;
+      const adminSus = JSON.parse(localStorage.getItem(adminKey) || 'null');
+
+      if (adminSus && adminSus.estado === 'activo') {
+        adminSus.estado = 'cancelado';
+        localStorage.setItem(adminKey, JSON.stringify(adminSus));
+      } else {
+        const s = JSON.parse(localStorage.getItem('lth_suscripcion') || '{}');
+        s.estado = 'cancelado';
+        localStorage.setItem('lth_suscripcion', JSON.stringify(s));
+      }
+
+      toast('Suscripción cancelada. Tus descuentos se desactivarán al vencer el período.');
+      renderSuscripcion();
+    }
+
+    function renderHistorialSolicitudes() {
+      const todasSolicitudes = JSON.parse(localStorage.getItem('lth_solicitudes') || '[]');
+      const misSolicitudes   = todasSolicitudes
+        .filter(s => s.clienteId === sesion.id)
+        .sort((a, b) => new Date(b.fechaSolicitud) - new Date(a.fechaSolicitud));
+
+      const body = document.getElementById('sus-historial-body');
+
+      if (!misSolicitudes.length) {
+        body.innerHTML = `<p>Sin registros de pago.</p>`;
+        return;
+      }
+
+      const estadoClass = { aprobado: 'sus-estado-aprobado', pendiente: 'sus-estado-pendiente', rechazado: 'sus-estado-rechazado' };
+      const estadoLabel = { aprobado: '✓ Aprobado', pendiente: '⏳ Pendiente', rechazado: '✕ Rechazado' };
+
+      body.innerHTML = `
+        <div class="sus-historial-titulo">Solicitudes de pago</div>
+        ${misSolicitudes.map(s => `
+          <div class="sus-historial-item">
+            <div>
+              <div class="historial-plan">${esc(s.plan)} · ${fmt(s.precio)}</div>
+              <div class="historial-meta">${esc(s.metodo)} · ${esc(s.id)}</div>
+            </div>
+            <div class="historial-estado">
+              <div class="${esc(estadoClass[s.estado])}">${esc(estadoLabel[s.estado] || s.estado)}</div>
+              <div class="historial-meta">${fmtFecha(s.fechaSolicitud)}</div>
+            </div>
+          </div>
+        `).join('')}`;
+    }
+
+    // Renderizar cuando el usuario hace clic en la pestaña Suscripción
+    document.querySelectorAll('.tab').forEach(tab => {
+      if (tab.dataset.sec === 'suscripcion') {
+        tab.addEventListener('click', renderSuscripcion);
+      }
+    });
+
+    // ── Init ──────────────────────────────────────────────────
+    document.addEventListener('DOMContentLoaded', () => {
+      // sesion ya fue verificada al inicio del script — no necesitamos protegerRuta()
+      try { inicializar(); } catch(e) { console.error('Error en inicializar():', e); }
+      try { verificarVencimientoSuscripcion(); } catch(e) {}
+      try { initAvatar({ perfilUrl: '/DrogueriaYvariedadesLosTresHermanos/perfil', logoutUrl: '/DrogueriaYvariedadesLosTresHermanos/' }); } catch(e) {}
+      // Abre la pestaña indicada en la dirección (por ejemplo /perfil#suscripcion)
+      const pestana = window.location.hash.slice(1);
+      if (pestana) document.querySelector(`.tab[data-sec="${CSS.escape(pestana)}"]`)?.click();
+    });
+  </script>
+  <script src="/DrogueriaYvariedadesLosTresHermanos/js/modo-estatico.js"></script>
+</body>
+</html>
