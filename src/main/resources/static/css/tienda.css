@@ -265,6 +265,8 @@ a:hover .enlace-flecha .ic, a.enlace-flecha:hover .ic { transform: translateX(5p
 @media (max-width: 720px) { .planes-franja { grid-template-columns: repeat(2, minmax(0,1fr)); } }
 
 /* Valores */
+.valores { display: grid; grid-template-columns: 1.1fr .9fr; gap: var(--e-7); align-items: center; }
+@media (max-width: 860px) { .valores { grid-template-columns: minmax(0,1fr); gap: var(--e-6); } }
 .valores-lista { display: flex; flex-wrap: wrap; gap: var(--e-3) var(--e-6); margin-block: var(--e-6); font: 700 var(--t-2xl)/1.2 var(--fuente-titulo); letter-spacing: -.025em; color: var(--tinta); }
 .valores-lista span { display: block; margin-bottom: .3rem; font: 700 var(--t-xs) var(--fuente-cuerpo); letter-spacing: .08em; color: var(--burgundy); }
 
@@ -421,7 +423,7 @@ a:hover .enlace-flecha .ic, a.enlace-flecha:hover .ic { transform: translateX(5p
 
 /* ── Nosotros ───────────────────────────────────────────────── */
 .historia { display: grid; grid-template-columns: .8fr 1.2fr; gap: var(--e-8); align-items: center; padding-bottom: var(--seccion); }
-.historia-simbolo { width: 100%; max-width: 420px; height: auto; }
+.pieza-marca { width: 100%; max-width: 480px; height: auto; margin-inline: auto; border-radius: var(--r-xl); box-shadow: var(--s-4); }
 .historia-texto p { margin-top: var(--e-4); color: var(--tinta-3); }
 .historia-texto .historia-entrada { font: 600 var(--t-xl)/1.45 var(--fuente-titulo); letter-spacing: -.015em; color: var(--tinta); }
 .mision-vision { padding-block: var(--seccion); background: var(--navy); color: var(--sobre-oscuro); }
@@ -431,7 +433,7 @@ a:hover .enlace-flecha .ic, a.enlace-flecha:hover .ic { transform: translateX(5p
 .valores-detalle li { padding-top: var(--e-4); border-top: 2px solid var(--navy); font-size: var(--t-sm); color: var(--tinta-3); }
 .valores-detalle span { font: 700 var(--t-xs) var(--fuente-cuerpo); color: var(--burgundy); letter-spacing: .08em; }
 .valores-detalle h3 { margin-block: var(--e-2); font-size: var(--t-xl); }
-@media (max-width: 860px) { .historia, .mv-rejilla { grid-template-columns: minmax(0,1fr); gap: var(--e-6); } .historia-simbolo { max-width: 220px; } }
+@media (max-width: 860px) { .historia, .mv-rejilla { grid-template-columns: minmax(0,1fr); gap: var(--e-6); } }
 
 /* ── Contacto ───────────────────────────────────────────────── */
 .contacto { display: grid; grid-template-columns: 1.05fr .95fr; gap: var(--e-5); align-items: start; padding-bottom: var(--seccion); }

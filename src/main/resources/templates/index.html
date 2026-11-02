@@ -172,18 +172,21 @@
 
     <!-- Valores -->
     <section class="bloque contenedor valores" aria-labelledby="titulo-valores">
-      <header class="revelar">
-        <span class="ante">Quiénes somos</span>
-        <h2 id="titulo-valores" class="titulo-seccion">Los valores detrás del mostrador.</h2>
-      </header>
-      <ul class="valores-lista" data-escalonar>
-        <li><span>01</span>Responsabilidad</li>
-        <li><span>02</span>Respeto</li>
-        <li><span>03</span>Honestidad</li>
-        <li><span>04</span>Solidaridad</li>
-        <li><span>05</span>Lealtad</li>
-      </ul>
-      <a th:href="@{/nosotros}" class="enlace-flecha revelar">Conoce nuestra historia <svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#flecha"/></svg></a>
+      <div>
+        <header class="revelar">
+          <span class="ante">Quiénes somos</span>
+          <h2 id="titulo-valores" class="titulo-seccion">Los valores detrás del mostrador.</h2>
+        </header>
+        <ul class="valores-lista" data-escalonar>
+          <li><span>01</span>Responsabilidad</li>
+          <li><span>02</span>Respeto</li>
+          <li><span>03</span>Honestidad</li>
+          <li><span>04</span>Solidaridad</li>
+          <li><span>05</span>Lealtad</li>
+        </ul>
+        <a th:href="@{/nosotros}" class="enlace-flecha revelar">Conoce nuestra historia <svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#flecha"/></svg></a>
+      </div>
+      <img class="pieza-marca revelar revelar--der" th:src="@{/img/marca/pieza-marca-3h.jpeg}" alt="Pieza de marca de Droguería Los Tres Hermanos: el símbolo 3H con una cápsula, el lema Calidad y servicio y la frase Tu salud, nuestra prioridad." width="1214" height="1296" loading="lazy">
     </section>
   </main>
 
