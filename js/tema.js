@@ -1,7 +1,7 @@
 // Modo claro y oscuro. Se carga en <head>, antes de pintar, para que nunca parpadee.
 (function () {
   const CLAVE = 'lth_tema';
-  const COLORES = { claro: '#F7F8FA', oscuro: '#0E1420' };
+  const COLORES = { claro: '#F6F7FA', oscuro: '#0B1226' };
   const raiz = document.documentElement;
 
   function guardado() {
