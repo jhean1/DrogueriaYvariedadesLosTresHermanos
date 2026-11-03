@@ -1,11 +1,9 @@
 /* ============================================================
    arte.js — Ilustraciones vectoriales propias del catálogo.
-   Sustituyen a las fotos mientras no existan. Cuando tengas las fotos,
-   colócalas en /img/productos/ con el nombre del campo `imagen` del
-   catálogo y cambia FOTOS_DISPONIBLES a true.
+   Sustituyen a las fotos mientras no existan: la foto se sube desde el
+   panel, en la ficha de cada producto, y en cuanto existe se usa aquí.
    ============================================================ */
 window.Arte = (function () {
-  const FOTOS_DISPONIBLES = false;
   const TONOS = {
     analgesicos: ['#244CDB', '#4778F5'], antiinflamatorios: ['#1F3F9E', '#4778F5'],
     antibioticos: ['#8E2338', '#C2455F'], antihistaminicos: ['#1B7459', '#269B78'], otros: ['#101B35', '#3B4F86']
@@ -44,7 +42,7 @@ window.Arte = (function () {
 
   function medicamento(med, presentacion) {
     const [a, b] = TONOS[med.cat] || TONOS.otros;
-    if (FOTOS_DISPONIBLES && med.imagen) return `<img src="/DrogueriaYvariedadesLosTresHermanos/img/productos/${Seguridad.esc(med.imagen)}" alt="" loading="lazy">`;
+    if (med.foto) return `<img src="${Seguridad.esc(med.foto)}" alt="" loading="lazy">`;
     const tipo = (presentacion && presentacion.tipo) || 'Unidad';
     if (tipo.startsWith('Caja')) return envolver(caja(a, b));
     if (tipo.startsWith('Tableta')) return envolver(blister(a));
@@ -72,9 +70,12 @@ window.Arte = (function () {
       <rect x="82" y="60" width="6" height="58" rx="3" fill="#fff" opacity=".35"/>`;
   }
 
+  // Paquete neutro para las variedades creadas desde el panel, hasta que tengan foto
+  const generica = () => `<rect x="60" y="38" width="80" height="92" rx="9" fill="#DCE3F0"/><rect x="72" y="60" width="56" height="8" rx="4" fill="#8592A6"/><rect x="72" y="76" width="36" height="6" rx="3" fill="#AEB8C8"/>`;
+
   function variedad(v) {
-    if (FOTOS_DISPONIBLES && v.imagen) return `<img src="/DrogueriaYvariedadesLosTresHermanos/img/productos/${Seguridad.esc(v.imagen)}" alt="" loading="lazy">`;
-    return envolver((FORMAS[v.id] || FORMAS[106])());
+    if (v.foto) return `<img src="${Seguridad.esc(v.foto)}" alt="" loading="lazy">`;
+    return envolver((FORMAS[v.id] || generica)());
   }
 
   return { medicamento, variedad };

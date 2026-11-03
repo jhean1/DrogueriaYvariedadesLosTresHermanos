@@ -12,16 +12,8 @@
   const velo     = document.getElementById('barra-velo');
   if (!navbar) return;
 
-  // La barra se compacta al bajar y se oculta si se sigue bajando; reaparece al subir.
-  let ultimoY = window.scrollY;
   function alDesplazar() {
-    const y = window.scrollY;
-    navbar.classList.toggle('scrolled', y > 16);
-    if (!navLinks || !navLinks.classList.contains('abierto')) {
-      navbar.classList.toggle('oculta', y > 480 && y > ultimoY + 2);
-      if (y < ultimoY - 2) navbar.classList.remove('oculta');
-    }
-    ultimoY = y;
+    navbar.classList.toggle('scrolled', window.scrollY > 16);
   }
   window.addEventListener('scroll', alDesplazar, { passive: true });
   alDesplazar();
@@ -33,7 +25,6 @@
     velo && velo.classList.toggle('visible', abierto);
     btnMenu.setAttribute('aria-expanded', String(abierto));
     document.body.classList.toggle('sin-scroll', abierto);
-    if (abierto) navbar.classList.remove('oculta');
   }
 
   btnMenu.addEventListener('click', () => fijarMenu(!navLinks.classList.contains('abierto')));
@@ -49,7 +40,7 @@
     }
   });
   window.addEventListener('resize', () => {
-    if (window.innerWidth > 1180) fijarMenu(false);
+    if (window.innerWidth > 860) fijarMenu(false);
   });
 })();
 
@@ -75,7 +66,8 @@ window.Toast = (function() {
   function mostrar(mensaje, duracion = 3000) {
     const toast = document.createElement('div');
     toast.className = 'toast';
-    toast.textContent = mensaje;
+    toast.innerHTML = '<svg class="ic" aria-hidden="true"><use href="/DrogueriaYvariedadesLosTresHermanos/img/iconos.svg#check"/></svg><span></span>';
+    toast.lastChild.textContent = mensaje;
     container.appendChild(toast);
 
     setTimeout(() => {
@@ -116,7 +108,7 @@ window.Carrito = (function() {
       items.push({ ...producto, cantidad: 1 });
     }
     guardar(items);
-    Toast.mostrar(`✓ ${producto.nombre} agregado al carrito`);
+    Toast.mostrar(`${producto.nombre} se agregó al carrito`);
   }
 
   function remover(id) {
@@ -152,8 +144,14 @@ window.Carrito = (function() {
     const badge = document.querySelector('.badge-carrito');
     if (badge) {
       const n = conteo();
+      const cambio = badge.textContent !== String(n);
       badge.textContent = n;
       badge.style.display = n > 0 ? 'grid' : 'none';
+      if (cambio) {
+        badge.classList.remove('rebote');
+        void badge.offsetWidth;
+        badge.classList.add('rebote');
+      }
     }
     document.querySelectorAll('.fab-badge').forEach(fab => {
       fab.textContent = conteo();
@@ -334,9 +332,9 @@ window.verificarVencimientoSuscripcion = function() {
       // Mostrar aviso si hay banner
       const banner = document.getElementById('banner-suscripcion-global');
       if (banner) {
-        banner.style.background = '#c0102a';
+        banner.style.background = 'var(--burgundy)';
         (banner.querySelector('.banner-texto') || banner).textContent =
-          '⚠️ Tu suscripción venció y fue cancelada automáticamente.';
+          'Tu suscripción venció y fue cancelada automáticamente.';
         setTimeout(() => banner.remove(), 5000);
       }
       return;
@@ -349,7 +347,7 @@ window.verificarVencimientoSuscripcion = function() {
         alerta.style.display = 'flex';
         const txt = alerta.querySelector('.alerta-venc-txt');
         if (txt) txt.textContent =
-          `⚠️ Tu plan vence en ${diasRestantes} día${diasRestantes === 1 ? '' : 's'}. Renuévalo para mantener tu descuento.`;
+          `Tu plan vence en ${diasRestantes} día${diasRestantes === 1 ? '' : 's'}. Renuévalo para mantener tu descuento.`;
       }
     }
   } catch(e) {}
@@ -429,7 +427,8 @@ window.Suscripcion = (function() {
     if (document.getElementById('sus-descuento-banner')) return;
 
     const nombrePlan = Seguridad.planCanonico(sus.plan).nombre;
-    const banner  = document.createElement('div');
+    const banner  = document.createElement('aside');
+    banner.setAttribute('aria-label', 'Tu plan de suscripción');
     banner.id     = 'sus-descuento-banner';
     banner.className = 'pildora-plan no-imprimir';
     banner.innerHTML =
@@ -437,6 +436,9 @@ window.Suscripcion = (function() {
        <span>Plan ${Seguridad.esc(nombrePlan)}: <strong>${Seguridad.esc(sus.descuento)}% de descuento</strong></span>
        <a href="/DrogueriaYvariedadesLosTresHermanos/perfil#suscripcion">Ver plan</a>`;
     document.body.appendChild(banner);
+    // Es un aviso breve: no debe quedarse tapando contenido
+    setTimeout(() => banner.classList.add('saliendo'), 7000);
+    setTimeout(() => banner.remove(), 7600);
   }
 
   // Inicializar banner en DOMContentLoaded

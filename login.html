@@ -6,13 +6,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Iniciar sesión · Los Tres Hermanos</title>
   <meta name="description" content="Inicia sesión en tu cuenta de Los Tres Hermanos.">
-  <meta name="theme-color" content="#101B35">
+  <meta name="theme-color" content="#F7F8FA">
   <link rel="icon" type="image/svg+xml" href="/DrogueriaYvariedadesLosTresHermanos/img/marca/favicon.svg">
   <link rel="icon" type="image/png" sizes="32x32" href="/DrogueriaYvariedadesLosTresHermanos/img/marca/favicon-32.png">
   <link rel="apple-touch-icon" href="/DrogueriaYvariedadesLosTresHermanos/img/marca/apple-touch-icon.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;family=Sora:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&amp;family=Sora:wght@500;600&amp;display=swap" rel="stylesheet">
+  <script src="/DrogueriaYvariedadesLosTresHermanos/js/tema.js"></script>
   <link rel="stylesheet" href="/DrogueriaYvariedadesLosTresHermanos/css/design-system.css">
   <link rel="stylesheet" href="/DrogueriaYvariedadesLosTresHermanos/css/tienda.css">
   <script>
@@ -26,21 +27,23 @@
 <body class="pagina-auth">
   <main class="auth">
     <aside class="auth-marca" aria-hidden="true">
-      <div class="hero-fondo"><div class="hero-aura" data-paralaje="-.4"></div><div class="hero-rejilla"></div></div>
-      <a href="/DrogueriaYvariedadesLosTresHermanos/" class="auth-logo" tabindex="-1"><img src="/DrogueriaYvariedadesLosTresHermanos/img/marca/logo-horizontal-oscuro.svg" alt="" width="330" height="50"></a>
+      <a href="/DrogueriaYvariedadesLosTresHermanos/" class="auth-logo" tabindex="-1"><img class="logo-claro" src="/DrogueriaYvariedadesLosTresHermanos/img/marca/logo-horizontal.svg" alt="" width="290" height="44"><img class="logo-oscuro" src="/DrogueriaYvariedadesLosTresHermanos/img/marca/logo-horizontal-oscuro.svg" alt="" width="290" height="44"></a>
       <div class="auth-marca-texto">
-        <h2 class="entra" style="--i:1">Tus pedidos y beneficios, en un solo lugar.</h2>
-        <ul class="auth-puntos entra" style="--i:3">
+        <h2>Tus pedidos y beneficios, en un solo lugar.</h2>
+        <ul class="auth-puntos">
           <li><svg class="ic"><use href="/DrogueriaYvariedadesLosTresHermanos/img/iconos.svg#check"/></svg>Consulta tus pedidos anteriores</li>
           <li><svg class="ic"><use href="/DrogueriaYvariedadesLosTresHermanos/img/iconos.svg#check"/></svg>Gestiona tu suscripción</li>
           <li><svg class="ic"><use href="/DrogueriaYvariedadesLosTresHermanos/img/iconos.svg#check"/></svg>Compra sin volver a escribir tus datos</li>
         </ul>
       </div>
-      <img class="auth-simbolo" src="/DrogueriaYvariedadesLosTresHermanos/img/marca/isotipo-reducido-oscuro.svg" alt="" data-paralaje=".6">
     </aside>
 
     <section class="auth-panel">
-      <a href="/DrogueriaYvariedadesLosTresHermanos/" class="auth-logo-movil"><img src="/DrogueriaYvariedadesLosTresHermanos/img/marca/logo-horizontal.svg" alt="Los Tres Hermanos, ir al inicio" width="290" height="44"></a>
+      <div class="auth-tema"><button class="btn-icono btn-tema" type="button" data-tema-boton aria-label="Cambiar el tema de color">
+  <svg class="ic tema-luna" aria-hidden="true"><use href="/DrogueriaYvariedadesLosTresHermanos/img/iconos.svg#luna"/></svg>
+  <svg class="ic tema-sol" aria-hidden="true"><use href="/DrogueriaYvariedadesLosTresHermanos/img/iconos.svg#sol"/></svg>
+</button></div>
+      <a href="/DrogueriaYvariedadesLosTresHermanos/" class="auth-logo-movil" aria-label="Los Tres Hermanos, ir al inicio"><img class="logo-claro" src="/DrogueriaYvariedadesLosTresHermanos/img/marca/logo-horizontal.svg" alt="" width="290" height="44"><img class="logo-oscuro" src="/DrogueriaYvariedadesLosTresHermanos/img/marca/logo-horizontal-oscuro.svg" alt="" width="290" height="44"></a>
       <div class="auth-formulario entra" style="--i:0">
         <nav class="migas" aria-label="Ruta"><a href="/DrogueriaYvariedadesLosTresHermanos/">Inicio</a><svg class="ic" aria-hidden="true"><use href="/DrogueriaYvariedadesLosTresHermanos/img/iconos.svg#chevron"/></svg><span aria-current="page">Iniciar sesión</span></nav>
         <h1>Bienvenido de nuevo</h1>
@@ -147,7 +150,7 @@
           id: cliente.id, nombre: cliente.nombre, correo: cliente.correo,
           telefono: cliente.telefono, direccion: cliente.direccion, rol: 'cliente'
         }));
-        toast(`✓ Bienvenido, ${cliente.nombre.split(' ')[0]}!`);
+        toast(`Bienvenido, ${cliente.nombre.split(' ')[0]}!`);
         // Redirigir a la página de retorno si viene de suscripciones
         const params  = new URLSearchParams(window.location.search);
         const destino = Seguridad.rutaRetornoSegura(params.get('retorno'), '/DrogueriaYvariedadesLosTresHermanos/');
@@ -161,7 +164,7 @@
         ['f-correo','f-pass'].forEach(id => document.getElementById(id).classList.add('error'));
         errTxt.textContent = 'Correo o contraseña incorrectos.';
         errEl.classList.add('visible');
-        toast('⚠️ Credenciales incorrectas', false);
+        toast('Credenciales incorrectas', false);
       }
     }
 
