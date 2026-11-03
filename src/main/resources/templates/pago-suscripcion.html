@@ -89,10 +89,10 @@
         <div class="completitud-wrap">
           <h3>Estado de verificación</h3>
           <div class="completitud-items" id="completitud-items">
-            <div class="completitud-item" id="ci-referencia"><span class="comp-icono">○</span> Referencia de transacción</div>
-            <div class="completitud-item" id="ci-fecha"><span class="comp-icono">○</span> Fecha del pago</div>
-            <div class="completitud-item" id="ci-titular"><span class="comp-icono">○</span> Nombre del titular</div>
-            <div class="completitud-item" id="ci-verificacion"><span class="comp-icono">○</span> Verificación adicional</div>
+            <div class="completitud-item" id="ci-referencia"><span class="comp-icono"></span> Referencia de transacción</div>
+            <div class="completitud-item" id="ci-fecha"><span class="comp-icono"></span> Fecha del pago</div>
+            <div class="completitud-item" id="ci-titular"><span class="comp-icono"></span> Nombre del titular</div>
+            <div class="completitud-item" id="ci-verificacion"><span class="comp-icono"></span> Verificación adicional</div>
           </div>
         </div>
 
@@ -315,7 +315,7 @@
     if (!el) return;
     el.classList.toggle('ok', ok);
     el.classList.toggle('error', !ok);
-    el.querySelector('.comp-icono').textContent = ok ? '✓' : '○';
+    el.querySelector('.comp-icono').innerHTML = ok ? Experiencia.icono('check') : '';
   }
 
   // ── Enviar solicitud ──────────────────────────────────

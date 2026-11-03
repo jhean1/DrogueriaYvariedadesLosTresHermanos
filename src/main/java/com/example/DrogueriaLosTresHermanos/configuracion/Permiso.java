@@ -18,10 +18,10 @@ public enum Permiso {
     SUSCRIPCIONES_APROBAR("subscriptions.approve", "Suscripciones", "Aprobar o rechazar pagos", true),
     SUSCRIPCIONES_ACTIVAR("subscriptions.activate", "Suscripciones", "Activar planes pagados en tienda", true),
 
-    PRODUCTOS_VER("products.view", "Productos", "Consultar productos", false),
-    PRODUCTOS_CREAR("products.create", "Productos", "Crear productos", false),
-    PRODUCTOS_EDITAR("products.update", "Productos", "Modificar productos", false),
-    PRODUCTOS_ELIMINAR("products.delete", "Productos", "Eliminar productos", false),
+    PRODUCTOS_VER("products.view", "Productos", "Consultar productos", true),
+    PRODUCTOS_CREAR("products.create", "Productos", "Crear productos", true),
+    PRODUCTOS_EDITAR("products.update", "Productos", "Modificar productos", true),
+    PRODUCTOS_ELIMINAR("products.delete", "Productos", "Retirar productos de la tienda", true),
 
     INVENTARIO_VER("inventory.view", "Inventario", "Consultar existencias", false),
     INVENTARIO_AJUSTAR("inventory.adjust", "Inventario", "Ajustar existencias", false),
@@ -30,7 +30,7 @@ public enum Permiso {
     LOTES_VER("batches.view", "Inventario", "Consultar lotes y vencimientos", false),
     LOTES_GESTIONAR("batches.manage", "Inventario", "Gestionar lotes y registros técnicos", false),
 
-    VENTAS_VER("sales.view", "Ventas", "Consultar ventas", false),
+    VENTAS_VER("sales.view", "Ventas", "Consultar pedidos y ventas", true),
     VENTAS_CREAR("sales.create", "Ventas", "Registrar ventas", false),
     VENTAS_ANULAR("sales.cancel", "Ventas", "Anular ventas", false),
 

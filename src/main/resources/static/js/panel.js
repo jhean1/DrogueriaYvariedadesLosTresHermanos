@@ -83,6 +83,63 @@ window.Panel = (function () {
     });
   }
 
+  // Paginación de cualquier tabla ya pintada. filtrar() recibe una condición por fila.
+  function paginar(tablaOId, tamano = 10) {
+    const tabla = typeof tablaOId === 'string' ? $(tablaOId) : tablaOId;
+    if (!tabla) return null;
+    const filas = [...tabla.tBodies[0].rows];
+    const contenedor = tabla.closest('.tarjeta') || tabla.parentElement;
+    let pie = (tabla.id && contenedor.querySelector(`[data-paginador="${tabla.id}"]`)) || tabla.closest('[id$="-wrap"]')?.querySelector('.tabla-pie');
+    if (!pie) {
+      pie = document.createElement('div');
+      pie.className = 'tabla-pie';
+      tabla.closest('.tabla-marco').insertAdjacentElement('afterend', pie);
+    }
+    let visibles = filas, pagina = 0;
+
+    function pintar() {
+      const total = Math.max(1, Math.ceil(visibles.length / tamano));
+      pagina = Math.min(pagina, total - 1);
+      filas.forEach(f => { f.hidden = true; });
+      const desde = pagina * tamano;
+      visibles.slice(desde, desde + tamano).forEach(f => { f.hidden = false; });
+      tabla.closest('.tabla-marco').hidden = !visibles.length;
+      pie.hidden = visibles.length <= tamano;
+      pie.innerHTML = `<span class="num">${desde + 1}–${Math.min(desde + tamano, visibles.length)} de ${visibles.length}</span>
+        <div class="paginas">
+          <button type="button" class="btn btn--secundario btn--sm" data-p="-1" ${pagina === 0 ? 'disabled' : ''}>Anterior</button>
+          <button type="button" class="btn btn--secundario btn--sm" data-p="1" ${pagina >= total - 1 ? 'disabled' : ''}>Siguiente</button>
+        </div>`;
+    }
+    pie.onclick = (e) => {
+      const b = e.target.closest('[data-p]');
+      if (!b) return;
+      pagina += +b.dataset.p;
+      pintar();
+    };
+    pintar();
+    return {
+      filtrar(condicion) { visibles = filas.filter(condicion); pagina = 0; pintar(); return visibles.length; }
+    };
+  }
+
+  // Mensaje breve de resultado de una acción
+  function aviso(texto, error) {
+    let caja = document.querySelector('.toast-wrap');
+    if (!caja) {
+      caja = document.createElement('div');
+      caja.className = 'toast-wrap';
+      caja.setAttribute('role', 'status');
+      document.body.appendChild(caja);
+    }
+    const t = document.createElement('div');
+    t.className = 'toast' + (error ? ' err' : '');
+    t.innerHTML = Experiencia.icono(error ? 'alerta' : 'check') + '<span></span>';
+    t.lastChild.textContent = texto;
+    caja.appendChild(t);
+    setTimeout(() => { t.classList.add('salir'); t.addEventListener('animationend', () => t.remove()); }, 3200);
+  }
+
   document.addEventListener('DOMContentLoaded', () => {
     menuLateral();
     menuFlotante('btn-avisos', 'menu-avisos');
@@ -91,5 +148,5 @@ window.Panel = (function () {
     busqueda();
   });
 
-  return { pintarAvisos, leer };
+  return { pintarAvisos, leer, paginar, aviso };
 })();

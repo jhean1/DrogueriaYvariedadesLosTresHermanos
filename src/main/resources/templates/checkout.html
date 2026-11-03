@@ -126,7 +126,7 @@
         descRow.style.display = 'flex';
         descRow.style.color   = 'var(--emerald-tinta)';
         document.getElementById('res-descuento').textContent =
-          `✓ ${sus.descuento}% Plan ${sus.plan.charAt(0).toUpperCase()+sus.plan.slice(1)} incluido`;
+          `${sus.descuento}% Plan ${sus.plan.charAt(0).toUpperCase()+sus.plan.slice(1)} incluido`;
       } else if (descRow) {
         descRow.style.display = 'none';
       }
@@ -199,7 +199,7 @@
       // Abrir WhatsApp y redirigir al recibo
       window.open(`https://wa.me/573225065554?text=${encodeURIComponent(msgWA)}`, '_blank', 'noopener');
 
-      toast('✓ Pedido confirmado. Generando factura...');
+      toast('Pedido confirmado. Generando factura...');
       setTimeout(() => { window.location.href = '/recibo'; }, 1200);
     }
 

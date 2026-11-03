@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/admin :: cabeza('Productos')}"></head>
+<body class="panel" th:attr="data-permisos=${perfil.permisosComoTexto()}">
+  <div th:replace="~{fragments/admin :: lateral}"></div>
+  <th:block th:replace="~{fragments/admin :: velo}"></th:block>
+  <div class="panel-principal">
+    <header th:replace="~{fragments/admin :: superior('Productos')}"></header>
+    <main class="panel-contenido" id="contenido">
+      <div class="pagina-cabeza">
+        <div>
+          <h1>Productos</h1>
+          <p>Lo que se publica aquí es lo que el cliente ve en la tienda.</p>
+        </div>
+        <a class="btn btn--primario" th:href="@{/admin/productos/nuevo}" th:if="${perfil.puede('products.create')}"><svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#mas"/></svg> Nuevo producto</a>
+      </div>
+
+      <div class="alerta alerta--exito" role="status" th:if="${mensaje}"><svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#check"/></svg><span th:text="${mensaje}">Listo</span></div>
+      <div class="alerta alerta--peligro" role="alert" th:if="${error}"><svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#alerta"/></svg><span th:text="${error}">Error</span></div>
+
+      <article class="tarjeta">
+        <div class="tarjeta-cabeza">
+          <h2>Catálogo <span class="insignia" id="total-productos" th:text="${productos.size()}">0</span></h2>
+          <div class="filtros-tabla">
+            <div class="filtro-tabla"><svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#buscar"/></svg><label class="solo-lector" for="filtro-producto">Buscar en el catálogo</label><input type="search" id="filtro-producto" placeholder="Nombre o marca"></div>
+            <label class="solo-lector" for="filtro-tipo">Tipo</label>
+            <select id="filtro-tipo"><option value="">Todos los tipos</option><option value="medicamento">Medicamentos</option><option value="variedad">Variedades</option></select>
+            <label class="solo-lector" for="filtro-estado">Estado</label>
+            <select id="filtro-estado"><option value="">Todos los estados</option><option value="publicado">Publicados</option><option value="retirado">Retirados</option></select>
+          </div>
+        </div>
+        <div class="tabla-marco">
+          <table class="tabla tabla--fichas" id="tabla-productos">
+            <thead><tr><th scope="col">Producto</th><th scope="col">Tipo</th><th scope="col">Categoría</th><th scope="col">Precio</th><th scope="col">Estado</th><th scope="col">Acción</th></tr></thead>
+            <tbody>
+              <tr th:each="p : ${productos}" th:classappend="${!p.activo()} ? 'fila-retirada'"
+                  th:attr="data-tipo=${p.tipo()},data-estado=${p.activo() ? 'publicado' : 'retirado'},data-busqueda=${p.nombre() + ' ' + #strings.listJoin(p.presentaciones().![marca()], ' ')}">
+                <td data-etiqueta="Producto">
+                  <div class="producto-celda">
+                    <span class="producto-mini">
+                      <img th:if="${!#strings.isEmpty(p.foto())}" th:src="@{'/productos/imagen/' + ${p.foto()}}" alt="" loading="lazy">
+                      <svg th:if="${#strings.isEmpty(p.foto())}" class="ic" aria-hidden="true"><use th:href="${p.esMedicamento()} ? '/img/iconos.svg#capsula' : '/img/iconos.svg#bolsa'"/></svg>
+                    </span>
+                    <div><strong th:text="${p.nombre()}">Nombre</strong><small th:if="${p.esMedicamento()}" th:text="${p.presentaciones().size()} + ' presentaciones'">0</small><small th:if="${!p.esMedicamento() and !#strings.isEmpty(p.contenido())}" th:text="${p.contenido()}">Contenido</small></div>
+                  </div>
+                </td>
+                <td data-etiqueta="Tipo" th:text="${p.esMedicamento()} ? 'Medicamento' : 'Variedad'">Tipo</td>
+                <td data-etiqueta="Categoría" th:text="${catalogo.nombreCategoria(p.categoria())}">Categoría</td>
+                <td data-etiqueta="Precio" class="num"><span th:if="${p.esMedicamento()}">Desde </span><span th:text="${'$' + #numbers.formatInteger(p.precioDesde(), 1, 'POINT')}">$0</span></td>
+                <td data-etiqueta="Estado">
+                  <span class="insignia insignia--exito" th:if="${p.activo()}"><span class="punto"></span>Publicado</span>
+                  <span class="insignia" th:unless="${p.activo()}">Retirado</span>
+                  <span class="insignia insignia--peligro" th:if="${p.disponibilidad() == 'agotado'}">Agotado</span>
+                </td>
+                <td data-etiqueta="Acción">
+                  <div class="tabla-acciones">
+                    <a class="btn btn--secundario btn--sm" th:if="${perfil.puede('products.update')}" th:href="@{'/admin/productos/' + ${p.id()}}">Editar</a>
+                    <form method="post" th:if="${perfil.puede('products.delete')}" th:action="@{'/admin/productos/' + ${p.id()} + '/visibilidad'}"
+                          th:attr="data-confirmar=${p.activo() ? 'Dejará de verse en la tienda. Sus datos se conservan y puedes volver a publicarlo cuando quieras.' : 'Volverá a verse en la tienda.'},data-confirmar-titulo=${(p.activo() ? 'Retirar ' : 'Publicar ') + p.nombre()},data-confirmar-accion=${p.activo() ? 'Retirar de la tienda' : 'Publicar'}">
+                      <input type="hidden" name="activo" th:value="${!p.activo()}">
+                      <button class="btn btn--fantasma btn--sm" type="submit" th:text="${p.activo()} ? 'Retirar' : 'Publicar'">Retirar</button>
+                    </form>
+                    <span th:unless="${perfil.puede('products.update') or perfil.puede('products.delete')}" class="insignia">Solo consulta</span>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="vacio" id="productos-vacio" hidden><div class="vacio-icono"><svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#buscar"/></svg></div><h3>Ningún producto coincide</h3><p>Prueba con otro nombre o cambia los filtros.</p></div>
+        <div class="tabla-pie" data-paginador="tabla-productos"></div>
+      </article>
+    </main>
+  </div>
+  <script th:src="@{/js/seguridad.js}"></script>
+  <script th:src="@{/js/experiencia.js}"></script>
+  <script th:src="@{/js/panel.js}"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const tabla = Panel.paginar('tabla-productos', 12);
+      const q = document.getElementById('filtro-producto');
+      const tipo = document.getElementById('filtro-tipo');
+      const estado = document.getElementById('filtro-estado');
+      const sinTildes = (t) => t.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
+      function filtrar() {
+        const texto = sinTildes(q.value.trim());
+        const n = tabla.filtrar(f =>
+          sinTildes(f.dataset.busqueda).includes(texto) &&
+          (!tipo.value || f.dataset.tipo === tipo.value) &&
+          (!estado.value || f.dataset.estado === estado.value));
+        document.getElementById('productos-vacio').hidden = n > 0;
+        document.getElementById('total-productos').textContent = n;
+      }
+      [q, tipo, estado].forEach(c => c.addEventListener('input', filtrar));
+    });
+  </script>
+</body>
+</html>

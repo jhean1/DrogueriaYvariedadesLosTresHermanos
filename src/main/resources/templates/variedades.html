@@ -5,23 +5,25 @@
   <th:block th:replace="~{fragments/tienda :: barra}"></th:block>
 
   <main id="contenido">
-    <section class="variedades-cabecera">
-      <div class="contenedor variedades-cabecera-interior">
-        <div>
-          <nav class="migas" aria-label="Ruta"><a th:href="@{/}">Inicio</a><svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#chevron"/></svg><span aria-current="page">Variedades</span></nav>
-          <h1 class="titulo-pagina">Lo cotidiano,<br><em>con otro estilo.</em></h1>
-          <p class="cabecera-texto">Perfumes, útiles escolares, cuidado personal y más.</p>
-        </div>
-        <div class="variedades-collage" id="variedades-collage" aria-hidden="true"></div>
+    <section class="catalogo-cabecera">
+      <div class="contenedor">
+        <nav class="migas" aria-label="Ruta"><a th:href="@{/}">Inicio</a><svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#chevron"/></svg><span aria-current="page">Variedades</span></nav>
+        <h1 class="titulo-pagina">Variedades</h1>
+        <p class="cabecera-texto">Tu bienestar también está en los pequeños detalles.</p>
+        <div class="filtros-wrap" id="filtros-variedades" role="group" aria-label="Filtrar por categoría"></div>
       </div>
     </section>
 
     <section class="contenedor catalogo">
-      <div class="filtros-wrap" role="group" aria-label="Filtrar por categoría">
-        <button class="chip-filtro activo" data-cat="all" type="button">Todos</button>
-        <button class="chip-filtro" data-cat="perfumes" type="button">Perfumes</button>
-        <button class="chip-filtro" data-cat="utiles" type="button">Útiles escolares</button>
-        <button class="chip-filtro" data-cat="cuidado" type="button">Cuidado personal</button>
+      <div class="resultados-info">
+        <span id="contador-resultados" role="status"></span>
+        <div class="resultados-controles">
+          <div class="filtro-lista">
+            <svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#buscar"/></svg>
+            <label class="solo-lector" for="filtro-variedades-texto">Filtrar esta lista</label>
+            <input type="search" id="filtro-variedades-texto" placeholder="Filtrar esta lista" autocomplete="off">
+          </div>
+        </div>
       </div>
       <div class="variedades-grid" id="variedades-grid"></div>
     </section>
@@ -35,64 +37,41 @@
   <th:block th:replace="~{fragments/tienda :: pie}"></th:block>
   <th:block th:replace="~{fragments/tienda :: carrito}"></th:block>
   <th:block th:replace="~{fragments/tienda :: scripts}"></th:block>
-  <script th:src="@{/js/arte.js}"></script>
-  <script th:src="@{/js/variedades-data.js}"></script>
   <script>
-    const CAT_LABELS = { perfumes:'Perfume', utiles:'Útil Escolar', cuidado:'Cuidado Personal' };
-    // Helper: precio con descuento de suscripción
-    function renderVarPrecio(precio) {
-      const desc = window.Suscripcion ? window.Suscripcion.descuento() : 0;
-      if (!desc) return `<span class="var-precio">${formatPrecio(precio)}</span>`;
-      const precioDesc = Math.round(precio * (1 - desc / 100));
-      return `<span class="var-precio-original">${formatPrecio(precio)}</span>
-              <span class="var-precio con-descuento">${formatPrecio(precioDesc)}</span>`;
-    }
-
-    let filtroActivo = 'all';
-
-    function render() {
-      const lista = filtroActivo === 'all' ? VARIEDADES : VARIEDADES.filter(v => v.cat === filtroActivo);
-      const grid = document.getElementById('variedades-grid');
-      grid.innerHTML = lista.map((v,i) => `
-        <article class="var-card var-card--${v.cat}" style="--i:${Math.min(i, 9)}">
-          <div class="var-arte">${Arte.variedad(v)}</div>
-          <div class="var-body">
-            <span class="var-cat">${CAT_LABELS[v.cat]||v.cat}</span>
-            <h2 class="var-nombre">${v.nombre}</h2>
-          </div>
-          <div class="var-footer">
-            <div class="var-precios">${renderVarPrecio(v.precio)}</div>
-            <button type="button" class="btn-agregar-var" data-id="${v.id}" aria-label="Agregar ${v.nombre} al carrito"><svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#mas"/></svg></button>
-          </div>
-        </article>
-      `).join('');
-
-      grid.querySelectorAll('.btn-agregar-var').forEach(btn => {
-        btn.addEventListener('click', () => {
-          const v = VARIEDADES.find(p => p.id === +btn.dataset.id);
-          if (v) {
-            const precioFinal = window.Suscripcion ? window.Suscripcion.aplicar(v.precio) : v.precio;
-            Carrito.agregar({ id: v.id, nombre: v.nombre, precio: precioFinal, imagen: v.imagen });
-          }
-          renderDrawer();
-        });
-      });
-    }
-
     document.addEventListener('DOMContentLoaded', () => {
+      const esc = Seguridad.esc;
+      const parametros = new URLSearchParams(location.search);
+      const cats = CATEGORIAS.filter(c => c.tipo === 'variedad');
+      let filtroActivo = cats.some(c => c.id === parametros.get('cat')) ? parametros.get('cat') : 'all';
+
+      const indice = Buscador.indice().filter(e => e.tipo === 'variedad');
+      let busqueda = parametros.get('q') || '';
+      const entrada = document.getElementById('filtro-variedades-texto');
+      entrada.value = busqueda;
+      entrada.addEventListener('input', (e) => { busqueda = e.target.value.trim(); render(); });
+      const filtros = document.getElementById('filtros-variedades');
+      filtros.innerHTML = [{ id: 'all', nombre: 'Todos' }, ...cats].map(c =>
+        `<button class="chip-filtro ${c.id === filtroActivo ? 'activo' : ''}" data-cat="${esc(c.id)}" type="button" aria-pressed="${c.id === filtroActivo}">${esc(c.nombre)}</button>`).join('');
+
+      function render() {
+        const base = busqueda ? Buscador.buscar(busqueda, indice).map(e => e.p) : VARIEDADES;
+        const lista = filtroActivo === 'all' ? base : base.filter(v => v.cat === filtroActivo);
+        document.getElementById('contador-resultados').innerHTML = `<strong>${lista.length}</strong> producto${lista.length !== 1 ? 's' : ''}${busqueda ? ` para "${esc(busqueda)}"` : ''}`;
+        document.getElementById('variedades-grid').innerHTML = lista.length
+          ? lista.map(Ficha.tarjetaVariedad).join('')
+          : `<div class="vacio vacio-busqueda"><div class="vacio-icono">${Experiencia.icono('bolsa')}</div><h3>No encontramos productos aquí</h3><p>Prueba con otra categoría o escríbenos por WhatsApp.</p></div>`;
+      }
+
       render();
-      initAvatar({ perfilUrl: '/perfil', logoutUrl: '/' });
-      document.getElementById('variedades-collage').innerHTML =
-        [VARIEDADES[0], VARIEDADES[6], VARIEDADES[8]].map(v => `<div>${Arte.variedad(v)}</div>`).join('');
-      document.querySelectorAll('.chip-filtro').forEach(chip => {
-        chip.addEventListener('click', () => {
-          document.querySelectorAll('.chip-filtro').forEach(c => c.classList.remove('activo'));
-          chip.classList.add('activo');
-          filtroActivo = chip.dataset.cat;
-          render();
-        });
+      filtros.addEventListener('click', (e) => {
+        const chip = e.target.closest('.chip-filtro');
+        if (!chip) return;
+        filtros.querySelectorAll('.chip-filtro').forEach(c => { c.classList.toggle('activo', c === chip); c.setAttribute('aria-pressed', c === chip); });
+        filtroActivo = chip.dataset.cat;
+        render();
       });
-  });
-</script>
+      initAvatar({ perfilUrl: '/perfil', logoutUrl: '/' });
+    });
+  </script>
 </body>
 </html>

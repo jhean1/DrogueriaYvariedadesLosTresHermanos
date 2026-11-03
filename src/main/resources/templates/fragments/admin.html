@@ -6,12 +6,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title th:text="${titulo} + ' · Panel 3H'">Panel 3H</title>
   <meta name="robots" content="noindex">
-  <meta name="theme-color" content="#101B35">
+  <meta name="theme-color" content="#F7F8FA">
   <link rel="icon" type="image/svg+xml" th:href="@{/img/marca/favicon.svg}">
   <link rel="icon" type="image/png" sizes="32x32" th:href="@{/img/marca/favicon-32.png}">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;family=Sora:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&amp;family=Sora:wght@500;600&amp;display=swap" rel="stylesheet">
+  <script th:src="@{/js/tema.js}"></script>
   <link rel="stylesheet" th:href="@{/css/design-system.css}">
   <link rel="stylesheet" th:href="@{/css/admin.css}">
   <script>document.documentElement.classList.add('js');</script>
@@ -22,7 +23,7 @@
 <!-- Barra lateral: el servidor solo incluye lo que el rol puede abrir -->
 <aside th:fragment="lateral" class="lateral" id="lateral" aria-label="Navegación del panel">
   <div class="lateral-marca">
-    <a th:href="@{/admin}" aria-label="Ir al resumen"><img th:src="@{/img/marca/logo-horizontal-oscuro.svg}" alt="" width="224" height="34"></a>
+    <a th:href="@{/admin}" aria-label="Ir al resumen"><img class="logo-claro" th:src="@{/img/marca/logo-horizontal.svg}" alt="" width="224" height="34"><img class="logo-oscuro" th:src="@{/img/marca/logo-horizontal-oscuro.svg}" alt="" width="224" height="34"></a>
     <button class="btn-icono lateral-cerrar" id="btn-cerrar-lateral" type="button" aria-label="Cerrar menú"><svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#cerrar"/></svg></button>
   </div>
 
@@ -33,8 +34,11 @@
       </a>
     </div>
 
-    <div class="lateral-grupo" th:if="${perfil.operaPagos() or perfil.operaClientes()}">
+    <div class="lateral-grupo" th:if="${perfil.operaPagos() or perfil.operaClientes() or perfil.vePedidos()}">
       <p class="lateral-titulo">Operación</p>
+      <a class="sidebar-item" data-seccion="pedidos" th:href="@{/admin#pedidos}" th:if="${perfil.vePedidos()}">
+        <svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#recibo"/></svg><span>Pedidos</span>
+      </a>
       <a class="sidebar-item" data-seccion="solicitudes" th:href="@{/admin#solicitudes}" th:if="${perfil.operaPagos()}">
         <svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#tarjeta"/></svg><span>Solicitudes de pago</span>
         <span class="sidebar-badge" id="badge-pendientes">0</span>
@@ -47,6 +51,16 @@
       </a>
       <a class="sidebar-item" data-seccion="activar-plan" th:href="@{/admin#activar-plan}" th:if="${perfil.puede('subscriptions.activate')}">
         <svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#estrella"/></svg><span>Activar plan en tienda</span>
+      </a>
+    </div>
+
+    <div class="lateral-grupo" th:if="${perfil.veProductos()}">
+      <p class="lateral-titulo">Catálogo</p>
+      <a class="sidebar-item" th:href="@{/admin/productos}" th:classappend="${seccionActiva == 'productos'} ? 'activo'" th:attrappend="aria-current=${seccionActiva == 'productos'} ? 'page'">
+        <svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#capsula"/></svg><span>Productos</span>
+      </a>
+      <a class="sidebar-item" th:href="@{/admin/categorias}" th:if="${perfil.puede('products.update')}" th:classappend="${seccionActiva == 'categorias'} ? 'activo'" th:attrappend="aria-current=${seccionActiva == 'categorias'} ? 'page'">
+        <svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#etiqueta"/></svg><span>Categorías</span>
       </a>
     </div>
 
@@ -85,6 +99,11 @@
       <input type="search" id="busqueda-global" placeholder="Buscar clientes y solicitudes" autocomplete="off">
       <div class="menu-flotante resultados-busqueda" id="resultados-busqueda" hidden></div>
     </div>
+
+    <button class="btn-icono btn-tema" type="button" data-tema-boton aria-label="Cambiar el tema de color">
+      <svg class="ic tema-luna" aria-hidden="true"><use href="/img/iconos.svg#luna"/></svg>
+      <svg class="ic tema-sol" aria-hidden="true"><use href="/img/iconos.svg#sol"/></svg>
+    </button>
 
     <div class="menu-contenedor" th:if="${perfil.operaPagos()}">
       <button class="btn-icono boton-avisos" id="btn-avisos" type="button" aria-label="Avisos" aria-expanded="false" aria-controls="menu-avisos">

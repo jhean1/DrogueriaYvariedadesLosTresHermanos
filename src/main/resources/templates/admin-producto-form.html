@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/admin :: cabeza(${productoId == null ? 'Nuevo producto' : 'Editar producto'})}"></head>
+<body class="panel" th:attr="data-permisos=${perfil.permisosComoTexto()}">
+  <div th:replace="~{fragments/admin :: lateral}"></div>
+  <th:block th:replace="~{fragments/admin :: velo}"></th:block>
+  <div class="panel-principal">
+    <header th:replace="~{fragments/admin :: superior(${productoId == null ? 'Nuevo producto' : 'Editar producto'})}"></header>
+    <main class="panel-contenido" id="contenido">
+      <div class="pagina-cabeza">
+        <div>
+          <h1 th:text="${productoId == null ? 'Nuevo producto' : f.nombre()}">Nuevo producto</h1>
+          <p>Registra solo datos que puedas verificar. Lo que dejes vacío no se muestra al cliente.</p>
+        </div>
+      </div>
+
+      <div class="alerta alerta--peligro" role="alert" th:if="${!errores.isEmpty()}">
+        <svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#alerta"/></svg>
+        <span>Revisa los campos marcados. Aún no se guardó nada.</span>
+      </div>
+
+      <form class="form-producto" method="post" enctype="multipart/form-data" novalidate
+            th:action="${productoId == null} ? @{/admin/productos/nuevo} : @{'/admin/productos/' + ${productoId}}">
+        <div class="form-principal">
+          <article class="tarjeta">
+            <div class="tarjeta-cabeza"><h2>Qué vas a registrar</h2></div>
+            <div class="tarjeta-cuerpo">
+              <div class="selector-tipo" role="radiogroup" aria-label="Tipo de producto">
+                <label class="opcion-tipo">
+                  <input type="radio" name="tipo" value="medicamento" th:checked="${f.tipo() == 'medicamento'}">
+                  <span><strong>Medicamento</strong><small>Tiene presentaciones, concentraciones y marcas</small></span>
+                </label>
+                <label class="opcion-tipo">
+                  <input type="radio" name="tipo" value="variedad" th:checked="${f.tipo() == 'variedad'}">
+                  <span><strong>Variedad</strong><small>Perfumes, útiles y cuidado personal, con un solo precio</small></span>
+                </label>
+              </div>
+              <p class="campo-error" th:if="${errores.containsKey('tipo')}" th:text="${errores.get('tipo')}"></p>
+            </div>
+          </article>
+
+          <article class="tarjeta">
+            <div class="tarjeta-cabeza"><h2>Información general</h2></div>
+            <div class="tarjeta-cuerpo rejilla-form">
+              <div class="campo todo" th:classappend="${errores.containsKey('nombre')} ? 'campo--error'">
+                <label for="nombre">Nombre comercial</label>
+                <input id="nombre" name="nombre" type="text" maxlength="80" required th:value="${f.nombre()}" aria-describedby="ayuda-nombre">
+                <span class="campo-ayuda" id="ayuda-nombre">Como lo reconoce el cliente. También es lo que encuentra el buscador.</span>
+                <span class="campo-error" th:if="${errores.containsKey('nombre')}" th:text="${errores.get('nombre')}"></span>
+              </div>
+              <div class="campo" th:classappend="${errores.containsKey('categoria')} ? 'campo--error'">
+                <label for="categoria">Categoría</label>
+                <select id="categoria" name="categoria" required>
+                  <option value="">Elige una categoría</option>
+                  <optgroup label="Medicamentos" data-para="medicamento"><option th:each="c : ${catMedicamentos}" th:value="${c.id()}" th:text="${c.nombre()}" th:selected="${c.id() == f.categoria()}"></option></optgroup>
+                  <optgroup label="Variedades" data-para="variedad"><option th:each="c : ${catVariedades}" th:value="${c.id()}" th:text="${c.nombre()}" th:selected="${c.id() == f.categoria()}"></option></optgroup>
+                </select>
+                <span class="campo-error" th:if="${errores.containsKey('categoria')}" th:text="${errores.get('categoria')}"></span>
+              </div>
+              <div class="campo solo-medicamento">
+                <label for="principioActivo">Principio activo <span class="opcional">(opcional)</span></label>
+                <input id="principioActivo" name="principioActivo" type="text" maxlength="80" th:value="${f.principioActivo()}">
+                <span class="campo-ayuda">Cópialo del empaque o de la ficha del fabricante.</span>
+              </div>
+              <div class="campo solo-variedad">
+                <label for="contenido">Contenido <span class="opcional">(opcional)</span></label>
+                <input id="contenido" name="contenido" type="text" maxlength="60" placeholder="Ej: 100 ml" th:value="${f.contenido()}">
+              </div>
+              <div class="campo todo" th:classappend="${errores.containsKey('descripcion')} ? 'campo--error'">
+                <label for="descripcion">Descripción breve <span class="opcional">(opcional)</span></label>
+                <textarea id="descripcion" name="descripcion" maxlength="300" rows="3" th:text="${f.descripcion()}" aria-describedby="ayuda-desc"></textarea>
+                <span class="campo-ayuda" id="ayuda-desc">Máximo 300 caracteres. No agregues indicaciones ni propiedades que no estén confirmadas por el fabricante o el regente.</span>
+                <span class="campo-error" th:if="${errores.containsKey('descripcion')}" th:text="${errores.get('descripcion')}"></span>
+              </div>
+            </div>
+          </article>
+
+          <article class="tarjeta solo-medicamento" th:classappend="${errores.containsKey('presentaciones')} ? 'campo--error'">
+            <div class="tarjeta-cabeza"><h2>Presentaciones y precios</h2><button class="btn btn--secundario btn--sm" type="button" id="agregar-presentacion"><svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#mas"/></svg> Agregar presentación</button></div>
+            <div class="tarjeta-cuerpo">
+              <p class="campo-error" role="alert" th:if="${errores.containsKey('presentaciones')}" th:text="${errores.get('presentaciones')}" style="margin-bottom:.75rem"></p>
+              <div class="filas-presentacion" id="filas-presentacion">
+                <div class="fila-presentacion" th:each="q, i : ${f.presentaciones()}">
+                  <input type="hidden" name="presId" th:value="${q.id()}">
+                  <div class="campo"><label th:for="'p-tipo-' + ${i.index}">Presentación</label><input th:id="'p-tipo-' + ${i.index}" name="presTipo" type="text" placeholder="Caja x10" th:value="${q.tipo()}"></div>
+                  <div class="campo"><label th:for="'p-conc-' + ${i.index}">Concentración</label><input th:id="'p-conc-' + ${i.index}" name="presConc" type="text" placeholder="500mg" th:value="${q.conc()}"></div>
+                  <div class="campo"><label th:for="'p-marca-' + ${i.index}">Marca</label><input th:id="'p-marca-' + ${i.index}" name="presMarca" type="text" placeholder="Genérico" th:value="${q.marca()}"></div>
+                  <div class="campo"><label th:for="'p-precio-' + ${i.index}">Precio</label><input th:id="'p-precio-' + ${i.index}" name="presPrecio" type="text" inputmode="numeric" placeholder="$" th:value="${q.precio() > 0 ? q.precio() : ''}"></div>
+                  <button class="btn-icono quitar-presentacion" type="button" aria-label="Quitar esta presentación"><svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#papelera"/></svg></button>
+                </div>
+              </div>
+              <p class="campo-ayuda" style="margin-top:.75rem">Cada combinación de presentación, concentración y marca tiene su propio precio. Escribe el precio en pesos, sin centavos.</p>
+            </div>
+          </article>
+
+          <article class="tarjeta solo-variedad">
+            <div class="tarjeta-cabeza"><h2>Precio</h2></div>
+            <div class="tarjeta-cuerpo">
+              <div class="campo" style="max-width:240px" th:classappend="${errores.containsKey('precio')} ? 'campo--error'">
+                <label for="precio">Precio en pesos</label>
+                <input id="precio" name="precio" type="text" inputmode="numeric" placeholder="$" th:value="${f.precio() > 0 ? f.precio() : ''}">
+                <span class="campo-error" th:if="${errores.containsKey('precio')}" th:text="${errores.get('precio')}"></span>
+              </div>
+            </div>
+          </article>
+        </div>
+
+        <div class="form-lateral">
+          <article class="tarjeta">
+            <div class="tarjeta-cabeza"><h2>Foto</h2></div>
+            <div class="tarjeta-cuerpo" style="display:flex;flex-direction:column;gap:.75rem">
+              <div class="foto-actual" id="foto-actual">
+                <img th:if="${!#strings.isEmpty(fotoActual)}" th:src="@{'/productos/imagen/' + ${fotoActual}}" alt="Foto actual del producto">
+                <span th:if="${#strings.isEmpty(fotoActual)}">Sin foto. La tienda muestra una ilustración.</span>
+              </div>
+              <div class="campo" th:classappend="${errores.containsKey('foto')} ? 'campo--error'">
+                <label class="solo-lector" for="foto">Subir foto</label>
+                <input id="foto" name="foto" type="file" accept="image/png,image/jpeg,image/webp" aria-describedby="ayuda-foto">
+                <span class="campo-ayuda" id="ayuda-foto">JPG, PNG o WEBP de hasta 3 MB.</span>
+                <span class="campo-error" th:if="${errores.containsKey('foto')}" th:text="${errores.get('foto')}"></span>
+              </div>
+            </div>
+          </article>
+
+          <article class="tarjeta">
+            <div class="tarjeta-cabeza"><h2>Lo que verá el cliente</h2></div>
+            <div class="tarjeta-cuerpo" style="display:flex;flex-direction:column;gap:1rem">
+              <div class="campo" th:classappend="${errores.containsKey('disponibilidad')} ? 'campo--error'">
+                <label for="disponibilidad">Disponibilidad</label>
+                <select id="disponibilidad" name="disponibilidad" aria-describedby="ayuda-disp">
+                  <option value="sin-dato" th:selected="${f.disponibilidad() == 'sin-dato'}">No mostrar</option>
+                  <option value="disponible" th:selected="${f.disponibilidad() == 'disponible'}">Disponible</option>
+                  <option value="agotado" th:selected="${f.disponibilidad() == 'agotado'}">Agotado (no se puede agregar)</option>
+                </select>
+                <span class="campo-ayuda" id="ayuda-disp">Mientras no haya control de inventario, usa "Disponible" solo si lo verificaste.</span>
+              </div>
+              <label class="casilla solo-medicamento">
+                <input type="checkbox" name="formula" value="true" th:checked="${f.formula()}">
+                <span><strong>Requiere fórmula médica</strong><small>Se muestra como aviso en la tarjeta y en la ficha.</small></span>
+              </label>
+            </div>
+          </article>
+
+          <div class="barra-guardar">
+            <a class="btn btn--fantasma" th:href="@{/admin/productos}">Cancelar</a>
+            <button class="btn btn--primario" type="submit" id="btn-guardar"><span class="btn-texto" th:text="${productoId == null ? 'Crear producto' : 'Guardar cambios'}">Guardar</span><span class="btn-spinner"></span></button>
+          </div>
+        </div>
+      </form>
+    </main>
+  </div>
+
+  <template id="plantilla-presentacion">
+    <div class="fila-presentacion">
+      <input type="hidden" name="presId" value="">
+      <div class="campo"><label>Presentación</label><input name="presTipo" type="text" placeholder="Caja x10"></div>
+      <div class="campo"><label>Concentración</label><input name="presConc" type="text" placeholder="500mg"></div>
+      <div class="campo"><label>Marca</label><input name="presMarca" type="text" placeholder="Genérico"></div>
+      <div class="campo"><label>Precio</label><input name="presPrecio" type="text" inputmode="numeric" placeholder="$"></div>
+      <button class="btn-icono quitar-presentacion" type="button" aria-label="Quitar esta presentación"><svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#papelera"/></svg></button>
+    </div>
+  </template>
+
+  <script th:src="@{/js/seguridad.js}"></script>
+  <script th:src="@{/js/experiencia.js}"></script>
+  <script th:src="@{/js/panel.js}"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const form = document.querySelector('.form-producto');
+      const categoria = document.getElementById('categoria');
+
+      // El formulario se adapta al tipo: un medicamento no pide lo mismo que una variedad
+      function aplicarTipo() {
+        const tipo = form.querySelector('input[name=tipo]:checked')?.value || 'medicamento';
+        form.querySelectorAll('.solo-medicamento').forEach(e => { e.hidden = tipo !== 'medicamento'; });
+        form.querySelectorAll('.solo-variedad').forEach(e => { e.hidden = tipo !== 'variedad'; });
+        categoria.querySelectorAll('optgroup').forEach(g => { g.disabled = g.dataset.para !== tipo; g.hidden = g.dataset.para !== tipo; });
+        if (categoria.selectedOptions[0]?.parentElement.disabled) categoria.value = '';
+      }
+      form.querySelectorAll('input[name=tipo]').forEach(r => r.addEventListener('change', aplicarTipo));
+      aplicarTipo();
+
+      const filas = document.getElementById('filas-presentacion');
+      let contador = filas.children.length;
+      document.getElementById('agregar-presentacion').addEventListener('click', () => {
+        const fila = document.getElementById('plantilla-presentacion').content.cloneNode(true);
+        fila.querySelectorAll('.campo').forEach(c => {
+          const id = 'p-nueva-' + (contador++);
+          c.querySelector('label').htmlFor = id;
+          c.querySelector('input').id = id;
+        });
+        filas.appendChild(fila);
+        filas.lastElementChild.querySelector('input[name=presTipo]').focus();
+      });
+      filas.addEventListener('click', (e) => {
+        const quitar = e.target.closest('.quitar-presentacion');
+        if (!quitar) return;
+        const fila = quitar.closest('.fila-presentacion');
+        // Siempre queda una fila para escribir
+        if (filas.children.length === 1) fila.querySelectorAll('input:not([type=hidden])').forEach(i => { i.value = ''; });
+        else fila.remove();
+      });
+
+      document.getElementById('foto').addEventListener('change', (e) => {
+        const archivo = e.target.files[0];
+        if (!archivo || !archivo.type.startsWith('image/')) return;
+        const lector = new FileReader();
+        lector.onload = () => {
+          const img = new Image();
+          img.alt = 'Vista previa de la foto';
+          img.src = lector.result;
+          document.getElementById('foto-actual').replaceChildren(img);
+        };
+        lector.readAsDataURL(archivo);
+      });
+
+      form.addEventListener('submit', () => {
+        const btn = document.getElementById('btn-guardar');
+        btn.querySelector('.btn-texto').hidden = true;
+        btn.querySelector('.btn-spinner').classList.add('visible');
+      });
+    });
+  </script>
+</body>
+</html>

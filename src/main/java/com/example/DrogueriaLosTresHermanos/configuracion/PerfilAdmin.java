@@ -19,6 +19,14 @@ public record PerfilAdmin(String correo, String rolId, String rolNombre, Set<Str
         return puede(Permiso.SUSCRIPCIONES_VER.getCodigo());
     }
 
+    public boolean veProductos() {
+        return puede(Permiso.PRODUCTOS_VER.getCodigo());
+    }
+
+    public boolean vePedidos() {
+        return puede(Permiso.VENTAS_VER.getCodigo());
+    }
+
     public boolean gestionaAccesos() {
         return puede(Permiso.ROLES_GESTIONAR.getCodigo()) || puede(Permiso.USUARIOS_GESTIONAR.getCodigo());
     }

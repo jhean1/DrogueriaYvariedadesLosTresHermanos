@@ -58,45 +58,6 @@ window.Experiencia = (function () {
     lista.forEach(el => obs.observe(el));
   }
 
-  // Parallax ligero: solo transforma, y solo con puntero fino y sin movimiento reducido
-  function paralaje() {
-    const capas = [...document.querySelectorAll('[data-paralaje]')];
-    if (!capas.length || sinMovimiento) return;
-    let px = 0, py = 0, pendiente = false;
-
-    function pintar() {
-      pendiente = false;
-      const y = Math.min(window.scrollY, 900);
-      capas.forEach(c => {
-        const f = Number(c.dataset.paralaje) || 0;
-        c.style.transform = `translate3d(${px * f * 22}px, ${py * f * 16 - y * f * .12}px, 0)`;
-      });
-    }
-    function solicitar() {
-      if (!pendiente) { pendiente = true; requestAnimationFrame(pintar); }
-    }
-    window.addEventListener('scroll', solicitar, { passive: true });
-    if (window.matchMedia('(pointer: fine)').matches) {
-      window.addEventListener('pointermove', (e) => {
-        px = e.clientX / window.innerWidth - .5;
-        py = e.clientY / window.innerHeight - .5;
-        solicitar();
-      }, { passive: true });
-    }
-  }
-
-  // Brillo que sigue al puntero en las superficies marcadas
-  function brillo() {
-    if (sinMovimiento || !window.matchMedia('(pointer: fine)').matches) return;
-    document.addEventListener('pointermove', (e) => {
-      const el = e.target.closest && e.target.closest('[data-brillo]');
-      if (!el) return;
-      const r = el.getBoundingClientRect();
-      el.style.setProperty('--mx', `${e.clientX - r.left}px`);
-      el.style.setProperty('--my', `${e.clientY - r.top}px`);
-    }, { passive: true });
-  }
-
   // Los elementos que actúan como botón también responden al teclado
   function teclado() {
     document.addEventListener('keydown', (e) => {
@@ -153,11 +114,53 @@ window.Experiencia = (function () {
   document.addEventListener('DOMContentLoaded', () => {
     revelar();
     contadores();
-    paralaje();
-    brillo();
     teclado();
     legales();
   });
 
-  return { revelar, contadores, atrapar, soltar, icono, sinMovimiento };
+  // Confirmación antes de una acción importante. Devuelve una promesa con la respuesta.
+  function confirmar({ titulo, texto, accion = 'Confirmar', peligro = false }) {
+    return new Promise((resolver) => {
+      const d = document.createElement('dialog');
+      d.className = 'dialogo dialogo-confirmar';
+      d.setAttribute('aria-labelledby', 'confirmar-titulo');
+      d.innerHTML = `<form method="dialog" class="dialogo-forma">
+        <div class="modal-cabeza"><h2 id="confirmar-titulo"></h2></div>
+        <div class="modal-cuerpo"><p></p></div>
+        <div class="modal-pie">
+          <button class="btn btn--fantasma" value="no">Cancelar</button>
+          <button class="btn ${peligro ? 'btn--peligro' : 'btn--primario'}" value="si"></button>
+        </div></form>`;
+      d.querySelector('h2').textContent = titulo;
+      d.querySelector('p').textContent = texto;
+      d.querySelector('button[value=si]').textContent = accion;
+      document.body.appendChild(d);
+      d.addEventListener('close', () => { resolver(d.returnValue === 'si'); d.remove(); });
+      d.showModal();
+    });
+  }
+
+  // Cualquier formulario o botón con data-confirmar pide confirmación antes de continuar
+  function confirmaciones() {
+    document.addEventListener('submit', (e) => {
+      const form = e.target;
+      const boton = e.submitter && e.submitter.dataset.confirmar ? e.submitter : form;
+      if (!boton.dataset || !boton.dataset.confirmar || form.dataset.confirmado) return;
+      e.preventDefault();
+      confirmar({
+        titulo: boton.dataset.confirmarTitulo || '¿Confirmas esta acción?',
+        texto: boton.dataset.confirmar,
+        accion: boton.dataset.confirmarAccion || 'Confirmar',
+        peligro: boton.dataset.confirmarPeligro !== undefined
+      }).then((si) => {
+        if (!si) return;
+        form.dataset.confirmado = '1';
+        if (e.submitter) form.requestSubmit(e.submitter); else form.requestSubmit();
+      });
+    });
+  }
+
+  document.addEventListener('DOMContentLoaded', confirmaciones);
+
+  return { revelar, contadores, atrapar, soltar, icono, sinMovimiento, confirmar };
 })();

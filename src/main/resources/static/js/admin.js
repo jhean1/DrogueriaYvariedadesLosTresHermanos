@@ -17,7 +17,7 @@ let planActivarSel    = null;
 
 const NOMBRES_METODO = { nequi:'Nequi', daviplata:'Daviplata', pse:'PSE', bancolombia:'Bancolombia', tienda:'En tienda' };
 const nombrePlan = (p) => Seguridad.planCanonico(p)?.nombre || p;
-const MIGAS = { resumen:'Resumen', solicitudes:'Solicitudes de pago', clientes:'Clientes', 'crear-cliente':'Crear cliente', 'activar-plan':'Activar plan en tienda' };
+const MIGAS = { resumen:'Resumen', pedidos:'Pedidos', solicitudes:'Solicitudes de pago', clientes:'Clientes', 'crear-cliente':'Crear cliente', 'activar-plan':'Activar plan en tienda' };
 
 // ── Helpers de localStorage ──────────────────────────
 function getClientes() {
@@ -79,7 +79,7 @@ document.addEventListener('click', function(e) {
   if (!boton) return;
   const { accion, id, estado } = boton.dataset;
   if (accion === 'ver-solicitud')       verSolicitud(id);
-  if (accion === 'estado-solicitud')    accionSolicitud(id, estado);
+  if (accion === 'estado-solicitud')    confirmarSolicitud(id, estado);
   if (accion === 'activar-cliente')     irActivarPorCliente(id);
   if (accion === 'preparar-activacion') {
     const cliente = getClientes().find(c => c.id === id);
@@ -103,6 +103,7 @@ function irSeccion(id, desdeDireccion) {
   fijar('miga-actual', MIGAS[id] || 'Resumen');
   if (!desdeDireccion && window.location.hash !== '#' + id) history.replaceState(null, '', '#' + id);
 
+  if (id === 'pedidos')      renderPedidos();
   if (id === 'solicitudes')  renderTablaSolicitudes(getSolicitudes());
   if (id === 'clientes')     renderTablaClientes(getClientes());
   if (id === 'activar-plan') renderTablaBuscaActivar(getClientes());
@@ -122,6 +123,7 @@ function actualizarResumen() {
     el.dataset.contar = valor;
     delete el.dataset.contado;
   };
+  if (typeof MEDICAMENTOS !== 'undefined') contar('stat-productos', MEDICAMENTOS.length + VARIEDADES.length);
   contar('stat-clientes', clientes.length);
   contar('stat-activos', activos.length);
   contar('stat-pendientes', sols.filter(s => s.estado === 'pendiente').length);
@@ -203,7 +205,10 @@ function renderTablaRecientes() {
 
 function renderTablaSolicitudes(sols) {
   const wrap = $id('tabla-solicitudes-wrap');
-  if (wrap) wrap.innerHTML = tablaHTML(sols);
+  if (!wrap) return;
+  wrap.innerHTML = tablaHTML(sols);
+  const t = wrap.querySelector('table');
+  if (t) Panel.paginar(t, 10);
 }
 
 function filtrarSolicitudes(q) {
@@ -287,7 +292,7 @@ function accionSolicitud(id, nuevoEstado) {
   // porque el cliente puede alterarla antes de enviarla.
   const plan = Seguridad.planCanonico(sols[idx].plan);
   if (nuevoEstado === 'aprobado' && !plan) {
-    alert('La solicitud tiene un plan no válido y no se puede aprobar.');
+    Panel.aviso('La solicitud tiene un plan no válido y no se puede aprobar.', true);
     return;
   }
 
@@ -309,9 +314,58 @@ function accionSolicitud(id, nuevoEstado) {
   actualizarBadgePendientes();
   renderTablaSolicitudes(getSolicitudes());
   renderTablaRecientes();
+  Panel.aviso(nuevoEstado === 'aprobado' ? 'Pago aprobado. El plan del cliente quedó activo.' : 'Solicitud rechazada.');
+}
+
+// Aprobar o rechazar cambia lo que el cliente paga: siempre se confirma antes
+function confirmarSolicitud(id, estado) {
+  const sol = getSolicitudes().find(s => s.id === id);
+  if (!sol) return Promise.resolve(false);
+  const aprobar = estado === 'aprobado';
+  return Experiencia.confirmar({
+    titulo: aprobar ? 'Aprobar el pago' : 'Rechazar la solicitud',
+    texto: aprobar
+      ? `Se activará el plan ${nombrePlan(sol.plan)} de ${sol.clienteNombre || 'este cliente'} por 30 días.`
+      : `${sol.clienteNombre || 'El cliente'} no recibirá el plan ${nombrePlan(sol.plan)}.`,
+    accion: aprobar ? 'Aprobar y activar' : 'Rechazar',
+    peligro: !aprobar
+  }).then((si) => { if (si) accionSolicitud(id, estado); return si; });
 }
 function accionSolicitudModal(estado) {
-  if (solicitudActualId) { accionSolicitud(solicitudActualId, estado); cerrarModal(); }
+  if (!solicitudActualId) return;
+  confirmarSolicitud(solicitudActualId, estado).then((si) => { if (si) cerrarModal(); });
+}
+
+// ── Pedidos ───────────────────────────────────────────
+function renderPedidos() {
+  const wrap = $id('tabla-pedidos-wrap');
+  if (!wrap) return;
+  const q = ($id('busca-ped').value || '').trim().toLowerCase();
+  const entrega = $id('filtro-entrega').value;
+  const todos = getVentas();
+  const lista = todos.filter(v =>
+    (!q || String(v.clienteNombre || '').toLowerCase().includes(q) || String(v.id || '').toLowerCase().includes(q)) &&
+    (!entrega || v.modalidad === entrega)
+  ).reverse();
+  fijar('total-pedidos', lista.length);
+  if (!lista.length) {
+    wrap.innerHTML = todos.length
+      ? vacio('buscar', 'Ningún pedido coincide', 'Prueba con otro nombre o cambia el filtro.')
+      : vacio('recibo', 'Aún no hay pedidos', 'Los pedidos web registrados en este navegador aparecerán aquí.');
+    return;
+  }
+  const rows = lista.map(v => `<tr>
+    <td data-etiqueta="Pedido"><div><strong>${esc(v.id || '–')}</strong><small>${esc(v.fecha || '')}</small></div></td>
+    <td data-etiqueta="Cliente">${esc(v.clienteNombre || '–')}</td>
+    <td data-etiqueta="Productos" class="num">${esc(Array.isArray(v.items) ? v.items.reduce((s, i) => s + (Number(i.cantidad) || 0), 0) : '–')}</td>
+    <td data-etiqueta="Entrega">${v.modalidad === 'domicilio' ? '<span class="insignia insignia--azul">Domicilio</span>' : '<span class="insignia">Recoger en tienda</span>'}</td>
+    <td data-etiqueta="Total" class="num"><strong>$${esc((Number(v.total) || 0).toLocaleString('es-CO'))}</strong></td>
+    <td data-etiqueta="Estado">${v.estado ? insigniaEstado(v.estado) : '–'}</td>
+  </tr>`).join('');
+  wrap.innerHTML = `<div class="tabla-marco"><table class="tabla tabla--fichas">
+    <thead><tr><th scope="col">Pedido</th><th scope="col">Cliente</th><th scope="col">Productos</th><th scope="col">Entrega</th><th scope="col">Total</th><th scope="col">Estado</th></tr></thead>
+    <tbody>${rows}</tbody></table></div>`;
+  Panel.paginar(wrap.querySelector('table'), 10);
 }
 
 // ── Tabla clientes ────────────────────────────────────
@@ -336,6 +390,7 @@ function renderTablaClientes(lista) {
     <thead><tr><th scope="col">Nombre</th><th scope="col">Correo</th><th scope="col">Teléfono</th><th scope="col">Dirección</th><th scope="col">Plan</th><th scope="col">Acción</th></tr></thead>
     <tbody>${rows}</tbody>
   </table></div>`;
+  Panel.paginar(wrap.querySelector('table'), 10);
 }
 
 function filtrarClientes(q) {

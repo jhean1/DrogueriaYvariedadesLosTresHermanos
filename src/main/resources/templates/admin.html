@@ -20,18 +20,25 @@
           <span class="insignia insignia--azul" th:text="${perfil.rolNombre()}">Rol</span>
         </div>
 
-        <div class="alerta alerta--info aviso-datos" th:if="${perfil.operaPagos() or perfil.operaClientes()}">
-          <svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#info"/></svg>
-          <span>Estos datos se leen de este navegador. Solo incluyen cuentas y solicitudes registradas en este equipo, hasta que el sistema tenga base de datos.</span>
+        <nav class="accesos-rapidos" aria-label="Accesos rápidos">
+          <a class="btn btn--primario btn--sm" th:href="@{/admin/productos/nuevo}" th:if="${perfil.puede('products.create')}"><svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#mas"/></svg> Nuevo producto</a>
+          <a class="btn btn--secundario btn--sm" th:href="@{/admin#solicitudes}" th:if="${perfil.operaPagos()}"><svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#tarjeta"/></svg> Revisar pagos</a>
+          <a class="btn btn--secundario btn--sm" th:href="@{/admin#pedidos}" th:if="${perfil.vePedidos()}"><svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#recibo"/></svg> Ver pedidos</a>
+          <a class="btn btn--secundario btn--sm" th:href="@{/admin/productos}" th:if="${perfil.veProductos()}"><svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#capsula"/></svg> Consultar productos</a>
+          <a class="btn btn--secundario btn--sm" th:href="@{/admin#crear-cliente}" th:if="${perfil.puede('customers.create')}"><svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#usuario-mas"/></svg> Crear cliente</a>
+          <a class="btn btn--secundario btn--sm" th:href="@{/admin/accesos}" th:if="${perfil.gestionaAccesos()}"><svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#llave"/></svg> Usuarios y permisos</a>
+        </nav>
+
+        <div class="rejilla-kpi" id="stats-grid">
+          <article class="kpi" th:if="${perfil.veProductos()}"><strong class="kpi-valor" id="stat-productos">0</strong><span class="kpi-etiqueta">Productos publicados</span></article>
+          <article class="kpi" th:if="${perfil.operaClientes()}"><strong class="kpi-valor" id="stat-clientes">0</strong><span class="kpi-etiqueta">Clientes registrados</span></article>
+          <article class="kpi" th:if="${perfil.operaClientes()}"><strong class="kpi-valor" id="stat-activos">0</strong><span class="kpi-etiqueta">Planes activos</span></article>
+          <article class="kpi" th:if="${perfil.operaPagos()}"><strong class="kpi-valor" id="stat-pendientes">0</strong><span class="kpi-etiqueta">Pagos pendientes</span></article>
+          <article class="kpi" th:if="${perfil.operaPagos()}"><strong class="kpi-valor" id="stat-aprobados">0</strong><span class="kpi-etiqueta">Pagos aprobados</span></article>
+          <article class="kpi" th:if="${perfil.puede('sales.view')}"><strong class="kpi-valor" id="stat-pedidos">0</strong><span class="kpi-etiqueta">Pedidos web</span></article>
         </div>
 
-        <div class="rejilla-kpi" id="stats-grid" th:if="${perfil.operaPagos() or perfil.operaClientes()}" data-escalonar>
-          <article class="kpi" th:if="${perfil.operaClientes()}"><span class="kpi-icono"><svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#usuarios"/></svg></span><strong class="kpi-valor" id="stat-clientes">0</strong><span class="kpi-etiqueta">Clientes registrados</span></article>
-          <article class="kpi" th:if="${perfil.operaClientes()}"><span class="kpi-icono kpi-icono--verde"><svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#estrella"/></svg></span><strong class="kpi-valor" id="stat-activos">0</strong><span class="kpi-etiqueta">Planes activos</span></article>
-          <article class="kpi" th:if="${perfil.operaPagos()}"><span class="kpi-icono kpi-icono--ambar"><svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#reloj"/></svg></span><strong class="kpi-valor" id="stat-pendientes">0</strong><span class="kpi-etiqueta">Pagos pendientes</span></article>
-          <article class="kpi" th:if="${perfil.operaPagos()}"><span class="kpi-icono kpi-icono--azul"><svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#check"/></svg></span><strong class="kpi-valor" id="stat-aprobados">0</strong><span class="kpi-etiqueta">Pagos aprobados</span></article>
-          <article class="kpi" th:if="${perfil.puede('sales.view')}"><span class="kpi-icono kpi-icono--vino"><svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#recibo"/></svg></span><strong class="kpi-valor" id="stat-pedidos">0</strong><span class="kpi-etiqueta">Pedidos web</span></article>
-        </div>
+        <p class="campo-ayuda" th:if="${perfil.operaPagos() or perfil.operaClientes() or perfil.vePedidos()}">Clientes, pagos y pedidos se leen de este navegador hasta que el sistema tenga base de datos. Solo incluyen lo registrado en este equipo.</p>
 
         <div class="rejilla-graficas" th:if="${perfil.operaPagos()}">
           <article class="tarjeta revelar">
@@ -65,6 +72,22 @@
             </a>
           </div>
         </section>
+      </section>
+
+      <!-- Pedidos -->
+      <section class="seccion" id="sec-pedidos" th:if="${perfil.vePedidos()}" aria-labelledby="titulo-pedidos">
+        <div class="pagina-cabeza"><div><h1 id="titulo-pedidos">Pedidos</h1><p>Pedidos web registrados en este navegador. El cliente los confirma por WhatsApp.</p></div></div>
+        <article class="tarjeta">
+          <div class="tarjeta-cabeza">
+            <h2>Todos los pedidos <span class="insignia" id="total-pedidos">0</span></h2>
+            <div class="filtros-tabla">
+              <div class="filtro-tabla"><svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#buscar"/></svg><label class="solo-lector" for="busca-ped">Filtrar pedidos</label><input type="search" id="busca-ped" placeholder="Cliente o número de pedido" oninput="renderPedidos()"></div>
+              <label class="solo-lector" for="filtro-entrega">Entrega</label>
+              <select id="filtro-entrega" onchange="renderPedidos()"><option value="">Toda entrega</option><option value="domicilio">Domicilio</option><option value="tienda">Recoger en tienda</option></select>
+            </div>
+          </div>
+          <div id="tabla-pedidos-wrap"></div>
+        </article>
       </section>
 
       <!-- Solicitudes -->
@@ -162,6 +185,7 @@
   <script th:src="@{/js/seguridad.js}"></script>
   <script th:src="@{/js/experiencia.js}"></script>
   <script th:src="@{/js/panel.js}"></script>
+  <script th:src="@{/js/catalogo.js}" th:if="${perfil.veProductos()}"></script>
   <script th:src="@{/js/admin.js}"></script>
 </body>
 </html>

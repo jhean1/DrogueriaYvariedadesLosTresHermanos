@@ -1,12 +1,11 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="es">
 <head th:replace="~{fragments/tienda :: cabeza('Mi cuenta', 'Gestiona tu cuenta, pedidos y suscripción en Los Tres Hermanos.')}"></head>
-<body class="sobre-oscuro perfil">
+<body class="perfil">
   <th:block th:replace="~{fragments/tienda :: barra}"></th:block>
 
   <main id="contenido">
     <section class="perfil-hero">
-      <div class="hero-fondo" aria-hidden="true"><div class="hero-rejilla"></div></div>
       <div class="contenedor perfil-hero-interior">
         <div class="avatar-grande entra" id="avatar-inicial" style="--i:0">?</div>
         <div class="perfil-info entra" style="--i:1">
@@ -14,7 +13,7 @@
           <h1 id="perfil-nombre">Cargando...</h1>
           <p id="perfil-correo">—</p>
         </div>
-        <button class="btn btn--vidrio btn--sm perfil-salir entra" style="--i:2" type="button" onclick="cerrarSesion()"><svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#salir"/></svg> Cerrar sesión</button>
+        <button class="btn btn--secundario btn--sm perfil-salir entra" style="--i:2" type="button" onclick="cerrarSesion()"><svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#salir"/></svg> Cerrar sesión</button>
       </div>
     </section>
 
@@ -279,7 +278,7 @@
       sessionStorage.setItem('lth_cliente', JSON.stringify(nuevaSesion));
       document.getElementById('perfil-nombre').textContent  = nombre;
       document.getElementById('avatar-inicial').textContent = nombre[0].toUpperCase();
-      toast('✓ Datos personales actualizados');
+      toast('Datos personales actualizados');
     }
 
     // ── Cambiar correo ────────────────────────────────────────
@@ -310,7 +309,7 @@
       document.getElementById('correo-actual-display').value     = nuevoCorreo;
       document.getElementById('edit-correo-nuevo').value         = '';
       document.getElementById('correo-pass-confirm').value       = '';
-      toast('✓ Correo actualizado correctamente');
+      toast('Correo actualizado correctamente');
     }
 
     // ── Cambiar contraseña ────────────────────────────────────
@@ -338,7 +337,7 @@
       document.getElementById('pass-nueva2').value  = '';
       document.getElementById('pass-strength-bar').style.width = '0%';
       document.getElementById('pass-strength-label').textContent = '';
-      toast('✓ Contraseña actualizada correctamente');
+      toast('Contraseña actualizada correctamente');
     }
 
     // ── Eliminar cuenta ───────────────────────────────────────
@@ -554,12 +553,12 @@
       if (/[0-9]/.test(pass)) score++;
       if (/[^A-Za-z0-9]/.test(pass)) score++;
       const pct    = (score / 5) * 100;
-      const colors = ['','#ef4444','#f97316','#eab308','#22c55e','#16a34a'];
+      const colors = ['','var(--burgundy)','var(--burgundy)','var(--amber)','var(--emerald)','var(--emerald-tinta)'];
       const labels = ['','Muy débil','Débil','Regular','Fuerte','¡Muy fuerte!'];
       bar.style.width      = pct + '%';
-      bar.style.background = colors[score] || '#ef4444';
+      bar.style.background = colors[score] || 'var(--burgundy)';
       label.textContent    = pass ? (labels[score] || '') : '';
-      label.style.color    = colors[score] || '#9CA3AF';
+      label.style.color    = colors[score] || 'var(--tinta-3)';
     });
 
     // ══════════════════════════════════════════════════════════
@@ -630,7 +629,7 @@
             <h3>Solicitud rechazada</h3>
             <p>Tu pago del plan <strong>${esc(sus.plan)}</strong> fue rechazado.<br>
                Puedes volver a intentarlo o contactar a la droguería.</p>
-            <a href="/suscripciones" class="btn-ver-planes">Ver planes →</a>
+            <a href="/suscripciones" class="btn-ver-planes">Ver planes</a>
           </div>`;
         renderHistorialSolicitudes();
         return;
@@ -653,7 +652,7 @@
             <h3>Plan vencido</h3>
             <p>Tu plan <strong>${esc(sus.plan)}</strong> venció el ${esc(fmtFecha(sus.fechaVencimiento))}.<br>
                Renueva para seguir disfrutando los descuentos.</p>
-            <a href="/suscripciones" class="btn-ver-planes">Renovar plan →</a>
+            <a href="/suscripciones" class="btn-ver-planes">Renovar plan</a>
           </div>`;
         renderHistorialSolicitudes();
         return;
@@ -762,7 +761,7 @@
       }
 
       const estadoClass = { aprobado: 'sus-estado-aprobado', pendiente: 'sus-estado-pendiente', rechazado: 'sus-estado-rechazado' };
-      const estadoLabel = { aprobado: '✓ Aprobado', pendiente: '⏳ Pendiente', rechazado: '✕ Rechazado' };
+      const estadoLabel = { aprobado: 'Aprobado', pendiente: 'Pendiente', rechazado: 'Rechazado' };
 
       body.innerHTML = `
         <div class="sus-historial-titulo">Solicitudes de pago</div>

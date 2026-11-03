@@ -5,19 +5,27 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Acceso del equipo · Los Tres Hermanos</title>
   <meta name="robots" content="noindex">
-  <meta name="theme-color" content="#101B35">
+  <meta name="theme-color" content="#F7F8FA">
   <link rel="icon" type="image/svg+xml" th:href="@{/img/marca/favicon.svg}">
   <link rel="icon" type="image/png" sizes="32x32" th:href="@{/img/marca/favicon-32.png}">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;family=Sora:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&amp;family=Sora:wght@500;600&amp;display=swap" rel="stylesheet">
+  <script th:src="@{/js/tema.js}"></script>
   <link rel="stylesheet" th:href="@{/css/design-system.css}">
   <link rel="stylesheet" th:href="@{/css/admin.css}">
   <script>document.documentElement.classList.add('js');</script>
 </head>
 <body class="acceso-equipo">
+  <div class="acceso-tema">
+    <button class="btn-icono btn-tema" type="button" data-tema-boton aria-label="Cambiar el tema de color">
+      <svg class="ic tema-luna" aria-hidden="true"><use href="/img/iconos.svg#luna"/></svg>
+      <svg class="ic tema-sol" aria-hidden="true"><use href="/img/iconos.svg#sol"/></svg>
+    </button>
+  </div>
   <main class="acceso">
-    <img class="acceso-logo" th:src="@{/img/marca/logo-vertical-oscuro.svg}" alt="Droguería y Variedades Los Tres Hermanos" width="240" height="160">
+    <img class="acceso-logo logo-claro" th:src="@{/img/marca/logo-vertical.svg}" alt="Droguería y Variedades Los Tres Hermanos" width="240" height="160">
+    <img class="acceso-logo logo-oscuro" th:src="@{/img/marca/logo-vertical-oscuro.svg}" alt="Droguería y Variedades Los Tres Hermanos" width="240" height="160">
     <div class="acceso-tarjeta">
       <h1>Acceso del equipo</h1>
       <p class="acceso-sub">Exclusivo para el personal autorizado de la droguería.</p>

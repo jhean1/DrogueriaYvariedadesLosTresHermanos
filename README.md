@@ -41,6 +41,10 @@ Los clientes también pueden suscribirse a un plan mensual para obtener descuent
 | <img src="docs/imagenes/medicamentos.png" alt="Catálogo de medicamentos con filtros y selector de presentación" width="420"> | <img src="docs/imagenes/variedades.png" alt="Catálogo de variedades por categoría" width="420"> |
 | Búsqueda, filtros y selección de presentación, concentración y marca | Perfumes, útiles escolares y cuidado personal |
 
+| Ficha de producto | Modo oscuro |
+|:---:|:---:|
+| <img src="docs/imagenes/ficha.png" alt="Ficha de un medicamento con sus presentaciones" width="420"> | <img src="docs/imagenes/oscuro-inicio.png" alt="Inicio en modo oscuro" width="420"> |
+
 ### Suscripciones y cuenta del cliente
 
 | Planes de suscripción | Registro | Mi cuenta |
@@ -52,6 +56,10 @@ Los clientes también pueden suscribirse a un plan mensual para obtener descuent
 | Resumen | Revisión de un pago |
 |:---:|:---:|
 | <img src="docs/imagenes/admin-panel.png" alt="Resumen del panel con indicadores y gráficas" width="420"> | <img src="docs/imagenes/admin-solicitud.png" alt="Detalle de una solicitud de pago" width="420"> |
+
+| Productos | Formulario de producto |
+|:---:|:---:|
+| <img src="docs/imagenes/admin-productos.png" alt="Lista de productos con búsqueda y filtros" width="420"> | <img src="docs/imagenes/admin-producto.png" alt="Formulario de edición de un medicamento" width="420"> |
 
 | Roles y permisos | Módulo en desarrollo | Acceso del equipo |
 |:---:|:---:|:---:|
@@ -67,7 +75,10 @@ Los clientes también pueden suscribirse a un plan mensual para obtener descuent
 
 ### Para clientes
 
-- 🔎 **Catálogo:** medicamentos con búsqueda, filtros por categoría y orden, además de variedades por categoría.
+- 🔎 **Búsqueda central:** visible en toda la tienda, con sugerencias al escribir por nombre, marca, principio activo o categoría.
+- 💊 **Catálogo:** tarjetas compactas y ficha de producto con presentación, concentración, marca y precio.
+- 🌗 **Modo claro y oscuro:** se recuerda la preferencia y cubre toda la aplicación.
+- 🧭 **Guía de compra:** pasos interactivos en el inicio, opcionales y sin interrumpir.
 - 🛒 **Carrito y pedido:** carrito persistente, entrega a domicilio o recogida en tienda, y envío del pedido por WhatsApp.
 - 🧾 **Recibo e historial:** comprobante del pedido y consulta de compras anteriores desde **Mi cuenta**.
 - ⭐ **Suscripciones:** descuento automático en toda la tienda cuando el plan está aprobado y vigente.
@@ -76,7 +87,9 @@ Los clientes también pueden suscribirse a un plan mensual para obtener descuent
 
 ### Para administradores
 
-- 📊 **Resumen:** clientes registrados, planes activos y pagos pendientes o aprobados.
+- 📊 **Resumen:** indicadores y accesos rápidos según el rol.
+- 🧴 **Productos y categorías:** crear, editar, retirar y volver a publicar medicamentos y variedades, con foto, validación y auditoría.
+- 📦 **Pedidos:** consulta de los pedidos web con búsqueda y filtros.
 - ✅ **Pagos:** revisión de comprobantes y aprobación o rechazo de solicitudes.
 - 👥 **Clientes:** búsqueda y creación de cuentas.
 - 🏪 **Pagos en tienda:** activación manual del plan cuando el cliente paga en efectivo.
@@ -162,16 +175,18 @@ sequenceDiagram
 └── src
     ├── main
     │   ├── java/com/example/DrogueriaLosTresHermanos
-    │   │   ├── configuracion/      # Spring Security, roles, permisos y módulos
+    │   │   ├── catalogo/           # Catálogo de productos y fotos
+│   │   ├── configuracion/      # Spring Security, roles, permisos y módulos
     │   │   ├── controlador/        # Rutas y vistas (MVC)
     │   │   ├── controller/         # Referencia histórica, sin uso
     │   │   └── modelo/             # Cliente, Producto, Pedido, ItemPedido y PlanSuscripcion
     │   └── resources
     │       ├── application.properties
+    │       ├── catalogo-inicial.properties  # Productos con los que arranca la tienda
     │       ├── static
     │       │   ├── css/            # design-system.css, tienda.css y admin.css
     │       │   ├── img/marca/      # Sistema de identidad 3H (SVG y PNG)
-    │       │   └── js/             # Lógica, animaciones y datos del catálogo
+    │       │   └── js/             # Lógica, búsqueda, ficha de producto y tema
     │       └── templates/          # Páginas Thymeleaf y fragmentos compartidos
     └── test/java/...               # Pruebas automatizadas
 ```
@@ -188,6 +203,12 @@ sequenceDiagram
 | `/perfil`, `/checkout`, `/recibo`, `/pago-suscripcion` | Área del cliente | Con sesión de cliente, comprobada en el navegador |
 | `/admin/login` | Acceso de administrador | Público |
 | `/admin` | Panel de administración | **Todo el equipo; cada sección según permisos** |
+| `/admin/productos` | Lista de productos | **Con `products.view`** |
+| `/admin/productos/nuevo` | Crear producto | **Con `products.create`** |
+| `/admin/productos/{id}` | Editar producto | **Con `products.update`** |
+| `/admin/productos/{id}/visibilidad` | Retirar o publicar | **Con `products.delete`** |
+| `/admin/categorias` | Categorías | **Con `products.update`** |
+| `/js/catalogo.js`, `/productos/imagen/{foto}` | Catálogo publicado y fotos | Público |
 | `/admin/modulos/{modulo}` | Módulos en desarrollo | **Según el permiso de cada módulo** |
 | `/admin/accesos` | Usuarios y permisos | **Con `users.manage` o `roles.manage`** |
 | `/admin/modulos/auditoria` | Historial de acciones | **Solo con `audit.view`** |
@@ -249,6 +270,8 @@ Si no la defines, la aplicación genera una clave temporal en cada arranque y la
 | `ADMIN_CLAVE` | Clave del administrador (12 caracteres o más) | Se genera una temporal en cada arranque |
 | `COOKIE_SEGURA` | Usa `true` si el sitio funciona con HTTPS | `false` |
 | `APP_DATOS` | Archivo donde se guardan roles, cuentas del equipo y auditoría | `datos/accesos.properties` |
+| `APP_CATALOGO` | Archivo del catálogo administrado desde el panel | `datos/catalogo.properties` |
+| `APP_FOTOS` | Carpeta de las fotos de productos | `datos/fotos` |
 | `APP_EQUIPO_0_CORREO`, `APP_EQUIPO_0_ROL`, `APP_EQUIPO_0_CLAVE` | Miembro adicional del equipo. Usa 1, 2… para agregar más | Sin miembros adicionales |
 
 Roles disponibles para `APP_EQUIPO_N_ROL`: `ADMINISTRADOR`, `REGENTE`, `CAJERO` y `AUXILIAR`. La cuenta de `ADMIN_CORREO` es la del propietario.
@@ -283,12 +306,13 @@ Roles disponibles para `APP_EQUIPO_N_ROL`: `ADMINISTRADOR`, `REGENTE`, `CAJERO` 
 - **La CSP permite scripts en línea:** las plantillas actuales los necesitan.
 - **Accesos en un archivo local:** roles, cuentas del equipo y auditoría se guardan en `datos/accesos.properties`. Funciona con un solo servidor y un disco persistente; para crecer conviene pasarlo a una base de datos.
 - **Los módulos de gestión están en desarrollo:** muestran su alcance, pero aún no tienen datos ni acciones.
-- **Fotos pendientes:** los productos usan ilustraciones hasta contar con las fotografías reales.
+- **Catálogo en un archivo local:** los cambios del panel se guardan en `datos/catalogo.properties` y las fotos en `datos/fotos`. Funciona con un solo servidor. La copia de GitHub Pages se genera con el catálogo inicial del repositorio, no con esos archivos.
+- **Fotos pendientes:** se pueden subir desde el panel. Mientras tanto, los productos usan ilustraciones.
 - **Datos de pago de ejemplo:** revisa los números de cuenta y el NIT antes de cualquier uso real.
 
 ## 🗺️ Próximos pasos
 
-- [ ] Agregar las fotos de los productos.
+- [ ] Subir las fotos de los productos desde el panel.
 - [ ] Incorporar una base de datos y una API en el servidor.
 - [ ] Validar cuentas, precios, pedidos y suscripciones en el servidor.
 - [ ] Construir los módulos de inventario, ventas, compras, caja, reportes y auditoría.

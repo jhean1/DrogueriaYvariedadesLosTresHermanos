@@ -164,7 +164,7 @@
             <button class="btn btn--secundario" type="submit">Cambiar rol</button>
           </form>
 
-          <form method="post" th:action="@{/admin/accesos/usuarios/{id}/estado(id=${u.id()})}" class="fila-accion fila-estado">
+          <form method="post" th:action="@{/admin/accesos/usuarios/{id}/estado(id=${u.id()})}" class="fila-accion fila-estado" th:attr="data-confirmar=${u.activa() ? 'La persona perderá el acceso al panel de inmediato, incluso si tiene una sesión abierta.' : 'La persona podrá volver a ingresar al panel.'},data-confirmar-titulo=${u.activa() ? 'Desactivar cuenta' : 'Activar cuenta'},data-confirmar-accion=${u.activa() ? 'Desactivar' : 'Activar'}">
             <input type="hidden" name="activa" th:value="${!u.activa()}">
             <div><strong th:text="${u.activa()} ? 'Cuenta activa' : 'Cuenta desactivada'">Estado</strong><p class="campo-ayuda" th:text="${u.activa()} ? 'Al desactivarla, la sesión abierta se cierra de inmediato.' : 'Al activarla, la persona podrá volver a entrar.'">Ayuda</p></div>
             <button class="btn" type="submit" th:classappend="${u.activa()} ? 'btn--peligro' : 'btn--exito'" th:text="${u.activa()} ? 'Desactivar' : 'Activar'">Cambiar</button>

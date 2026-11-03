@@ -36,7 +36,7 @@ PAGINAS = {
 EXCLUIDOS = {'css/admin.css', 'js/admin.js', 'js/panel.js'}
 
 RUTAS = 'perfil|login|registro|checkout|recibo|medicamentos|variedades|servicios|suscripciones|nosotros|contacto'
-ABSOLUTA = re.compile(rf'''(?<=['"`(])/(?=(?:{RUTAS})(?:['"`?#)\s]|$)|img/|js/|css/)''')
+ABSOLUTA = re.compile(rf'''(?<=['"`(])/(?=(?:{RUTAS})(?:['"`?#)\s]|$)|img/|js/|css/|productos/|\#)''')
 RAIZ_SOLA = re.compile(r'''(['"`])/\1''')
 
 # Equivale a la política del servidor; frame-ancestors no se admite en una etiqueta meta.
@@ -89,6 +89,14 @@ def generar(salida, base):
             shutil.copyfile(archivo, destino)
 
     shutil.copyfile(RAIZ / 'scripts/sitio/modo-estatico.js', salida / 'js/modo-estatico.js')
+    with urllib.request.urlopen(f'{ORIGEN}/js/catalogo.js', timeout=20) as r:
+        catalogo = r.read().decode('utf-8')
+    (salida / 'js/catalogo.js').write_text(ajustar_rutas(catalogo, base), encoding='utf-8')
+    for foto in set(re.findall(r'/productos/imagen/([\w.-]+)', catalogo)):
+        destino = salida / 'productos/imagen' / foto
+        destino.parent.mkdir(parents=True, exist_ok=True)
+        with urllib.request.urlopen(f'{ORIGEN}/productos/imagen/{foto}', timeout=20) as r:
+            destino.write_bytes(r.read())
     meta = f'<meta http-equiv="Content-Security-Policy" content="{CSP}">'
     modo = f'<script src="{base}/js/modo-estatico.js"></script>'
     for ruta, nombre in PAGINAS.items():
@@ -123,6 +131,8 @@ def main():
     p = argparse.ArgumentParser()
     p.add_argument('--salida', default='_sitio', type=pathlib.Path)
     p.add_argument('--base', default='/DrogueriaYvariedadesLosTresHermanos')
+    p.add_argument('--catalogo', default='datos/catalogo.properties')
+    p.add_argument('--fotos', default='datos/fotos')
     a = p.parse_args()
 
     jar = next((j for j in sorted((RAIZ / 'target').glob('*.jar')) if 'original' not in j.name), None)
@@ -131,7 +141,8 @@ def main():
 
     proceso = subprocess.Popen(
         ['java', '-jar', str(jar), f'--server.port={PUERTO}', f'--app.admin.clave={secrets.token_urlsafe(24)}',
-         f'--app.datos={tempfile.gettempdir()}/sitio-{secrets.token_hex(6)}.properties'],
+         f'--app.datos={tempfile.gettempdir()}/sitio-{secrets.token_hex(6)}.properties',
+         '--app.catalogo=' + a.catalogo, '--app.fotos=' + a.fotos],
         stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
     try:
         esperar_aplicacion()

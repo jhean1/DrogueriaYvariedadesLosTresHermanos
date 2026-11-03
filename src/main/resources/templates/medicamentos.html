@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="es">
-<head th:replace="~{fragments/tienda :: cabeza('Medicamentos', 'Catálogo de medicamentos: busca por nombre o categoría y elige presentación, concentración y marca.')}"></head>
+<head th:replace="~{fragments/tienda :: cabeza('Medicamentos', 'Catálogo de medicamentos: busca por nombre, marca o categoría y elige presentación, concentración y marca.')}"></head>
 <body>
   <th:block th:replace="~{fragments/tienda :: barra}"></th:block>
 
@@ -8,30 +8,24 @@
     <section class="catalogo-cabecera">
       <div class="contenedor">
         <nav class="migas" aria-label="Ruta"><a th:href="@{/}">Inicio</a><svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#chevron"/></svg><span aria-current="page">Medicamentos</span></nav>
-        <h1 class="titulo-pagina">Encuentra tu <span class="resaltado">medicamento.</span></h1>
-        <div class="buscador">
-          <svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#buscar"/></svg>
-          <label class="solo-lector" for="search-input">Buscar medicamento</label>
-          <input type="text" id="search-input" placeholder="Busca por nombre, por ejemplo: ibuprofeno" autocomplete="off">
-        </div>
-        <div class="chips-wrap" id="chips-categoria" role="group" aria-label="Filtrar por categoría">
-          <button class="chip-filtro activo" data-cat="all" type="button">Todos</button>
-          <button class="chip-filtro" data-cat="analgesicos" type="button">Analgésicos</button>
-          <button class="chip-filtro" data-cat="antiinflamatorios" type="button">Antiinflamatorios</button>
-          <button class="chip-filtro" data-cat="antibioticos" type="button">Antibióticos</button>
-          <button class="chip-filtro" data-cat="antihistaminicos" type="button">Antihistamínicos</button>
-          <button class="chip-filtro" data-cat="otros" type="button">Otros</button>
-        </div>
+        <h1 class="titulo-pagina">Medicamentos</h1>
+        <p class="cabecera-texto">Abre un producto para ver sus presentaciones, marcas y precios.</p>
+        <div class="chips-wrap" id="chips-categoria" role="group" aria-label="Filtrar por categoría"></div>
       </div>
     </section>
 
     <section class="contenedor catalogo">
       <div class="resultados-info">
         <span id="contador-resultados" role="status">Cargando...</span>
-        <div class="orden">
+        <div class="resultados-controles">
+          <div class="filtro-lista">
+            <svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#buscar"/></svg>
+            <label class="solo-lector" for="search-input">Filtrar esta lista</label>
+            <input type="search" id="search-input" placeholder="Filtrar esta lista" autocomplete="off">
+          </div>
           <label class="solo-lector" for="select-orden">Ordenar</label>
           <select class="select-orden" id="select-orden">
-            <option value="default">Ordenar por defecto</option>
+            <option value="default">Orden del catálogo</option>
             <option value="precio-asc">Precio: menor a mayor</option>
             <option value="precio-desc">Precio: mayor a menor</option>
             <option value="nombre">A - Z</option>
@@ -39,7 +33,7 @@
         </div>
       </div>
       <div class="medicamentos-grid" id="medications-list">
-        <div class="esqueleto esqueleto-tarjeta"></div><div class="esqueleto esqueleto-tarjeta"></div><div class="esqueleto esqueleto-tarjeta"></div>
+        <div class="esqueleto esqueleto-tarjeta"></div><div class="esqueleto esqueleto-tarjeta"></div><div class="esqueleto esqueleto-tarjeta"></div><div class="esqueleto esqueleto-tarjeta"></div>
       </div>
       <p class="nota-catalogo"><svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#info"/></svg> Productos sujetos a disponibilidad. Consulta a un profesional de la salud antes de usar cualquier medicamento.</p>
     </section>
@@ -53,247 +47,59 @@
   <th:block th:replace="~{fragments/tienda :: pie}"></th:block>
   <th:block th:replace="~{fragments/tienda :: carrito}"></th:block>
   <th:block th:replace="~{fragments/tienda :: scripts}"></th:block>
-  <script th:src="@{/js/arte.js}"></script>
-  <script th:src="@{/js/explorador-data.js}"></script>
   <script>
-  // ── HELPER: renderizar precio con descuento si hay suscripción ──
-  function renderPrecioHTML(precioOriginal) {
-    const desc = window.Suscripcion ? window.Suscripcion.descuento() : 0;
-    if (!desc) {
-      return `<span class="med-precio">${formatPrecio(precioOriginal)}</span>`;
-    }
-    const precioDesc = Math.round(precioOriginal * (1 - desc / 100));
-    return `
-      <span class="med-precio-original">${formatPrecio(precioOriginal)}</span>
-      <span class="med-precio con-descuento">${formatPrecio(precioDesc)}</span>`;
-  }
+    document.addEventListener('DOMContentLoaded', () => {
+      const esc = Seguridad.esc;
+      const parametros = new URLSearchParams(location.search);
+      const filtro = { cat: 'all', busqueda: parametros.get('q') || '', orden: 'default' };
+      const cats = CATEGORIAS.filter(c => c.tipo === 'medicamento');
+      if (cats.some(c => c.id === parametros.get('cat'))) filtro.cat = parametros.get('cat');
 
-  // ── ESTADO POR CARD ──────────────────────────────────────
-  // Guardamos: { medId: { tipo, conc, marca } }
-  const estadoSel = {};
+      const chips = document.getElementById('chips-categoria');
+      chips.innerHTML = [{ id: 'all', nombre: 'Todos' }, ...cats].map(c =>
+        `<button class="chip-filtro ${c.id === filtro.cat ? 'activo' : ''}" data-cat="${esc(c.id)}" type="button" aria-pressed="${c.id === filtro.cat}">${esc(c.nombre)}</button>`).join('');
 
-  function initEstado(med) {
-    if (!estadoSel[med.id]) {
-      const p = med.presentaciones[0];
-      estadoSel[med.id] = { tipo: p.tipo, conc: p.conc, marca: p.marca };
-    }
-  }
+      const indice = Buscador.indice().filter(e => e.tipo === 'medicamento');
 
-  function getPresActual(med) {
-    initEstado(med);
-    const e = estadoSel[med.id];
-    return med.presentaciones.find(p =>
-      p.tipo === e.tipo && p.conc === e.conc && p.marca === e.marca
-    ) || med.presentaciones[0];
-  }
+      function render() {
+        let lista = filtro.busqueda ? Buscador.buscar(filtro.busqueda, indice).map(e => e.p) : [...MEDICAMENTOS];
+        if (filtro.cat !== 'all') lista = lista.filter(m => m.cat === filtro.cat);
+        if (filtro.orden === 'nombre') lista.sort((a, b) => a.nombre.localeCompare(b.nombre));
+        if (filtro.orden === 'precio-asc') lista.sort((a, b) => Ficha.desde(a) - Ficha.desde(b));
+        if (filtro.orden === 'precio-desc') lista.sort((a, b) => Ficha.desde(b) - Ficha.desde(a));
 
-  // ── FILTROS ───────────────────────────────────────────────
-  let filtro = { cat:'all', busqueda:'', orden:'default' };
+        const contador = document.getElementById('contador-resultados');
+        const enVariedades = filtro.busqueda ? Buscador.buscar(filtro.busqueda).filter(e => e.tipo === 'variedad').length : 0;
+        contador.innerHTML = `<strong>${lista.length}</strong> medicamento${lista.length !== 1 ? 's' : ''}${filtro.busqueda ? ` para "${esc(filtro.busqueda)}"` : ''}` +
+          (enVariedades ? ` · <a class="enlace" href="/variedades?q=${encodeURIComponent(filtro.busqueda)}">${enVariedades} en variedades</a>` : '');
 
-  // ── RENDER CARDS ─────────────────────────────────────────
-  function render() {
-    let lista = [...MEDICAMENTOS];
-    if (filtro.cat !== 'all') lista = lista.filter(m => m.cat === filtro.cat);
-    if (filtro.busqueda) {
-      const q = filtro.busqueda.toLowerCase();
-      lista = lista.filter(m => m.nombre.toLowerCase().includes(q) || m.desc.toLowerCase().includes(q));
-    }
-    if (filtro.orden === 'nombre') {
-      lista.sort((a,b) => a.nombre.localeCompare(b.nombre));
-    } else if (filtro.orden === 'precio-asc' || filtro.orden === 'precio-desc') {
-      lista.sort((a,b) => {
-        const pa = getPresActual(a).precio;
-        const pb = getPresActual(b).precio;
-        return filtro.orden === 'precio-asc' ? pa - pb : pb - pa;
-      });
-    }
+        const grid = document.getElementById('medications-list');
+        if (!lista.length) {
+          const consulta = encodeURIComponent(`Hola, estoy buscando ${filtro.busqueda || 'un medicamento'}. ¿Lo tienen disponible?`);
+          grid.innerHTML = `<div class="vacio vacio-busqueda"><div class="vacio-icono">${Experiencia.icono('buscar')}</div>
+            <h3>No encontramos ese medicamento</h3>
+            <p>Revisa cómo está escrito, prueba otra categoría o pregúntanos directamente.</p>
+            <a class="btn btn--secundario btn--sm" href="https://wa.me/573225065554?text=${consulta}" target="_blank" rel="noopener">${Experiencia.icono('whatsapp')} Preguntar por WhatsApp</a></div>`;
+          return;
+        }
+        grid.innerHTML = lista.map(Ficha.tarjetaMedicamento).join('');
+      }
 
-    const grid = document.getElementById('medications-list');
-    document.getElementById('contador-resultados').innerHTML =
-      `Mostrando <strong>${lista.length}</strong> medicamento${lista.length!==1?'s':''}`;
-
-    if (!lista.length) {
-      grid.innerHTML = `<div class="vacio"><div class="vacio-icono"><svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#buscar"/></svg></div><h3>Sin resultados</h3><p>Intenta con otro término o categoría.</p></div>`;
-      return;
-    }
-
-    grid.innerHTML = lista.map((m,i) => renderCard(m, i)).join('');
-    attachCardEvents();
-  }
-
-  function renderCard(m, i) {
-    initEstado(m);
-    const e    = estadoSel[m.id];
-    const pres = getPresActual(m);
-    const tipos = [...new Set(m.presentaciones.map(p => p.tipo))];
-    const concs = [...new Set(m.presentaciones.filter(p => p.tipo === e.tipo).map(p => p.conc))];
-    const marcas = m.presentaciones.filter(p => p.tipo === e.tipo && p.conc === e.conc);
-
-    return `<article class="med-card" data-med="${m.id}" style="--i:${Math.min(i, 9)}">
-      <div class="med-arte">${Arte.medicamento(m, pres)}</div>
-      <div class="med-body">
-        <span class="insignia insignia--azul med-categoria">${LABELS_CAT[m.cat]||m.cat}</span>
-        <h2 class="med-nombre">${m.nombre}</h2>
-        <p class="med-desc">${m.desc}</p>
-      </div>
-      <div class="med-selector">
-        <span class="selector-label">Presentación</span>
-        <div class="selector-row" data-grupo="tipo">
-          ${tipos.map(t => `<button type="button" class="sel-btn ${t===e.tipo?'activo':''}" data-tipo="${t}">${t}</button>`).join('')}
-        </div>
-        <span class="selector-label">Concentración</span>
-        <div class="selector-row" data-grupo="conc">
-          ${concs.map(c => `<button type="button" class="sel-btn ${c===e.conc?'activo':''}" data-conc="${c}">${c}</button>`).join('')}
-        </div>
-        <span class="selector-label">Marca</span>
-        <div class="selector-row" data-grupo="marca">
-          ${marcas.map(p => `<button type="button" class="sel-btn ${p.marca===e.marca?'activo':''}" data-marca="${p.marca}" data-presid="${p.id}">${p.marca}</button>`).join('')}
-        </div>
-      </div>
-      <div class="med-footer">
-        <div class="med-precio-wrap">
-          ${renderPrecioHTML(pres.precio)}
-          <span class="med-precio-unit">${pres.tipo} · ${pres.conc} · ${pres.marca}</span>
-        </div>
-        <button type="button" class="btn btn--primario btn--sm btn-agregar" data-id="${m.id}" aria-label="Agregar ${m.nombre} al carrito">
-          <svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#mas"/></svg> Agregar
-        </button>
-      </div>
-    </article>`;
-  }
-
-  function actualizarCard(card, med) {
-    const e    = estadoSel[med.id];
-    const pres = getPresActual(med);
-    card.querySelector('.med-arte').innerHTML = Arte.medicamento(med, pres);
-
-    // Actualizar concentraciones disponibles para el tipo
-    const concs = [...new Set(
-      med.presentaciones.filter(p => p.tipo === e.tipo).map(p => p.conc)
-    )];
-    const concRow = card.querySelector('[data-grupo="conc"]');
-    concRow.innerHTML = concs.map(c => `<button type="button" class="sel-btn ${c===e.conc?'activo':''}" data-conc="${c}">${c}</button>
-    `).join('');
-
-    // Actualizar marcas disponibles para tipo+conc
-    const marcas = med.presentaciones.filter(p => p.tipo === e.tipo && p.conc === e.conc);
-    const marcaRow = card.querySelector('[data-grupo="marca"]');
-    marcaRow.innerHTML = marcas.map(p => `<button type="button" class="sel-btn ${p.marca===e.marca?'activo':''}" data-marca="${p.marca}" data-presid="${p.id}">
-        ${p.marca}
-      </button>
-    `).join('');
-
-    // Actualizar precio (con descuento si hay suscripción)
-    card.querySelector('.med-precio-wrap').innerHTML =
-      renderPrecioHTML(pres.precio) +
-      `<span class="med-precio-unit">${pres.tipo} · ${pres.conc} · ${pres.marca}</span>`;
-
-    // Re-adjuntar eventos a los nuevos botones
-    attachRowEvents(card, med);
-  }
-
-  function attachRowEvents(card, med) {
-    // Tipo
-    card.querySelectorAll('[data-grupo="tipo"] .sel-btn').forEach(btn => {
-      btn.addEventListener('click', () => {
-        const nuevoTipo = btn.dataset.tipo;
-        // Verificar si la conc actual existe en el nuevo tipo
-        const e = estadoSel[med.id];
-        const concsDisp = [...new Set(
-          med.presentaciones.filter(p => p.tipo === nuevoTipo).map(p => p.conc)
-        )];
-        const nuevaConc  = concsDisp.includes(e.conc) ? e.conc : concsDisp[0];
-        const marcasDisp = med.presentaciones.filter(p => p.tipo === nuevoTipo && p.conc === nuevaConc);
-        const nuevaMarca = marcasDisp.find(p => p.marca === e.marca)?.marca || marcasDisp[0].marca;
-
-        estadoSel[med.id] = { tipo: nuevoTipo, conc: nuevaConc, marca: nuevaMarca };
-
-        // Marcar activo en tipo
-        card.querySelectorAll('[data-grupo="tipo"] .sel-btn').forEach(b => b.classList.remove('activo'));
-        btn.classList.add('activo');
-
-        actualizarCard(card, med);
-      });
-    });
-
-    // Concentración
-    card.querySelectorAll('[data-grupo="conc"] .sel-btn').forEach(btn => {
-      btn.addEventListener('click', () => {
-        const nuevaConc = btn.dataset.conc;
-        const e = estadoSel[med.id];
-        const marcasDisp = med.presentaciones.filter(p => p.tipo === e.tipo && p.conc === nuevaConc);
-        const nuevaMarca = marcasDisp.find(p => p.marca === e.marca)?.marca || marcasDisp[0].marca;
-
-        estadoSel[med.id] = { tipo: e.tipo, conc: nuevaConc, marca: nuevaMarca };
-
-        card.querySelectorAll('[data-grupo="conc"] .sel-btn').forEach(b => b.classList.remove('activo'));
-        btn.classList.add('activo');
-
-        actualizarCard(card, med);
-      });
-    });
-
-    // Marca
-    card.querySelectorAll('[data-grupo="marca"] .sel-btn').forEach(btn => {
-      btn.addEventListener('click', () => {
-        const e = estadoSel[med.id];
-        estadoSel[med.id] = { tipo: e.tipo, conc: e.conc, marca: btn.dataset.marca };
-
-        card.querySelectorAll('[data-grupo="marca"] .sel-btn').forEach(b => b.classList.remove('activo'));
-        btn.classList.add('activo');
-
-        const pres = getPresActual(med);
-        card.querySelector('.med-precio-wrap').innerHTML =
-          renderPrecioHTML(pres.precio) +
-          `<span class="med-precio-unit">${pres.tipo} · ${pres.conc} · ${pres.marca}</span>`;
-      });
-    });
-  }
-
-  function attachCardEvents() {
-    document.querySelectorAll('.med-card').forEach(card => {
-      const med = MEDICAMENTOS.find(m => m.id === +card.dataset.med);
-      if (!med) return;
-      attachRowEvents(card, med);
-
-      // Botón agregar (precio con descuento si hay suscripción)
-      card.querySelector('.btn-agregar').addEventListener('click', () => {
-        const pres = getPresActual(med);
-        const precioFinal = (window.Suscripcion ? window.Suscripcion.aplicar(pres.precio) : pres.precio);
-        Carrito.agregar({
-          id:      pres.id,
-          nombre:  med.nombre,
-          detalle: `${pres.conc} · ${pres.tipo} · ${pres.marca}`,
-          precio:  precioFinal,
-          imagen:  med.imagen
-        });
-        renderDrawer();
-      });
-    });
-  }
-
-  // ── INIT ─────────────────────────────────────────────────
-  document.addEventListener('DOMContentLoaded', () => {
-    render();
-
-    document.getElementById('search-input').addEventListener('input', e => {
-      filtro.busqueda = e.target.value.trim();
+      const entrada = document.getElementById('search-input');
+      entrada.value = filtro.busqueda;
       render();
+
+      entrada.addEventListener('input', (e) => { filtro.busqueda = e.target.value.trim(); render(); });
+      chips.addEventListener('click', (e) => {
+        const chip = e.target.closest('.chip-filtro');
+        if (!chip) return;
+        chips.querySelectorAll('.chip-filtro').forEach(c => { c.classList.toggle('activo', c === chip); c.setAttribute('aria-pressed', c === chip); });
+        filtro.cat = chip.dataset.cat;
+        render();
+      });
+      document.getElementById('select-orden').addEventListener('change', (e) => { filtro.orden = e.target.value; render(); });
+      initAvatar({ perfilUrl: '/perfil', logoutUrl: '/' });
     });
-    document.getElementById('chips-categoria').addEventListener('click', e => {
-      const chip = e.target.closest('.chip-filtro');
-      if (!chip) return;
-      document.querySelectorAll('.chip-filtro').forEach(c => c.classList.remove('activo'));
-      chip.classList.add('activo');
-      filtro.cat = chip.dataset.cat;
-      render();
-    });
-    document.getElementById('select-orden').addEventListener('change', e => {
-      filtro.orden = e.target.value;
-      render();
-    });
-    initAvatar({ perfilUrl: '/perfil', logoutUrl: '/' });
-  });
   </script>
 </body>
 </html>

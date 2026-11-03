@@ -1,20 +1,16 @@
 <!DOCTYPE html>
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
 <head th:replace="~{fragments/tienda :: cabeza('Suscripciones', 'Planes de suscripción con descuento en medicamentos y variedades.')}"></head>
-<body class="sobre-oscuro">
+<body>
   <th:block th:replace="~{fragments/tienda :: barra}"></th:block>
 
   <main id="contenido">
     <section class="sus-hero">
-      <div class="hero-fondo" aria-hidden="true"><div class="hero-aura" data-paralaje="-.4"></div><div class="hero-rejilla"></div></div>
       <div class="contenedor sus-hero-interior">
         <div id="badge-hero-activo"></div>
-        <nav class="migas migas--claras entra" style="--i:0" aria-label="Ruta"><a th:href="@{/}">Inicio</a><svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#chevron"/></svg><span aria-current="page">Suscripciones</span></nav>
-        <h1 class="hero-titulo hero-titulo--centro">
-          <span class="linea"><span class="entra-linea" style="--i:1">Compra lo de siempre.</span></span>
-          <span class="linea"><span class="entra-linea hero-acento" style="--i:2">Paga menos.</span></span>
-        </h1>
-        <p class="hero-desc entra" style="--i:4">Suscríbete y obtén descuentos automáticos en todos tus medicamentos y variedades.</p>
+        <nav class="migas" aria-label="Ruta"><a th:href="@{/}">Inicio</a><svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#chevron"/></svg><span aria-current="page">Suscripciones</span></nav>
+        <h1>Compra lo de siempre y paga menos</h1>
+        <p class="hero-desc">Suscríbete y obtén descuentos automáticos en todos tus medicamentos y variedades.</p>
       </div>
     </section>
 
@@ -38,7 +34,7 @@
       </div>
 
       <div class="planes-grid" data-escalonar>
-        <article class="plan-card" data-plan="basico" data-descuento="3" data-precio="4900" data-brillo>
+        <article class="plan-card" data-plan="basico" data-descuento="3" data-precio="4900">
           <span class="plan-icono"><svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#brote"/></svg></span>
           <h2 class="plan-nombre">Básico</h2>
           <p class="plan-desc">Empieza a ahorrar en tus compras de la droguería.</p>
@@ -50,7 +46,7 @@
           </ul>
           <button class="btn btn--secundario btn--bloque btn-plan" type="button" onclick="seleccionarPlan('basico',3,4900)">Suscribirme</button>
         </article>
-        <article class="plan-card" data-plan="estandar" data-descuento="5" data-precio="9900" data-brillo>
+        <article class="plan-card" data-plan="estandar" data-descuento="5" data-precio="9900">
           <span class="plan-icono"><svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#capsula"/></svg></span>
           <h2 class="plan-nombre">Estándar</h2>
           <p class="plan-desc">Ahorra más en tus medicamentos y variedades del mes.</p>
@@ -62,7 +58,7 @@
           </ul>
           <button class="btn btn--secundario btn--bloque btn-plan" type="button" onclick="seleccionarPlan('estandar',5,9900)">Suscribirme</button>
         </article>
-        <article class="plan-card popular" data-plan="regular" data-descuento="10" data-precio="14900" data-brillo>
+        <article class="plan-card popular" data-plan="regular" data-descuento="10" data-precio="14900">
           <span class="badge-popular">Recomendado</span>
           <span class="plan-icono"><svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#hospital"/></svg></span>
           <h2 class="plan-nombre">Regular</h2>
@@ -76,7 +72,7 @@
           </ul>
           <button class="btn btn--primario btn--bloque btn-plan" type="button" onclick="seleccionarPlan('regular',10,14900)">Suscribirme</button>
         </article>
-        <article class="plan-card" data-plan="premium" data-descuento="15" data-precio="19900" data-brillo>
+        <article class="plan-card" data-plan="premium" data-descuento="15" data-precio="19900">
           <span class="plan-icono plan-icono--vino"><svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#corona"/></svg></span>
           <h2 class="plan-nombre">Premium</h2>
           <p class="plan-desc">Máximo ahorro, domicilio prioritario y acceso exclusivo a ofertas.</p>
@@ -96,8 +92,7 @@
 
     <section class="contenedor bloque" aria-labelledby="titulo-comparativa">
       <header class="encabezado revelar">
-        <span class="ante">Comparativa</span>
-        <h2 id="titulo-comparativa" class="titulo-seccion">Todos los planes, lado a lado.</h2>
+        <h2 id="titulo-comparativa" class="titulo-seccion">Todos los planes, lado a lado</h2>
       </header>
       <div class="tarjeta tabla-marco revelar">
         <table class="tabla tabla-comparativa">
@@ -118,8 +113,7 @@
     <section class="bloque bloque--tono" aria-labelledby="titulo-faq">
       <div class="contenedor faq-rejilla">
         <header class="revelar">
-          <span class="ante">Preguntas frecuentes</span>
-          <h2 id="titulo-faq" class="titulo-seccion">Lo que suelen preguntarnos.</h2>
+          <h2 id="titulo-faq" class="titulo-seccion">Lo que suelen preguntarnos</h2>
         </header>
         <div class="faq-lista revelar">
           <div class="faq-item">
@@ -327,7 +321,7 @@
         }
 
         banner.classList.add('visible');
-        document.getElementById('banner-plan-nombre').textContent = '✓ ' + info.nombre + ' activo';
+        document.getElementById('banner-plan-nombre').textContent = info.nombre + ' activo';
         document.getElementById('banner-plan-desc').textContent =
           `${sus.descuento}% de descuento activo en toda la tienda${fechaTexto}`;
         badgeHero.innerHTML =
@@ -338,7 +332,7 @@
           alertaVenc.style.display = 'flex';
           const txt = alertaVenc.querySelector('.alerta-venc-txt');
           if (txt) txt.textContent =
-            `⚠️ Tu plan vence en ${diasRestantes} día${diasRestantes === 1 ? '' : 's'}. Renuévalo para no perder tu descuento.`;
+            `Tu plan vence en ${diasRestantes} día${diasRestantes === 1 ? '' : 's'}. Renuévalo para no perder tu descuento.`;
         } else if (alertaVenc) {
           alertaVenc.style.display = 'none';
         }

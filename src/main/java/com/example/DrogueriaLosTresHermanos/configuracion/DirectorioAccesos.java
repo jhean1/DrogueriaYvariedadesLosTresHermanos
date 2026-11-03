@@ -181,6 +181,11 @@ public class DirectorioAccesos implements UserDetailsService {
         registrar(conocida ? nombre : "Cuenta desconocida", "Inicio de sesión fallido", "Acceso rechazado");
     }
 
+    /** Registra una acción de otro módulo del panel en la auditoría. */
+    public void auditar(String actor, String accion, String detalle) {
+        registrar(actor, accion, detalle);
+    }
+
     // ── Consultas ─────────────────────────────────────────────
 
     public synchronized List<Rol> roles() {

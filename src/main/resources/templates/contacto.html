@@ -7,7 +7,7 @@
   <main id="contenido">
     <section class="cabecera contenedor">
       <nav class="migas revelar" aria-label="Ruta"><a th:href="@{/}">Inicio</a><svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#chevron"/></svg><span aria-current="page">Contacto</span></nav>
-      <h1 class="titulo-pagina revelar">Hablemos. <span class="resaltado">Estamos cerca.</span></h1>
+      <h1 class="titulo-pagina revelar">Estamos aquí para ayudarte</h1>
       <p class="cabecera-texto revelar">Estamos en Arjona, Bolívar, listos para atenderte.</p>
     </section>
 
@@ -47,12 +47,12 @@
         </form>
       </div>
 
-      <div class="mapa-card revelar revelar--der">
+      <div class="mapa-card revelar">
         <iframe
           src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3930.123456!2d-75.3494!3d10.2531!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMTDCsDE1JzExLjIiTiA3NcKwMjAnNTcuOCJX!5e0!3m2!1ses!2sco!4v1234567890!5m2!1ses!2sco&amp;q=Diagonal+52+50A-755+Arjona+Bolivar+Colombia"
           allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"
           title="Droguería Los Tres Hermanos, Diagonal 52 50A-755, Arjona, Bolívar"></iframe>
-        <a href="https://www.google.com/maps/search/?api=1&amp;query=Diagonal+52+50A-755+Arjona+Bolivar+Colombia" target="_blank" rel="noopener" class="btn btn--claro btn--sm mapa-boton">
+        <a href="https://www.google.com/maps/search/?api=1&amp;query=Diagonal+52+50A-755+Arjona+Bolivar+Colombia" target="_blank" rel="noopener" class="btn btn--secundario btn--sm mapa-boton">
           <svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#ubicacion"/></svg> Ver en Google Maps
         </a>
       </div>
@@ -78,7 +78,7 @@
       const asunto  = document.getElementById('f-asunto').value.trim();
 
       if (!nombre || !mensaje) {
-        Toast.mostrar('⚠️ Por favor completa todos los campos.');
+        Toast.mostrar('Por favor completa todos los campos.');
         return;
       }
 
@@ -90,7 +90,7 @@
 
       window.open(`https://wa.me/573225065554?text=${encodeURIComponent(msg)}`, '_blank', 'noopener');
       this.reset();
-      Toast.mostrar('✅ Mensaje enviado por WhatsApp');
+      Toast.mostrar('Mensaje enviado por WhatsApp');
     });
 
     document.addEventListener('DOMContentLoaded', () => {

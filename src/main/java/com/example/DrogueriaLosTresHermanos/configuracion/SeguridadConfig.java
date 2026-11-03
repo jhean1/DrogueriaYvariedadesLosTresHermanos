@@ -44,6 +44,12 @@ public class SeguridadConfig {
         http
             .authorizeHttpRequests(rutas -> {
                 rutas.requestMatchers("/admin/login").permitAll();
+                rutas.requestMatchers("/admin/productos/nuevo").hasAuthority(Permiso.PRODUCTOS_CREAR.getCodigo());
+                rutas.requestMatchers(HttpMethod.POST, "/admin/productos/*/visibilidad").hasAuthority(Permiso.PRODUCTOS_ELIMINAR.getCodigo());
+                rutas.requestMatchers("/admin/productos/*").hasAuthority(Permiso.PRODUCTOS_EDITAR.getCodigo());
+                rutas.requestMatchers(HttpMethod.GET, "/admin/productos").hasAuthority(Permiso.PRODUCTOS_VER.getCodigo());
+                rutas.requestMatchers("/admin/productos/**").denyAll();
+                rutas.requestMatchers("/admin/categorias", "/admin/categorias/**").hasAuthority(Permiso.PRODUCTOS_EDITAR.getCodigo());
                 rutas.requestMatchers(HttpMethod.POST, "/admin/accesos/roles/*/permisos", "/admin/accesos/usuarios/*/permisos")
                     .hasAuthority(Permiso.PERMISOS_GESTIONAR.getCodigo());
                 rutas.requestMatchers(HttpMethod.POST, "/admin/accesos/roles").hasAuthority(Permiso.ROLES_GESTIONAR.getCodigo());

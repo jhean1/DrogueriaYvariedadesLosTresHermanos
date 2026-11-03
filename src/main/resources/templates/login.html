@@ -4,21 +4,20 @@
 <body class="pagina-auth">
   <main class="auth">
     <aside class="auth-marca" aria-hidden="true">
-      <div class="hero-fondo"><div class="hero-aura" data-paralaje="-.4"></div><div class="hero-rejilla"></div></div>
-      <a th:href="@{/}" class="auth-logo" tabindex="-1"><img th:src="@{/img/marca/logo-horizontal-oscuro.svg}" alt="" width="330" height="50"></a>
+      <a th:href="@{/}" class="auth-logo" tabindex="-1"><img class="logo-claro" th:src="@{/img/marca/logo-horizontal.svg}" alt="" width="290" height="44"><img class="logo-oscuro" th:src="@{/img/marca/logo-horizontal-oscuro.svg}" alt="" width="290" height="44"></a>
       <div class="auth-marca-texto">
-        <h2 class="entra" style="--i:1">Tus pedidos y beneficios, en un solo lugar.</h2>
-        <ul class="auth-puntos entra" style="--i:3">
+        <h2>Tus pedidos y beneficios, en un solo lugar.</h2>
+        <ul class="auth-puntos">
           <li><svg class="ic"><use href="/img/iconos.svg#check"/></svg>Consulta tus pedidos anteriores</li>
           <li><svg class="ic"><use href="/img/iconos.svg#check"/></svg>Gestiona tu suscripción</li>
           <li><svg class="ic"><use href="/img/iconos.svg#check"/></svg>Compra sin volver a escribir tus datos</li>
         </ul>
       </div>
-      <img class="auth-simbolo" th:src="@{/img/marca/isotipo-reducido-oscuro.svg}" alt="" data-paralaje=".6">
     </aside>
 
     <section class="auth-panel">
-      <a th:href="@{/}" class="auth-logo-movil"><img th:src="@{/img/marca/logo-horizontal.svg}" alt="Los Tres Hermanos, ir al inicio" width="290" height="44"></a>
+      <div class="auth-tema"><button th:replace="~{fragments/tienda :: tema}"></button></div>
+      <a th:href="@{/}" class="auth-logo-movil" aria-label="Los Tres Hermanos, ir al inicio"><img class="logo-claro" th:src="@{/img/marca/logo-horizontal.svg}" alt="" width="290" height="44"><img class="logo-oscuro" th:src="@{/img/marca/logo-horizontal-oscuro.svg}" alt="" width="290" height="44"></a>
       <div class="auth-formulario entra" style="--i:0">
         <nav class="migas" aria-label="Ruta"><a th:href="@{/}">Inicio</a><svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#chevron"/></svg><span aria-current="page">Iniciar sesión</span></nav>
         <h1>Bienvenido de nuevo</h1>
@@ -125,7 +124,7 @@
           id: cliente.id, nombre: cliente.nombre, correo: cliente.correo,
           telefono: cliente.telefono, direccion: cliente.direccion, rol: 'cliente'
         }));
-        toast(`✓ Bienvenido, ${cliente.nombre.split(' ')[0]}!`);
+        toast(`Bienvenido, ${cliente.nombre.split(' ')[0]}!`);
         // Redirigir a la página de retorno si viene de suscripciones
         const params  = new URLSearchParams(window.location.search);
         const destino = Seguridad.rutaRetornoSegura(params.get('retorno'), '/');
@@ -139,7 +138,7 @@
         ['f-correo','f-pass'].forEach(id => document.getElementById(id).classList.add('error'));
         errTxt.textContent = 'Correo o contraseña incorrectos.';
         errEl.classList.add('visible');
-        toast('⚠️ Credenciales incorrectas', false);
+        toast('Credenciales incorrectas', false);
       }
     }
 

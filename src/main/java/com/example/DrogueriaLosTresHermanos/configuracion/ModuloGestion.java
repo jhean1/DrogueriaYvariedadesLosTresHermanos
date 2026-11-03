@@ -10,7 +10,7 @@ public enum ModuloGestion {
     INVENTARIO("inventario", "Inventario", "caja",
         "Control de existencias, lotes y vencimientos para evitar faltantes y pérdidas.",
         Permiso.INVENTARIO_VER,
-        List.of("Productos y categorías", "Existencias y stock mínimo o máximo", "Lotes y fechas de vencimiento",
+        List.of("Existencias y stock mínimo o máximo", "Lotes y fechas de vencimiento",
             "Movimientos y ajustes", "Conteos físicos", "Alertas de inventario")),
 
     VENTAS("ventas", "Ventas y POS", "recibo",

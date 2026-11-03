@@ -4,21 +4,20 @@
 <body class="pagina-auth">
   <main class="auth auth--registro">
     <aside class="auth-marca" aria-hidden="true">
-      <div class="hero-fondo"><div class="hero-aura" data-paralaje="-.4"></div><div class="hero-rejilla"></div></div>
-      <a th:href="@{/}" class="auth-logo" tabindex="-1"><img th:src="@{/img/marca/logo-horizontal-oscuro.svg}" alt="" width="330" height="50"></a>
+      <a th:href="@{/}" class="auth-logo" tabindex="-1"><img class="logo-claro" th:src="@{/img/marca/logo-horizontal.svg}" alt="" width="290" height="44"><img class="logo-oscuro" th:src="@{/img/marca/logo-horizontal-oscuro.svg}" alt="" width="290" height="44"></a>
       <div class="auth-marca-texto">
-        <h2 class="entra" style="--i:1">Crea tu cuenta y compra con más comodidad.</h2>
-        <ul class="auth-puntos entra" style="--i:3">
+        <h2>Crea tu cuenta y compra con más comodidad.</h2>
+        <ul class="auth-puntos">
           <li><svg class="ic"><use href="/img/iconos.svg#documento"/></svg>Historial de pedidos y facturas</li>
           <li><svg class="ic"><use href="/img/iconos.svg#casa"/></svg>Pedidos a domicilio en Arjona</li>
           <li><svg class="ic"><use href="/img/iconos.svg#corazon"/></svg>Tus productos favoritos a mano</li>
         </ul>
       </div>
-      <img class="auth-simbolo" th:src="@{/img/marca/isotipo-reducido-oscuro.svg}" alt="" data-paralaje=".6">
     </aside>
 
     <section class="auth-panel">
-      <a th:href="@{/}" class="auth-logo-movil"><img th:src="@{/img/marca/logo-horizontal.svg}" alt="Los Tres Hermanos, ir al inicio" width="290" height="44"></a>
+      <div class="auth-tema"><button th:replace="~{fragments/tienda :: tema}"></button></div>
+      <a th:href="@{/}" class="auth-logo-movil" aria-label="Los Tres Hermanos, ir al inicio"><img class="logo-claro" th:src="@{/img/marca/logo-horizontal.svg}" alt="" width="290" height="44"><img class="logo-oscuro" th:src="@{/img/marca/logo-horizontal-oscuro.svg}" alt="" width="290" height="44"></a>
       <div class="auth-formulario auth-formulario--ancho entra" style="--i:0">
         <nav class="migas" aria-label="Ruta"><a th:href="@{/}">Inicio</a><svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#chevron"/></svg><span aria-current="page">Crear cuenta</span></nav>
         <h1>Crear mi cuenta</h1>
@@ -138,7 +137,7 @@
       document.getElementById('acepto-terminos').checked = true;
       actualizarBoton();
       cerrarModal();
-      toast('✓ Términos aceptados');
+      toast('Términos aceptados');
     }
 
     // Cerrar modal al hacer clic fuera
@@ -236,7 +235,7 @@
       }));
       sessionStorage.setItem('lth_recien_registro', '1');
 
-      toast('✓ ¡Cuenta creada exitosamente!');
+      toast('¡Cuenta creada exitosamente!');
       // Deshabilitar el botón SOLO después de guardar correctamente
       btn.disabled = true;
 
