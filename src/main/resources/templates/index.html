@@ -137,6 +137,19 @@
       </div>
     </section>
 
+    <!-- Variedades: tono cálido, distinto del bloque farmacéutico -->
+    <section class="bloque-variedades" aria-labelledby="titulo-bloque-variedades">
+      <div class="contenedor bloque-variedades-interior">
+        <div class="vitrina" id="vitrina-variedades" aria-hidden="true" data-escalonar></div>
+        <div class="revelar revelar--der">
+          <span class="ante ante--borgona">Variedades</span>
+          <h2 id="titulo-bloque-variedades" class="titulo-seccion">Y también lo de todos los días.</h2>
+          <p class="bloque-variedades-texto">Perfumes, útiles escolares y cuidado personal, en el mismo lugar donde compras tus medicamentos.</p>
+          <a th:href="@{/variedades}" class="btn btn--oscuro">Ver variedades <svg class="ic ic-mueve" aria-hidden="true"><use href="/img/iconos.svg#flecha"/></svg></a>
+        </div>
+      </div>
+    </section>
+
     <!-- Beneficios: lista sin tarjetas -->
     <section class="bloque contenedor beneficios" aria-labelledby="titulo-beneficios">
       <header class="revelar beneficios-cabeza">
@@ -236,6 +249,9 @@
           <h3>${esc(p.nombre)}</h3>
           <strong>${esc(p.precio)}</strong>
         </a>`).join('');
+
+      document.getElementById('vitrina-variedades').innerHTML =
+        [VARIEDADES[1], VARIEDADES[6], VARIEDADES[9]].map(v => `<div>${Arte.variedad(v)}</div>`).join('');
 
       const conteos = {};
       MEDICAMENTOS.forEach(m => { conteos[m.cat] = (conteos[m.cat] || 0) + 1; });

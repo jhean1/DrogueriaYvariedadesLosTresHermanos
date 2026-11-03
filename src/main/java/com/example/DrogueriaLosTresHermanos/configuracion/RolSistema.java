@@ -1,20 +1,13 @@
 package com.example.DrogueriaLosTresHermanos.configuracion;
 
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.EnumSet;
-import java.util.List;
 import java.util.Set;
 
 import static com.example.DrogueriaLosTresHermanos.configuracion.Permiso.*;
 
-/**
- * Roles del equipo de la droguería y sus permisos efectivos.
- * Mientras no exista base de datos, esta tabla es la fuente de verdad.
- */
+/** Roles iniciales del equipo. Desde el panel se pueden ajustar y crear otros (ver DirectorioAccesos). */
 public enum RolSistema {
 
     PROPIETARIO("Propietario", "Acceso completo, usuarios, roles, finanzas y auditoría.",
@@ -53,16 +46,4 @@ public enum RolSistema {
     public String getNombre() { return nombre; }
     public String getDescripcion() { return descripcion; }
     public Set<Permiso> getPermisos() { return permisos; }
-
-    public boolean tiene(Permiso permiso) {
-        return permisos.contains(permiso);
-    }
-
-    /** Autoridades de Spring Security: el rol y cada uno de sus permisos. */
-    public List<GrantedAuthority> autoridades() {
-        List<GrantedAuthority> autoridades = new ArrayList<>();
-        autoridades.add(new SimpleGrantedAuthority("ROLE_" + name()));
-        permisos.forEach(p -> autoridades.add(new SimpleGrantedAuthority(p.getCodigo())));
-        return autoridades;
-    }
 }

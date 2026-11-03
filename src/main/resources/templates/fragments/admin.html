@@ -51,16 +51,17 @@
     </div>
 
     <div class="lateral-grupo" th:if="${!perfil.modulos().isEmpty()}">
-      <p class="lateral-titulo">Gestión <span class="lateral-etiqueta">En desarrollo</span></p>
-      <a class="sidebar-item sidebar-item--futuro" th:each="m : ${perfil.modulos()}" th:href="@{${m.ruta}}" th:classappend="${seccionActiva == m.slug} ? 'activo'" th:attrappend="aria-current=${seccionActiva == m.slug} ? 'page'">
+      <p class="lateral-titulo">Gestión</p>
+      <a class="sidebar-item" th:each="m : ${perfil.modulos()}" th:href="@{${m.ruta}}" th:classappend="${seccionActiva == m.slug} ? 'activo'" th:attrappend="aria-current=${seccionActiva == m.slug} ? 'page'">
         <svg class="ic" aria-hidden="true"><use th:href="'/img/iconos.svg#' + ${m.icono}"/></svg><span th:text="${m.nombre}">Módulo</span>
+        <span class="lateral-etiqueta" th:if="${m.slug != 'auditoria'}">Pronto</span>
       </a>
     </div>
 
-    <div class="lateral-grupo" th:if="${perfil.puede('roles.manage')}">
+    <div class="lateral-grupo" th:if="${perfil.gestionaAccesos()}">
       <p class="lateral-titulo">Administración</p>
       <a class="sidebar-item" th:href="@{/admin/accesos}" th:classappend="${seccionActiva == 'accesos'} ? 'activo'" th:attrappend="aria-current=${seccionActiva == 'accesos'} ? 'page'">
-        <svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#llave"/></svg><span>Roles y permisos</span>
+        <svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#llave"/></svg><span>Usuarios y permisos</span>
       </a>
     </div>
   </nav>
@@ -95,11 +96,11 @@
     <div class="menu-contenedor">
       <button class="usuario-boton" id="btn-usuario" type="button" aria-expanded="false" aria-controls="menu-usuario">
         <span class="usuario-avatar" th:text="${#strings.toUpperCase(#strings.substring(perfil.correo(), 0, 1))}">A</span>
-        <span class="usuario-datos"><strong class="topbar-admin-nombre" th:text="${perfil.correo()}">correo</strong><small th:text="${perfil.rol().nombre}">Rol</small></span>
+        <span class="usuario-datos"><strong class="topbar-admin-nombre" th:text="${perfil.correo()}">correo</strong><small th:text="${perfil.rolNombre()}">Rol</small></span>
         <svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#chevron-abajo"/></svg>
       </button>
       <div class="menu-flotante menu-usuario" id="menu-usuario" hidden>
-        <div class="menu-usuario-cabeza"><strong th:text="${perfil.correo()}">correo</strong><span class="insignia insignia--azul" th:text="${perfil.rol().nombre}">Rol</span></div>
+        <div class="menu-usuario-cabeza"><strong th:text="${perfil.correo()}">correo</strong><span class="insignia insignia--azul" th:text="${perfil.rolNombre()}">Rol</span></div>
         <form method="post" th:action="@{/admin/logout}">
           <button class="menu-opcion" type="submit"><svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#salir"/></svg> Cerrar sesión</button>
         </form>

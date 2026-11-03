@@ -19,7 +19,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest(properties = {
     "app.admin.correo=admin@prueba.test",
-    "app.admin.clave=clave-de-prueba-segura"
+    "app.admin.clave=clave-de-prueba-segura",
+    "app.datos=target/test-datos/seguridad-${random.uuid}.properties"
 })
 @AutoConfigureMockMvc
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)

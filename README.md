@@ -80,7 +80,8 @@ Los clientes también pueden suscribirse a un plan mensual para obtener descuent
 - ✅ **Pagos:** revisión de comprobantes y aprobación o rechazo de solicitudes.
 - 👥 **Clientes:** búsqueda y creación de cuentas.
 - 🏪 **Pagos en tienda:** activación manual del plan cuando el cliente paga en efectivo.
-- 🔑 **Roles y permisos:** cinco roles con permisos por módulo y acción, validados por Spring Security en cada ruta.
+- 🔑 **Usuarios y permisos:** crea roles y cuentas, asigna o revoca permisos por rol o por persona y activa o desactiva cuentas; Spring Security lo valida en cada petición.
+- 🕵️ **Auditoría:** historial de inicios de sesión y cambios de accesos.
 - 🧭 **Módulos planificados:** inventario, ventas, compras, caja, reportes, auditoría y notificaciones, marcados como *en desarrollo* y sin acciones simuladas.
 
 ### Planes de suscripción
@@ -188,7 +189,8 @@ sequenceDiagram
 | `/admin/login` | Acceso de administrador | Público |
 | `/admin` | Panel de administración | **Todo el equipo; cada sección según permisos** |
 | `/admin/modulos/{modulo}` | Módulos en desarrollo | **Según el permiso de cada módulo** |
-| `/admin/accesos` | Roles y permisos | **Solo con `roles.manage`** |
+| `/admin/accesos` | Usuarios y permisos | **Con `users.manage` o `roles.manage`** |
+| `/admin/modulos/auditoria` | Historial de acciones | **Solo con `audit.view`** |
 
 ## 🚀 Instalación y ejecución
 
@@ -246,6 +248,7 @@ Si no la defines, la aplicación genera una clave temporal en cada arranque y la
 | `ADMIN_CORREO` | Correo para entrar al panel | `admin@lostreshermanos.com` |
 | `ADMIN_CLAVE` | Clave del administrador (12 caracteres o más) | Se genera una temporal en cada arranque |
 | `COOKIE_SEGURA` | Usa `true` si el sitio funciona con HTTPS | `false` |
+| `APP_DATOS` | Archivo donde se guardan roles, cuentas del equipo y auditoría | `datos/accesos.properties` |
 | `APP_EQUIPO_0_CORREO`, `APP_EQUIPO_0_ROL`, `APP_EQUIPO_0_CLAVE` | Miembro adicional del equipo. Usa 1, 2… para agregar más | Sin miembros adicionales |
 
 Roles disponibles para `APP_EQUIPO_N_ROL`: `ADMINISTRADOR`, `REGENTE`, `CAJERO` y `AUXILIAR`. La cuenta de `ADMIN_CORREO` es la del propietario.
@@ -262,7 +265,8 @@ Roles disponibles para `APP_EQUIPO_N_ROL`: `ADMINISTRADOR`, `REGENTE`, `CAJERO` 
 |---|---|
 | Credenciales en variables de entorno y BCrypt | Evita que la clave del administrador aparezca en el código |
 | Sesión en el servidor para `/admin` | Impide entrar al panel sin autenticarse |
-| Roles y permisos en Spring Security | Bloquea con 403 cada ruta sin permiso y omite del HTML las secciones no autorizadas |
+| Roles y permisos en Spring Security | Bloquea con 403 cada ruta sin permiso, omite del HTML las secciones no autorizadas y aplica los cambios de inmediato, incluso en sesiones abiertas |
+| Reglas contra la escalada de privilegios | Nadie concede permisos que no tiene ni modifica su propia cuenta o rol; el propietario es intocable |
 | Protección CSRF | Rechaza formularios de login y cierre de sesión enviados desde otros sitios |
 | Bloqueo tras 5 intentos fallidos durante 15 minutos | Frena los ataques de fuerza bruta contra el panel |
 | Hash PBKDF2-SHA256 con sal | Evita guardar las contraseñas de clientes en texto plano |
@@ -277,7 +281,7 @@ Roles disponibles para `APP_EQUIPO_N_ROL`: `ADMINISTRADOR`, `REGENTE`, `CAJERO` 
 - **Las cuentas de cliente no se validan en el servidor:** una persona con conocimientos técnicos puede modificar su sesión o sus datos desde las herramientas del navegador.
 - **Precios sin verificación en el servidor:** el contenido del carrito se puede alterar antes de enviarlo por WhatsApp, por lo que la droguería debe confirmar cada pedido.
 - **La CSP permite scripts en línea:** las plantillas actuales los necesitan.
-- **Roles de solo lectura:** el equipo se define con variables de entorno; crear roles o editar permisos desde el panel requiere base de datos.
+- **Accesos en un archivo local:** roles, cuentas del equipo y auditoría se guardan en `datos/accesos.properties`. Funciona con un solo servidor y un disco persistente; para crecer conviene pasarlo a una base de datos.
 - **Los módulos de gestión están en desarrollo:** muestran su alcance, pero aún no tienen datos ni acciones.
 - **Fotos pendientes:** los productos usan ilustraciones hasta contar con las fotografías reales.
 - **Datos de pago de ejemplo:** revisa los números de cuenta y el NIT antes de cualquier uso real.

@@ -14,6 +14,7 @@ import secrets
 import shutil
 import subprocess
 import sys
+import tempfile
 import time
 import urllib.error
 import urllib.request
@@ -129,7 +130,8 @@ def main():
         raise SystemExit('Compila primero con: ./mvnw package -DskipTests')
 
     proceso = subprocess.Popen(
-        ['java', '-jar', str(jar), f'--server.port={PUERTO}', f'--app.admin.clave={secrets.token_urlsafe(24)}'],
+        ['java', '-jar', str(jar), f'--server.port={PUERTO}', f'--app.admin.clave={secrets.token_urlsafe(24)}',
+         f'--app.datos={tempfile.gettempdir()}/sitio-{secrets.token_hex(6)}.properties'],
         stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
     try:
         esperar_aplicacion()

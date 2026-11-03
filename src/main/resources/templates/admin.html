@@ -17,7 +17,7 @@
             <p class="saludo" id="saludo">Hola</p>
             <h1 id="titulo-resumen">Resumen de la droguería</h1>
           </div>
-          <span class="insignia insignia--azul" th:text="${perfil.rol().nombre}">Rol</span>
+          <span class="insignia insignia--azul" th:text="${perfil.rolNombre()}">Rol</span>
         </div>
 
         <div class="alerta alerta--info aviso-datos" th:if="${perfil.operaPagos() or perfil.operaClientes()}">

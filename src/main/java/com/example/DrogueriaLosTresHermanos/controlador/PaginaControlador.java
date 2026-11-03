@@ -1,5 +1,6 @@
 package com.example.DrogueriaLosTresHermanos.controlador;
 
+import com.example.DrogueriaLosTresHermanos.configuracion.DirectorioAccesos;
 import com.example.DrogueriaLosTresHermanos.configuracion.PerfilAdmin;
 import com.example.DrogueriaLosTresHermanos.modelo.PlanSuscripcion;
 import org.springframework.security.core.Authentication;
@@ -36,6 +37,12 @@ import java.util.List;
  */
 @Controller
 public class PaginaControlador {
+
+    private final DirectorioAccesos directorio;
+
+    public PaginaControlador(DirectorioAccesos directorio) {
+        this.directorio = directorio;
+    }
 
     // ── Datos de los 4 planes (en producción vendrán de BD) ──────────────────
     private List<PlanSuscripcion> obtenerPlanes() {
@@ -166,7 +173,7 @@ public class PaginaControlador {
     // ── Panel de administración ───────────────────────────────────────────────
     @GetMapping("/admin")
     public String adminPanel(Model modelo, Authentication autenticacion) {
-        PerfilAdmin perfil = PerfilAdmin.de(autenticacion);
+        PerfilAdmin perfil = directorio.perfil(autenticacion);
         modelo.addAttribute("pagina", "admin");
         modelo.addAttribute("titulo", "Panel de Administración");
         modelo.addAttribute("adminCorreo", perfil.correo());

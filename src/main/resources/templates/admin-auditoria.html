@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/admin :: cabeza('Auditoría')}"></head>
+<body class="panel" th:attr="data-permisos=${perfil.permisosComoTexto()}">
+  <div th:replace="~{fragments/admin :: lateral}"></div>
+  <th:block th:replace="~{fragments/admin :: velo}"></th:block>
+  <div class="panel-principal">
+    <header th:replace="~{fragments/admin :: superior('Auditoría')}"></header>
+    <main class="panel-contenido" id="contenido">
+      <div class="pagina-cabeza revelar">
+        <div>
+          <h1>Auditoría</h1>
+          <p>Inicios de sesión y cambios de accesos registrados por el servidor. Se conservan los 500 más recientes.</p>
+        </div>
+        <span class="insignia insignia--exito"><span class="punto"></span><span th:text="${eventos.size()} + ' eventos'">0 eventos</span></span>
+      </div>
+
+      <section class="tarjeta revelar" aria-labelledby="titulo-historial">
+        <div class="tarjeta-cabeza"><h2 id="titulo-historial">Historial de acciones</h2></div>
+        <div class="vacio" th:if="${eventos.isEmpty()}">
+          <div class="vacio-icono"><svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#historial"/></svg></div>
+          <h3>Sin eventos todavía</h3>
+        </div>
+        <div class="tabla-marco" th:unless="${eventos.isEmpty()}">
+          <table class="tabla tabla--fichas">
+            <thead><tr><th scope="col">Fecha</th><th scope="col">Quién</th><th scope="col">Acción</th><th scope="col">Detalle</th></tr></thead>
+            <tbody>
+              <tr th:each="e : ${eventos}">
+                <td data-etiqueta="Fecha"><time class="fecha-local" th:datetime="${e.fecha()}" th:text="${e.fecha()}">fecha</time></td>
+                <td data-etiqueta="Quién" th:text="${e.actor()}">actor</td>
+                <td data-etiqueta="Acción"><strong th:text="${e.accion()}">acción</strong></td>
+                <td data-etiqueta="Detalle" class="celda-detalle" th:text="${e.detalle()}">detalle</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <div class="alerta alerta--info revelar">
+        <svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#info"/></svg>
+        <span>Aún no se registran movimientos de inventario ni anulaciones, porque esos módulos están en desarrollo. Las aprobaciones de pagos ocurren en el navegador y tampoco llegan a este historial.</span>
+      </div>
+    </main>
+  </div>
+  <script th:src="@{/js/seguridad.js}"></script>
+  <script th:src="@{/js/experiencia.js}"></script>
+  <script th:src="@{/js/panel.js}"></script>
+  <script>
+    document.querySelectorAll('.fecha-local').forEach(el => {
+      const f = new Date(el.getAttribute('datetime'));
+      if (!isNaN(f)) el.textContent = f.toLocaleString('es-CO');
+    });
+  </script>
+</body>
+</html>

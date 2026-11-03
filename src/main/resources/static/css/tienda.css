@@ -104,7 +104,8 @@ body.sin-scroll { overflow: hidden; }
 .avatar-drop-item.peligro { color: var(--burgundy); }
 .avatar-drop-item.peligro:hover { background: var(--burgundy-suave); color: var(--burgundy); }
 .avatar-drop-divider { height: 1px; margin: var(--e-2) 0; background: var(--borde); }
-.pildora-plan { position: fixed; left: var(--e-4); bottom: var(--e-4); z-index: 90; display: flex; align-items: center; gap: var(--e-2); padding: .55rem 1rem; border-radius: var(--r-full); background: var(--navy); color: #E3E8F5; font-size: var(--t-xs); box-shadow: var(--s-4); animation: entrar var(--t-lenta) var(--curva) both 1s; }
+.pildora-plan { position: fixed; left: var(--e-4); bottom: var(--e-4); z-index: 90; display: flex; align-items: center; gap: var(--e-2); padding: .55rem 1rem; border-radius: var(--r-full); background: var(--navy); color: #E3E8F5; font-size: var(--t-xs); box-shadow: var(--s-4); animation: entrar var(--t-lenta) var(--curva) both 1s; transition: opacity var(--t-media), transform var(--t-media) var(--curva); }
+.pildora-plan.saliendo { opacity: 0; transform: translateY(12px); pointer-events: none; }
 .pildora-plan strong { color: #fff; }
 .pildora-plan .punto { color: #5FD4B1; }
 .pildora-plan a { color: #A9C1FF; font-weight: 700; text-decoration: underline; }
@@ -119,11 +120,11 @@ body.sin-scroll { overflow: hidden; }
 .hero-interior { display: grid; grid-template-columns: 1.05fr .95fr; align-items: center; gap: var(--e-6); }
 .hero-lugar { display: inline-flex; align-items: center; gap: var(--e-2); margin-bottom: var(--e-5); padding: .4rem .85rem; border: 1px solid rgba(255,255,255,.2); border-radius: var(--r-full); color: #E3E8F5; font-size: var(--t-sm); font-weight: 600; }
 .hero-titulo { font: 800 var(--t-4xl)/1.03 var(--fuente-titulo); letter-spacing: -.045em; color: #fff; }
-.hero-acento { background: linear-gradient(95deg, #A9C1FF, #6F96FF 60%, #E08A9C); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.hero-acento { color: #8FAEFF; }
 .hero-desc { max-width: 46ch; margin-block: var(--e-5) var(--e-6); font-size: var(--t-lg); line-height: 1.6; }
 .hero-acciones { display: flex; flex-wrap: wrap; gap: var(--e-3); }
 .hero-escena { position: relative; height: clamp(380px, 46vw, 560px); }
-.hero-anillo { position: absolute; inset: 7% 8%; border: 1px dashed rgba(255,255,255,.16); border-radius: 50%; }
+.hero-anillo { position: absolute; left: 50%; top: 50%; translate: -50% -50%; width: min(92%, 480px); aspect-ratio: 1; border: 1px dashed rgba(255,255,255,.16); border-radius: 50%; }
 .hero-anillo::before { content: ''; position: absolute; inset: 14%; border: 1px solid rgba(255,255,255,.08); border-radius: 50%; }
 .hero-capsula-capa { position: absolute; inset: 0; display: grid; place-items: center; will-change: transform; }
 .hero-capsula { width: min(100%, 520px); animation: flotar 7s ease-in-out infinite, aparecer-capsula 1.1s var(--curva) both; }
@@ -243,6 +244,15 @@ a:hover .enlace-flecha .ic, a.enlace-flecha:hover .ic { transform: translateX(5p
 .lista-categorias a:hover { padding-left: var(--e-3); color: #A9C1FF; }
 .lista-categorias small { font: 600 var(--t-sm) var(--fuente-cuerpo); color: var(--sobre-oscuro); }
 @media (max-width: 860px) { .editorial-interior { grid-template-columns: minmax(0,1fr); gap: var(--e-6); } }
+
+/* Variedades en el inicio */
+.bloque-variedades { padding-block: var(--seccion); background: linear-gradient(180deg, var(--burgundy-suave), var(--pearl)); }
+.bloque-variedades-interior { display: grid; grid-template-columns: 1.1fr .9fr; gap: var(--e-8); align-items: center; }
+.bloque-variedades-texto { max-width: 44ch; margin-block: var(--e-4) var(--e-6); font-size: var(--t-lg); color: var(--tinta-2); }
+.vitrina { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: var(--e-3); align-items: center; }
+.vitrina > div { padding: var(--e-4); border-radius: var(--r-lg); background: var(--superficie); box-shadow: var(--s-3); transition: opacity var(--t-lenta) var(--curva), transform var(--t-lenta) var(--curva); }
+.vitrina > div:nth-child(2) { padding-block: var(--e-7); }
+@media (max-width: 860px) { .bloque-variedades-interior { grid-template-columns: minmax(0,1fr); gap: var(--e-6); } }
 
 /* Beneficios */
 .beneficios { display: grid; grid-template-columns: .85fr 1.15fr; gap: var(--e-7); align-items: start; }

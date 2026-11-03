@@ -1,59 +1,92 @@
 <!DOCTYPE html>
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
-<head th:replace="~{fragments/admin :: cabeza('Roles y permisos')}"></head>
+<head th:replace="~{fragments/admin :: cabeza('Usuarios y permisos')}"></head>
 <body class="panel" th:attr="data-permisos=${perfil.permisosComoTexto()}">
   <div th:replace="~{fragments/admin :: lateral}"></div>
   <th:block th:replace="~{fragments/admin :: velo}"></th:block>
   <div class="panel-principal">
-    <header th:replace="~{fragments/admin :: superior('Roles y permisos')}"></header>
+    <header th:replace="~{fragments/admin :: superior('Usuarios y permisos')}"></header>
     <main class="panel-contenido" id="contenido">
       <div class="pagina-cabeza revelar">
         <div>
-          <h1>Roles y permisos</h1>
-          <p>Estos son los permisos que Spring Security aplica hoy en cada ruta del panel.</p>
+          <h1>Usuarios y permisos</h1>
+          <p>El servidor valida cada ruta con estos permisos. Los cambios se aplican de inmediato, incluso a las sesiones abiertas.</p>
         </div>
       </div>
 
-      <div class="alerta alerta--info revelar">
-        <svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#info"/></svg>
-        <span><strong>Vista de solo lectura.</strong> Crear roles, editar permisos y desactivar cuentas desde aquí requiere base de datos. Hoy los usuarios del equipo se definen con variables de entorno.</span>
+      <div class="alerta alerta--exito" role="status" th:if="${mensaje}"><svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#check"/></svg><span th:text="${mensaje}">Listo</span></div>
+      <div class="alerta alerta--peligro" role="alert" th:if="${error}"><svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#alerta"/></svg><span th:text="${error}">Error</span></div>
+
+      <div class="tarjeta barra-pestanas">
+        <div class="pestanas" role="tablist" aria-label="Secciones de accesos">
+          <button class="tab activo" type="button" role="tab" aria-selected="true" aria-controls="vista-usuarios" data-vista="usuarios" th:if="${perfil.puede('users.manage')}"><svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#usuarios"/></svg>Usuarios</button>
+          <button class="tab" type="button" role="tab" aria-selected="false" aria-controls="vista-roles" data-vista="roles" th:classappend="${!perfil.puede('users.manage')} ? 'activo'"><svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#llave"/></svg>Roles</button>
+          <button class="tab" type="button" role="tab" aria-selected="false" aria-controls="vista-matriz" data-vista="matriz"><svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#panel"/></svg>Matriz de permisos</button>
+        </div>
       </div>
 
-      <section class="rejilla-roles" aria-label="Roles" data-escalonar>
-        <article class="tarjeta rol-tarjeta" th:each="r : ${roles}">
-          <h2 th:text="${r.nombre}">Rol</h2>
-          <p th:text="${r.descripcion}">Descripción</p>
-          <span class="insignia insignia--azul" th:text="${r.permisos.size()} + ' permisos'">0 permisos</span>
+      <!-- Usuarios -->
+      <section class="vista-accesos" id="vista-usuarios" role="tabpanel" th:if="${perfil.puede('users.manage')}" aria-labelledby="titulo-usuarios">
+        <article class="tarjeta">
+          <div class="tarjeta-cabeza">
+            <h2 id="titulo-usuarios">Cuentas del equipo <span class="insignia" th:text="${usuarios.size()}">1</span></h2>
+            <button class="btn btn--primario btn--sm" type="button" data-abrir="dialogo-cuenta"><svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#usuario-mas"/></svg> Nueva cuenta</button>
+          </div>
+          <div class="tabla-marco">
+            <table class="tabla tabla--fichas">
+              <thead><tr><th scope="col">Correo</th><th scope="col">Rol</th><th scope="col">Excepciones</th><th scope="col">Estado</th><th scope="col">Acción</th></tr></thead>
+              <tbody>
+                <tr th:each="u : ${usuarios}">
+                  <td data-etiqueta="Correo"><strong th:text="${u.correo()}">correo</strong></td>
+                  <td data-etiqueta="Rol" th:text="${directorio.nombreRol(u.rolId())}">Rol</td>
+                  <td data-etiqueta="Excepciones"><span class="insignia" th:text="${u.concedidos().size() + u.revocados().size()}">0</span></td>
+                  <td data-etiqueta="Estado">
+                    <span class="insignia insignia--exito" th:if="${u.activa()}"><span class="punto"></span>Activa</span>
+                    <span class="insignia insignia--peligro" th:unless="${u.activa()}">Desactivada</span>
+                  </td>
+                  <td data-etiqueta="Acción">
+                    <span class="insignia" th:if="${u.protegida()}">Protegida</span>
+                    <span class="insignia insignia--azul" th:if="${!u.protegida() and u.correo() == #strings.toLowerCase(perfil.correo())}">Tu cuenta</span>
+                    <button class="btn btn--secundario btn--sm" type="button" th:if="${!u.protegida() and u.correo() != #strings.toLowerCase(perfil.correo())}" th:attr="data-abrir='dialogo-' + ${u.id()}">Gestionar</button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
         </article>
       </section>
 
-      <section class="tarjeta revelar" aria-labelledby="titulo-usuarios">
-        <div class="tarjeta-cabeza"><h2 id="titulo-usuarios">Usuarios del equipo</h2><span class="insignia" th:text="${usuarios.size()}">1</span></div>
-        <div class="tabla-marco">
-          <table class="tabla tabla--fichas">
-            <thead><tr><th scope="col">Correo</th><th scope="col">Rol</th><th scope="col">Estado</th></tr></thead>
-            <tbody>
-              <tr th:each="u : ${usuarios}">
-                <td data-etiqueta="Correo"><strong th:text="${u.correo()}">correo</strong></td>
-                <td data-etiqueta="Rol" th:text="${u.rol().nombre}">Rol</td>
-                <td data-etiqueta="Estado"><span class="insignia insignia--exito"><span class="punto"></span>Activo</span></td>
-              </tr>
-            </tbody>
-          </table>
+      <!-- Roles -->
+      <section class="vista-accesos" id="vista-roles" role="tabpanel" th:hidden="${perfil.puede('users.manage')}" aria-labelledby="titulo-roles">
+        <div class="subcabecera">
+          <h2 id="titulo-roles" class="subtitulo-panel">Roles</h2>
+          <button class="btn btn--primario btn--sm" type="button" data-abrir="dialogo-rol" th:if="${perfil.puede('roles.manage')}"><svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#mas"/></svg> Nuevo rol</button>
+        </div>
+        <div class="rejilla-roles" data-escalonar>
+          <article class="tarjeta rol-tarjeta" th:each="r : ${roles}">
+            <h3 th:text="${r.nombre()}">Rol</h3>
+            <p th:text="${r.descripcion()}">Descripción</p>
+            <div class="rol-pie">
+              <span class="insignia insignia--azul" th:text="${r.permisos().size()} + ' permisos'">0 permisos</span>
+              <span class="insignia" th:if="${r.protegido()}">Protegido</span>
+              <button class="btn btn--secundario btn--sm" type="button" th:if="${!r.protegido() and perfil.puede('permissions.manage') and r.id() != perfil.rolId()}" th:attr="data-abrir='dialogo-' + ${r.id()}">Editar permisos</button>
+            </div>
+          </article>
         </div>
       </section>
 
-      <section class="tarjeta revelar" aria-labelledby="titulo-matriz">
+      <!-- Matriz -->
+      <section class="vista-accesos tarjeta" id="vista-matriz" role="tabpanel" hidden aria-labelledby="titulo-matriz">
         <div class="tarjeta-cabeza"><h2 id="titulo-matriz">Matriz de permisos</h2>
           <span class="leyenda"><span class="insignia insignia--exito">Función activa</span><span class="insignia">Reservado para un módulo futuro</span></span>
         </div>
         <div class="tabla-marco">
           <table class="tabla matriz">
             <thead>
-              <tr><th scope="col">Permiso</th><th scope="col" th:each="r : ${roles}" th:text="${r.nombre}">Rol</th></tr>
+              <tr><th scope="col">Permiso</th><th scope="col" th:each="r : ${roles}" th:text="${r.nombre()}">Rol</th></tr>
             </thead>
             <tbody th:each="grupo : ${permisosPorModulo}">
-              <tr class="matriz-grupo"><th scope="rowgroup" th:attr="colspan=${roles.length + 1}" th:text="${grupo.key}">Módulo</th></tr>
+              <tr class="matriz-grupo"><th scope="rowgroup" th:attr="colspan=${roles.size() + 1}" th:text="${grupo.key}">Módulo</th></tr>
               <tr th:each="p : ${grupo.value}">
                 <th scope="row">
                   <span th:text="${p.descripcion}">Descripción</span>
@@ -61,8 +94,8 @@
                   <span class="insignia insignia--exito" th:if="${p.operativo}">Activa</span>
                 </th>
                 <td th:each="r : ${roles}" class="matriz-celda">
-                  <span th:if="${r.tiene(p)}" class="matriz-si"><svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#check"/></svg><span class="solo-lector">Permitido</span></span>
-                  <span th:unless="${r.tiene(p)}" class="matriz-no">–<span class="solo-lector">No permitido</span></span>
+                  <span th:if="${r.tiene(p.codigo)}" class="matriz-si"><svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#check"/></svg><span class="solo-lector">Permitido</span></span>
+                  <span th:unless="${r.tiene(p.codigo)}" class="matriz-no">–<span class="solo-lector">No permitido</span></span>
                 </td>
               </tr>
             </tbody>
@@ -71,8 +104,111 @@
       </section>
     </main>
   </div>
+
+  <!-- Nueva cuenta -->
+  <dialog class="dialogo" id="dialogo-cuenta" aria-labelledby="titulo-nueva-cuenta" th:if="${perfil.puede('users.manage')}">
+    <form method="post" th:action="@{/admin/accesos/usuarios}" class="dialogo-forma">
+      <div class="modal-cabeza"><h2 id="titulo-nueva-cuenta">Nueva cuenta</h2><button class="btn-icono" type="button" data-cerrar aria-label="Cerrar"><svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#cerrar"/></svg></button></div>
+      <div class="modal-cuerpo">
+        <div class="campo"><label for="cuenta-correo">Correo</label><input id="cuenta-correo" type="email" name="correo" maxlength="120" autocomplete="off" required></div>
+        <div class="campo"><label for="cuenta-clave">Contraseña temporal</label><input id="cuenta-clave" type="password" name="clave" minlength="12" autocomplete="new-password" required><p class="campo-ayuda">Mínimo 12 caracteres. Compártela por un canal seguro.</p></div>
+        <div class="campo"><label for="cuenta-rol">Rol</label>
+          <select id="cuenta-rol" name="rol" required><option th:each="r : ${roles}" th:value="${r.id()}" th:text="${r.nombre()}" th:unless="${r.protegido()}">Rol</option></select></div>
+      </div>
+      <div class="modal-pie"><button class="btn btn--fantasma" type="button" data-cerrar>Cancelar</button><button class="btn btn--primario" type="submit">Crear cuenta</button></div>
+    </form>
+  </dialog>
+
+  <!-- Nuevo rol -->
+  <dialog class="dialogo" id="dialogo-rol" aria-labelledby="titulo-nuevo-rol" th:if="${perfil.puede('roles.manage')}">
+    <form method="post" th:action="@{/admin/accesos/roles}" class="dialogo-forma">
+      <div class="modal-cabeza"><h2 id="titulo-nuevo-rol">Nuevo rol</h2><button class="btn-icono" type="button" data-cerrar aria-label="Cerrar"><svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#cerrar"/></svg></button></div>
+      <div class="modal-cuerpo">
+        <div class="campo"><label for="rol-nombre">Nombre</label><input id="rol-nombre" name="nombre" maxlength="60" required></div>
+        <div class="campo"><label for="rol-descripcion">Descripción</label><input id="rol-descripcion" name="descripcion" maxlength="200"></div>
+        <div class="campo"><label for="rol-base">Copiar permisos de</label>
+          <select id="rol-base" name="base"><option value="">Empezar solo con el panel</option><option th:each="r : ${roles}" th:value="${r.id()}" th:text="${r.nombre()}">Rol</option></select></div>
+      </div>
+      <div class="modal-pie"><button class="btn btn--fantasma" type="button" data-cerrar>Cancelar</button><button class="btn btn--primario" type="submit">Crear rol</button></div>
+    </form>
+  </dialog>
+
+  <!-- Permisos de cada rol -->
+  <th:block th:if="${perfil.puede('permissions.manage')}">
+    <dialog class="dialogo dialogo--ancho" th:each="r : ${roles}" th:unless="${r.protegido() or r.id() == perfil.rolId()}" th:id="'dialogo-' + ${r.id()}" th:attr="aria-label='Permisos de ' + ${r.nombre()}">
+      <form method="post" th:action="@{/admin/accesos/roles/{id}/permisos(id=${r.id()})}" class="dialogo-forma">
+        <div class="modal-cabeza"><h2 th:text="'Permisos de ' + ${r.nombre()}">Permisos</h2><button class="btn-icono" type="button" data-cerrar aria-label="Cerrar"><svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#cerrar"/></svg></button></div>
+        <div class="modal-cuerpo">
+          <fieldset class="grupo-permisos" th:each="grupo : ${permisosPorModulo}">
+            <legend th:text="${grupo.key}">Módulo</legend>
+            <label class="opcion-permiso" th:each="p : ${grupo.value}">
+              <input type="checkbox" name="permisos" th:value="${p.codigo}" th:checked="${r.tiene(p.codigo)}" th:disabled="${!perfil.puede(p.codigo)}">
+              <span><strong th:text="${p.descripcion}">Descripción</strong><code th:text="${p.codigo}">codigo</code></span>
+            </label>
+          </fieldset>
+        </div>
+        <div class="modal-pie"><button class="btn btn--fantasma" type="button" data-cerrar>Cancelar</button><button class="btn btn--primario" type="submit">Guardar permisos</button></div>
+      </form>
+    </dialog>
+  </th:block>
+
+  <!-- Gestión de cada cuenta -->
+  <th:block th:if="${perfil.puede('users.manage')}">
+    <dialog class="dialogo dialogo--ancho" th:each="u : ${usuarios}" th:unless="${u.protegida() or u.correo() == #strings.toLowerCase(perfil.correo())}" th:id="'dialogo-' + ${u.id()}" th:attr="aria-label='Gestionar ' + ${u.correo()}">
+      <div class="dialogo-forma">
+        <div class="modal-cabeza"><h2 th:text="${u.correo()}">correo</h2><button class="btn-icono" type="button" data-cerrar aria-label="Cerrar"><svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#cerrar"/></svg></button></div>
+        <div class="modal-cuerpo">
+          <form method="post" th:action="@{/admin/accesos/usuarios/{id}/rol(id=${u.id()})}" class="fila-accion">
+            <div class="campo"><label th:for="'rol-' + ${u.id()}">Rol</label>
+              <select th:id="'rol-' + ${u.id()}" name="rol"><option th:each="r : ${roles}" th:value="${r.id()}" th:text="${r.nombre()}" th:selected="${r.id() == u.rolId()}" th:unless="${r.protegido()}">Rol</option></select></div>
+            <button class="btn btn--secundario" type="submit">Cambiar rol</button>
+          </form>
+
+          <form method="post" th:action="@{/admin/accesos/usuarios/{id}/estado(id=${u.id()})}" class="fila-accion fila-estado">
+            <input type="hidden" name="activa" th:value="${!u.activa()}">
+            <div><strong th:text="${u.activa()} ? 'Cuenta activa' : 'Cuenta desactivada'">Estado</strong><p class="campo-ayuda" th:text="${u.activa()} ? 'Al desactivarla, la sesión abierta se cierra de inmediato.' : 'Al activarla, la persona podrá volver a entrar.'">Ayuda</p></div>
+            <button class="btn" type="submit" th:classappend="${u.activa()} ? 'btn--peligro' : 'btn--exito'" th:text="${u.activa()} ? 'Desactivar' : 'Activar'">Cambiar</button>
+          </form>
+
+          <form method="post" th:action="@{/admin/accesos/usuarios/{id}/permisos(id=${u.id()})}" th:if="${perfil.puede('permissions.manage')}">
+            <h3>Permisos individuales</h3>
+            <p class="campo-ayuda">Excepciones sobre lo que ya otorga el rol: concede o revoca permisos solo a esta cuenta.</p>
+            <fieldset class="grupo-permisos" th:each="grupo : ${permisosPorModulo}">
+              <legend th:text="${grupo.key}">Módulo</legend>
+              <div class="fila-permiso" th:each="p : ${grupo.value}">
+                <span><strong th:text="${p.descripcion}">Descripción</strong><code th:text="${p.codigo}">codigo</code></span>
+                <span class="opciones-excepcion" th:if="${perfil.puede(p.codigo)}">
+                  <label><input type="checkbox" name="concedidos" th:value="${p.codigo}" th:checked="${u.concedidos().contains(p.codigo)}"> Conceder</label>
+                  <label><input type="checkbox" name="revocados" th:value="${p.codigo}" th:checked="${u.revocados().contains(p.codigo)}"> Revocar</label>
+                </span>
+              </div>
+            </fieldset>
+            <div class="form-acciones"><button class="btn btn--primario" type="submit">Guardar excepciones</button></div>
+          </form>
+        </div>
+      </div>
+    </dialog>
+  </th:block>
+
   <script th:src="@{/js/seguridad.js}"></script>
   <script th:src="@{/js/experiencia.js}"></script>
   <script th:src="@{/js/panel.js}"></script>
+  <script>
+    // Pestañas y diálogos nativos (<dialog> ya atrapa el foco y cierra con Escape)
+    document.querySelectorAll('[data-vista]').forEach(tab => tab.addEventListener('click', () => {
+      document.querySelectorAll('[data-vista]').forEach(t => {
+        const activa = t === tab;
+        t.classList.toggle('activo', activa);
+        t.setAttribute('aria-selected', String(activa));
+      });
+      document.querySelectorAll('.vista-accesos').forEach(v => { v.hidden = v.id !== 'vista-' + tab.dataset.vista; });
+    }));
+    document.addEventListener('click', (e) => {
+      const abrir = e.target.closest('[data-abrir]');
+      if (abrir) document.getElementById(abrir.dataset.abrir)?.showModal();
+      if (e.target.closest('[data-cerrar]')) e.target.closest('dialog')?.close();
+      if (e.target.matches('dialog')) e.target.close();
+    });
+  </script>
 </body>
 </html>

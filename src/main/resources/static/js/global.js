@@ -429,7 +429,8 @@ window.Suscripcion = (function() {
     if (document.getElementById('sus-descuento-banner')) return;
 
     const nombrePlan = Seguridad.planCanonico(sus.plan).nombre;
-    const banner  = document.createElement('div');
+    const banner  = document.createElement('aside');
+    banner.setAttribute('aria-label', 'Tu plan de suscripción');
     banner.id     = 'sus-descuento-banner';
     banner.className = 'pildora-plan no-imprimir';
     banner.innerHTML =
@@ -437,6 +438,9 @@ window.Suscripcion = (function() {
        <span>Plan ${Seguridad.esc(nombrePlan)}: <strong>${Seguridad.esc(sus.descuento)}% de descuento</strong></span>
        <a href="/perfil#suscripcion">Ver plan</a>`;
     document.body.appendChild(banner);
+    // Es un aviso breve: no debe quedarse tapando contenido
+    setTimeout(() => banner.classList.add('saliendo'), 7000);
+    setTimeout(() => banner.remove(), 7600);
   }
 
   // Inicializar banner en DOMContentLoaded

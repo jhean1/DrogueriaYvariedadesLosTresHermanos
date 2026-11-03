@@ -42,7 +42,7 @@ public enum Permiso {
     FINANZAS_VER("finance.view", "Caja", "Consultar información financiera", false),
 
     REPORTES_VER("reports.view", "Reportes", "Consultar reportes", false),
-    AUDITORIA_VER("audit.view", "Auditoría", "Consultar el historial de acciones", false),
+    AUDITORIA_VER("audit.view", "Auditoría", "Consultar el historial de acciones", true),
     NOTIFICACIONES_VER("notifications.view", "Notificaciones", "Consultar alertas administrativas", false),
 
     USUARIOS_GESTIONAR("users.manage", "Accesos", "Gestionar usuarios", true),

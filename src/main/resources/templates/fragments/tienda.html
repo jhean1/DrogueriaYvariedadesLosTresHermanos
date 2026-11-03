@@ -74,7 +74,7 @@
 <!-- Panel lateral del carrito -->
 <th:block th:fragment="carrito">
   <div class="drawer-overlay no-imprimir" id="drawer-overlay" onclick="cerrarDrawer()"></div>
-  <aside class="carrito-drawer no-imprimir" id="carrito-drawer" role="dialog" aria-modal="true" aria-labelledby="titulo-carrito">
+  <div class="carrito-drawer no-imprimir" id="carrito-drawer" role="dialog" aria-modal="true" aria-labelledby="titulo-carrito">
     <div class="drawer-header">
       <h2 id="titulo-carrito">Mi carrito</h2>
       <button class="btn-cerrar-drawer btn-icono" id="btn-cerrar-drawer" type="button" onclick="cerrarDrawer()" aria-label="Cerrar carrito">
@@ -91,7 +91,7 @@
         Finalizar compra <svg class="ic ic-mueve" aria-hidden="true"><use href="/img/iconos.svg#flecha"/></svg>
       </button>
     </div>
-  </aside>
+  </div>
 </th:block>
 
 <!-- Pie de página -->

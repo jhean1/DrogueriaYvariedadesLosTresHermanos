@@ -24,6 +24,7 @@
 
       <div class="alerta alerta--peligro" role="alert" th:if="${param.error}"><svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#alerta"/></svg><span>Usuario o contraseña incorrectos.</span></div>
       <div class="alerta alerta--aviso" role="alert" th:if="${param.bloqueado}"><svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#reloj"/></svg><span>Demasiados intentos fallidos. Espera 15 minutos e inténtalo de nuevo.</span></div>
+      <div class="alerta alerta--aviso" role="alert" th:if="${param.inactiva}"><svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#candado"/></svg><span>Tu cuenta fue desactivada. Consulta con el propietario.</span></div>
       <div class="alerta alerta--exito" role="status" th:if="${param.salir}"><svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#check"/></svg><span>Cerraste sesión correctamente.</span></div>
 
       <form method="post" th:action="@{/admin/login}" id="form-acceso">
@@ -36,7 +37,7 @@
           <label for="admin-clave">Contraseña</label>
           <div class="campo-icono"><svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#candado"/></svg>
             <input type="password" id="admin-clave" name="clave" autocomplete="current-password" required>
-            <button type="button" class="btn-ojo" onclick="toggleClave()" aria-label="Mostrar u ocultar contraseña"><svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#ojo"/></svg></button></div>
+            <button type="button" class="btn-ojo" onclick="toggleClave()" aria-label="Mostrar u ocultar contraseña"><svg class="ic" id="ojo-icono" aria-hidden="true"><use href="/img/iconos.svg#ojo"/></svg></button></div>
         </div>
         <button class="btn btn--primario btn--lg btn--bloque" type="submit" id="btn-acceso">
           <span class="btn-texto">Ingresar al panel</span><span class="btn-spinner"></span>

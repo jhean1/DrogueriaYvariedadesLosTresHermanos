@@ -1,11 +1,14 @@
 HELP.md
 target/
 _sitio/
+datos/
 .mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 _sitio/
+datos/
 !**/src/test/**/target/
 _sitio/
+datos/
 
 ### STS ###
 .apt_generated
