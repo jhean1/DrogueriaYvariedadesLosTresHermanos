@@ -275,3 +275,26 @@ input[type=file]::file-selector-button { margin-right: var(--e-3); min-height: 3
   .fila-presentacion { grid-template-columns: repeat(2, minmax(0,1fr)); padding: var(--e-3); border: 1px solid var(--borde); border-radius: var(--r-md); }
   .fila-presentacion .btn-icono { grid-column: 2; justify-self: end; }
 }
+
+/* ── Identidad 3H en el panel ───────────────────────────────── */
+.lateral { background: var(--navy); border-right: 1px solid var(--oro); }
+.lateral-pie { color: var(--tinta-2); }
+.sidebar-item { border-radius: var(--r-full); }
+.sidebar-item.activo .ic { color: var(--oro-claro); }
+.superior { border-bottom: 1px solid var(--borde); }
+.usuario-avatar { background: var(--navy); color: var(--oro-claro); }
+.kpi-valor { color: var(--tinta); }
+.filtro-tabla input, .filtros-tabla select, .buscador-panel input { border-radius: var(--r-full) !important; }
+.opcion-tipo:has(input:checked), .plan-opt.sel { border-color: var(--oro); }
+.barra-relleno { background: var(--navy); }
+[data-tema="oscuro"] .barra-relleno { background: var(--oro); }
+
+/* Acceso del equipo: las dos curvas de la pieza de marca */
+.acceso-equipo { isolation: isolate; }
+.acceso-equipo::before, .acceso-equipo::after { content: ''; position: fixed; z-index: -1; width: 46vw; height: 46vw; min-width: 260px; min-height: 260px; border-radius: 50%; background: var(--navy); border: 3px solid var(--oro); }
+.acceso-equipo::before { top: -30vw; left: -18vw; }
+.acceso-equipo::after { bottom: -30vw; right: -18vw; }
+@media (max-width: 760px) {
+  .acceso-equipo::before { top: -210px; left: -130px; }
+  .acceso-equipo::after { bottom: -210px; right: -130px; }
+}

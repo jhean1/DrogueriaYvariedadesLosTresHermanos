@@ -832,3 +832,133 @@ dialog.dialogo--ficha { width: min(calc(100vw - 2rem), 820px); max-height: min(9
 .plan-nombre { margin-top: 0; }
 [data-tema="oscuro"] .tema-variedades .chip-filtro.activo { background: var(--burgundy-suave); border-color: var(--borde-peligro); color: var(--burgundy); }
 .resultados-info .enlace { font-weight: 600; }
+
+/* ── Identidad 3H: la curva dorada y la cápsula del logo ────── */
+.badge-carrito, .fab-badge { background: var(--rojo); color: #fff; }
+.navbar { border-bottom: 0; }
+.navbar-logo img { height: 44px; }
+.nav-link::after { background: var(--oro); height: 3px; }
+.buscador-global input[type=search] { border-radius: var(--r-full); }
+.buscador-global input[type=search]:focus { border-radius: var(--r-full) !important; }
+.sugerencias { border-radius: var(--r-xl); }
+.sug-opcion, .sug-todos { border-radius: var(--r-lg); }
+.chip-filtro, .sugerencias-rapidas a { border-radius: var(--r-full); }
+.filtro-lista input, .select-orden { border-radius: var(--r-full) !important; }
+.sel-btn { border-radius: var(--r-full); padding-inline: .85rem; }
+
+@media (min-width: 861px) {
+  .barra-nav {
+    --tinta: #fff; --tinta-2: #DCE2EE; --royal: var(--oro-claro);
+    --foco: 0 0 0 2px var(--navy), 0 0 0 4px var(--oro-claro);
+    background: var(--navy); border-bottom: 2px solid var(--oro);
+  }
+  .nav-link:hover { color: var(--oro-claro); }
+  .nav-link.active { color: var(--oro-claro); }
+}
+
+/* Portada: un campo azul noche con el borde dorado, como la pieza de marca */
+.portada { position: relative; overflow: hidden; isolation: isolate; padding-block: clamp(2.5rem, 1.5rem + 4vw, 5rem) clamp(3.5rem, 2rem + 4vw, 6rem); border-bottom: 0; }
+.portada::before, .portada::after { content: ''; position: absolute; z-index: -1; top: -32%; bottom: -32%; border-radius: 50%; }
+.portada::before { right: -10%; width: 52%; background: var(--navy); border: 3px solid var(--oro); }
+.portada::after { right: calc(-10% + 0px); width: calc(52% + 26px); border: 1px solid var(--oro); opacity: .55; }
+.portada h1 { font-size: var(--t-4xl); }
+.buscador-grande input[type=search] { border-color: var(--borde-fuerte); box-shadow: var(--s-2); }
+.buscador-grande input[type=search]:focus { border-color: var(--oro); box-shadow: 0 0 0 3px color-mix(in srgb, var(--oro) 26%, transparent), var(--s-2); }
+.buscador-grande .buscador-enviar { right: .35rem; }
+.tira { background: var(--superficie); filter: drop-shadow(0 16px 26px rgba(4,10,30,.32)); }
+.tira::before { background: var(--oro); }
+.tira-corte, .tira-cabeza { border-color: var(--borde-fuerte); }
+
+/* Estas hojas pintan con --superficie, que en azul noche es transparente */
+.hechos, .perfil-hero, .auth-marca { background: var(--navy); }
+
+/* Franja de hechos: curva superior con filo dorado */
+.hechos { position: relative; z-index: 1; margin-top: -24px; padding-top: 10px; border-top: 2px solid var(--oro); border-bottom: 0; border-radius: 50% 50% 0 0 / 24px 24px 0 0; }
+.hechos .ic { color: var(--oro-claro); }
+.hechos li { color: #fff; }
+
+/* Secciones */
+.bloque--tono { border-block: 0; }
+.encabezado { margin-bottom: var(--e-5); }
+.indice h3 { border-bottom: 2px solid var(--oro); }
+.indice-lista a:hover { color: var(--royal); }
+.guia-paso { border-radius: var(--r-lg); }
+.guia-paso[aria-selected="true"] .guia-paso-num { background: var(--accion); border-color: var(--oro); }
+.guia-escena { border-radius: var(--r-xl); background: var(--superficie); }
+.demo { background: var(--pearl); }
+.vitrina a { border-radius: 50%; padding: var(--e-5); }
+.plan-linea strong { color: var(--tinta); }
+.planes-lista li + li { border-color: var(--borde); }
+.pieza-marca { box-shadow: var(--s-3); }
+
+/* Encabezados de catálogo y planes: la curva asoma en la esquina */
+.catalogo-cabecera, .sus-hero { position: relative; overflow: hidden; isolation: isolate; }
+.catalogo-cabecera::before, .sus-hero::before { content: ''; position: absolute; z-index: -1; top: -190px; right: -90px; width: 460px; height: 330px; border-radius: 50%; background: var(--navy); border: 3px solid var(--oro); }
+
+/* Tarjetas de producto */
+.med-card, .var-card { border-radius: var(--r-lg); box-shadow: var(--s-1); }
+.med-card:hover, .var-card:hover { border-color: var(--oro); box-shadow: var(--s-2); }
+.med-arte, .var-arte { border-radius: 0 0 50% 50% / 0 0 16px 16px; }
+.med-nombre, .var-nombre { font-size: 1.0625rem; }
+.med-precio, .var-precio { font-size: var(--t-xl); }
+.med-categoria { color: var(--amber-tinta); font-weight: 600; }
+.var-cat { font-weight: 600; }
+.ficha-precio .med-precio { font-size: var(--t-2xl); }
+.ficha-compra { border-color: var(--borde-fuerte); }
+
+/* Carrito y pedido */
+.drawer-header { background: var(--navy); border-bottom: 2px solid var(--oro); --tinta: #fff; --tinta-2: #DCE2EE; --superficie-2: rgba(255,255,255,.11); --royal: var(--oro-claro); }
+.carrito-item-miniatura { background: var(--navy); color: var(--oro-claro); border-radius: 50%; }
+.total-valor, .resumen-total-final strong { color: var(--tinta); }
+.resumen-panel::before { background: var(--oro); }
+.recibo { position: relative; }
+.recibo-header { border-top: 3px solid var(--oro); }
+.paso.hecho .paso-circulo { background: var(--accion); border-color: var(--accion); color: var(--sobre-accion); }
+.paso.hecho + .paso::before { background: var(--oro); }
+.modalidad-card { border-width: 1px; }
+.modalidad-card.seleccionado { outline: 1px solid var(--royal); }
+.modalidad-card.seleccionado .modalidad-icono { background: var(--accion) !important; color: var(--sobre-accion) !important; }
+
+/* Planes */
+.plan-card.popular { border: 2px solid var(--oro); }
+.badge-popular { background: var(--accion); color: var(--sobre-accion); }
+.plan-descuento { background: var(--amber-suave); color: var(--amber-tinta); }
+.plan-precio { color: var(--tinta); }
+.faq-item { border-color: var(--borde-fuerte); }
+.chevron { color: var(--oro); }
+
+/* Acceso de clientes */
+.auth-marca { border-right: 3px solid var(--oro); border-radius: 0 110px 110px 0 / 0 50% 50% 0; }
+.auth-marca h2 { color: #fff; }
+.auth-puntos .ic { color: var(--oro-claro); }
+
+/* Perfil */
+.perfil-hero { border-bottom: 2px solid var(--oro); }
+.avatar-grande { border: 2px solid var(--oro-claro); }
+
+/* Pie de página: misma curva con filo dorado */
+.footer-global { position: relative; z-index: 1; margin-top: -24px; border-top: 2px solid var(--oro); border-radius: 50% 50% 0 0 / 24px 24px 0 0; }
+.footer-col h3 { color: var(--oro-claro); }
+.footer-col .ic { color: var(--oro-claro); }
+
+@media (max-width: 960px) {
+  .catalogo-cabecera::before, .sus-hero::before { top: -160px; right: -100px; width: 300px; height: 230px; }
+  .portada::before { top: auto; bottom: -34%; right: -18%; left: -18%; width: auto; height: 62%; }
+  .portada::after { display: none; }
+  .tira { margin-inline: auto; width: 100%; }
+}
+@media (max-width: 860px) {
+  .navbar { border-bottom: 2px solid var(--oro); }
+  .navbar-logo img { height: 36px; }
+  .tab-movil.active { color: var(--royal); }
+  .tab-movil.active .ic { color: var(--oro); }
+}
+@media (max-width: 640px) {
+  .portada { padding-bottom: var(--e-8); }
+  .portada::before { top: -86px; bottom: auto; left: auto; right: -96px; width: 190px; height: 170px; }
+  .portada h1 { padding-right: 2.5rem; }
+  .catalogo-cabecera::before, .sus-hero::before { top: -96px; right: -96px; width: 190px; height: 170px; }
+  .hechos, .footer-global { border-radius: 50% 50% 0 0 / 14px 14px 0 0; margin-top: -14px; }
+  .auth-marca { border-radius: 0; }
+  .vitrina a { padding: var(--e-3); }
+}

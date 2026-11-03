@@ -4,30 +4,26 @@ Referencia del diseño implementado en `static/css/design-system.css`. La tienda
 
 ## Idea
 
-**El mostrador.** Buscar es preguntar en la droguería. La búsqueda manda, cada producto se abre en una ficha y la pieza propia de la marca es la **tira de pedido**: el recibo con borde troquelado que aparece en la portada y que se repite como línea superior en el resumen del pedido.
+**La curva dorada.** La identidad sale del logo y de la pieza de marca: azul noche, un arco dorado y una cápsula roja y blanca. El azul entra en curva con filo dorado en la portada, la franja de hechos, el pie y el acceso. Los botones y filtros tienen forma de cápsula, y un trazo dorado subraya los títulos principales.
 
-La interfaz es calmada y comercial. Sin degradados pesados, sin vidrio, sin bandas oscuras a pantalla completa, sin antetítulos, sin numeración decorativa.
+**El mostrador.** La búsqueda manda, cada producto se abre en una ficha y el recibo de ejemplo con borde troquelado aparece en la portada.
 
 ## Color
 
-Un color principal, uno secundario y neutros. El oro de la marca es puntual.
-
 | Token | Claro | Oscuro | Uso |
 |---|---|---|---|
-| `--accion` | `#1D3F91` | `#3563CC` | Fondo de la acción principal |
-| `--royal` | `#1D3F91` | `#92B2F6` | Enlaces, estado activo, foco del icono |
-| `--burgundy` | `#8E2338` | `#F0A5B4` | Errores, peligro y categoría de variedades |
-| `--amber` | `#C2963A` | `#D9B060` | Avisos y datos pendientes en gráficas |
+| `--navy` | `#10224D` | `#17254B` | Superficies de marca |
+| `--accion` | `#10224D` | `#E6C26E` | Fondo de la acción principal |
+| `--oro` | `#C2963A` | `#E6C26E` | Filos, curvas y estados activos |
+| `--rojo` | `#C8102E` | `#D11F3A` | Contador del carrito |
+| `--royal` | `#17306E` | `#A4BBF0` | Enlaces |
+| `--burgundy` | `#B00E28` | `#F4A7B5` | Errores, peligro y categoría de variedades |
 | `--emerald-tinta` | `#17694F` | `#71D9B8` | Éxito y precio con descuento |
-| `--pearl` | `#F7F8FA` | `#0E1420` | Fondo de página |
-| `--superficie` | `#FFFFFF` | `#161D2B` | Tarjetas, barras y diálogos |
-| `--superficie-2` | `#F1F3F7` | `#1E2736` | Campos de búsqueda y encabezados de tabla |
-| `--tinta` / `-2` / `-3` | `#141C2E` / `#3A4557` / `#596476` | `#E9EDF4` / `#C4CDDB` / `#A5B0C3` | Texto |
-| `--borde` / `-fuerte` | `#E3E7EE` / `#C9D0DB` | `#2A3445` / `#3D495E` | Separadores y contornos de control |
-| `--placa` / `-calida` | `#F3F5F9` / `#F8F4F1` | `#E6EAF1` / `#E9E3DE` | Fondo de la imagen del producto |
-| `--navy` | `#14213D` | `#0A0F1A` | Solo el pie de página |
+| `--pearl` | `#F6F7FA` | `#0B1226` | Fondo de página |
+| `--superficie` | `#FFFFFF` | `#131C36` | Tarjetas, barras y diálogos |
+| `--tinta` / `-2` / `-3` | `#10224D` / `#38435C` / `#566178` | `#EDF0F7` / `#C8D0E0` / `#A9B5CB` | Texto |
 
-La imagen de un producto siempre va sobre una placa clara, atenuada en modo oscuro con `--placa-brillo`. Las ilustraciones y fotos no cambian de color.
+Las superficies azul noche (`.footer-global`, `.hechos`, `.perfil-hero`, `.auth-marca`, `.lateral`) redefinen estos tokens dentro de su propio bloque: el mismo componente funciona encima sin reglas especiales. Las ilustraciones usan los colores del logo y siempre van sobre una placa clara.
 
 ## Tipografía
 
@@ -44,7 +40,7 @@ La imagen de un producto siempre va sobre una placa clara, atenuada en modo oscu
 
 ## Forma y profundidad
 
-Radios de 6, 10, 14 y 18 px. Los contornos hacen el trabajo y las sombras quedan para lo que flota: menús, diálogos y sugerencias. Controles de al menos 44 px de alto, 46 px en el teléfono.
+Radios de 6, 10, 16 y 22 px, y forma de cápsula en botones, filtros y búsqueda. Los contornos hacen el trabajo y las sombras quedan para lo que flota: menús, diálogos y sugerencias. Controles de al menos 44 px de alto, 46 px en el teléfono.
 
 ## Componentes propios
 
