@@ -5,17 +5,27 @@
    ============================================================ */
 window.Experiencia = (function () {
   const sinMovimiento = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const conPuntero = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
   const icono = (n) => `<svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#${n}"/></svg>`;
 
-  // Revelado progresivo: --i escalona a los hermanos marcados con data-escalonar
-  const observadorRevelar = 'IntersectionObserver' in window
-    ? new IntersectionObserver((entradas, obs) => {
-        entradas.forEach(e => {
-          if (e.isIntersecting) { e.target.classList.add('visible'); obs.unobserve(e.target); }
-        });
-      }, { threshold: 0.1, rootMargin: '0px 0px -6% 0px' })
+  // Un solo observador para toda la página: cada elemento registra qué hacer al entrar o salir
+  const seguidos = new Map();
+  const observador = 'IntersectionObserver' in window
+    ? new IntersectionObserver((entradas) => {
+        entradas.forEach(e => { const fn = seguidos.get(e.target); if (fn) fn(e); });
+      }, { threshold: [0, 0.1] })
     : null;
+  function observar(el, fn) {
+    if (!observador) { fn({ isIntersecting: true, intersectionRatio: 1, target: el, boundingClientRect: el.getBoundingClientRect() }); return; }
+    seguidos.set(el, fn);
+    observador.observe(el);
+  }
+  function dejar(el) {
+    seguidos.delete(el);
+    if (observador) observador.unobserve(el);
+  }
 
+  // Revelado progresivo: --i escalona a los hermanos marcados con data-escalonar
   function revelar(raiz = document) {
     raiz.querySelectorAll('[data-escalonar]').forEach(grupo => {
       [...grupo.children].forEach((hijo, i) => {
@@ -24,18 +34,24 @@ window.Experiencia = (function () {
       });
     });
     raiz.querySelectorAll('.revelar:not(.visible)').forEach(el => {
-      if (observadorRevelar && !sinMovimiento) observadorRevelar.observe(el);
-      else el.classList.add('visible');
+      if (sinMovimiento || !observador) { el.classList.add('visible'); return; }
+      observar(el, (e) => {
+        const alto = e.boundingClientRect.height > window.innerHeight * .8;
+        if (e.intersectionRatio >= 0.1 || (alto && e.isIntersecting)) {
+          e.target.classList.add('visible');
+          dejar(e.target);
+        }
+      });
     });
   }
 
-  // Contadores con desaceleración; el valor final ya está en el HTML para quien no tenga JS
+  // Contadores que suben desde 0; el valor final ya está en el HTML para quien no tenga JS
   function animarContador(el) {
     const fin = Number(el.dataset.contar);
     if (!Number.isFinite(fin)) return;
     if (sinMovimiento) { el.textContent = fin.toLocaleString('es-CO'); return; }
     const inicio = performance.now();
-    const duracion = 1300;
+    const duracion = 900;
     (function paso(ahora) {
       const t = Math.min((ahora - inicio) / duracion, 1);
       el.textContent = Math.round(fin * (1 - Math.pow(1 - t, 3))).toLocaleString('es-CO');
@@ -44,18 +60,103 @@ window.Experiencia = (function () {
   }
 
   function contadores(raiz = document) {
-    const lista = raiz.querySelectorAll('[data-contar]:not([data-contado])');
-    if (!('IntersectionObserver' in window)) { lista.forEach(animarContador); return; }
-    const obs = new IntersectionObserver((entradas) => {
-      entradas.forEach(e => {
-        if (e.isIntersecting) {
-          e.target.dataset.contado = '1';
-          animarContador(e.target);
-          obs.unobserve(e.target);
-        }
+    raiz.querySelectorAll('[data-contar]:not([data-contado])').forEach(el => {
+      observar(el, (e) => {
+        if (!e.isIntersecting) return;
+        e.target.dataset.contado = '1';
+        animarContador(e.target);
+        dejar(e.target);
       });
-    }, { threshold: 0.5 });
-    lista.forEach(el => obs.observe(el));
+    });
+  }
+
+  // Las animaciones en bucle se detienen cuando su sección no está en pantalla
+  function bucles() {
+    document.querySelectorAll('[data-loop]').forEach(el => {
+      observar(el, (e) => e.target.classList.toggle('pausado', !e.isIntersecting));
+    });
+  }
+
+  // Barra de progreso y botón de volver arriba: comparten un solo cálculo por cuadro
+  function progresoScroll() {
+    const barra = document.querySelector('.progreso-scroll');
+    const subir = document.getElementById('flota-subir');
+    if (!barra && !subir) return;
+    const anillo = subir && subir.querySelector('circle');
+    const largo = 2 * Math.PI * 22;
+    let pendiente = false;
+    function pintar() {
+      pendiente = false;
+      const total = document.documentElement.scrollHeight - window.innerHeight;
+      const avance = total > 0 ? Math.min(1, window.scrollY / total) : 0;
+      if (barra) barra.style.setProperty('--avance', avance.toFixed(4));
+      if (subir) {
+        subir.classList.toggle('visible', window.scrollY > 500);
+        anillo.style.strokeDashoffset = (largo * (1 - avance)).toFixed(1);
+      }
+    }
+    window.addEventListener('scroll', () => {
+      if (!pendiente) { pendiente = true; requestAnimationFrame(pintar); }
+    }, { passive: true });
+    pintar();
+  }
+
+  // Botones flotantes de la tienda. El panel y el acceso del equipo no los llevan.
+  function flotantes() {
+    if (!document.querySelector('.navbar')) return;
+    const caja = document.createElement('aside');
+    caja.className = 'flotantes no-imprimir';
+    caja.setAttribute('aria-label', 'Accesos rápidos');
+    caja.innerHTML = `
+      <button class="flota-subir" id="flota-subir" type="button" aria-label="Volver arriba">
+        <svg viewBox="0 0 48 48" aria-hidden="true"><circle cx="24" cy="24" r="22" stroke-dasharray="${(2 * Math.PI * 22).toFixed(1)}"/></svg>
+        ${icono('flecha')}
+      </button>
+      <a class="flota-wa" href="https://wa.me/573225065554" target="_blank" rel="noopener" aria-label="Escribir por WhatsApp">
+        <span class="flota-aviso" aria-hidden="true">¿Te ayudamos?</span>
+        <span class="flota-pulso" aria-hidden="true"></span><span class="flota-pulso flota-pulso--2" aria-hidden="true"></span>
+        ${icono('whatsapp')}
+      </a>`;
+    document.body.appendChild(caja);
+    caja.querySelector('#flota-subir').addEventListener('click', () => window.scrollTo({ top: 0, behavior: sinMovimiento ? 'auto' : 'smooth' }));
+    const aviso = caja.querySelector('.flota-aviso');
+    setTimeout(() => aviso.classList.add('visible'), 5000);
+    setTimeout(() => aviso.classList.remove('visible'), 10000);
+  }
+
+  // Tilt leve de las tarjetas, solo con mouse
+  function tilt() {
+    if (!conPuntero || sinMovimiento) return;
+    let pendiente = false, ultimo = null;
+    document.addEventListener('pointermove', (e) => {
+      const tarjeta = e.target.closest && e.target.closest('.med-card, .var-card');
+      if (ultimo && ultimo !== tarjeta) { ultimo.style.removeProperty('--rx'); ultimo.style.removeProperty('--ry'); }
+      ultimo = tarjeta;
+      if (!tarjeta || pendiente) return;
+      pendiente = true;
+      requestAnimationFrame(() => {
+        pendiente = false;
+        const r = tarjeta.getBoundingClientRect();
+        tarjeta.style.setProperty('--ry', (((e.clientX - r.left) / r.width - .5) * 6).toFixed(2) + 'deg');
+        tarjeta.style.setProperty('--rx', ((.5 - (e.clientY - r.top) / r.height) * 6).toFixed(2) + 'deg');
+      });
+    }, { passive: true });
+  }
+
+  // Onda al tocar los botones de compra
+  function ondas() {
+    if (sinMovimiento) return;
+    document.addEventListener('pointerdown', (e) => {
+      const boton = e.target.closest && e.target.closest('.btn-elegir, .btn-agregar, .btn-agregar-var');
+      if (!boton || boton.disabled) return;
+      const r = boton.getBoundingClientRect();
+      const onda = document.createElement('span');
+      onda.className = 'onda';
+      onda.style.left = (e.clientX - r.left - 6) + 'px';
+      onda.style.top = (e.clientY - r.top - 6) + 'px';
+      onda.addEventListener('animationend', () => onda.remove());
+      boton.appendChild(onda);
+    }, { passive: true });
   }
 
   // Los elementos que actúan como botón también responden al teclado
@@ -112,8 +213,13 @@ window.Experiencia = (function () {
   }
 
   document.addEventListener('DOMContentLoaded', () => {
+    flotantes();
     revelar();
     contadores();
+    bucles();
+    progresoScroll();
+    tilt();
+    ondas();
     teclado();
     legales();
   });
@@ -162,5 +268,5 @@ window.Experiencia = (function () {
 
   document.addEventListener('DOMContentLoaded', confirmaciones);
 
-  return { revelar, contadores, atrapar, soltar, icono, sinMovimiento, confirmar };
+  return { revelar, contadores, observar, dejar, atrapar, soltar, icono, sinMovimiento, confirmar };
 })();

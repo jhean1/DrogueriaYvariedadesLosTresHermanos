@@ -6,13 +6,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title th:text="${titulo} + ' · Panel 3H'">Panel 3H</title>
   <meta name="robots" content="noindex">
-  <meta name="theme-color" content="#F7F8FA">
+  <meta name="theme-color" content="#1B2A6B">
   <link rel="icon" type="image/svg+xml" th:href="@{/img/marca/favicon.svg}">
   <link rel="icon" type="image/png" sizes="32x32" th:href="@{/img/marca/favicon-32.png}">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&amp;family=Sora:wght@500;600&amp;display=swap" rel="stylesheet">
-  <script th:src="@{/js/tema.js}"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;family=Sora:wght@500;600;700;800&amp;display=swap" rel="stylesheet">
   <link rel="stylesheet" th:href="@{/css/design-system.css}">
   <link rel="stylesheet" th:href="@{/css/admin.css}">
   <script>document.documentElement.classList.add('js');</script>
@@ -99,11 +98,6 @@
       <input type="search" id="busqueda-global" placeholder="Buscar clientes y solicitudes" autocomplete="off">
       <div class="menu-flotante resultados-busqueda" id="resultados-busqueda" hidden></div>
     </div>
-
-    <button class="btn-icono btn-tema" type="button" data-tema-boton aria-label="Cambiar el tema de color">
-      <svg class="ic tema-luna" aria-hidden="true"><use href="/img/iconos.svg#luna"/></svg>
-      <svg class="ic tema-sol" aria-hidden="true"><use href="/img/iconos.svg#sol"/></svg>
-    </button>
 
     <div class="menu-contenedor" th:if="${perfil.operaPagos()}">
       <button class="btn-icono boton-avisos" id="btn-avisos" type="button" aria-label="Avisos" aria-expanded="false" aria-controls="menu-avisos">

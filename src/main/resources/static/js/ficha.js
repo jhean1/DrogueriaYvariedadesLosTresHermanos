@@ -170,23 +170,21 @@ window.Ficha = (function () {
   }
 
   // ── Agregar al carrito ────────────────────────────────────
-  // La miniatura viaja hasta el carrito: confirma dónde quedó el producto
+  // Un círculo rojo vuela desde el botón hasta el carrito
   function volar(origen) {
     const destino = document.getElementById('btn-abrir-carrito');
     if (!origen || !destino || Experiencia.sinMovimiento || !origen.animate) return;
     const a = origen.getBoundingClientRect(), b = destino.getBoundingClientRect();
-    const lado = 72;
-    const copia = document.createElement('div');
-    copia.className = 'vuelo';
-    copia.innerHTML = origen.querySelector('svg, img')?.outerHTML || '';
-    const izq = a.left + a.width / 2 - lado / 2, arriba = a.top + a.height / 2 - lado / 2;
-    Object.assign(copia.style, { left: izq + 'px', top: arriba + 'px', width: lado + 'px', height: lado + 'px' });
-    (dialogo && dialogo.open ? dialogo : document.body).appendChild(copia);
-    const x = b.left + b.width / 2 - (izq + lado / 2), y = b.top + b.height / 2 - (arriba + lado / 2);
-    copia.animate(
-      [{ transform: 'none', opacity: 1 }, { transform: `translate(${x}px, ${y}px) scale(.12)`, opacity: .35 }],
-      { duration: 480, easing: 'cubic-bezier(.4,.1,.3,1)' }
-    ).onfinish = () => copia.remove();
+    const circulo = document.createElement('div');
+    circulo.className = 'vuelo';
+    const izq = a.left + a.width / 2 - 9, arriba = a.top + a.height / 2 - 9;
+    Object.assign(circulo.style, { left: izq + 'px', top: arriba + 'px' });
+    (dialogo && dialogo.open ? dialogo : document.body).appendChild(circulo);
+    const x = b.left + b.width / 2 - (izq + 9), y = b.top + b.height / 2 - (arriba + 9);
+    circulo.animate(
+      [{ transform: 'none', opacity: 1 }, { transform: `translate(${x * .5}px, ${y * .5 - 60}px) scale(1.15)`, opacity: 1, offset: .5 }, { transform: `translate(${x}px, ${y}px) scale(.5)`, opacity: .6 }],
+      { duration: 560, easing: 'cubic-bezier(.4,0,.2,1)' }
+    ).onfinish = () => circulo.remove();
   }
 
   function confirmar(boton) {
@@ -210,7 +208,7 @@ window.Ficha = (function () {
       const m = buscarMed(+med.dataset.id);
       if (!m) return;
       const pres = actual(m);
-      volar(dialogo?.querySelector('.ficha-arte'));
+      volar(med);
       Carrito.agregar({
         id: pres.id, nombre: m.nombre, detalle: `${pres.conc} · ${pres.tipo} · ${pres.marca}`,
         precio: window.Suscripcion ? Suscripcion.aplicar(pres.precio) : pres.precio, imagen: m.imagen
@@ -225,7 +223,7 @@ window.Ficha = (function () {
     if (vr) {
       const v = buscarVar(+vr.dataset.id);
       if (!v) return;
-      volar(vr.closest('.var-card')?.querySelector('.var-arte') || dialogo?.querySelector('.ficha-arte'));
+      volar(vr);
       Carrito.agregar({
         id: v.id, nombre: v.nombre, precio: window.Suscripcion ? Suscripcion.aplicar(v.precio) : v.precio, imagen: v.imagen
       });

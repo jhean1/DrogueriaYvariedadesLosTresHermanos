@@ -41,9 +41,9 @@ Los clientes también pueden suscribirse a un plan mensual para obtener descuent
 | <img src="docs/imagenes/medicamentos.png" alt="Catálogo de medicamentos con filtros y selector de presentación" width="420"> | <img src="docs/imagenes/variedades.png" alt="Catálogo de variedades por categoría" width="420"> |
 | Búsqueda, filtros y selección de presentación, concentración y marca | Perfumes, útiles escolares y cuidado personal |
 
-| Ficha de producto | Modo oscuro |
-|:---:|:---:|
-| <img src="docs/imagenes/ficha.png" alt="Ficha de un medicamento con sus presentaciones" width="420"> | <img src="docs/imagenes/oscuro-inicio.png" alt="Inicio en modo oscuro" width="420"> |
+| Ficha de producto |
+|:---:|
+| <img src="docs/imagenes/ficha.png" alt="Ficha de un medicamento con sus presentaciones" width="560"> |
 
 ### Suscripciones y cuenta del cliente
 
@@ -77,8 +77,8 @@ Los clientes también pueden suscribirse a un plan mensual para obtener descuent
 
 - 🔎 **Búsqueda central:** visible en toda la tienda, con sugerencias al escribir por nombre, marca, principio activo o categoría.
 - 💊 **Catálogo:** tarjetas compactas y ficha de producto con presentación, concentración, marca y precio.
-- 🌗 **Modo claro y oscuro:** se recuerda la preferencia y cubre toda la aplicación.
-- 🧭 **Guía de compra:** pasos interactivos en el inicio, opcionales y sin interrumpir.
+- 💙 **Identidad alegre:** hero animado, categorías de colores, botones flotantes y movimiento que respeta la preferencia de menos animación.
+- 🧭 **Guía de compra:** cuatro pasos en el inicio que se dibujan al bajar por la página.
 - 🛒 **Carrito y pedido:** carrito persistente, entrega a domicilio o recogida en tienda, y envío del pedido por WhatsApp.
 - 🧾 **Recibo e historial:** comprobante del pedido y consulta de compras anteriores desde **Mi cuenta**.
 - ⭐ **Suscripciones:** descuento automático en toda la tienda cuando el plan está aprobado y vigente.

@@ -128,10 +128,8 @@ window.Buscador = (function () {
 
     // En el inicio el buscador grande manda. El de la barra aparece cuando aquel ya no se ve.
     const grande = document.getElementById('buscador-inicio');
-    if (grande && 'IntersectionObserver' in window) {
-      new IntersectionObserver(([e]) => {
-        document.body.classList.toggle('buscador-grande-visible', e.isIntersecting);
-      }, { rootMargin: '-72px 0px 0px 0px' }).observe(grande);
+    if (grande) {
+      Experiencia.observar(grande, (e) => document.body.classList.toggle('buscador-grande-visible', e.isIntersecting));
     }
   });
 

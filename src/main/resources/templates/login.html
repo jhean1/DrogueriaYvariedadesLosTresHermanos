@@ -2,7 +2,8 @@
 <html xmlns:th="http://www.thymeleaf.org" lang="es">
 <head th:replace="~{fragments/tienda :: cabeza('Iniciar sesión', 'Inicia sesión en tu cuenta de Los Tres Hermanos.')}"></head>
 <body class="pagina-auth">
-  <main class="auth">
+  <th:block th:replace="~{fragments/tienda :: barra}"></th:block>
+  <main class="auth" id="contenido">
     <aside class="auth-marca" aria-hidden="true">
       <a th:href="@{/}" class="auth-logo" tabindex="-1"><img class="logo-claro" th:src="@{/img/marca/logo-horizontal.svg}" alt="" width="290" height="44"><img class="logo-oscuro" th:src="@{/img/marca/logo-horizontal-oscuro.svg}" alt="" width="290" height="44"></a>
       <div class="auth-marca-texto">
@@ -16,7 +17,6 @@
     </aside>
 
     <section class="auth-panel">
-      <div class="auth-tema"><button th:replace="~{fragments/tienda :: tema}"></button></div>
       <a th:href="@{/}" class="auth-logo-movil" aria-label="Los Tres Hermanos, ir al inicio"><img class="logo-claro" th:src="@{/img/marca/logo-horizontal.svg}" alt="" width="290" height="44"><img class="logo-oscuro" th:src="@{/img/marca/logo-horizontal-oscuro.svg}" alt="" width="290" height="44"></a>
       <div class="auth-formulario entra" style="--i:0">
         <nav class="migas" aria-label="Ruta"><a th:href="@{/}">Inicio</a><svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#chevron"/></svg><span aria-current="page">Iniciar sesión</span></nav>
@@ -60,10 +60,11 @@
       </div>
     </section>
   </main>
+  <th:block th:replace="~{fragments/tienda :: pie}"></th:block>
+  <th:block th:replace="~{fragments/tienda :: carrito}"></th:block>
   <div class="toast-wrap" id="toast-wrap"></div>
 
-  <script th:src="@{/js/seguridad.js}"></script>
-  <script th:src="@{/js/experiencia.js}"></script>
+  <th:block th:replace="~{fragments/tienda :: scripts}"></th:block>
   <script>
     document.getElementById('btn-ojo').addEventListener('click', () => {
       const inp = document.getElementById('input-pass');

@@ -2,11 +2,15 @@
 <html xmlns:th="http://www.thymeleaf.org" lang="es">
 <head th:replace="~{fragments/tienda :: cabeza('Algo salió mal', 'Ocurrió un error inesperado.')}"></head>
 <body class="pagina-error">
-  <main class="error-pagina">
+  <th:block th:replace="~{fragments/tienda :: barra}"></th:block>
+  <main class="error-pagina" id="contenido">
     <span class="vacio-icono"><svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#alerta"/></svg></span>
     <h1>Algo salió mal</h1>
     <p>Ocurrió un error inesperado. Inténtalo de nuevo en unos minutos.</p>
     <a th:href="@{/}" class="btn btn--primario">Ir al inicio</a>
   </main>
+  <th:block th:replace="~{fragments/tienda :: pie}"></th:block>
+  <th:block th:replace="~{fragments/tienda :: carrito}"></th:block>
+  <th:block th:replace="~{fragments/tienda :: scripts}"></th:block>
 </body>
 </html>
