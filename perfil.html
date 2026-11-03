@@ -6,14 +6,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Mi cuenta · Los Tres Hermanos</title>
   <meta name="description" content="Gestiona tu cuenta, pedidos y suscripción en Los Tres Hermanos.">
-  <meta name="theme-color" content="#F7F8FA">
+  <meta name="theme-color" content="#1B2A6B">
   <link rel="icon" type="image/svg+xml" href="/DrogueriaYvariedadesLosTresHermanos/img/marca/favicon.svg">
   <link rel="icon" type="image/png" sizes="32x32" href="/DrogueriaYvariedadesLosTresHermanos/img/marca/favicon-32.png">
   <link rel="apple-touch-icon" href="/DrogueriaYvariedadesLosTresHermanos/img/marca/apple-touch-icon.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&amp;family=Sora:wght@500;600&amp;display=swap" rel="stylesheet">
-  <script src="/DrogueriaYvariedadesLosTresHermanos/js/tema.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;family=Sora:wght@500;600;700;800&amp;display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/DrogueriaYvariedadesLosTresHermanos/css/design-system.css">
   <link rel="stylesheet" href="/DrogueriaYvariedadesLosTresHermanos/css/tienda.css">
   <script>
@@ -22,10 +21,24 @@
       var s = JSON.parse(sessionStorage.getItem('lth_cliente') || 'null');
       if (s && s.rol === 'cliente') document.documentElement.classList.add('con-sesion');
     } catch (e) {}
+    // Pantalla de entrada: solo la primera vez en la sesión y si no se pidió menos movimiento
+    try {
+      if (!sessionStorage.getItem('lth_entrada') && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        sessionStorage.setItem('lth_entrada', '1');
+        document.documentElement.classList.add('con-entrada');
+      }
+    } catch (e) {}
   </script>
 </head>
 <body class="perfil">
   
+  <div class="entrada no-imprimir" aria-hidden="true">
+    <div class="entrada-marca">
+      <img src="/DrogueriaYvariedadesLosTresHermanos/img/marca/logo-vertical.svg" alt="" width="240" height="160">
+      <svg class="entrada-cruz" viewBox="0 0 24 24"><path d="M9 2h6v7h7v6h-7v7H9v-7H2V9h7z"/></svg>
+    </div>
+  </div>
+  <div class="progreso-scroll no-imprimir" aria-hidden="true"></div>
   <a class="saltar" href="#contenido">Saltar al contenido</a>
   <header class="navbar no-imprimir" role="banner">
     <div class="navbar-inner contenedor">
@@ -43,10 +56,6 @@
       </form>
 
       <div class="navbar-actions">
-        <button class="btn-icono btn-tema" type="button" data-tema-boton aria-label="Cambiar el tema de color">
-  <svg class="ic tema-luna" aria-hidden="true"><use href="/DrogueriaYvariedadesLosTresHermanos/img/iconos.svg#luna"/></svg>
-  <svg class="ic tema-sol" aria-hidden="true"><use href="/DrogueriaYvariedadesLosTresHermanos/img/iconos.svg#sol"/></svg>
-</button>
         <a href="/DrogueriaYvariedadesLosTresHermanos/registro" id="btn-registrate" class="btn btn--fantasma btn--sm">Regístrate</a>
         <a href="/DrogueriaYvariedadesLosTresHermanos/login" id="btn-mi-cuenta" class="btn btn--sm" aria-label="Mi cuenta">
           <svg class="ic" aria-hidden="true"><use href="/DrogueriaYvariedadesLosTresHermanos/img/iconos.svg#usuario"/></svg>
@@ -201,7 +210,7 @@
           <p>Medicamentos, variedades y servicios para las familias de Arjona, Bolívar. Estamos aquí para ayudarte con tu pedido.</p>
         </div>
         <div class="footer-col">
-          <h3>Tienda</h3>
+          <h2>Tienda</h2>
           <ul>
             <li><a href="/DrogueriaYvariedadesLosTresHermanos/medicamentos">Medicamentos</a></li>
             <li><a href="/DrogueriaYvariedadesLosTresHermanos/variedades">Variedades</a></li>
@@ -211,7 +220,7 @@
           </ul>
         </div>
         <div class="footer-col">
-          <h3>La droguería</h3>
+          <h2>La droguería</h2>
           <ul>
             <li><a href="/DrogueriaYvariedadesLosTresHermanos/nosotros">Quiénes somos</a></li>
             <li><a href="/DrogueriaYvariedadesLosTresHermanos/contacto">Contacto</a></li>
@@ -219,7 +228,7 @@
           </ul>
         </div>
         <div class="footer-col">
-          <h3>Contacto y horario</h3>
+          <h2>Contacto y horario</h2>
           <ul class="pie-contacto">
             <li><a href="https://wa.me/573225065554" target="_blank" rel="noopener"><svg class="ic" aria-hidden="true"><use href="/DrogueriaYvariedadesLosTresHermanos/img/iconos.svg#whatsapp"/></svg>WhatsApp +57 322 506 5554</a></li>
             <li><a href="mailto:diazpajaro1208@gmail.com"><svg class="ic" aria-hidden="true"><use href="/DrogueriaYvariedadesLosTresHermanos/img/iconos.svg#correo"/></svg>diazpajaro1208@gmail.com</a></li>
