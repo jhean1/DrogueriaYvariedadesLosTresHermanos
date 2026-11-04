@@ -15,6 +15,8 @@
     </section>
 
     <section class="contenedor catalogo">
+      <div id="editor-imagenes" hidden th:if="${editarImagenes}" th:attr="data-csrf=${_csrf.token}"></div>
+      <p class="alerta alerta--info aviso-imagenes" th:if="${editarImagenes}"><svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#info"/></svg><span>Tienes permiso para gestionar productos: usa el botón de cada tarjeta para agregar o cambiar su imagen. JPG, PNG o WEBP de hasta 3 MB.</span></p>
       <div class="resultados-info">
         <span id="contador-resultados" role="status">Cargando...</span>
         <div class="resultados-controles">

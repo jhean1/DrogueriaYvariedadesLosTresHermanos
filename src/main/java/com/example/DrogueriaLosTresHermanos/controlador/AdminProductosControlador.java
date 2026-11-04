@@ -7,6 +7,7 @@ import com.example.DrogueriaLosTresHermanos.catalogo.CatalogoProductos.Producto;
 import com.example.DrogueriaLosTresHermanos.catalogo.FotosProductos;
 import com.example.DrogueriaLosTresHermanos.configuracion.DirectorioAccesos;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
@@ -108,6 +110,23 @@ public class AdminProductosControlador {
         directorio.auditar(a.getName(), activo ? "Producto publicado" : "Producto retirado de la tienda", p.nombre());
         r.addFlashAttribute("mensaje", activo ? "El producto volvió a la tienda." : "El producto ya no aparece en la tienda.");
         return "redirect:/admin/productos";
+    }
+
+    /** Cambio rápido de imagen desde el catálogo de medicamentos. Responde la ruta de la foto, o el motivo si no se aceptó. */
+    @PostMapping("/admin/productos/{id:\\d+}/foto")
+    @ResponseBody
+    public ResponseEntity<String> foto(@PathVariable int id, @RequestParam MultipartFile foto, Authentication a) {
+        Producto p = catalogo.buscar(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        try {
+            String nombre = fotos.guardar(foto);
+            catalogo.cambiarFoto(id, nombre);
+            directorio.auditar(a.getName(), "Imagen de producto cambiada", p.nombre());
+            return ResponseEntity.ok("/productos/imagen/" + nombre);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (IOException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("No se pudo guardar la foto.");
+        }
     }
 
     @GetMapping("/admin/categorias")

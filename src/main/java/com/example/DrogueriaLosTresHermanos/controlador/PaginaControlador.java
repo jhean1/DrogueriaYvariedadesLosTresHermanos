@@ -2,6 +2,7 @@ package com.example.DrogueriaLosTresHermanos.controlador;
 
 import com.example.DrogueriaLosTresHermanos.configuracion.DirectorioAccesos;
 import com.example.DrogueriaLosTresHermanos.configuracion.PerfilAdmin;
+import com.example.DrogueriaLosTresHermanos.configuracion.Permiso;
 import com.example.DrogueriaLosTresHermanos.modelo.PlanSuscripcion;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
@@ -75,8 +76,11 @@ public class PaginaControlador {
 
     // ── Catálogo de medicamentos ─────────────────────────────────────────────
     @GetMapping("/medicamentos")
-    public String medicamentos(Model modelo) {
+    public String medicamentos(Model modelo, Authentication autenticacion) {
         modelo.addAttribute("pagina", "medicamentos");
+        // Solo quien puede modificar productos ve el botón de imagen; el servidor valida de nuevo al subirla
+        modelo.addAttribute("editarImagenes", autenticacion != null && autenticacion.getAuthorities().stream()
+            .anyMatch(a -> Permiso.PRODUCTOS_EDITAR.getCodigo().equals(a.getAuthority())));
         modelo.addAttribute("titulo", "Medicamentos");
         return "medicamentos";
     }

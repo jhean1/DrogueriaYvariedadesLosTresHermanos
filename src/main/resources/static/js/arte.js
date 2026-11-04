@@ -5,8 +5,8 @@
    ============================================================ */
 window.Arte = (function () {
   const TONOS = {
-    analgesicos: ['#1B2A6B', '#4A5FD4'], antiinflamatorios: ['#2D3E9E', '#8E9CF0'],
-    antibioticos: ['#C0102A', '#FFFFFF'], antihistaminicos: ['#4A5FD4', '#8E9CF0'], otros: ['#1B2A6B', '#C0102A']
+    analgesicos: ['#10224D', '#3F5C9E'], antiinflamatorios: ['#1C3468', '#7D96CC'],
+    antibioticos: ['#C8102E', '#FFFFFF'], antihistaminicos: ['#A67C28', '#E6C26E'], otros: ['#10224D', '#C8102E']
   };
 
   function capsula(a, b) {
@@ -17,10 +17,16 @@ window.Arte = (function () {
     </g>`;
   }
 
-  function blister(a) {
-    let pastillas = '';
-    for (let f = 0; f < 2; f++) for (let c = 0; c < 4; c++) {
-      pastillas += `<circle cx="${61 + c * 26}" cy="${62 + f * 34}" r="10.5" fill="#fff"/><circle cx="${58 + c * 26}" cy="${59 + f * 34}" r="3" fill="${a}" opacity=".25"/>`;
+  // Tantas píldoras como indica la presentación: Tableta x7, x10, x14, x28, x30
+  function blister(a, n) {
+    const total = Math.max(1, Math.min(n || 8, 30));
+    const filas = total <= 10 ? 2 : 3;
+    const columnas = Math.ceil(total / filas);
+    const r = Math.min(10.5, 44 / columnas);
+    let pastillas = '', quedan = total;
+    for (let f = 0; f < filas; f++) for (let c = 0; c < columnas && quedan > 0; c++, quedan--) {
+      const x = 44 + (c + .5) * (112 / columnas), y = 44 + (f + .5) * (72 / filas);
+      pastillas += `<circle cx="${x}" cy="${y}" r="${r}" fill="#fff"/><circle cx="${x - r * .3}" cy="${y - r * .3}" r="${r * .3}" fill="${a}" opacity=".25"/>`;
     }
     return `<g transform="rotate(-8 100 80)">
       <rect x="40" y="40" width="120" height="80" rx="11" fill="${a}"/>
@@ -45,26 +51,26 @@ window.Arte = (function () {
     if (med.foto) return `<img src="${Seguridad.esc(med.foto)}" alt="" loading="lazy">`;
     const tipo = (presentacion && presentacion.tipo) || 'Unidad';
     if (tipo.startsWith('Caja')) return envolver(caja(a, b));
-    if (tipo.startsWith('Tableta')) return envolver(blister(a));
+    if (tipo.startsWith('Tableta')) return envolver(blister(a, parseInt((tipo.match(/x(\d+)/) || [])[1], 10)));
     return envolver(capsula(a, b));
   }
 
   const FORMAS = {
-    101: () => perfume('#C0102A', '#E0566B'),
-    102: () => perfume('#2D3E9E', '#8E9CF0'),
-    103: () => perfume('#1B2A6B', '#E0566B'),
-    104: () => `<g transform="rotate(-6 100 80)"><rect x="56" y="28" width="92" height="108" rx="7" fill="#1B2A6B"/><rect x="56" y="28" width="16" height="108" rx="7" fill="#C0102A"/><rect x="84" y="50" width="48" height="20" rx="3" fill="#fff"/><path d="M90 57h36M90 63h22" stroke="#667085" stroke-width="2.500"/></g>`,
-    105: () => [0, 1, 2].map(i => `<g transform="rotate(${-26 + i * 26} 100 130)"><rect x="93" y="30" width="14" height="94" rx="4" fill="${['#2D3E9E', '#1B2A6B', '#C0102A'][i]}"/><path d="M93 124h14l-7 14z" fill="#E4E9F0"/><rect x="93" y="30" width="14" height="14" rx="4" fill="#fff" opacity=".35"/></g>`).join(''),
-    106: () => `<g transform="rotate(-14 100 80)"><rect x="46" y="52" width="108" height="56" rx="11" fill="#FAFBFD" stroke="#CCD4E0" stroke-width="2"/><path d="M46 63a11 11 0 0 1 11-11h43v56H57a11 11 0 0 1-11-11z" fill="#2D3E9E"/></g>`,
-    107: () => ['#C0102A', '#E8122F', '#16A34A', '#4A5FD4', '#2D3E9E', '#1B2A6B'].map((c, i) => `<g transform="translate(${38 + i * 22} ${i % 2 ? 26 : 18})"><path d="M0 22 7 4l7 18z" fill="#E9D8BE"/><rect y="22" width="14" height="96" fill="${c}"/><path d="M4.500 10 7 4l2.500 6z" fill="${c}"/></g>`).join(''),
-    108: () => `<rect x="74" y="58" width="52" height="84" rx="10" fill="#2D3E9E"/><rect x="78" y="22" width="44" height="38" rx="15" fill="#E4E9F0"/><rect x="84" y="82" width="32" height="30" rx="4" fill="#fff" opacity=".9"/><path d="M90 92h20M90 100h13" stroke="#2D3E9E" stroke-width="2.500"/>`,
-    109: () => `<rect x="86" y="18" width="28" height="20" rx="4" fill="#C0102A"/><path d="M90 38h20l14 20v76a8 8 0 0 1-8 8H84a8 8 0 0 1-8-8V58z" fill="#DDE4F2"/><rect x="76" y="76" width="48" height="42" fill="#fff"/><path d="M100 86v22M89 97h22" stroke="#C0102A" stroke-width="5" stroke-linecap="round"/>`,
-    110: () => `<g transform="rotate(38 100 80)"><rect x="89" y="4" width="22" height="118" rx="11" fill="#FAFBFD" stroke="#CCD4E0" stroke-width="2"/><rect x="93" y="28" width="14" height="30" rx="3" fill="#1B2A6B"/><rect x="95" y="118" width="10" height="28" rx="5" fill="#667085"/><circle cx="100" cy="82" r="5" fill="#2D3E9E"/></g>`,
+    101: () => perfume('#C8102E', '#E0566B'),
+    102: () => perfume('#1C3468', '#7D96CC'),
+    103: () => perfume('#10224D', '#E0566B'),
+    104: () => `<g transform="rotate(-6 100 80)"><rect x="56" y="28" width="92" height="108" rx="7" fill="#10224D"/><rect x="56" y="28" width="16" height="108" rx="7" fill="#C8102E"/><rect x="84" y="50" width="48" height="20" rx="3" fill="#fff"/><path d="M90 57h36M90 63h22" stroke="#667085" stroke-width="2.500"/></g>`,
+    105: () => [0, 1, 2].map(i => `<g transform="rotate(${-26 + i * 26} 100 130)"><rect x="93" y="30" width="14" height="94" rx="4" fill="${['#1C3468', '#10224D', '#C8102E'][i]}"/><path d="M93 124h14l-7 14z" fill="#E4E9F0"/><rect x="93" y="30" width="14" height="14" rx="4" fill="#fff" opacity=".35"/></g>`).join(''),
+    106: () => `<g transform="rotate(-14 100 80)"><rect x="46" y="52" width="108" height="56" rx="11" fill="#FAFBFD" stroke="#CCD4E0" stroke-width="2"/><path d="M46 63a11 11 0 0 1 11-11h43v56H57a11 11 0 0 1-11-11z" fill="#1C3468"/></g>`,
+    107: () => ['#C8102E', '#C2963A', '#2F7D66', '#3F5C9E', '#1C3468', '#10224D'].map((c, i) => `<g transform="translate(${38 + i * 22} ${i % 2 ? 26 : 18})"><path d="M0 22 7 4l7 18z" fill="#E9D8BE"/><rect y="22" width="14" height="96" fill="${c}"/><path d="M4.500 10 7 4l2.500 6z" fill="${c}"/></g>`).join(''),
+    108: () => `<rect x="74" y="58" width="52" height="84" rx="10" fill="#1C3468"/><rect x="78" y="22" width="44" height="38" rx="15" fill="#E4E9F0"/><rect x="84" y="82" width="32" height="30" rx="4" fill="#fff" opacity=".9"/><path d="M90 92h20M90 100h13" stroke="#1C3468" stroke-width="2.500"/>`,
+    109: () => `<rect x="86" y="18" width="28" height="20" rx="4" fill="#C8102E"/><path d="M90 38h20l14 20v76a8 8 0 0 1-8 8H84a8 8 0 0 1-8-8V58z" fill="#DDE4F2"/><rect x="76" y="76" width="48" height="42" fill="#fff"/><path d="M100 86v22M89 97h22" stroke="#C8102E" stroke-width="5" stroke-linecap="round"/>`,
+    110: () => `<g transform="rotate(38 100 80)"><rect x="89" y="4" width="22" height="118" rx="11" fill="#FAFBFD" stroke="#CCD4E0" stroke-width="2"/><rect x="93" y="28" width="14" height="30" rx="3" fill="#10224D"/><rect x="95" y="118" width="10" height="28" rx="5" fill="#667085"/><circle cx="100" cy="82" r="5" fill="#1C3468"/></g>`,
     111: () => `<path d="M58 54c28-12 56-12 84 0v50c-28 24-56 24-84 0z" fill="#DDE4F2"/><path d="M58 70c28-10 56-10 84 0M58 86c28 8 56 8 84 0" stroke="#fff" stroke-width="3" fill="none"/><path d="M58 62C40 56 32 72 40 88c5 9 12 12 18 12M142 62c18-6 26 10 18 26-5 9-12 12-18 12" fill="none" stroke="#667085" stroke-width="3"/>`
   };
 
   function perfume(a, b) {
-    return `<rect x="88" y="16" width="24" height="24" rx="5" fill="#1B2A6B"/><rect x="93" y="38" width="14" height="12" fill="#CCD4E0"/>
+    return `<rect x="88" y="16" width="24" height="24" rx="5" fill="#10224D"/><rect x="93" y="38" width="14" height="12" fill="#CCD4E0"/>
       <path d="M72 62a12 12 0 0 1 12-12h32a12 12 0 0 1 12 12v68a12 12 0 0 1-12 12H84a12 12 0 0 1-12-12z" fill="${a}"/>
       <path d="M100 50h16a12 12 0 0 1 12 12v68a12 12 0 0 1-12 12h-16z" fill="${b}" opacity=".85"/>
       <rect x="82" y="60" width="6" height="58" rx="3" fill="#fff" opacity=".35"/>`;

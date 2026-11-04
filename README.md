@@ -41,9 +41,9 @@ Los clientes también pueden suscribirse a un plan mensual para obtener descuent
 | <img src="docs/imagenes/medicamentos.png" alt="Catálogo de medicamentos con filtros y selector de presentación" width="420"> | <img src="docs/imagenes/variedades.png" alt="Catálogo de variedades por categoría" width="420"> |
 | Búsqueda, filtros y selección de presentación, concentración y marca | Perfumes, útiles escolares y cuidado personal |
 
-| Ficha de producto |
-|:---:|
-| <img src="docs/imagenes/ficha.png" alt="Ficha de un medicamento con sus presentaciones" width="560"> |
+| Ficha de producto | Modo oscuro |
+|:---:|:---:|
+| <img src="docs/imagenes/ficha.png" alt="Ficha de un medicamento con sus presentaciones" width="420"> | <img src="docs/imagenes/oscuro-inicio.png" alt="Inicio en modo oscuro" width="420"> |
 
 ### Suscripciones y cuenta del cliente
 
@@ -77,7 +77,8 @@ Los clientes también pueden suscribirse a un plan mensual para obtener descuent
 
 - 🔎 **Búsqueda central:** visible en toda la tienda, con sugerencias al escribir por nombre, marca, principio activo o categoría.
 - 💊 **Catálogo:** tarjetas compactas y ficha de producto con presentación, concentración, marca y precio.
-- 💙 **Identidad alegre:** hero animado, categorías de colores, botones flotantes y movimiento que respeta la preferencia de menos animación.
+- 🌗 **Modo claro y oscuro:** interruptor visible que recuerda la preferencia, con movimiento sutil que respeta la opción de menos animación.
+- 🖼️ **Imagen de cada medicamento:** el personal autorizado la agrega o cambia desde el catálogo.
 - 🧭 **Guía de compra:** cuatro pasos en el inicio que se dibujan al bajar por la página.
 - 🛒 **Carrito y pedido:** carrito persistente, entrega a domicilio o recogida en tienda, y envío del pedido por WhatsApp.
 - 🧾 **Recibo e historial:** comprobante del pedido y consulta de compras anteriores desde **Mi cuenta**.
@@ -207,6 +208,7 @@ sequenceDiagram
 | `/admin/productos/nuevo` | Crear producto | **Con `products.create`** |
 | `/admin/productos/{id}` | Editar producto | **Con `products.update`** |
 | `/admin/productos/{id}/visibilidad` | Retirar o publicar | **Con `products.delete`** |
+| `/admin/productos/{id}/foto` | Cambiar la imagen desde el catálogo | **Con `products.update`** |
 | `/admin/categorias` | Categorías | **Con `products.update`** |
 | `/js/catalogo.js`, `/productos/imagen/{foto}` | Catálogo publicado y fotos | Público |
 | `/admin/modulos/{modulo}` | Módulos en desarrollo | **Según el permiso de cada módulo** |

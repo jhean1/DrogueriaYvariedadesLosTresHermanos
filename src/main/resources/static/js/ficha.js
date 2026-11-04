@@ -29,12 +29,46 @@ window.Ficha = (function () {
     ].join('');
   }
 
+  function editorImagenes() {
+    return document.getElementById('editor-imagenes');
+  }
+  function botonImagen(m) {
+    if (!editorImagenes()) return '';
+    const texto = m.foto ? 'Cambiar imagen' : 'Agregar imagen';
+    return `<button type="button" class="btn-foto" data-foto="${m.id}" aria-label="${texto} de ${esc(m.nombre)}">${ic('subir')} ${texto}</button>`;
+  }
+
+  function subirImagen(boton, archivo) {
+    const m = buscarMed(+boton.dataset.foto);
+    const editor = editorImagenes();
+    if (!m || !editor) return;
+    if (!/^image\/(jpeg|png|webp)$/.test(archivo.type)) { Toast.mostrar('La foto debe ser JPG, PNG o WEBP.'); return; }
+    if (archivo.size > 3 * 1024 * 1024) { Toast.mostrar('La foto no puede superar 3 MB.'); return; }
+    const datos = new FormData();
+    datos.append('foto', archivo);
+    datos.append('_csrf', editor.dataset.csrf);
+    boton.setAttribute('aria-busy', 'true');
+    fetch('/admin/productos/' + m.id + '/foto', { method: 'POST', body: datos, redirect: 'manual' })
+      .then(r => r.text().then(texto => ({ ok: r.ok, texto, status: r.status })))
+      .then(({ ok, texto, status }) => {
+        if (!ok) { Toast.mostrar(status === 400 ? texto : 'No se pudo guardar la imagen. Revisa tu sesión e inténtalo de nuevo.'); return; }
+        m.foto = texto;
+        const tarjeta = boton.closest('.med-card');
+        tarjeta.querySelector('.med-arte').innerHTML = Arte.medicamento(m, m.presentaciones[0]);
+        tarjeta.querySelector('.btn-foto').outerHTML = botonImagen(m);
+        Toast.mostrar('Imagen guardada. Ya aparece en la tienda.');
+      })
+      .catch(() => Toast.mostrar('No se pudo guardar la imagen. Revisa tu conexión.'))
+      .finally(() => boton.removeAttribute('aria-busy'));
+  }
+
   // ── Tarjetas ──────────────────────────────────────────────
   function tarjetaMedicamento(m, i) {
     const n = m.presentaciones.length;
     const conc = [...new Set(m.presentaciones.map(p => p.conc))];
     return `<article class="med-card" data-med="${m.id}" style="--i:${Math.min(i, 8)}">
       <button type="button" class="med-arte" data-ficha="medicamento" data-id="${m.id}" aria-label="Ver detalles de ${esc(m.nombre)}" tabindex="-1">${Arte.medicamento(m, m.presentaciones[0])}</button>
+      ${botonImagen(m)}
       <div class="med-body">
         <span class="med-categoria">${esc(LABELS_CAT[m.cat] || m.cat)}</span>
         <h2 class="med-nombre"><button type="button" data-ficha="medicamento" data-id="${m.id}">${esc(m.nombre)}</button></h2>
@@ -97,7 +131,7 @@ window.Ficha = (function () {
     const concs = [...new Set(med.presentaciones.filter(p => p.tipo === e.tipo).map(p => p.conc))];
     const marcas = med.presentaciones.filter(p => p.tipo === e.tipo && p.conc === e.conc).map(p => p.marca);
     const pregunta = encodeURIComponent(`Hola, quiero preguntar por ${med.nombre}: ${pres.tipo}, ${pres.conc}, ${pres.marca}.`);
-    return `<div class="ficha-arte">${Arte.medicamento(med, pres)}</div>
+    return `<div class="ficha-arte">${Arte.medicamento(med, pres)}<span class="ficha-arte-etiqueta">${esc(pres.tipo)}</span></div>
       <div class="ficha-info">
         <span class="med-categoria">${esc(LABELS_CAT[med.cat] || med.cat)}</span>
         <h2 id="ficha-titulo">${esc(med.nombre)}</h2>
@@ -150,9 +184,12 @@ window.Ficha = (function () {
       const fila = btn.closest('[data-grupo]');
       const med = buscarMed(+dialogo.dataset.id);
       if (!med) return;
-      elegir(med, fila.dataset.grupo, btn.dataset[fila.dataset.grupo]);
       const orden = fila.dataset.grupo;
+      const antes = actual(med).tipo;
+      elegir(med, fila.dataset.grupo, btn.dataset[fila.dataset.grupo]);
       dialogo.querySelector('#ficha-contenido').innerHTML = pintarMedicamento(med);
+      // La imagen cambia con la presentación elegida; el cambio se anima solo cuando de verdad cambia
+      if (actual(med).tipo !== antes) dialogo.querySelector('.ficha-arte').classList.add('arte-cambia');
       dialogo.querySelector(`[data-grupo="${orden}"] .sel-btn.activo`)?.focus();
     });
     return dialogo;
@@ -200,6 +237,15 @@ window.Ficha = (function () {
   }
 
   document.addEventListener('click', (e) => {
+    const foto = e.target.closest('.btn-foto');
+    if (foto) {
+      const entrada = document.createElement('input');
+      entrada.type = 'file';
+      entrada.accept = 'image/jpeg,image/png,image/webp';
+      entrada.addEventListener('change', () => { if (entrada.files[0]) subirImagen(foto, entrada.files[0]); });
+      entrada.click();
+      return;
+    }
     const abre = e.target.closest('[data-ficha]');
     if (abre) { abrir(abre.dataset.ficha, +abre.dataset.id); return; }
 

@@ -7,12 +7,7 @@
   <main id="contenido">
     <section class="portada" data-loop aria-labelledby="portada-titulo">
       <div class="portada-fondo" aria-hidden="true">
-        <div class="portada-grad"></div>
-        <span class="blob blob--a"></span>
-        <span class="blob blob--b"></span>
-        <span class="blob blob--c"></span>
         <svg class="ecg" viewBox="0 0 1200 120" preserveAspectRatio="none"><path pathLength="1" d="M0 70H250l18-10 16 10h40l12 16 20-74 22 92 14-34h60l16-12 18 12H690l18-10 16 10h40l12 16 20-74 22 92 14-34h368"/></svg>
-        <div class="ola"><svg viewBox="0 0 2880 120" preserveAspectRatio="none"><path d="M0 50C240 90 480 10 720 50S1200 90 1440 50 1920 10 2160 50 2640 90 2880 50V120H0z"/></svg></div>
       </div>
 
       <div class="contenedor portada-interior">
@@ -32,7 +27,7 @@
 
           <div class="portada-acciones entra" style="--i:4">
             <a th:href="@{/medicamentos}" class="btn btn--primario btn--lg">Ver medicamentos <svg class="ic ic-mueve" aria-hidden="true"><use href="/img/iconos.svg#flecha"/></svg></a>
-            <a th:href="@{/variedades}" class="btn btn--lg portada-btn-claro">Explorar variedades</a>
+            <a th:href="@{/variedades}" class="btn btn--secundario btn--lg">Explorar variedades</a>
           </div>
         </div>
 
@@ -45,16 +40,16 @@
             <div class="capa" style="--d:26">
               <svg class="escena-capsula" viewBox="0 0 240 110">
                 <rect x="4" y="4" width="232" height="102" rx="51" fill="#fff"/>
-                <path d="M120 12H59a43 43 0 0 0 0 86h61z" fill="#4A5FD4"/>
-                <path d="M120 12h61a43 43 0 0 1 0 86h-61z" fill="#E8122F"/>
+                <path d="M120 12H59a43 43 0 0 0 0 86h61z" fill="#2B4A9E"/>
+                <path d="M120 12h61a43 43 0 0 1 0 86h-61z" fill="#C8102E"/>
                 <rect x="38" y="26" width="58" height="10" rx="5" fill="#fff" opacity=".55"/>
                 <rect x="140" y="26" width="46" height="10" rx="5" fill="#fff" opacity=".4"/>
               </svg>
             </div>
-            <div class="capa particula" style="--d:46;--x:6%;--y:12%;--dur:7s"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="11" fill="#fff"/><path d="M4 12h16" stroke="#C0102A" stroke-width="2.500"/></svg></div>
-            <div class="capa particula" style="--d:34;--x:82%;--y:6%;--dur:9s"><svg viewBox="0 0 24 24"><path d="M12 1c4 6 8 10 8 14a8 8 0 0 1-16 0c0-4 4-8 8-14z" fill="#FCA5A5"/></svg></div>
+            <div class="capa particula" style="--d:46;--x:6%;--y:12%;--dur:7s"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="11" fill="#fff"/><path d="M4 12h16" stroke="#C8102E" stroke-width="2.500"/></svg></div>
+            <div class="capa particula" style="--d:34;--x:82%;--y:6%;--dur:9s"><svg viewBox="0 0 24 24"><path d="M12 1c4 6 8 10 8 14a8 8 0 0 1-16 0c0-4 4-8 8-14z" fill="#E6C26E"/></svg></div>
             <div class="capa particula" style="--d:60;--x:90%;--y:58%;--dur:6s"><svg viewBox="0 0 24 24"><path d="M9 2h6v7h7v6h-7v7H9v-7H2V9h7z" fill="#fff"/></svg></div>
-            <div class="capa particula" style="--d:28;--x:2%;--y:66%;--dur:8s"><svg viewBox="0 0 24 24"><path d="M9 2h6v7h7v6h-7v7H9v-7H2V9h7z" fill="#FCA5A5"/></svg></div>
+            <div class="capa particula" style="--d:28;--x:2%;--y:66%;--dur:8s"><svg viewBox="0 0 24 24"><path d="M9 2h6v7h7v6h-7v7H9v-7H2V9h7z" fill="#E6C26E"/></svg></div>
             <div class="capa particula particula--extra" style="--d:52;--x:68%;--y:86%;--dur:10s"><svg viewBox="0 0 48 24"><rect x="1" y="1" width="46" height="22" rx="11" fill="#fff"/><path d="M24 1h12a11 11 0 0 1 0 22H24z" fill="#E8122F"/></svg></div>
             <div class="capa particula particula--extra" style="--d:40;--x:26%;--y:90%;--dur:7.500s"><svg viewBox="0 0 24 24"><path d="M12 1c4 6 8 10 8 14a8 8 0 0 1-16 0c0-4 4-8 8-14z" fill="#fff"/></svg></div>
           </div>

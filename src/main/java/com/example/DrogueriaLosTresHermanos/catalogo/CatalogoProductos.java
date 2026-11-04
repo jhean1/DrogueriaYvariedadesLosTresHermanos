@@ -130,6 +130,18 @@ public class CatalogoProductos {
         return Map.of();
     }
 
+    /** Cambia solo la foto. Devuelve false si el producto ya no existe. */
+    public synchronized boolean cambiarFoto(int id, String foto) {
+        Producto p = productos.get(id);
+        if (p == null) {
+            return false;
+        }
+        productos.put(id, new Producto(p.id(), p.tipo(), p.nombre(), p.descripcion(), p.categoria(), p.principioActivo(),
+            p.contenido(), p.formula(), p.disponibilidad(), p.activo(), foto, p.imagen(), p.precio(), p.presentaciones()));
+        persistir();
+        return true;
+    }
+
     public synchronized void cambiarVisibilidad(int id, boolean activo) {
         Producto p = productos.get(id);
         if (p != null) {

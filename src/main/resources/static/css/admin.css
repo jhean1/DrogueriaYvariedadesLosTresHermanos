@@ -13,7 +13,7 @@ body.sin-scroll { overflow: hidden; }
 .acceso-tarjeta .alerta { margin-bottom: var(--e-4); }
 .acceso-tarjeta form { display: flex; flex-direction: column; gap: var(--e-4); }
 .acceso-volver { display: inline-flex; align-items: center; gap: var(--e-2); min-height: 44px; color: var(--tinta-3); font-size: var(--t-sm); font-weight: 500; }
-
+.acceso-tema { position: fixed; top: var(--e-3); right: var(--e-3); }
 
 /* ── Estructura ─────────────────────────────────────────────── */
 .lateral { position: fixed; inset: 0 auto 0 0; z-index: 60; display: flex; flex-direction: column; width: 256px; background: var(--superficie); border-right: 1px solid var(--borde); transition: transform var(--t-media) var(--curva); }
@@ -276,28 +276,27 @@ input[type=file]::file-selector-button { margin-right: var(--e-3); min-height: 3
   .fila-presentacion .btn-icono { grid-column: 2; justify-self: end; }
 }
 
-/* ── Identidad del panel ────────────────────────────────────── */
-.lateral { background: var(--grad-card); border-right: 0; box-shadow: var(--sombra-md); }
-.lateral-marca, .lateral-pie { border-color: var(--borde-azul); }
+/* ── Identidad 3H en el panel ───────────────────────────────── */
+.lateral { background: var(--navy); border-right: 1px solid var(--oro); }
+.lateral-pie { color: var(--tinta-2); }
 .sidebar-item { border-radius: var(--r-full); }
-.sidebar-item.activo { background: var(--blanco); color: var(--azul); }
-.sidebar-item.activo .ic { color: var(--rojo); }
-.sidebar-item.activo .lateral-etiqueta { background: var(--gris-claro); color: var(--azul); }
-.sidebar-badge { background: var(--grad-rojo); color: var(--blanco); }
-.usuario-avatar { background: var(--grad-card); color: var(--blanco); }
-.panel { background: var(--gris-claro); }
-.panel .btn--primario { background: var(--azul-medio); box-shadow: var(--sombra-sm); }
-.panel .btn--primario:hover { background: var(--azul); box-shadow: var(--sombra-md); }
-.tarjeta, .rejilla-kpi { box-shadow: var(--sombra-sm); }
-.kpi-valor { color: var(--azul); font-weight: 700; }
+.sidebar-item.activo .ic { color: var(--oro-claro); }
+.superior { border-bottom: 1px solid var(--borde); }
+.usuario-avatar { background: var(--navy); color: var(--oro-claro); }
+.kpi-valor { color: var(--tinta); }
 .filtro-tabla input, .filtros-tabla select, .buscador-panel input { border-radius: var(--r-full) !important; }
-.opcion-tipo:has(input:checked), .plan-opt.sel { border-color: var(--azul-medio); }
-.barra-relleno { background: var(--grad-card); }
+.opcion-tipo:has(input:checked), .plan-opt.sel { border-color: var(--oro); }
+.barra-relleno { background: var(--navy); }
+[data-tema="oscuro"] .barra-relleno { background: var(--oro); }
 
-/* Acceso del equipo */
-.acceso-equipo { background: var(--grad-hero); }
-.acceso-volver, .acceso-volver:hover { color: var(--blanco); }
-.acceso-logo { width: 170px; }
-.acceso-logo.logo-claro { display: none !important; }
-.acceso-logo.logo-oscuro { display: block !important; }
-.acceso-tarjeta { box-shadow: var(--sombra-lg); }
+/* Acceso del equipo: las dos curvas de la pieza de marca */
+.acceso-equipo { isolation: isolate; }
+.acceso-equipo::before, .acceso-equipo::after { content: ''; position: fixed; z-index: -1; width: 46vw; height: 46vw; min-width: 260px; min-height: 260px; border-radius: 50%; background: var(--navy); border: 3px solid var(--oro); }
+.acceso-equipo::before { top: -30vw; left: -18vw; }
+.acceso-equipo::after { bottom: -30vw; right: -18vw; }
+@media (max-width: 760px) {
+  .acceso-equipo::before { top: -210px; left: -130px; }
+  .acceso-equipo::after { bottom: -210px; right: -130px; }
+}
+.sidebar-item.activo .lateral-etiqueta { background: var(--royal-suave); color: #fff; }
+.panel { background: var(--pearl); }

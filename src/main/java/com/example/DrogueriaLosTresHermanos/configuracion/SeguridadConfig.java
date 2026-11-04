@@ -46,6 +46,7 @@ public class SeguridadConfig {
                 rutas.requestMatchers("/admin/login").permitAll();
                 rutas.requestMatchers("/admin/productos/nuevo").hasAuthority(Permiso.PRODUCTOS_CREAR.getCodigo());
                 rutas.requestMatchers(HttpMethod.POST, "/admin/productos/*/visibilidad").hasAuthority(Permiso.PRODUCTOS_ELIMINAR.getCodigo());
+                rutas.requestMatchers(HttpMethod.POST, "/admin/productos/*/foto").hasAuthority(Permiso.PRODUCTOS_EDITAR.getCodigo());
                 rutas.requestMatchers("/admin/productos/*").hasAuthority(Permiso.PRODUCTOS_EDITAR.getCodigo());
                 rutas.requestMatchers(HttpMethod.GET, "/admin/productos").hasAuthority(Permiso.PRODUCTOS_VER.getCodigo());
                 rutas.requestMatchers("/admin/productos/**").denyAll();

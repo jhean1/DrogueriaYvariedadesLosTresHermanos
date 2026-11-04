@@ -141,6 +141,30 @@ class ProductosTests {
     }
 
     @Test
+    void laImagenDelMedicamentoSeCambiaDesdeElCatalogo() throws Exception {
+        byte[] png = {(byte) 0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A, 0, 0, 0, 0};
+        MockMultipartFile foto = new MockMultipartFile("foto", "f.png", "image/png", png);
+        // El visitante y el cajero no ven el botón ni pueden subirla
+        mvc.perform(get("/medicamentos")).andExpect(content().string(not(containsString("editor-imagenes"))));
+        mvc.perform(get("/medicamentos").with(user("caja@prueba.test"))).andExpect(content().string(not(containsString("editor-imagenes"))));
+        mvc.perform(multipart("/admin/productos/5/foto").file(foto).with(csrf()).with(user("caja@prueba.test"))).andExpect(status().isForbidden());
+        mvc.perform(multipart("/admin/productos/5/foto").file(foto).with(user("regente@prueba.test"))).andExpect(status().isForbidden());
+        // El regente sí: conserva los demás datos y rechaza lo que no es una imagen
+        mvc.perform(get("/medicamentos").with(user("regente@prueba.test"))).andExpect(content().string(containsString("editor-imagenes")));
+        var antes = catalogo.buscar(5).orElseThrow();
+        mvc.perform(multipart("/admin/productos/5/foto").file(new MockMultipartFile("foto", "x.png", "image/png", "<svg>".getBytes()))
+                .with(csrf()).with(user("regente@prueba.test")))
+            .andExpect(status().isBadRequest());
+        assertEquals(antes.foto(), catalogo.buscar(5).orElseThrow().foto());
+        mvc.perform(multipart("/admin/productos/5/foto").file(foto).with(csrf()).with(user("regente@prueba.test"))).andExpect(status().isOk());
+        var despues = catalogo.buscar(5).orElseThrow();
+        assertNotEquals(antes.foto(), despues.foto());
+        assertEquals(antes.presentaciones(), despues.presentaciones());
+        assertEquals(antes.nombre(), despues.nombre());
+        mvc.perform(multipart("/admin/productos/999/foto").file(foto).with(csrf()).with(user("regente@prueba.test"))).andExpect(status().isNotFound());
+    }
+
+    @Test
     void laCategoriaConProductosNoSeElimina() throws Exception {
         assertTrue(catalogo.eliminarCategoria("analgesicos") != null);
         mvc.perform(post("/admin/categorias").with(csrf()).with(user("dueno@prueba.test")).param("nombre", "Bebés").param("tipo", "variedad"))
