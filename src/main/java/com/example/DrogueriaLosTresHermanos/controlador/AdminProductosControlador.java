@@ -1,11 +1,11 @@
 package com.example.DrogueriaLosTresHermanos.controlador;
 
-import com.example.DrogueriaLosTresHermanos.catalogo.CatalogoProductos;
-import com.example.DrogueriaLosTresHermanos.catalogo.CatalogoProductos.Datos;
-import com.example.DrogueriaLosTresHermanos.catalogo.CatalogoProductos.Presentacion;
-import com.example.DrogueriaLosTresHermanos.catalogo.CatalogoProductos.Producto;
-import com.example.DrogueriaLosTresHermanos.catalogo.FotosProductos;
-import com.example.DrogueriaLosTresHermanos.configuracion.DirectorioAccesos;
+import com.example.DrogueriaLosTresHermanos.servicio.CatalogoProductos;
+import com.example.DrogueriaLosTresHermanos.servicio.CatalogoProductos.Datos;
+import com.example.DrogueriaLosTresHermanos.servicio.CatalogoProductos.Presentacion;
+import com.example.DrogueriaLosTresHermanos.servicio.CatalogoProductos.Producto;
+import com.example.DrogueriaLosTresHermanos.servicio.FotosProductos;
+import com.example.DrogueriaLosTresHermanos.servicio.DirectorioAccesos;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;

@@ -176,11 +176,10 @@ sequenceDiagram
 └── src
     ├── main
     │   ├── java/com/example/DrogueriaLosTresHermanos
-    │   │   ├── catalogo/           # Catálogo de productos y fotos
-│   │   ├── configuracion/      # Spring Security, roles, permisos y módulos
-    │   │   ├── controlador/        # Rutas y vistas (MVC)
-    │   │   ├── controller/         # Referencia histórica, sin uso
-    │   │   └── modelo/             # Cliente, Producto, Pedido, ItemPedido y PlanSuscripcion
+    │   │   ├── configuracion/      # Spring Security, filtros y propiedades del equipo
+    │   │   ├── controlador/        # Controlador (MVC): rutas de la tienda y del panel
+    │   │   ├── modelo/             # Modelo (MVC): datos, roles, permisos y módulos
+    │   │   └── servicio/           # Catálogo, fotos, cuentas y permisos del equipo
     │   └── resources
     │       ├── application.properties
     │       ├── catalogo-inicial.properties  # Productos con los que arranca la tienda

@@ -1,11 +1,11 @@
-package com.example.DrogueriaLosTresHermanos.configuracion;
+package com.example.DrogueriaLosTresHermanos.modelo;
 
 
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.Set;
 
-import static com.example.DrogueriaLosTresHermanos.configuracion.Permiso.*;
+import static com.example.DrogueriaLosTresHermanos.modelo.Permiso.*;
 
 /** Roles iniciales del equipo. Desde el panel se pueden ajustar y crear otros (ver DirectorioAccesos). */
 public enum RolSistema {

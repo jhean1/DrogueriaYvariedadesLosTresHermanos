@@ -1,4 +1,4 @@
-package com.example.DrogueriaLosTresHermanos.catalogo;
+package com.example.DrogueriaLosTresHermanos.servicio;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ClassPathResource;

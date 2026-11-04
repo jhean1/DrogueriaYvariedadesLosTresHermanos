@@ -1,4 +1,4 @@
-package com.example.DrogueriaLosTresHermanos.configuracion;
+package com.example.DrogueriaLosTresHermanos.modelo;
 
 /**
  * Permisos del panel, por módulo y acción. Spring Security los usa como

@@ -1,10 +1,10 @@
 package com.example.DrogueriaLosTresHermanos.controlador;
 
-import com.example.DrogueriaLosTresHermanos.catalogo.CatalogoProductos;
-import com.example.DrogueriaLosTresHermanos.catalogo.CatalogoProductos.Categoria;
-import com.example.DrogueriaLosTresHermanos.catalogo.CatalogoProductos.Presentacion;
-import com.example.DrogueriaLosTresHermanos.catalogo.CatalogoProductos.Producto;
-import com.example.DrogueriaLosTresHermanos.catalogo.FotosProductos;
+import com.example.DrogueriaLosTresHermanos.servicio.CatalogoProductos;
+import com.example.DrogueriaLosTresHermanos.servicio.CatalogoProductos.Categoria;
+import com.example.DrogueriaLosTresHermanos.servicio.CatalogoProductos.Presentacion;
+import com.example.DrogueriaLosTresHermanos.servicio.CatalogoProductos.Producto;
+import com.example.DrogueriaLosTresHermanos.servicio.FotosProductos;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.CacheControl;

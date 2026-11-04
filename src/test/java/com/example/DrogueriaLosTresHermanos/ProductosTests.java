@@ -1,6 +1,6 @@
 package com.example.DrogueriaLosTresHermanos;
 
-import com.example.DrogueriaLosTresHermanos.catalogo.CatalogoProductos;
+import com.example.DrogueriaLosTresHermanos.servicio.CatalogoProductos;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;

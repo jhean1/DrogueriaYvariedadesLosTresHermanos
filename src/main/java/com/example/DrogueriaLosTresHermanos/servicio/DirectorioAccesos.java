@@ -1,5 +1,10 @@
-package com.example.DrogueriaLosTresHermanos.configuracion;
+package com.example.DrogueriaLosTresHermanos.servicio;
 
+import com.example.DrogueriaLosTresHermanos.configuracion.EquipoProperties;
+import com.example.DrogueriaLosTresHermanos.modelo.ModuloGestion;
+import com.example.DrogueriaLosTresHermanos.modelo.PerfilAdmin;
+import com.example.DrogueriaLosTresHermanos.modelo.Permiso;
+import com.example.DrogueriaLosTresHermanos.modelo.RolSistema;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;

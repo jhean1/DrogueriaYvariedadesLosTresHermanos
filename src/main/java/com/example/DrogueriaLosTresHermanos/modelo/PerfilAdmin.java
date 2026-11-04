@@ -1,4 +1,4 @@
-package com.example.DrogueriaLosTresHermanos.configuracion;
+package com.example.DrogueriaLosTresHermanos.modelo;
 
 import java.util.List;
 import java.util.Set;

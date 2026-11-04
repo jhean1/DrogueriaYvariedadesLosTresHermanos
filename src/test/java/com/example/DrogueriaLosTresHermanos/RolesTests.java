@@ -1,11 +1,11 @@
 package com.example.DrogueriaLosTresHermanos;
 
-import com.example.DrogueriaLosTresHermanos.configuracion.DirectorioAccesos;
-import com.example.DrogueriaLosTresHermanos.configuracion.DirectorioAccesos.Actor;
-import com.example.DrogueriaLosTresHermanos.configuracion.DirectorioAccesos.OperacionNoPermitida;
-import com.example.DrogueriaLosTresHermanos.configuracion.ModuloGestion;
-import com.example.DrogueriaLosTresHermanos.configuracion.Permiso;
-import com.example.DrogueriaLosTresHermanos.configuracion.RolSistema;
+import com.example.DrogueriaLosTresHermanos.servicio.DirectorioAccesos;
+import com.example.DrogueriaLosTresHermanos.servicio.DirectorioAccesos.Actor;
+import com.example.DrogueriaLosTresHermanos.servicio.DirectorioAccesos.OperacionNoPermitida;
+import com.example.DrogueriaLosTresHermanos.modelo.ModuloGestion;
+import com.example.DrogueriaLosTresHermanos.modelo.Permiso;
+import com.example.DrogueriaLosTresHermanos.modelo.RolSistema;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

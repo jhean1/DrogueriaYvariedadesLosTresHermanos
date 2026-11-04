@@ -1,5 +1,8 @@
 package com.example.DrogueriaLosTresHermanos.configuracion;
 
+import com.example.DrogueriaLosTresHermanos.modelo.ModuloGestion;
+import com.example.DrogueriaLosTresHermanos.modelo.Permiso;
+import com.example.DrogueriaLosTresHermanos.servicio.DirectorioAccesos;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

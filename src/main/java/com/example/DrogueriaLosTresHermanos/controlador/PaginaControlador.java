@@ -1,8 +1,8 @@
 package com.example.DrogueriaLosTresHermanos.controlador;
 
-import com.example.DrogueriaLosTresHermanos.configuracion.DirectorioAccesos;
-import com.example.DrogueriaLosTresHermanos.configuracion.PerfilAdmin;
-import com.example.DrogueriaLosTresHermanos.configuracion.Permiso;
+import com.example.DrogueriaLosTresHermanos.servicio.DirectorioAccesos;
+import com.example.DrogueriaLosTresHermanos.modelo.PerfilAdmin;
+import com.example.DrogueriaLosTresHermanos.modelo.Permiso;
 import com.example.DrogueriaLosTresHermanos.modelo.PlanSuscripcion;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;

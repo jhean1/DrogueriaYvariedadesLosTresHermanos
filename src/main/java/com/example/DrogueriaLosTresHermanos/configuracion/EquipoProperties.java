@@ -1,5 +1,6 @@
 package com.example.DrogueriaLosTresHermanos.configuracion;
 
+import com.example.DrogueriaLosTresHermanos.modelo.RolSistema;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 import java.util.List;
