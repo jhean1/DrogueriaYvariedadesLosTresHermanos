@@ -6,13 +6,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Crear cuenta · Los Tres Hermanos</title>
   <meta name="description" content="Crea tu cuenta gratis en Los Tres Hermanos.">
-  <meta name="theme-color" content="#1B2A6B">
+  <meta name="theme-color" content="#F6F7FA">
   <link rel="icon" type="image/svg+xml" href="/DrogueriaYvariedadesLosTresHermanos/img/marca/favicon.svg">
   <link rel="icon" type="image/png" sizes="32x32" href="/DrogueriaYvariedadesLosTresHermanos/img/marca/favicon-32.png">
   <link rel="apple-touch-icon" href="/DrogueriaYvariedadesLosTresHermanos/img/marca/apple-touch-icon.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;family=Sora:wght@500;600;700;800&amp;display=swap" rel="stylesheet">
+  <script src="/DrogueriaYvariedadesLosTresHermanos/js/tema.js"></script>
   <link rel="stylesheet" href="/DrogueriaYvariedadesLosTresHermanos/css/design-system.css">
   <link rel="stylesheet" href="/DrogueriaYvariedadesLosTresHermanos/css/tienda.css">
   <script>
@@ -34,7 +35,8 @@
   
   <div class="entrada no-imprimir" aria-hidden="true">
     <div class="entrada-marca">
-      <img src="/DrogueriaYvariedadesLosTresHermanos/img/marca/logo-vertical.svg" alt="" width="240" height="160">
+      <img class="logo-claro" src="/DrogueriaYvariedadesLosTresHermanos/img/marca/logo-vertical.svg" alt="" width="240" height="160">
+      <img class="logo-oscuro" src="/DrogueriaYvariedadesLosTresHermanos/img/marca/logo-vertical-oscuro.svg" alt="" width="240" height="160">
       <svg class="entrada-cruz" viewBox="0 0 24 24"><path d="M9 2h6v7h7v6h-7v7H9v-7H2V9h7z"/></svg>
     </div>
   </div>
@@ -56,6 +58,10 @@
       </form>
 
       <div class="navbar-actions">
+        <button class="btn-icono btn-tema" type="button" data-tema-boton aria-label="Cambiar el tema de color">
+  <svg class="ic tema-luna" aria-hidden="true"><use href="/DrogueriaYvariedadesLosTresHermanos/img/iconos.svg#luna"/></svg>
+  <svg class="ic tema-sol" aria-hidden="true"><use href="/DrogueriaYvariedadesLosTresHermanos/img/iconos.svg#sol"/></svg>
+</button>
         <a href="/DrogueriaYvariedadesLosTresHermanos/registro" id="btn-registrate" class="btn btn--fantasma btn--sm">Regístrate</a>
         <a href="/DrogueriaYvariedadesLosTresHermanos/login" id="btn-mi-cuenta" class="btn btn--sm" aria-label="Mi cuenta">
           <svg class="ic" aria-hidden="true"><use href="/DrogueriaYvariedadesLosTresHermanos/img/iconos.svg#usuario"/></svg>

@@ -137,8 +137,8 @@ window.Experiencia = (function () {
       requestAnimationFrame(() => {
         pendiente = false;
         const r = tarjeta.getBoundingClientRect();
-        tarjeta.style.setProperty('--ry', (((e.clientX - r.left) / r.width - .5) * 6).toFixed(2) + 'deg');
-        tarjeta.style.setProperty('--rx', ((.5 - (e.clientY - r.top) / r.height) * 6).toFixed(2) + 'deg');
+        tarjeta.style.setProperty('--ry', (((e.clientX - r.left) / r.width - .5) * 3).toFixed(2) + 'deg');
+        tarjeta.style.setProperty('--rx', ((.5 - (e.clientY - r.top) / r.height) * 3).toFixed(2) + 'deg');
       });
     }, { passive: true });
   }

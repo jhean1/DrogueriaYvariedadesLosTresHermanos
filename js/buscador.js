@@ -128,8 +128,20 @@ window.Buscador = (function () {
 
     // En el inicio el buscador grande manda. El de la barra aparece cuando aquel ya no se ve.
     const grande = document.getElementById('buscador-inicio');
-    if (grande) {
-      Experiencia.observar(grande, (e) => document.body.classList.toggle('buscador-grande-visible', e.isIntersecting));
+    const barra = document.querySelector('.navbar');
+    const pequeno = barra && barra.querySelector('.buscador-global');
+    if (grande && pequeno) {
+      // El de la barra toma el relevo justo cuando el grande llega hasta él
+      let pendiente = false;
+      const medir = () => {
+        pendiente = false;
+        const tope = Math.max(barra.getBoundingClientRect().bottom, pequeno.getBoundingClientRect().bottom);
+        document.body.classList.toggle('buscador-grande-visible', grande.getBoundingClientRect().bottom > tope);
+      };
+      const pedir = () => { if (!pendiente) { pendiente = true; requestAnimationFrame(medir); } };
+      window.addEventListener('scroll', pedir, { passive: true });
+      window.addEventListener('resize', pedir, { passive: true });
+      medir();
     }
   });
 
