@@ -451,7 +451,7 @@ dialog.dialogo--ficha { width: min(calc(100vw - 2rem), 820px); max-height: min(9
 
 /* ── Servicios ──────────────────────────────────────────────── */
 .servicios-lista { padding-bottom: var(--e-8); }
-.servicio-fila { position: relative; display: grid; grid-template-columns: 56px 56px minmax(0,1fr) auto; align-items: center; gap: var(--e-5); padding-block: var(--e-6); border-top: 1px solid var(--borde); transition: padding-left var(--t-media) var(--curva), opacity var(--t-lenta) var(--curva), transform var(--t-lenta) var(--curva); }
+.servicio-fila { position: relative; display: grid; grid-template-columns: 56px minmax(0,1fr) auto; align-items: center; gap: var(--e-5); padding-block: var(--e-6); border-top: 1px solid var(--borde); transition: padding-left var(--t-media) var(--curva), opacity var(--t-lenta) var(--curva), transform var(--t-lenta) var(--curva); }
 .servicio-fila:last-child { border-bottom: 1px solid var(--borde); }
 .servicio-fila:hover { padding-left: var(--e-3); }
 .servicio-numero { font: 700 var(--t-sm) var(--fuente-titulo); color: var(--tinta-3); }
