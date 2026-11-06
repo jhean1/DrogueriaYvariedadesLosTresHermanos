@@ -142,7 +142,9 @@ def main():
     proceso = subprocess.Popen(
         ['java', '-jar', str(jar), f'--server.port={PUERTO}', f'--app.admin.clave={secrets.token_urlsafe(24)}',
          f'--app.datos={tempfile.gettempdir()}/sitio-{secrets.token_hex(6)}.properties',
-         '--app.catalogo=' + a.catalogo, '--app.fotos=' + a.fotos],
+         '--app.catalogo=' + a.catalogo, '--app.fotos=' + a.fotos,
+         # Sin base de datos: la versión estática no tiene cuentas ni pedidos en línea
+         '--app.db.url='],
         stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
     try:
         esperar_aplicacion()

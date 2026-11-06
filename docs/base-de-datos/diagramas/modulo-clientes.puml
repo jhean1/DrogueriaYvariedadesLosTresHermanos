@@ -1,0 +1,206 @@
+@startuml modulo-clientes
+title Clientes y suscripciones: Cuentas de la tienda, compra de planes y su vigencia.
+hide methods
+hide stereotype
+hide circle
+skinparam shadowing false
+skinparam roundCorner 6
+skinparam defaultFontName Arial
+skinparam dpi 110
+skinparam ArrowColor #3A4A6B
+skinparam ArrowThickness 1.1
+skinparam nodesep 45
+skinparam ranksep 55
+skinparam class {
+  BackgroundColor White
+  BorderColor #10224D
+  FontSize 13
+  AttributeFontSize 12
+}
+skinparam package {
+  BorderColor #8A94A8
+  FontSize 16
+  FontStyle bold
+  BackgroundColor transparent
+}
+entity "**cliente**\nClientes con cuenta en la tienda" as cliente #FBEFD5 {
+  {field} **id** <color:#3A4A6B>[clave primaria]</color>
+  {field} Identificador del cliente <color:#555555>(número entero; obligatorio)</color>
+  --
+  {field} **nombre_cliente**
+  {field} Nombre completo del cliente <color:#555555>(texto, hasta 120 caracteres; obligatorio)</color>
+  {field} **correo_cliente** <color:#3A4A6B>[no se repite]</color>
+  {field} Correo de acceso; se borra al eliminar la cuenta <color:#555555>(texto, hasta 120 caracteres; opcional)</color>
+  {field} **telefono_cliente**
+  {field} Teléfono de contacto; se borra al eliminar la cuenta <color:#555555>(texto, hasta 20 caracteres; opcional)</color>
+  {field} **direccion_cliente**
+  {field} Dirección de entrega; se borra al eliminar la cuenta <color:#555555>(texto, hasta 255 caracteres; opcional)</color>
+  {field} **clave_hash**
+  {field} Contraseña cifrada; se borra al eliminar la cuenta <color:#555555>(texto, hasta 255 caracteres; opcional)</color>
+  {field} **foto_cliente**
+  {field} Ubicación de la foto de perfil <color:#555555>(texto, hasta 255 caracteres; opcional)</color>
+  {field} **cuenta_activa**
+  {field} Falso cuando la cuenta fue eliminada <color:#555555>(sí o no; obligatorio)</color>
+  {field} **creado_por_id** <color:#3A4A6B>[clave foránea → usuario]</color>
+  {field} Empleado que creó la cuenta, si no se registró el cliente <color:#555555>(número entero; opcional)</color>
+  {field} **fecha_autorizacion_datos**
+  {field} Cuándo autorizó el tratamiento de sus datos (Ley 1581 de 2012) <color:#555555>(fecha y hora; obligatorio)</color>
+  {field} **version_politica**
+  {field} Versión de la política que aceptó. <color:#B00020>**POR REVISAR**</color>: la página todavía no numera su política <color:#555555>(texto, hasta 20 caracteres; obligatorio)</color>
+  {field} **fecha_registro**
+  {field} Cuándo se creó la cuenta <color:#555555>(fecha y hora; obligatorio)</color>
+  {field} **fecha_eliminacion**
+  {field} Cuándo se eliminó la cuenta <color:#555555>(fecha y hora; opcional)</color>
+}
+entity "**favorito**\nProductos favoritos de cada cliente" as favorito #FBEFD5 {
+  {field} **cliente_id** <color:#3A4A6B>[clave primaria; clave foránea → cliente]</color>
+  {field} Cliente que lo guardó <color:#555555>(número entero; obligatorio)</color>
+  {field} **producto_id** <color:#3A4A6B>[clave primaria; clave foránea → producto]</color>
+  {field} Producto guardado <color:#555555>(número entero; obligatorio)</color>
+  --
+  {field} **fecha_favorito**
+  {field} Cuándo se guardó <color:#555555>(fecha y hora; obligatorio)</color>
+}
+entity "**recuperacion_clave**\nCódigos temporales para recuperar la\ncontraseña" as recuperacion_clave #FBEFD5 {
+  {field} **id** <color:#3A4A6B>[clave primaria]</color>
+  {field} Identificador de la solicitud <color:#555555>(número entero; obligatorio)</color>
+  --
+  {field} **cliente_id** <color:#3A4A6B>[clave foránea → cliente]</color>
+  {field} Cliente que pidió recuperar la contraseña <color:#555555>(número entero; obligatorio)</color>
+  {field} **token_hash** <color:#3A4A6B>[no se repite]</color>
+  {field} Código de recuperación cifrado <color:#555555>(texto, hasta 255 caracteres; obligatorio)</color>
+  {field} **fecha_expiracion**
+  {field} Hasta cuándo sirve el código <color:#555555>(fecha y hora; obligatorio)</color>
+  {field} **fecha_uso**
+  {field} Cuándo se usó; un código solo sirve una vez <color:#555555>(fecha y hora; opcional)</color>
+  {field} **fecha_creacion**
+  {field} Cuándo se solicitó <color:#555555>(fecha y hora; obligatorio)</color>
+}
+entity "**plan_suscripcion**\nPlanes de suscripción disponibles" as plan_suscripcion #FBEFD5 {
+  {field} **id** <color:#3A4A6B>[clave primaria]</color>
+  {field} Identificador del plan <color:#555555>(número entero; obligatorio)</color>
+  --
+  {field} **nombre_plan** <color:#3A4A6B>[no se repite]</color>
+  {field} Nombre del plan <color:#555555>(texto, hasta 40 caracteres; obligatorio)</color>
+  {field} **descripcion_plan**
+  {field} Qué ofrece el plan <color:#555555>(texto, hasta 255 caracteres; opcional)</color>
+  {field} **precio_mensual**
+  {field} Precio vigente en pesos <color:#555555>(valor en pesos; obligatorio)</color>
+  {field} **descuento_porcentaje**
+  {field} Descuento en la tienda durante la vigencia <color:#555555>(número entero; obligatorio)</color>
+  {field} **duracion_dias**
+  {field} Días de vigencia <color:#555555>(número entero; obligatorio)</color>
+  {field} **domicilio_prioritario**
+  {field} Si incluye domicilio prioritario. <color:#B00020>**POR REVISAR**</color>: la página no define en qué consiste la prioridad <color:#555555>(sí o no; obligatorio)</color>
+  {field} **ofertas_anticipadas**
+  {field} Incluye ofertas anticipadas <color:#555555>(sí o no; obligatorio)</color>
+  {field} **soporte_whatsapp**
+  {field} Incluye soporte por WhatsApp <color:#555555>(sí o no; obligatorio)</color>
+  {field} **acceso_exclusivo**
+  {field} Si incluye acceso exclusivo. <color:#B00020>**POR REVISAR**</color>: la página dice unas veces ofertas y otras lanzamientos <color:#555555>(sí o no; obligatorio)</color>
+  {field} **plan_activo**
+  {field} Si se puede comprar <color:#555555>(sí o no; obligatorio)</color>
+}
+entity "**solicitud_suscripcion**\nCompras de un plan, en línea o en el\nlocal, con su revisión" as solicitud_suscripcion #FBEFD5 {
+  {field} **id** <color:#3A4A6B>[clave primaria]</color>
+  {field} Identificador de la solicitud <color:#555555>(número entero; obligatorio)</color>
+  --
+  {field} **cliente_id** <color:#3A4A6B>[clave foránea → cliente]</color>
+  {field} Cliente que compra el plan <color:#555555>(número entero; obligatorio)</color>
+  {field} **plan_id** <color:#3A4A6B>[clave foránea → plan_suscripcion]</color>
+  {field} Plan que el cliente quiere comprar <color:#555555>(número entero; obligatorio)</color>
+  {field} **metodo_pago_id** <color:#3A4A6B>[clave foránea → metodo_pago]</color>
+  {field} Forma de pago usada <color:#555555>(número entero; obligatorio)</color>
+  {field} **origen_solicitud**
+  {field} Si se compró en línea o en el local (obligatorio)
+  {field} <color:#555555>una de estas opciones: web, tienda</color>
+  {field} **monto_pagado**
+  {field} Valor que se pagó <color:#555555>(valor en pesos; obligatorio)</color>
+  {field} **referencia_pago**
+  {field} Número de referencia de la transacción <color:#555555>(texto, hasta 60 caracteres; opcional)</color>
+  {field} **numero_aprobacion**
+  {field} Número de aprobación del banco <color:#555555>(texto, hasta 60 caracteres; opcional)</color>
+  {field} **titular_pago**
+  {field} Titular de la cuenta que pagó <color:#555555>(texto, hasta 120 caracteres; opcional)</color>
+  {field} **fecha_pago**
+  {field} Día en que se hizo el pago <color:#555555>(fecha; opcional)</color>
+  {field} **comprobante_pago**
+  {field} Ubicación de la imagen del comprobante de pago <color:#555555>(texto, hasta 255 caracteres; opcional)</color>
+  {field} **nota_solicitud**
+  {field} Observación del cliente o del empleado <color:#555555>(texto, hasta 255 caracteres; opcional)</color>
+  {field} **estado_solicitud**
+  {field} Resultado de la revisión (obligatorio)
+  {field} <color:#555555>una de estas opciones: pendiente, aprobado, rechazado</color>
+  {field} **motivo_rechazo**
+  {field} Por qué se rechazó <color:#555555>(texto, hasta 255 caracteres; opcional)</color>
+  {field} **revisado_por_id** <color:#3A4A6B>[clave foránea → usuario]</color>
+  {field} Empleado que revisó <color:#555555>(número entero; opcional)</color>
+  {field} **fecha_revision**
+  {field} Cuándo se revisó <color:#555555>(fecha y hora; opcional)</color>
+  {field} **fecha_solicitud**
+  {field} Cuándo se envió <color:#555555>(fecha y hora; obligatorio)</color>
+}
+entity "**suscripcion**\nPlanes contratados por los clientes y su\nvigencia" as suscripcion #FBEFD5 {
+  {field} **id** <color:#3A4A6B>[clave primaria]</color>
+  {field} Identificador de la suscripción <color:#555555>(número entero; obligatorio)</color>
+  --
+  {field} **cliente_id** <color:#3A4A6B>[clave foránea → cliente]</color>
+  {field} Cliente titular de la suscripción <color:#555555>(número entero; obligatorio)</color>
+  {field} **plan_id** <color:#3A4A6B>[clave foránea → plan_suscripcion]</color>
+  {field} Plan que compró el cliente <color:#555555>(número entero; obligatorio)</color>
+  {field} **solicitud_id** <color:#3A4A6B>[clave foránea → solicitud_suscripcion; no se repite]</color>
+  {field} Solicitud aprobada que la originó <color:#555555>(número entero; obligatorio)</color>
+  {field} **descuento_porcentaje**
+  {field} Descuento acordado al comprar, aunque el plan cambie después <color:#555555>(número entero; obligatorio)</color>
+  {field} **fecha_inicio**
+  {field} Inicio de la vigencia <color:#555555>(fecha y hora; obligatorio)</color>
+  {field} **fecha_vencimiento**
+  {field} Fin de la vigencia <color:#555555>(fecha y hora; obligatorio)</color>
+  {field} **estado_suscripcion**
+  {field} Situación del plan; reemplazada significa que se renovó (obligatorio)
+  {field} <color:#555555>una de estas opciones: activa, vencida, cancelada, reemplazada</color>
+  {field} **fecha_cancelacion**
+  {field} Cuándo se canceló <color:#555555>(fecha y hora; opcional)</color>
+  {field} **cliente_con_plan_activo** <color:#3A4A6B>[no se repite; la calcula MySQL]</color>
+  {field} Se calcula solo: impide dos planes activos para un cliente <color:#555555>(número entero; opcional)</color>
+}
+entity "**metodo_pago**\nFormas de pago aceptadas" as metodo_pago #FBEFD5 {
+  {field} **id** <color:#3A4A6B>[clave primaria]</color>
+  {field} Identificador del método <color:#555555>(número entero; obligatorio)</color>
+  --
+  {field} **codigo_metodo_pago** <color:#3A4A6B>[no se repite]</color>
+  {field} Código interno del método, por ejemplo nequi <color:#555555>(texto, hasta 30 caracteres; obligatorio)</color>
+  {field} **nombre_metodo_pago**
+  {field} Nombre que se muestra en la página <color:#555555>(texto, hasta 60 caracteres; obligatorio)</color>
+  {field} **numero_cuenta**
+  {field} Número de cuenta donde se recibe el pago <color:#555555>(texto, hasta 60 caracteres; opcional)</color>
+  {field} **titular_cuenta**
+  {field} Titular de la cuenta donde se recibe el pago <color:#555555>(texto, hasta 120 caracteres; opcional)</color>
+  {field} **metodo_pago_activo**
+  {field} Si está disponible para pagar <color:#555555>(sí o no; obligatorio)</color>
+}
+entity "**producto**\nMedicamentos y variedades" as producto #DFF3E4
+hide producto members
+cliente ||--o{ favorito : "Cliente que lo guardó\n(uno a muchos)"
+producto ||--o{ favorito : "Producto guardado\n(uno a muchos)"
+cliente ||--o{ recuperacion_clave : "Cliente que pidió\nrecuperar la contraseña\n(uno a muchos)"
+cliente ||--o{ solicitud_suscripcion : "Cliente que compra el plan\n(uno a muchos)"
+metodo_pago ||--o{ solicitud_suscripcion : "Forma de pago usada\n(uno a muchos)"
+plan_suscripcion ||--o{ solicitud_suscripcion : "Plan que el cliente quiere\ncomprar\n(uno a muchos)"
+cliente ||--o{ suscripcion : "Cliente titular de la\nsuscripción\n(uno a muchos)"
+plan_suscripcion ||--o{ suscripcion : "Plan que compró el cliente\n(uno a muchos)"
+solicitud_suscripcion ||--o| suscripcion : "Solicitud aprobada que la\noriginó\n(uno a uno)"
+note as N
+Los campos **usuario_id**, **vendedor_id** y los terminados
+en **_por_id** indican qué empleado hizo la operación
+(tabla **usuario**). Esas líneas se omiten para que
+el diagrama se pueda leer.
+end note
+legend left
+  **Cómo leer este diagrama**
+  **Clave primaria:** identifica cada registro de la tabla, sin repetirse.
+  **Clave foránea:** enlace con un registro de otra tabla.
+  **Línea entre tablas:** ||  exactamente uno;  o|  cero o uno;  o{  cero o muchos.
+  **POR REVISAR:** su significado debe confirmarlo el negocio o el equipo.
+endlegend
+@enduml

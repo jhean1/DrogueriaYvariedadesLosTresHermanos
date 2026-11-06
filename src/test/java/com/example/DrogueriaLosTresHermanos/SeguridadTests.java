@@ -18,6 +18,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest(properties = {
+    "app.db.url=",
     "app.admin.correo=admin@prueba.test",
     "app.admin.clave=clave-de-prueba-segura",
     "app.datos=target/test-datos/seguridad-${random.uuid}.properties"
@@ -34,6 +35,21 @@ class SeguridadTests {
         mvc.perform(get("/admin"))
             .andExpect(status().is3xxRedirection())
             .andExpect(redirectedUrl("/admin/login"));
+    }
+
+    @Test
+    void apiDelPanelSinSesionResponde401() throws Exception {
+        mvc.perform(get("/api/admin/pedidos")).andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    void sinBaseDeDatosLasCuentasNoEstanDisponibles() throws Exception {
+        mvc.perform(get("/api/cuenta"))
+            .andExpect(status().isOk())
+            .andExpect(content().string(containsString("\"disponible\":false")));
+        mvc.perform(post("/api/cuenta/ingreso").with(csrf()).contentType("application/json").content("{\"correo\":\"a@b.co\",\"clave\":\"12345678\"}"))
+            .andExpect(status().isServiceUnavailable());
+        mvc.perform(get("/login")).andExpect(content().string(containsString("CUENTA_INICIAL")));
     }
 
     @Test

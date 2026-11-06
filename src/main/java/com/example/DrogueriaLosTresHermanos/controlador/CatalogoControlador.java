@@ -65,7 +65,8 @@ public class CatalogoControlador {
             .append(",contenido:").append(txt(p.contenido()))
             .append(",formula:").append(p.formula())
             .append(",disponibilidad:").append(txt(p.disponibilidad()))
-            .append(",imagen:").append(txt(p.imagen()))
+            // Imagen de referencia (parecida, no la del producto exacto); la foto real tiene prioridad
+            .append(",imagen:").append(txt(fotos.ruta(p.imagen()).isPresent() ? "/productos/imagen/" + p.imagen() : ""))
             .append(",foto:").append(txt(p.foto().isEmpty() ? "" : "/productos/imagen/" + p.foto()));
         if (p.esMedicamento()) {
             s.append(",presentaciones:[").append(p.presentaciones().stream().map(this::presentacion).collect(Collectors.joining(","))).append("]");

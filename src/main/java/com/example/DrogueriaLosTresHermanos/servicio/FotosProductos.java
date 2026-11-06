@@ -55,6 +55,17 @@ public class FotosProductos {
         return Files.isRegularFile(p) ? Optional.of(p) : Optional.empty();
     }
 
+    /** Borra un archivo guardado (por ejemplo, la foto anterior de un cliente). Si no existe, no hace nada. */
+    public void borrar(String nombre) {
+        ruta(nombre).ifPresent(p -> {
+            try {
+                Files.deleteIfExists(p);
+            } catch (IOException e) {
+                org.slf4j.LoggerFactory.getLogger(FotosProductos.class).warn("No se pudo borrar el archivo {}: {}", nombre, e.getMessage());
+            }
+        });
+    }
+
     public String tipoDe(String nombre) {
         return TIPOS.getOrDefault(nombre.substring(nombre.lastIndexOf('.') + 1), "application/octet-stream");
     }

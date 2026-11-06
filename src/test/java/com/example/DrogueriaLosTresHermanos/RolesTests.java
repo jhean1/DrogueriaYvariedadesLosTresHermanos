@@ -37,6 +37,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest(properties = {
+    "app.db.url=",
     "app.admin.correo=dueno@prueba.test",
     "app.admin.clave=clave-del-propietario",
     "app.equipo[0].correo=caja@prueba.test",

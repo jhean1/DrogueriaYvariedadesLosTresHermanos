@@ -1,0 +1,98 @@
+@startuml modulo-catalogo
+title Catálogo: Lo que se vende: categorías, productos y presentaciones.
+hide methods
+hide stereotype
+hide circle
+skinparam shadowing false
+skinparam roundCorner 6
+skinparam defaultFontName Arial
+skinparam dpi 110
+skinparam ArrowColor #3A4A6B
+skinparam ArrowThickness 1.1
+skinparam nodesep 45
+skinparam ranksep 55
+skinparam class {
+  BackgroundColor White
+  BorderColor #10224D
+  FontSize 13
+  AttributeFontSize 12
+}
+skinparam package {
+  BorderColor #8A94A8
+  FontSize 16
+  FontStyle bold
+  BackgroundColor transparent
+}
+entity "**categoria**\nCategorías y subcategorías de productos" as categoria #DFF3E4 {
+  {field} **id** <color:#3A4A6B>[clave primaria]</color>
+  {field} Identificador de la categoría <color:#555555>(número entero; obligatorio)</color>
+  --
+  {field} **codigo_categoria** <color:#3A4A6B>[no se repite]</color>
+  {field} Código interno, por ejemplo analgesicos <color:#555555>(texto, hasta 60 caracteres; obligatorio)</color>
+  {field} **nombre_categoria**
+  {field} Nombre que se muestra en la página <color:#555555>(texto, hasta 80 caracteres; obligatorio)</color>
+  {field} **tipo_categoria**
+  {field} Tipo de productos que agrupa (obligatorio)
+  {field} <color:#555555>una de estas opciones: medicamento, variedad</color>
+  {field} **categoria_padre_id** <color:#3A4A6B>[clave foránea → categoria]</color>
+  {field} Categoría superior; vacía si es principal <color:#555555>(número entero; opcional)</color>
+}
+entity "**producto**\nMedicamentos y variedades" as producto #DFF3E4 {
+  {field} **id** <color:#3A4A6B>[clave primaria]</color>
+  {field} Identificador del producto <color:#555555>(número entero; obligatorio)</color>
+  --
+  {field} **categoria_id** <color:#3A4A6B>[clave foránea → categoria]</color>
+  {field} Categoría del producto; de ella se obtiene su tipo <color:#555555>(número entero; obligatorio)</color>
+  {field} **nombre_producto**
+  {field} Nombre comercial del producto <color:#555555>(texto, hasta 150 caracteres; obligatorio)</color>
+  {field} **descripcion_producto**
+  {field} Descripción para la tienda <color:#555555>(texto largo; opcional)</color>
+  {field} **principio_activo**
+  {field} Principio activo, en medicamentos <color:#555555>(texto, hasta 150 caracteres; opcional)</color>
+  {field} **contenido_producto**
+  {field} Contenido o tamaño, por ejemplo 100 ml <color:#555555>(texto, hasta 100 caracteres; opcional)</color>
+  {field} **requiere_formula**
+  {field} Si se vende solo con fórmula médica <color:#555555>(sí o no; obligatorio)</color>
+  {field} **producto_activo**
+  {field} Si aparece en la tienda <color:#555555>(sí o no; obligatorio)</color>
+  {field} **foto_producto**
+  {field} Ubicación de la foto subida desde el panel <color:#555555>(texto, hasta 255 caracteres; opcional)</color>
+  {field} **imagen_catalogo**
+  {field} Imagen asignada en el catálogo inicial. <color:#B00020>**POR REVISAR**</color>: confirmar cómo la usa la tienda frente a la foto <color:#555555>(texto, hasta 255 caracteres; opcional)</color>
+}
+entity "**presentacion**\nUnidad que se vende y se almacena; las\nvariedades tienen una sola" as presentacion #DFF3E4 {
+  {field} **id** <color:#3A4A6B>[clave primaria]</color>
+  {field} Identificador de lo que se vende <color:#555555>(número entero; obligatorio)</color>
+  --
+  {field} **producto_id** <color:#3A4A6B>[clave foránea → producto]</color>
+  {field} Producto al que pertenece <color:#555555>(número entero; obligatorio)</color>
+  {field} **tipo_presentacion**
+  {field} Forma de venta, por ejemplo Tableta o Unidad <color:#555555>(texto, hasta 60 caracteres; obligatorio)</color>
+  {field} **concentracion**
+  {field} Concentración, por ejemplo 500 mg <color:#555555>(texto, hasta 60 caracteres; opcional)</color>
+  {field} **marca**
+  {field} Marca o laboratorio <color:#555555>(texto, hasta 80 caracteres; opcional)</color>
+  {field} **codigo_barras** <color:#3A4A6B>[no se repite]</color>
+  {field} Código de barras para el lector <color:#555555>(texto, hasta 40 caracteres; opcional)</color>
+  {field} **registro_sanitario**
+  {field} Registro sanitario, cuando aplica <color:#555555>(texto, hasta 40 caracteres; opcional)</color>
+  {field} **precio_venta**
+  {field} Precio de venta vigente en pesos <color:#555555>(valor en pesos; obligatorio)</color>
+  {field} **stock_minimo**
+  {field} Por debajo de este valor se genera una alerta <color:#555555>(número entero; obligatorio)</color>
+  {field} **stock_maximo**
+  {field} Existencia máxima recomendada <color:#555555>(número entero; opcional)</color>
+  {field} **presentacion_activa**
+  {field} Si se puede vender <color:#555555>(sí o no; obligatorio)</color>
+}
+categoria |o--o{ categoria : "Categoría superior\n(opcional: uno a muchos)"
+categoria ||--o{ producto : "Categoría del producto\n(uno a muchos)"
+producto ||--o{ presentacion : "Producto al que pertenece\n(uno a muchos)"
+legend left
+  **Cómo leer este diagrama**
+  **Clave primaria:** identifica cada registro de la tabla, sin repetirse.
+  **Clave foránea:** enlace con un registro de otra tabla.
+  **Línea entre tablas:** ||  exactamente uno;  o|  cero o uno;  o{  cero o muchos.
+  **POR REVISAR:** su significado debe confirmarlo el negocio o el equipo.
+endlegend
+@enduml

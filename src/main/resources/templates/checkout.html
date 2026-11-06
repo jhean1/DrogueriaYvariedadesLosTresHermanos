@@ -18,24 +18,24 @@
         <div class="alerta alerta--aviso alerta-invitado" id="alerta-invitado">
           <svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#candado"/></svg>
           <div>
-            <h2>Debes registrarte para hacer un pedido</h2>
-            <p>Los clientes registrados pueden hacer pedidos, guardar su historial y recibir su factura. Es gratis.</p>
+            <h2 id="invitado-titulo">Inicia sesión para hacer tu pedido</h2>
+            <p id="invitado-texto">Con tu cuenta la droguería recibe tu pedido, guardas tu historial y ves tu recibo. Crearla es gratis.</p>
             <div class="alerta-acciones">
-              <a th:href="@{/registro}" class="btn btn--primario btn--sm">Crear cuenta gratis</a>
-              <a th:href="@{/login}" class="btn btn--secundario btn--sm">Ya tengo cuenta</a>
+              <a href="/registro?retorno=checkout" class="btn btn--primario btn--sm">Crear cuenta gratis</a>
+              <a href="/login?retorno=checkout" class="btn btn--secundario btn--sm">Ya tengo cuenta</a>
             </div>
           </div>
         </div>
 
         <div class="panel-entrega" id="panel-entrega">
           <div class="modalidad-grid">
-            <div class="modalidad-card" id="card-tienda" role="button" tabindex="0" onclick="seleccionarModalidad('tienda')">
+            <div class="modalidad-card" id="card-tienda" role="button" aria-pressed="false" tabindex="0" onclick="seleccionarModalidad('tienda')">
               <span class="modalidad-icono"><svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#tienda"/></svg></span>
               <h2>Recoger en tienda</h2>
               <p>Tu pedido estará listo cuando llegues.</p>
               <span class="modalidad-check"><svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#check"/></svg></span>
             </div>
-            <div class="modalidad-card" id="card-domicilio" role="button" tabindex="0" onclick="seleccionarModalidad('domicilio')">
+            <div class="modalidad-card" id="card-domicilio" role="button" aria-pressed="false" tabindex="0" onclick="seleccionarModalidad('domicilio')">
               <span class="modalidad-icono"><svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#camion"/></svg></span>
               <h2>Domicilio</h2>
               <p>Te lo llevamos a tu dirección dentro de Arjona.</p>
@@ -46,7 +46,7 @@
           <div class="desplegable info-tienda" id="info-tienda">
             <div class="alerta alerta--info">
               <svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#tienda"/></svg>
-              <div><strong>Tu pedido quedará listo en la droguería</strong><br>Dirección: Transversal 20 #14-52, Arjona, Bolívar. Trae este comprobante o muéstralo desde tu teléfono.</div>
+              <div><strong>Tu pedido quedará listo en la droguería</strong><br>Dirección: Diagonal 52 50A-755, Arjona, Bolívar. Muestra el número de tu pedido al recogerlo.</div>
             </div>
           </div>
           <div class="desplegable dir-domicilio" id="dir-domicilio">
@@ -63,8 +63,10 @@
         <h2>Resumen del pedido</h2>
         <div class="resumen-items" id="resumen-items"></div>
         <div class="resumen-total-row"><span>Subtotal</span><span id="res-subtotal">$0</span></div>
-        <div class="resumen-total-row" id="res-desc-row"><span>Descuento</span><span id="res-descuento">-$0</span></div>
+        <div class="resumen-total-row" id="res-desc-row" hidden><span id="res-desc-etiqueta">Descuento</span><span id="res-descuento">-$0</span></div>
         <div class="resumen-total-final"><span>Total</span><strong id="res-total">$0</strong></div>
+        <p class="resumen-nota" id="nota-formula" hidden><svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#documento"/></svg> Tu pedido tiene medicamentos que requieren fórmula médica. Tenla a mano al recibirlo.</p>
+        <p class="resumen-nota" id="nota-domicilio" hidden><svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#camion"/></svg> Si el domicilio tiene costo, la droguería te lo informa al confirmar tu pedido.</p>
         <button class="btn btn--primario btn--lg btn--bloque" id="btn-confirmar" type="button" onclick="confirmarPedido()" disabled>
           Confirmar pedido <svg class="ic ic-mueve" aria-hidden="true"><use href="/img/iconos.svg#flecha"/></svg>
         </button>
@@ -76,21 +78,13 @@
   <div class="toast-wrap" id="toast-wrap"></div>
   <th:block th:replace="~{fragments/tienda :: scripts}"></th:block>
   <script>
-    // ── Estado ────────────────────────────────────────────────
-    const sesionCliente = JSON.parse(sessionStorage.getItem('lth_cliente') || 'null');
-    const carrito       = Carrito.obtener();
-    let modalidadSel    = null;
+    const WHATSAPP = 'https://wa.me/573225065554';
+    const cliente  = Cuenta.cliente();
+    const fmt      = window.formatPrecio;
+    let carrito    = Carrito.obtener();
+    let modalidadSel = null;
+    let enviando     = false;
 
-    // ── Verificar sesión ──────────────────────────────────────
-    if (!sesionCliente || sesionCliente.rol === 'invitado') {
-      document.getElementById('alerta-invitado').style.display = 'flex';
-      document.getElementById('panel-entrega').style.opacity   = '0.4';
-      document.getElementById('panel-entrega').style.pointerEvents = 'none';
-    } else if (sesionCliente.direccion) {
-      document.getElementById('input-direccion').value = sesionCliente.direccion;
-    }
-
-    // ── Toast ─────────────────────────────────────────────────
     function toast(msg, ok=true) {
       const wrap = document.getElementById('toast-wrap');
       const el = document.createElement('div');
@@ -100,112 +94,126 @@
       setTimeout(() => { el.classList.add('out'); el.addEventListener('animationend', () => el.remove()); }, 3500);
     }
 
-    const fmt = window.formatPrecio;
+    // ── Sin cuenta o sin servidor ─────────────────────────────
+    function bloquearEntrega() {
+      const panel = document.getElementById('panel-entrega');
+      document.getElementById('alerta-invitado').style.display = 'flex';
+      panel.style.opacity = '0.4';
+      panel.style.pointerEvents = 'none';
+      panel.setAttribute('aria-hidden', 'true');
+      panel.querySelectorAll('[tabindex], input').forEach(el => el.setAttribute('tabindex', '-1'));
+    }
+    if (!Cuenta.disponible()) {
+      // Sin cuentas en línea (por ejemplo, la copia estática del sitio): el pedido va por WhatsApp
+      document.getElementById('invitado-titulo').textContent = 'Envía tu pedido por WhatsApp';
+      document.getElementById('invitado-texto').textContent = 'Los pedidos en línea no están disponibles en este momento. Envíanos tu carrito por WhatsApp y te confirmamos precio y entrega.';
+      document.querySelector('#alerta-invitado .alerta-acciones').hidden = true;
+      bloquearEntrega();
+      const btn = document.getElementById('btn-confirmar');
+      btn.innerHTML = '<svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#whatsapp"/></svg> Enviar pedido por WhatsApp';
+      btn.disabled = !carrito.length;
+    } else if (!cliente) {
+      bloquearEntrega();
+    } else if (cliente.direccion) {
+      document.getElementById('input-direccion').value = cliente.direccion;
+    }
 
-    // ── Render resumen ────────────────────────────────────────
+    // ── Resumen (valor estimado: el servidor calcula el definitivo) ─
     function renderResumen() {
       const body = document.getElementById('resumen-items');
       if (!carrito.length) {
-        body.innerHTML = '<p style="color:var(--gris-texto);font-size:0.85rem;text-align:center">Carrito vacío</p>';
+        body.innerHTML = '<div class="vacio"><h3>Tu carrito está vacío</h3><p>Agrega productos para hacer tu pedido.</p><a class="btn btn--secundario btn--sm" href="/medicamentos">Ver medicamentos</a></div>';
+        document.getElementById('btn-confirmar').disabled = true;
+        ['res-subtotal', 'res-total'].forEach(id => { document.getElementById(id).textContent = fmt(0); });
+        document.getElementById('res-desc-row').hidden = true;
+        // Sin productos no hay entrega que elegir: el aviso del carrito vacío va primero
+        document.querySelector('.checkout-principal h1').textContent = 'Tu carrito está vacío';
+        document.getElementById('panel-entrega').hidden = true;
+        document.getElementById('alerta-invitado').style.display = 'none';
         return;
       }
-      const total = carrito.reduce((s,i) => s + i.precio * i.cantidad, 0);
       body.innerHTML = carrito.map(item => `
         <div class="resumen-item">
-          <span class="resumen-item-nombre">${Seguridad.esc(item.nombre)}</span>
+          <span class="resumen-item-nombre">${Seguridad.esc(item.nombre)}${item.detalle ? `<small>${Seguridad.esc(item.detalle)}</small>` : ''}</span>
           <span class="resumen-item-qty">x${Seguridad.esc(item.cantidad)}</span>
-          <span class="resumen-item-precio">${fmt(item.precio * item.cantidad)}</span>
-        </div>
-      `).join('');
-      document.getElementById('res-subtotal').textContent = fmt(total);
-
-      // Mostrar badge de suscripción si hay descuento activo
-      const sus = window.Suscripcion ? window.Suscripcion.obtener() : null;
+          <span class="resumen-item-precio num">${fmt(item.precio * item.cantidad)}</span>
+        </div>`).join('');
+      const subtotal = carrito.reduce((s, i) => s + i.precio * i.cantidad, 0);
+      const total    = Carrito.total();
+      document.getElementById('res-subtotal').textContent = fmt(subtotal);
+      const sus = Suscripcion.obtener();
       const descRow = document.getElementById('res-desc-row');
-      if (sus && sus.descuento > 0 && descRow) {
-        descRow.style.display = 'flex';
-        descRow.style.color   = 'var(--emerald-tinta)';
-        document.getElementById('res-descuento').textContent =
-          `${sus.descuento}% Plan ${sus.plan.charAt(0).toUpperCase()+sus.plan.slice(1)} incluido`;
-      } else if (descRow) {
-        descRow.style.display = 'none';
+      descRow.hidden = !(sus && subtotal > total);
+      if (!descRow.hidden) {
+        document.getElementById('res-desc-etiqueta').textContent = `Plan ${sus.nombre} (${sus.descuento}%)`;
+        document.getElementById('res-descuento').textContent = '-' + fmt(subtotal - total);
       }
-
       document.getElementById('res-total').textContent = fmt(total);
+      const conFormula = carrito.some(i => i.tipo === 'medicamento'
+        && MEDICAMENTOS.some(m => m.formula && m.presentaciones.some(p => String(p.id) === String(i.presentacion))));
+      document.getElementById('nota-formula').hidden = !conFormula;
     }
 
     // ── Seleccionar modalidad ─────────────────────────────────
     function seleccionarModalidad(tipo) {
+      if (!cliente || !Cuenta.disponible()) return;
       modalidadSel = tipo;
-      document.getElementById('card-tienda').classList.toggle('seleccionado', tipo === 'tienda');
-      document.getElementById('card-domicilio').classList.toggle('seleccionado', tipo === 'domicilio');
+      ['tienda', 'domicilio'].forEach(m => {
+        const card = document.getElementById('card-' + m);
+        card.classList.toggle('seleccionado', tipo === m);
+        card.setAttribute('aria-pressed', String(tipo === m));
+      });
       document.getElementById('info-tienda').classList.toggle('visible', tipo === 'tienda');
       document.getElementById('dir-domicilio').classList.toggle('visible', tipo === 'domicilio');
-      document.getElementById('btn-confirmar').disabled = false;
+      document.getElementById('nota-domicilio').hidden = tipo !== 'domicilio';
+      document.getElementById('btn-confirmar').disabled = !carrito.length;
+    }
+    ['tienda', 'domicilio'].forEach(m => {
+      document.getElementById('card-' + m).addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); seleccionarModalidad(m); }
+      });
+    });
+
+    function pedirPorWhatsApp() {
+      const lineas = carrito.map(i => `• ${i.nombre}${i.detalle ? ' (' + i.detalle + ')' : ''} x${i.cantidad}`).join('\n');
+      const referencia = fmt(carrito.reduce((s, i) => s + i.precio * i.cantidad, 0));
+      const msg = `Hola, quiero hacer este pedido:\n${lineas}\n\nValor de referencia: ${referencia}`;
+      window.open(`${WHATSAPP}?text=${encodeURIComponent(msg)}`, '_blank', 'noopener');
     }
 
     // ── Confirmar pedido ──────────────────────────────────────
-    function confirmarPedido() {
-      if (!sesionCliente || sesionCliente.rol === 'invitado') {
-        toast('Debes registrarte para hacer un pedido', false);
+    async function confirmarPedido() {
+      carrito = Carrito.obtener();
+      if (!carrito.length) { toast('Tu carrito está vacío', false); renderResumen(); return; }
+      if (!Cuenta.disponible()) { pedirPorWhatsApp(); return; }
+      if (!cliente) { window.location.href = '/login?retorno=checkout'; return; }
+      if (!modalidadSel) { toast('Elige cómo quieres recibir tu pedido', false); return; }
+      const direccion = document.getElementById('input-direccion').value.trim();
+      if (modalidadSel === 'domicilio' && !direccion) {
+        toast('Escribe la dirección de entrega', false);
+        document.getElementById('input-direccion').focus();
         return;
       }
-      if (!modalidadSel) { toast('Selecciona cómo quieres recibir tu pedido', false); return; }
-      if (!carrito.length) { toast('Tu carrito está vacío', false); return; }
-
-      let direccion = '';
-      if (modalidadSel === 'domicilio') {
-        direccion = document.getElementById('input-direccion').value.trim();
-        if (!direccion) { toast('Ingresa tu dirección de entrega', false); return; }
+      if (enviando) return;
+      enviando = true;
+      const btn = document.getElementById('btn-confirmar');
+      btn.disabled = true;
+      btn.setAttribute('aria-busy', 'true');
+      try {
+        const r = await Api.pedir('/api/pedidos', { metodo: 'POST',
+          datos: { lineas: Carrito.lineasPedido(), modalidad: modalidadSel, direccion: modalidadSel === 'domicilio' ? direccion : '' } });
+        Carrito.vaciar();
+        window.location.href = '/recibo?pedido=' + encodeURIComponent(r.pedido.numero);
+      } catch (err) {
+        enviando = false;
+        btn.disabled = false;
+        btn.removeAttribute('aria-busy');
+        toast(err.message, false);
+        if (err.estado === 401) setTimeout(() => { window.location.href = '/login?retorno=checkout'; }, 1500);
       }
-
-      const subtotal = carrito.reduce((s,i) => s + i.precio * i.cantidad, 0);
-      const numPedido = 'LTH-' + Date.now().toString(36).toUpperCase();
-
-      // Guardar pedido en lth_ventas
-      // ⚠️ PREPARADO PARA BD: reemplazar con fetch() POST a tu API
-      const ventas = JSON.parse(localStorage.getItem('lth_ventas') || '[]');
-      const nuevaVenta = {
-        id:         numPedido,
-        fecha:      new Date().toLocaleString('es-CO'),
-        clienteId:  sesionCliente.id,
-        clienteNombre: sesionCliente.nombre,
-        clienteTel:  sesionCliente.telefono,
-        vendedor:   'web',
-        productos:  carrito,
-        total:      subtotal,
-        modalidad:  modalidadSel,
-        direccion:  modalidadSel === 'domicilio' ? direccion : 'Recoger en tienda',
-        estado:     'pendiente'
-      };
-      ventas.push(nuevaVenta);
-      localStorage.setItem('lth_ventas', JSON.stringify(ventas));
-
-      // Notificar a WhatsApp de la droguería
-      const items = carrito.map(i => `• ${i.nombre} x${i.cantidad} = ${fmt(i.precio * i.cantidad)}`).join('\n');
-      const entrega = modalidadSel === 'domicilio'
-        ? `📍 *DOMICILIO a:* ${direccion}`
-        : `🏪 *RECOGER EN TIENDA*`;
-      const msgWA =
-        `🛒 *NUEVO PEDIDO WEB — Los Tres Hermanos*\n` +
-        `📋 N° Pedido: *${numPedido}*\n` +
-        `👤 Cliente: *${sesionCliente.nombre}*\n` +
-        `📞 Tel: ${sesionCliente.telefono || '—'}\n` +
-        `${entrega}\n\n` +
-        `*Productos:*\n${items}\n\n` +
-        `💰 *TOTAL: ${fmt(subtotal)}*\n\n` +
-        `_Pedido realizado desde la página web._`;
-
-      // Abrir WhatsApp y redirigir al recibo
-      window.open(`https://wa.me/573225065554?text=${encodeURIComponent(msgWA)}`, '_blank', 'noopener');
-
-      toast('Pedido confirmado. Generando factura...');
-      setTimeout(() => { window.location.href = '/recibo'; }, 1200);
     }
 
-    // ── Init ──────────────────────────────────────────────────
     document.addEventListener('DOMContentLoaded', () => {
-      protegerRuta();
       renderResumen();
       initAvatar({ perfilUrl: '/perfil', logoutUrl: '/' });
     });

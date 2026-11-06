@@ -1,0 +1,179 @@
+@startuml modulo-ventas
+title Pedidos y ventas: Pedidos en línea y ventas de mostrador, con sus pagos y devoluciones.
+hide methods
+hide stereotype
+hide circle
+skinparam shadowing false
+skinparam roundCorner 6
+skinparam defaultFontName Arial
+skinparam dpi 110
+skinparam ArrowColor #3A4A6B
+skinparam ArrowThickness 1.1
+skinparam nodesep 45
+skinparam ranksep 55
+skinparam class {
+  BackgroundColor White
+  BorderColor #10224D
+  FontSize 13
+  AttributeFontSize 12
+}
+skinparam package {
+  BorderColor #8A94A8
+  FontSize 16
+  FontStyle bold
+  BackgroundColor transparent
+}
+entity "**pedido**\nPedidos en línea y ventas de mostrador" as pedido #FBE3E4 {
+  {field} **id** <color:#3A4A6B>[clave primaria]</color>
+  {field} Identificador del pedido o venta <color:#555555>(número entero; obligatorio)</color>
+  --
+  {field} **numero_pedido** <color:#3A4A6B>[no se repite]</color>
+  {field} Número visible, por ejemplo LTH-K8F3A2 <color:#555555>(texto, hasta 20 caracteres; obligatorio)</color>
+  {field} **numero_comprobante** <color:#3A4A6B>[no se repite]</color>
+  {field} Número del comprobante interno; no es factura electrónica <color:#555555>(texto, hasta 30 caracteres; opcional)</color>
+  {field} **canal_venta**
+  {field} Por dónde se vendió: web es la tienda en línea y pos es el mostrador (obligatorio)
+  {field} <color:#555555>una de estas opciones: web, pos</color>
+  {field} **cliente_id** <color:#3A4A6B>[clave foránea → cliente]</color>
+  {field} Cliente que compró; vacío en ventas de mostrador sin cuenta <color:#555555>(número entero; opcional)</color>
+  {field} **suscripcion_id** <color:#3A4A6B>[clave foránea → suscripcion]</color>
+  {field} Suscripción que dio el descuento <color:#555555>(número entero; opcional)</color>
+  {field} **vendedor_id** <color:#3A4A6B>[clave foránea → usuario]</color>
+  {field} Empleado que registró la venta <color:#555555>(número entero; opcional)</color>
+  {field} **sesion_caja_id** <color:#3A4A6B>[clave foránea → sesion_caja]</color>
+  {field} Turno de caja de la venta <color:#555555>(número entero; opcional)</color>
+  {field} **modalidad_entrega**
+  {field} Si se recoge en la tienda o se lleva a domicilio (obligatorio)
+  {field} <color:#555555>una de estas opciones: tienda, domicilio</color>
+  {field} **direccion_entrega**
+  {field} Dirección a la que se entrega este pedido <color:#555555>(texto, hasta 255 caracteres; opcional)</color>
+  {field} **subtotal_pedido**
+  {field} Suma de cantidad por precio original <color:#555555>(valor en pesos; obligatorio)</color>
+  {field} **descuento_porcentaje**
+  {field} Porcentaje aplicado <color:#555555>(número entero; obligatorio)</color>
+  {field} **descuento_aplicado**
+  {field} Valor del descuento en pesos <color:#555555>(valor en pesos; obligatorio)</color>
+  {field} **descuento_autorizado_por_id** <color:#3A4A6B>[clave foránea → usuario]</color>
+  {field} Empleado que autorizó un descuento manual <color:#555555>(número entero; opcional)</color>
+  {field} **costo_domicilio**
+  {field} Valor cobrado por el domicilio <color:#555555>(valor en pesos; obligatorio)</color>
+  {field} **total_pedido** <color:#3A4A6B>[la calcula MySQL]</color>
+  {field} Se calcula solo: subtotal - descuento + domicilio <color:#555555>(valor en pesos; obligatorio)</color>
+  {field} **estado_pedido**
+  {field} En qué punto va el pedido (obligatorio)
+  {field} <color:#555555>una de estas opciones: pendiente, en_proceso, entregado, cancelado</color>
+  {field} **anulado_por_id** <color:#3A4A6B>[clave foránea → usuario]</color>
+  {field} Empleado que anuló <color:#555555>(número entero; opcional)</color>
+  {field} **motivo_anulacion**
+  {field} Por qué se anuló <color:#555555>(texto, hasta 255 caracteres; opcional)</color>
+  {field} **fecha_anulacion**
+  {field} Cuándo se anuló <color:#555555>(fecha y hora; opcional)</color>
+  {field} **fecha_creacion**
+  {field} Fecha y hora en que se registró <color:#555555>(fecha y hora; obligatorio)</color>
+}
+entity "**detalle_pedido**\nProductos de cada pedido" as detalle_pedido #FBE3E4 {
+  {field} **id** <color:#3A4A6B>[clave primaria]</color>
+  {field} Identificador de la línea <color:#555555>(número entero; obligatorio)</color>
+  --
+  {field} **pedido_id** <color:#3A4A6B>[clave foránea → pedido]</color>
+  {field} Pedido al que pertenece <color:#555555>(número entero; obligatorio)</color>
+  {field} **presentacion_id** <color:#3A4A6B>[clave foránea → presentacion]</color>
+  {field} Presentación que se vendió <color:#555555>(número entero; obligatorio)</color>
+  {field} **nombre_producto**
+  {field} Nombre al momento de la venta, para el comprobante <color:#555555>(texto, hasta 255 caracteres; obligatorio)</color>
+  {field} **cantidad_vendida**
+  {field} Unidades vendidas <color:#555555>(número entero; obligatorio)</color>
+  {field} **precio_original**
+  {field} Precio de lista al momento de la venta <color:#555555>(valor en pesos; obligatorio)</color>
+  {field} **precio_unitario**
+  {field} Precio cobrado, ya con descuento <color:#555555>(valor en pesos; obligatorio)</color>
+  {field} **subtotal_linea** <color:#3A4A6B>[la calcula MySQL]</color>
+  {field} Se calcula solo: cantidad por precio cobrado <color:#555555>(valor en pesos; obligatorio)</color>
+  {field} **formula_soporte**
+  {field} Ubicación del archivo de la fórmula médica, si se exige <color:#555555>(texto, hasta 255 caracteres; opcional)</color>
+}
+entity "**pago_pedido**\nPagos de cada pedido; un pedido puede\ntener varios" as pago_pedido #FBE3E4 {
+  {field} **id** <color:#3A4A6B>[clave primaria]</color>
+  {field} Identificador del pago <color:#555555>(número entero; obligatorio)</color>
+  --
+  {field} **pedido_id** <color:#3A4A6B>[clave foránea → pedido]</color>
+  {field} Pedido al que corresponde el pago <color:#555555>(número entero; obligatorio)</color>
+  {field} **metodo_pago_id** <color:#3A4A6B>[clave foránea → metodo_pago]</color>
+  {field} Forma de pago usada <color:#555555>(número entero; obligatorio)</color>
+  {field} **monto_pago**
+  {field} Valor que se pagó <color:#555555>(valor en pesos; obligatorio)</color>
+  {field} **referencia_pago**
+  {field} Referencia de la transacción <color:#555555>(texto, hasta 60 caracteres; opcional)</color>
+  {field} **estado_pago**
+  {field} Si el pago está pendiente, confirmado, rechazado o reembolsado (obligatorio)
+  {field} <color:#555555>una de estas opciones: pendiente, confirmado, rechazado, reembolsado</color>
+  {field} **fecha_pago**
+  {field} Fecha y hora en que se registró <color:#555555>(fecha y hora; obligatorio)</color>
+}
+entity "**devolucion**\nDevoluciones de clientes" as devolucion #FBE3E4 {
+  {field} **id** <color:#3A4A6B>[clave primaria]</color>
+  {field} Identificador de la devolución <color:#555555>(número entero; obligatorio)</color>
+  --
+  {field} **pedido_id** <color:#3A4A6B>[clave foránea → pedido]</color>
+  {field} Pedido al que corresponde la devolución <color:#555555>(número entero; obligatorio)</color>
+  {field} **usuario_id** <color:#3A4A6B>[clave foránea → usuario]</color>
+  {field} Empleado que la registró <color:#555555>(número entero; obligatorio)</color>
+  {field} **motivo_devolucion**
+  {field} Por qué el cliente devolvió el producto <color:#555555>(texto, hasta 255 caracteres; obligatorio)</color>
+  {field} **fecha_devolucion**
+  {field} Fecha y hora en que ocurrió <color:#555555>(fecha y hora; obligatorio)</color>
+}
+entity "**detalle_devolucion**\nProductos de cada devolución de cliente" as detalle_devolucion #FBE3E4 {
+  {field} **id** <color:#3A4A6B>[clave primaria]</color>
+  {field} Identificador de la línea <color:#555555>(número entero; obligatorio)</color>
+  --
+  {field} **devolucion_id** <color:#3A4A6B>[clave foránea → devolucion]</color>
+  {field} Devolución a la que pertenece esta línea <color:#555555>(número entero; obligatorio)</color>
+  {field} **detalle_pedido_id** <color:#3A4A6B>[clave foránea → detalle_pedido]</color>
+  {field} Producto del pedido que se devuelve <color:#555555>(número entero; obligatorio)</color>
+  {field} **lote_id** <color:#3A4A6B>[clave foránea → lote]</color>
+  {field} Lote al que regresa, si reingresa <color:#555555>(número entero; opcional)</color>
+  {field} **cantidad_devuelta**
+  {field} Unidades devueltas <color:#555555>(número entero; obligatorio)</color>
+  {field} **monto_devuelto**
+  {field} Dinero devuelto al cliente <color:#555555>(valor en pesos; obligatorio)</color>
+  {field} **reingresa_inventario**
+  {field} Si el producto se puede volver a vender <color:#555555>(sí o no; obligatorio)</color>
+}
+entity "**cliente**\nClientes con cuenta en la tienda" as cliente #FBEFD5
+hide cliente members
+entity "**lote**\nLotes con su existencia y vencimiento" as lote #DDF1F6
+hide lote members
+entity "**metodo_pago**\nFormas de pago aceptadas" as metodo_pago #FBEFD5
+hide metodo_pago members
+entity "**presentacion**\nUnidad que se vende y se almacena; las\nvariedades tienen una sola" as presentacion #DFF3E4
+hide presentacion members
+entity "**sesion_caja**\nTurnos de caja: apertura y cierre" as sesion_caja #F4F1DE
+hide sesion_caja members
+entity "**suscripcion**\nPlanes contratados por los clientes y su\nvigencia" as suscripcion #FBEFD5
+hide suscripcion members
+cliente |o--o{ pedido : "Cliente que compró\n(opcional: uno a muchos)"
+sesion_caja |o--o{ pedido : "Turno de caja de la venta\n(opcional: uno a muchos)"
+suscripcion |o--o{ pedido : "Suscripción que dio el\ndescuento\n(opcional: uno a muchos)"
+pedido ||--o{ detalle_pedido : "Pedido al que pertenece\n(uno a muchos)"
+presentacion ||--o{ detalle_pedido : "Presentación que se vendió\n(uno a muchos)"
+metodo_pago ||--o{ pago_pedido : "Forma de pago usada\n(uno a muchos)"
+pedido ||--o{ pago_pedido : "Pedido al que corresponde\nel pago\n(uno a muchos)"
+pedido ||--o{ devolucion : "Pedido al que corresponde\nla devolución\n(uno a muchos)"
+detalle_pedido ||--o{ detalle_devolucion : "Producto del pedido que se\ndevuelve\n(uno a muchos)"
+devolucion ||--o{ detalle_devolucion : "Devolución a la que\npertenece esta línea\n(uno a muchos)"
+lote |o--o{ detalle_devolucion : "Lote al que regresa, si\nreingresa\n(opcional: uno a muchos)"
+note as N
+Los campos **usuario_id**, **vendedor_id** y los terminados
+en **_por_id** indican qué empleado hizo la operación
+(tabla **usuario**). Esas líneas se omiten para que
+el diagrama se pueda leer.
+end note
+legend left
+  **Cómo leer este diagrama**
+  **Clave primaria:** identifica cada registro de la tabla, sin repetirse.
+  **Clave foránea:** enlace con un registro de otra tabla.
+  **Línea entre tablas:** ||  exactamente uno;  o|  cero o uno;  o{  cero o muchos.
+  **POR REVISAR:** su significado debe confirmarlo el negocio o el equipo.
+endlegend
+@enduml

@@ -1,0 +1,144 @@
+@startuml mapa-general
+title Mapa general: todas las tablas y qué guarda cada una
+hide methods
+hide stereotype
+hide circle
+skinparam shadowing false
+skinparam roundCorner 6
+skinparam defaultFontName Arial
+skinparam dpi 110
+skinparam ArrowColor #3A4A6B
+skinparam ArrowThickness 1.1
+skinparam nodesep 45
+skinparam ranksep 55
+skinparam class {
+  BackgroundColor White
+  BorderColor #10224D
+  FontSize 13
+  AttributeFontSize 12
+}
+skinparam package {
+  BorderColor #8A94A8
+  FontSize 16
+  FontStyle bold
+  BackgroundColor transparent
+}
+package "Accesos y auditoría" #E4E9F7 {
+  entity "**rol**\nRoles del equipo de trabajo" as rol
+  entity "**permiso**\nAcciones que se pueden autorizar en el\npanel" as permiso
+  entity "**rol_permiso**\nPermisos que tiene cada rol" as rol_permiso
+  entity "**usuario**\nCuentas de los empleados de la droguería" as usuario
+  entity "**usuario_permiso**\nExcepciones de permisos por empleado" as usuario_permiso
+  entity "**auditoria**\nHistorial de acciones sensibles; no se\npuede modificar ni borrar" as auditoria
+  entity "**configuracion**\nAjustes generales del sistema" as configuracion
+}
+package "Clientes y suscripciones" #FBEFD5 {
+  entity "**cliente**\nClientes con cuenta en la tienda" as cliente
+  entity "**favorito**\nProductos favoritos de cada cliente" as favorito
+  entity "**recuperacion_clave**\nCódigos temporales para recuperar la\ncontraseña" as recuperacion_clave
+  entity "**plan_suscripcion**\nPlanes de suscripción disponibles" as plan_suscripcion
+  entity "**solicitud_suscripcion**\nCompras de un plan, en línea o en el\nlocal, con su revisión" as solicitud_suscripcion
+  entity "**suscripcion**\nPlanes contratados por los clientes y su\nvigencia" as suscripcion
+  entity "**metodo_pago**\nFormas de pago aceptadas" as metodo_pago
+}
+package "Catálogo" #DFF3E4 {
+  entity "**categoria**\nCategorías y subcategorías de productos" as categoria
+  entity "**producto**\nMedicamentos y variedades" as producto
+  entity "**presentacion**\nUnidad que se vende y se almacena; las\nvariedades tienen una sola" as presentacion
+}
+package "Pedidos y ventas" #FBE3E4 {
+  entity "**pedido**\nPedidos en línea y ventas de mostrador" as pedido
+  entity "**detalle_pedido**\nProductos de cada pedido" as detalle_pedido
+  entity "**pago_pedido**\nPagos de cada pedido; un pedido puede\ntener varios" as pago_pedido
+  entity "**devolucion**\nDevoluciones de clientes" as devolucion
+  entity "**detalle_devolucion**\nProductos de cada devolución de cliente" as detalle_devolucion
+}
+package "Inventario" #DDF1F6 {
+  entity "**lote**\nLotes con su existencia y vencimiento" as lote
+  entity "**movimiento_inventario**\nHistorial de entradas y salidas de cada\nlote; no se puede modificar ni borrar" as movimiento_inventario
+  entity "**conteo_fisico**\nConteos físicos del inventario" as conteo_fisico
+  entity "**detalle_conteo**\nResultado del conteo por lote" as detalle_conteo
+  entity "**notificacion**\nAlertas de stock, vencimiento y\nadministración" as notificacion
+}
+package "Compras y proveedores" #EDE4F5 {
+  entity "**proveedor**\nProveedores de la droguería" as proveedor
+  entity "**orden_compra**\nÓrdenes de compra a proveedores" as orden_compra
+  entity "**detalle_orden_compra**\nProductos de cada orden de compra" as detalle_orden_compra
+  entity "**recepcion_mercancia**\nEntradas de mercancía" as recepcion_mercancia
+  entity "**detalle_recepcion**\nProductos de cada entrada de mercancía" as detalle_recepcion
+  entity "**devolucion_proveedor**\nDevoluciones a proveedores" as devolucion_proveedor
+  entity "**detalle_devolucion_proveedor**\nProductos de cada devolución a proveedor" as detalle_devolucion_proveedor
+}
+package "Caja" #F4F1DE {
+  entity "**sesion_caja**\nTurnos de caja: apertura y cierre" as sesion_caja
+  entity "**arqueo_caja**\nConteos de efectivo durante un turno" as arqueo_caja
+  entity "**movimiento_caja**\nIngresos y egresos de dinero de cada turno" as movimiento_caja
+}
+categoria |o--o{ categoria
+categoria ||--o{ producto
+cliente |o--o{ pedido
+cliente ||--o{ favorito
+cliente ||--o{ recuperacion_clave
+cliente ||--o{ solicitud_suscripcion
+cliente ||--o{ suscripcion
+conteo_fisico ||--o{ detalle_conteo
+detalle_conteo |o--o{ movimiento_inventario
+detalle_devolucion |o--o{ movimiento_inventario
+detalle_devolucion_proveedor |o--o{ movimiento_inventario
+detalle_orden_compra |o--o{ detalle_recepcion
+detalle_pedido |o--o{ movimiento_inventario
+detalle_pedido ||--o{ detalle_devolucion
+detalle_recepcion |o--o{ movimiento_inventario
+devolucion ||--o{ detalle_devolucion
+devolucion_proveedor ||--o{ detalle_devolucion_proveedor
+lote |o--o{ detalle_devolucion
+lote |o--o{ notificacion
+lote ||--o{ detalle_conteo
+lote ||--o{ detalle_devolucion_proveedor
+lote ||--o{ detalle_recepcion
+lote ||--o{ movimiento_inventario
+metodo_pago ||--o{ movimiento_caja
+metodo_pago ||--o{ pago_pedido
+metodo_pago ||--o{ solicitud_suscripcion
+orden_compra |o--o{ recepcion_mercancia
+orden_compra ||--o{ detalle_orden_compra
+pedido |o--o{ movimiento_caja
+pedido ||--o{ detalle_pedido
+pedido ||--o{ devolucion
+pedido ||--o{ pago_pedido
+permiso ||--o{ rol_permiso
+permiso ||--o{ usuario_permiso
+plan_suscripcion ||--o{ solicitud_suscripcion
+plan_suscripcion ||--o{ suscripcion
+presentacion |o--o{ notificacion
+presentacion ||--o{ detalle_orden_compra
+presentacion ||--o{ detalle_pedido
+presentacion ||--o{ lote
+producto ||--o{ favorito
+producto ||--o{ presentacion
+proveedor ||--o{ devolucion_proveedor
+proveedor ||--o{ orden_compra
+proveedor ||--o{ recepcion_mercancia
+recepcion_mercancia ||--o{ detalle_recepcion
+rol ||--o{ rol_permiso
+rol ||--o{ usuario
+sesion_caja |o--o{ pedido
+sesion_caja ||--o{ arqueo_caja
+sesion_caja ||--o{ movimiento_caja
+solicitud_suscripcion ||--o| suscripcion
+suscripcion |o--o{ movimiento_caja
+suscripcion |o--o{ pedido
+hide members
+legend left
+  **Cómo leer este diagrama**
+  **Clave primaria:** identifica cada registro de la tabla, sin repetirse.
+  **Clave foránea:** enlace con un registro de otra tabla.
+  **Línea entre tablas:** ||  exactamente uno;  o|  cero o uno;  o{  cero o muchos.
+  **POR REVISAR:** su significado debe confirmarlo el negocio o el equipo.
+endlegend
+note as N
+Casi todas las tablas guardan también qué empleado
+hizo cada operación. Esas líneas hacia **usuario**
+se omiten para que el mapa se pueda leer.
+end note
+@enduml

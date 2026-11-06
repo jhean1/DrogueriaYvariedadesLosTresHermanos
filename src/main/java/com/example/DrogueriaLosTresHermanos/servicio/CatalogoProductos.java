@@ -1,35 +1,27 @@
 package com.example.DrogueriaLosTresHermanos.servicio;
 
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.io.ClassPathResource;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.io.UncheckedIOException;
-import java.io.Writer;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.StandardCopyOption;
 import java.text.Normalizer;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Properties;
 import java.util.Set;
 
 /**
- * Catálogo de medicamentos y variedades. El primer arranque parte de
- * catalogo-inicial.properties; los cambios del panel se guardan en un archivo local.
+ * Catálogo de medicamentos y variedades. Mantiene una copia en memoria para responder rápido
+ * y guarda cada cambio en su almacén: MySQL si hay conexión configurada, o un archivo local.
  */
 @Service
 public class CatalogoProductos {
+
+    private static final Logger LOG = LoggerFactory.getLogger(CatalogoProductos.class);
 
     public static final String MEDICAMENTO = "medicamento";
     public static final String VARIEDAD = "variedad";
@@ -60,13 +52,20 @@ public class CatalogoProductos {
                         String contenido, boolean formula, String disponibilidad, int precio,
                         List<Presentacion> presentaciones) {}
 
-    private final Path archivo;
+    private final AlmacenCatalogo almacen;
     private final Map<String, Categoria> categorias = new LinkedHashMap<>();
     private final Map<Integer, Producto> productos = new LinkedHashMap<>();
 
-    public CatalogoProductos(@Value("${app.catalogo}") String archivo) {
-        this.archivo = Path.of(archivo);
-        cargar();
+    @Autowired
+    public CatalogoProductos(AlmacenCatalogo almacen) {
+        this.almacen = almacen;
+        recargar();
+        LOG.info("Catálogo cargado desde {}: {} productos en {} categorías", almacen.origen(), productos.size(), categorias.size());
+    }
+
+    /** Catálogo en un archivo local; lo usan las pruebas. */
+    public CatalogoProductos(String archivo) {
+        this(new AlmacenCatalogoArchivo(archivo));
     }
 
     // ── Consultas ─────────────────────────────────────────────
@@ -112,21 +111,23 @@ public class CatalogoProductos {
         if (!errores.isEmpty()) {
             return errores;
         }
-        int nuevoId = id != null ? id : productos.keySet().stream().mapToInt(Integer::intValue).max().orElse(0) + 1;
+        int provisional = id != null ? id : productos.keySet().stream().mapToInt(Integer::intValue).max().orElse(0) + 1;
         List<Presentacion> presentaciones = new ArrayList<>();
         if (MEDICAMENTO.equals(d.tipo())) {
             int n = 1;
             for (Presentacion p : d.presentaciones()) {
-                String presId = p.id() == null || p.id().isBlank() ? nuevoId + "-n" + n : p.id();
+                String presId = p.id() == null || p.id().isBlank() ? provisional + "-n" + n : p.id();
                 presentaciones.add(new Presentacion(presId, p.tipo().strip(), p.conc().strip(), p.marca().strip(), p.precio()));
                 n++;
             }
         }
-        productos.put(nuevoId, new Producto(nuevoId, d.tipo(), d.nombre().strip(), limpio(d.descripcion()), d.categoria(),
+        Producto nuevo = new Producto(provisional, d.tipo(), d.nombre().strip(), limpio(d.descripcion()), d.categoria(),
             limpio(d.principioActivo()), limpio(d.contenido()), d.formula(), d.disponibilidad(),
             previo == null || previo.activo(), foto != null ? foto : previo == null ? "" : previo.foto(),
-            previo == null ? "" : previo.imagen(), VARIEDAD.equals(d.tipo()) ? d.precio() : 0, presentaciones));
-        persistir();
+            previo == null ? "" : previo.imagen(), VARIEDAD.equals(d.tipo()) ? d.precio() : 0, presentaciones);
+        int definitivo = almacen.guardarProducto(nuevo, previo == null);
+        productos.put(definitivo, conId(nuevo, definitivo));
+        despuesDeCambiar();
         return Map.of();
     }
 
@@ -136,18 +137,20 @@ public class CatalogoProductos {
         if (p == null) {
             return false;
         }
+        almacen.cambiarFoto(id, foto);
         productos.put(id, new Producto(p.id(), p.tipo(), p.nombre(), p.descripcion(), p.categoria(), p.principioActivo(),
             p.contenido(), p.formula(), p.disponibilidad(), p.activo(), foto, p.imagen(), p.precio(), p.presentaciones()));
-        persistir();
+        despuesDeCambiar();
         return true;
     }
 
     public synchronized void cambiarVisibilidad(int id, boolean activo) {
         Producto p = productos.get(id);
         if (p != null) {
+            almacen.cambiarVisibilidad(id, activo);
             productos.put(id, new Producto(p.id(), p.tipo(), p.nombre(), p.descripcion(), p.categoria(), p.principioActivo(),
                 p.contenido(), p.formula(), p.disponibilidad(), activo, p.foto(), p.imagen(), p.precio(), p.presentaciones()));
-            persistir();
+            despuesDeCambiar();
         }
     }
 
@@ -202,7 +205,9 @@ public class CatalogoProductos {
             if (actual == null) {
                 return "La categoría ya no existe.";
             }
-            categorias.put(id, new Categoria(id, limpioNombre, actual.tipo()));
+            Categoria editada = new Categoria(id, limpioNombre, actual.tipo());
+            almacen.guardarCategoria(editada, false);
+            categorias.put(id, editada);
         } else {
             if (!MEDICAMENTO.equals(tipo) && !VARIEDAD.equals(tipo)) {
                 return "Elige el tipo de la categoría.";
@@ -211,9 +216,11 @@ public class CatalogoProductos {
             if (nuevo.isEmpty() || categorias.containsKey(nuevo)) {
                 return "Ya existe una categoría con ese nombre.";
             }
-            categorias.put(nuevo, new Categoria(nuevo, limpioNombre, tipo));
+            Categoria creada = new Categoria(nuevo, limpioNombre, tipo);
+            almacen.guardarCategoria(creada, true);
+            categorias.put(nuevo, creada);
         }
-        persistir();
+        despuesDeCambiar();
         return null;
     }
 
@@ -224,9 +231,33 @@ public class CatalogoProductos {
         if (usosCategoria(id) > 0) {
             return "No se puede eliminar: todavía tiene productos. Muévelos a otra categoría primero.";
         }
+        almacen.eliminarCategoria(id);
         categorias.remove(id);
-        persistir();
+        despuesDeCambiar();
         return null;
+    }
+
+    // ── Almacén ───────────────────────────────────────────────
+
+    private void recargar() {
+        AlmacenCatalogo.Contenido c = almacen.cargar();
+        categorias.clear();
+        c.categorias().forEach(x -> categorias.put(x.id(), x));
+        productos.clear();
+        c.productos().forEach(x -> productos.put(x.id(), x));
+    }
+
+    private void despuesDeCambiar() {
+        if (almacen.recargarTrasCambios()) {
+            recargar();
+        } else {
+            almacen.sincronizar(new AlmacenCatalogo.Contenido(List.copyOf(categorias.values()), List.copyOf(productos.values())));
+        }
+    }
+
+    private static Producto conId(Producto p, int id) {
+        return p.id() == id ? p : new Producto(id, p.tipo(), p.nombre(), p.descripcion(), p.categoria(), p.principioActivo(), p.contenido(),
+            p.formula(), p.disponibilidad(), p.activo(), p.foto(), p.imagen(), p.precio(), p.presentaciones());
     }
 
     private static String identificador(String nombre) {
@@ -236,95 +267,5 @@ public class CatalogoProductos {
 
     private static String limpio(String v) {
         return v == null ? "" : v.strip();
-    }
-
-    // ── Persistencia ──────────────────────────────────────────
-
-    private void cargar() {
-        Properties p = new Properties();
-        try {
-            if (Files.exists(archivo)) {
-                try (Reader r = Files.newBufferedReader(archivo, StandardCharsets.UTF_8)) {
-                    p.load(r);
-                }
-            } else {
-                try (Reader r = new InputStreamReader(new ClassPathResource("catalogo-inicial.properties").getInputStream(), StandardCharsets.UTF_8)) {
-                    p.load(r);
-                }
-            }
-        } catch (IOException e) {
-            throw new UncheckedIOException("No se pudo leer el catálogo", e);
-        }
-        for (int i = 0; p.containsKey("cat." + i + ".id"); i++) {
-            String id = p.getProperty("cat." + i + ".id");
-            categorias.put(id, new Categoria(id, p.getProperty("cat." + i + ".nombre"), p.getProperty("cat." + i + ".tipo")));
-        }
-        List<Producto> leidos = new ArrayList<>();
-        for (int i = 0; p.containsKey("p." + i + ".id"); i++) {
-            String b = "p." + i + ".";
-            List<Presentacion> pres = new ArrayList<>();
-            for (int j = 0; p.containsKey(b + "pres." + j + ".id"); j++) {
-                String q = b + "pres." + j + ".";
-                pres.add(new Presentacion(p.getProperty(q + "id"), p.getProperty(q + "tipo"), p.getProperty(q + "conc"),
-                    p.getProperty(q + "marca"), Integer.parseInt(p.getProperty(q + "precio"))));
-            }
-            leidos.add(new Producto(Integer.parseInt(p.getProperty(b + "id")), p.getProperty(b + "tipo"), p.getProperty(b + "nombre"),
-                p.getProperty(b + "descripcion", ""), p.getProperty(b + "categoria"), p.getProperty(b + "principio", ""),
-                p.getProperty(b + "contenido", ""), Boolean.parseBoolean(p.getProperty(b + "formula")),
-                p.getProperty(b + "disponibilidad", SIN_DATO), Boolean.parseBoolean(p.getProperty(b + "activo", "true")),
-                p.getProperty(b + "foto", ""), p.getProperty(b + "imagen", ""), Integer.parseInt(p.getProperty(b + "precio", "0")),
-                List.copyOf(pres)));
-        }
-        leidos.stream().sorted(Comparator.comparingInt(Producto::id)).forEach(x -> productos.put(x.id(), x));
-    }
-
-    private void persistir() {
-        Properties p = new Properties();
-        int i = 0;
-        for (Categoria c : categorias.values()) {
-            p.setProperty("cat." + i + ".id", c.id());
-            p.setProperty("cat." + i + ".nombre", c.nombre());
-            p.setProperty("cat." + i + ".tipo", c.tipo());
-            i++;
-        }
-        i = 0;
-        for (Producto x : productos.values()) {
-            String b = "p." + i + ".";
-            p.setProperty(b + "id", String.valueOf(x.id()));
-            p.setProperty(b + "tipo", x.tipo());
-            p.setProperty(b + "nombre", x.nombre());
-            p.setProperty(b + "descripcion", x.descripcion());
-            p.setProperty(b + "categoria", x.categoria());
-            p.setProperty(b + "principio", x.principioActivo());
-            p.setProperty(b + "contenido", x.contenido());
-            p.setProperty(b + "formula", String.valueOf(x.formula()));
-            p.setProperty(b + "disponibilidad", x.disponibilidad());
-            p.setProperty(b + "activo", String.valueOf(x.activo()));
-            p.setProperty(b + "foto", x.foto());
-            p.setProperty(b + "imagen", x.imagen());
-            p.setProperty(b + "precio", String.valueOf(x.precio()));
-            int j = 0;
-            for (Presentacion q : x.presentaciones()) {
-                String k = b + "pres." + j + ".";
-                p.setProperty(k + "id", q.id());
-                p.setProperty(k + "tipo", q.tipo());
-                p.setProperty(k + "conc", q.conc());
-                p.setProperty(k + "marca", q.marca());
-                p.setProperty(k + "precio", String.valueOf(q.precio()));
-                j++;
-            }
-            i++;
-        }
-        try {
-            Path carpeta = archivo.toAbsolutePath().getParent();
-            Files.createDirectories(carpeta);
-            Path temporal = Files.createTempFile(carpeta, "catalogo", ".tmp");
-            try (Writer w = Files.newBufferedWriter(temporal, StandardCharsets.UTF_8)) {
-                p.store(w, "Catalogo de la drogueria. Se administra desde el panel.");
-            }
-            Files.move(temporal, archivo, StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.ATOMIC_MOVE);
-        } catch (IOException e) {
-            throw new UncheckedIOException("No se pudo guardar el catálogo", e);
-        }
     }
 }

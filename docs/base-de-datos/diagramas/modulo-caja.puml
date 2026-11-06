@@ -1,0 +1,116 @@
+@startuml modulo-caja
+title Caja: Turnos de caja, arqueos e ingresos y egresos de dinero.
+hide methods
+hide stereotype
+hide circle
+skinparam shadowing false
+skinparam roundCorner 6
+skinparam defaultFontName Arial
+skinparam dpi 110
+skinparam ArrowColor #3A4A6B
+skinparam ArrowThickness 1.1
+skinparam nodesep 45
+skinparam ranksep 55
+skinparam class {
+  BackgroundColor White
+  BorderColor #10224D
+  FontSize 13
+  AttributeFontSize 12
+}
+skinparam package {
+  BorderColor #8A94A8
+  FontSize 16
+  FontStyle bold
+  BackgroundColor transparent
+}
+entity "**sesion_caja**\nTurnos de caja: apertura y cierre" as sesion_caja #F4F1DE {
+  {field} **id** <color:#3A4A6B>[clave primaria]</color>
+  {field} Identificador del turno de caja <color:#555555>(número entero; obligatorio)</color>
+  --
+  {field} **abierta_por_id** <color:#3A4A6B>[clave foránea → usuario]</color>
+  {field} Empleado que abrió <color:#555555>(número entero; obligatorio)</color>
+  {field} **cerrada_por_id** <color:#3A4A6B>[clave foránea → usuario]</color>
+  {field} Empleado que cerró <color:#555555>(número entero; opcional)</color>
+  {field} **monto_inicial**
+  {field} Efectivo con el que se abrió <color:#555555>(valor en pesos; obligatorio)</color>
+  {field} **monto_esperado**
+  {field} Efectivo que debía haber al cerrar <color:#555555>(valor en pesos; opcional)</color>
+  {field} **monto_contado**
+  {field} Efectivo contado al cerrar <color:#555555>(valor en pesos; opcional)</color>
+  {field} **estado_sesion_caja**
+  {field} Si el turno de caja sigue abierto o ya se cerró (obligatorio)
+  {field} <color:#555555>una de estas opciones: abierta, cerrada</color>
+  {field} **fecha_apertura**
+  {field} Fecha y hora en que se abrió la caja <color:#555555>(fecha y hora; obligatorio)</color>
+  {field} **fecha_cierre**
+  {field} Fecha y hora en que se cerró la caja <color:#555555>(fecha y hora; opcional)</color>
+}
+entity "**arqueo_caja**\nConteos de efectivo durante un turno" as arqueo_caja #F4F1DE {
+  {field} **id** <color:#3A4A6B>[clave primaria]</color>
+  {field} Identificador del arqueo <color:#555555>(número entero; obligatorio)</color>
+  --
+  {field} **sesion_caja_id** <color:#3A4A6B>[clave foránea → sesion_caja]</color>
+  {field} Turno de caja que se contó <color:#555555>(número entero; obligatorio)</color>
+  {field} **usuario_id** <color:#3A4A6B>[clave foránea → usuario]</color>
+  {field} Empleado que contó el efectivo <color:#555555>(número entero; obligatorio)</color>
+  {field} **monto_esperado**
+  {field} Efectivo que debía haber en caja <color:#555555>(valor en pesos; obligatorio)</color>
+  {field} **monto_contado**
+  {field} Efectivo que se encontró al contar <color:#555555>(valor en pesos; obligatorio)</color>
+  {field} **observacion_arqueo**
+  {field} Explicación de una diferencia <color:#555555>(texto, hasta 255 caracteres; opcional)</color>
+  {field} **fecha_arqueo**
+  {field} Fecha y hora del conteo <color:#555555>(fecha y hora; obligatorio)</color>
+}
+entity "**movimiento_caja**\nIngresos y egresos de dinero de cada turno" as movimiento_caja #F4F1DE {
+  {field} **id** <color:#3A4A6B>[clave primaria]</color>
+  {field} Identificador del movimiento <color:#555555>(número entero; obligatorio)</color>
+  --
+  {field} **sesion_caja_id** <color:#3A4A6B>[clave foránea → sesion_caja]</color>
+  {field} Turno de caja en que ocurrió <color:#555555>(número entero; obligatorio)</color>
+  {field} **usuario_id** <color:#3A4A6B>[clave foránea → usuario]</color>
+  {field} Empleado que lo registró <color:#555555>(número entero; obligatorio)</color>
+  {field} **metodo_pago_id** <color:#3A4A6B>[clave foránea → metodo_pago]</color>
+  {field} Medio por el que entró o salió el dinero <color:#555555>(número entero; obligatorio)</color>
+  {field} **tipo_movimiento_caja**
+  {field} Si entra o sale dinero (obligatorio)
+  {field} <color:#555555>una de estas opciones: ingreso, egreso</color>
+  {field} **categoria_movimiento_caja**
+  {field} Motivo por el que entró o salió el dinero (obligatorio)
+  {field} <color:#555555>una de estas opciones: venta, suscripcion, devolucion, gasto, otro</color>
+  {field} **monto_movimiento**
+  {field} Valor del movimiento de dinero <color:#555555>(valor en pesos; obligatorio)</color>
+  {field} **descripcion_movimiento**
+  {field} Explicación del movimiento de dinero <color:#555555>(texto, hasta 255 caracteres; opcional)</color>
+  {field} **pedido_id** <color:#3A4A6B>[clave foránea → pedido]</color>
+  {field} Pedido que originó el movimiento, si aplica <color:#555555>(número entero; opcional)</color>
+  {field} **suscripcion_id** <color:#3A4A6B>[clave foránea → suscripcion]</color>
+  {field} Suscripción que originó el movimiento, si aplica <color:#555555>(número entero; opcional)</color>
+  {field} **fecha_movimiento**
+  {field} Fecha y hora en que ocurrió <color:#555555>(fecha y hora; obligatorio)</color>
+}
+entity "**metodo_pago**\nFormas de pago aceptadas" as metodo_pago #FBEFD5
+hide metodo_pago members
+entity "**pedido**\nPedidos en línea y ventas de mostrador" as pedido #FBE3E4
+hide pedido members
+entity "**suscripcion**\nPlanes contratados por los clientes y su\nvigencia" as suscripcion #FBEFD5
+hide suscripcion members
+sesion_caja ||--o{ arqueo_caja : "Turno de caja que se contó\n(uno a muchos)"
+metodo_pago ||--o{ movimiento_caja : "Medio por el que entró o\nsalió el dinero\n(uno a muchos)"
+pedido |o--o{ movimiento_caja : "Pedido que originó el\nmovimiento, si aplica\n(opcional: uno a muchos)"
+sesion_caja ||--o{ movimiento_caja : "Turno de caja en que\nocurrió\n(uno a muchos)"
+suscripcion |o--o{ movimiento_caja : "Suscripción que originó el\nmovimiento, si aplica\n(opcional: uno a muchos)"
+note as N
+Los campos **usuario_id**, **vendedor_id** y los terminados
+en **_por_id** indican qué empleado hizo la operación
+(tabla **usuario**). Esas líneas se omiten para que
+el diagrama se pueda leer.
+end note
+legend left
+  **Cómo leer este diagrama**
+  **Clave primaria:** identifica cada registro de la tabla, sin repetirse.
+  **Clave foránea:** enlace con un registro de otra tabla.
+  **Línea entre tablas:** ||  exactamente uno;  o|  cero o uno;  o{  cero o muchos.
+  **POR REVISAR:** su significado debe confirmarlo el negocio o el equipo.
+endlegend
+@enduml

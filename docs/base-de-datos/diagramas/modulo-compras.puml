@@ -1,0 +1,162 @@
+@startuml modulo-compras
+title Compras y proveedores: Proveedores, órdenes de compra, entradas de mercancía y devoluciones.
+hide methods
+hide stereotype
+hide circle
+skinparam shadowing false
+skinparam roundCorner 6
+skinparam defaultFontName Arial
+skinparam dpi 110
+skinparam ArrowColor #3A4A6B
+skinparam ArrowThickness 1.1
+skinparam nodesep 45
+skinparam ranksep 55
+skinparam class {
+  BackgroundColor White
+  BorderColor #10224D
+  FontSize 13
+  AttributeFontSize 12
+}
+skinparam package {
+  BorderColor #8A94A8
+  FontSize 16
+  FontStyle bold
+  BackgroundColor transparent
+}
+entity "**proveedor**\nProveedores de la droguería" as proveedor #EDE4F5 {
+  {field} **id** <color:#3A4A6B>[clave primaria]</color>
+  {field} Identificador del proveedor <color:#555555>(número entero; obligatorio)</color>
+  --
+  {field} **nit_proveedor** <color:#3A4A6B>[no se repite]</color>
+  {field} NIT o documento del proveedor <color:#555555>(texto, hasta 20 caracteres; obligatorio)</color>
+  {field} **nombre_proveedor**
+  {field} Nombre o razón social del proveedor <color:#555555>(texto, hasta 150 caracteres; obligatorio)</color>
+  {field} **contacto_proveedor**
+  {field} Persona de contacto en el proveedor <color:#555555>(texto, hasta 120 caracteres; opcional)</color>
+  {field} **telefono_proveedor**
+  {field} Teléfono del proveedor <color:#555555>(texto, hasta 20 caracteres; opcional)</color>
+  {field} **correo_proveedor**
+  {field} Correo del proveedor <color:#555555>(texto, hasta 120 caracteres; opcional)</color>
+  {field} **direccion_proveedor**
+  {field} Dirección del proveedor <color:#555555>(texto, hasta 255 caracteres; opcional)</color>
+  {field} **proveedor_activo**
+  {field} Si se le sigue comprando <color:#555555>(sí o no; obligatorio)</color>
+}
+entity "**orden_compra**\nÓrdenes de compra a proveedores" as orden_compra #EDE4F5 {
+  {field} **id** <color:#3A4A6B>[clave primaria]</color>
+  {field} Identificador de la orden <color:#555555>(número entero; obligatorio)</color>
+  --
+  {field} **numero_orden** <color:#3A4A6B>[no se repite]</color>
+  {field} Número de la orden de compra <color:#555555>(texto, hasta 20 caracteres; obligatorio)</color>
+  {field} **proveedor_id** <color:#3A4A6B>[clave foránea → proveedor]</color>
+  {field} Proveedor al que se le compra <color:#555555>(número entero; obligatorio)</color>
+  {field} **usuario_id** <color:#3A4A6B>[clave foránea → usuario]</color>
+  {field} Empleado que la creó <color:#555555>(número entero; obligatorio)</color>
+  {field} **estado_orden**
+  {field} En qué punto va la orden de compra (obligatorio)
+  {field} <color:#555555>una de estas opciones: borrador, enviada, parcial, recibida, cancelada</color>
+  {field} **fecha_creacion**
+  {field} Cuándo se creó <color:#555555>(fecha y hora; obligatorio)</color>
+  {field} **fecha_esperada**
+  {field} Cuándo se espera recibir <color:#555555>(fecha; opcional)</color>
+}
+entity "**detalle_orden_compra**\nProductos de cada orden de compra" as detalle_orden_compra #EDE4F5 {
+  {field} **id** <color:#3A4A6B>[clave primaria]</color>
+  {field} Identificador de la línea <color:#555555>(número entero; obligatorio)</color>
+  --
+  {field} **orden_compra_id** <color:#3A4A6B>[clave foránea → orden_compra]</color>
+  {field} Orden de compra a la que pertenece esta línea <color:#555555>(número entero; obligatorio)</color>
+  {field} **presentacion_id** <color:#3A4A6B>[clave foránea → presentacion]</color>
+  {field} Presentación que se pide <color:#555555>(número entero; obligatorio)</color>
+  {field} **cantidad_pedida**
+  {field} Unidades pedidas <color:#555555>(número entero; obligatorio)</color>
+  {field} **costo_unitario**
+  {field} Costo acordado por unidad <color:#555555>(valor en pesos; obligatorio)</color>
+}
+entity "**recepcion_mercancia**\nEntradas de mercancía" as recepcion_mercancia #EDE4F5 {
+  {field} **id** <color:#3A4A6B>[clave primaria]</color>
+  {field} Identificador de la entrada <color:#555555>(número entero; obligatorio)</color>
+  --
+  {field} **proveedor_id** <color:#3A4A6B>[clave foránea → proveedor]</color>
+  {field} Quién entregó <color:#555555>(número entero; obligatorio)</color>
+  {field} **orden_compra_id** <color:#3A4A6B>[clave foránea → orden_compra]</color>
+  {field} Orden relacionada; una entrada puede no tenerla <color:#555555>(número entero; opcional)</color>
+  {field} **usuario_id** <color:#3A4A6B>[clave foránea → usuario]</color>
+  {field} Empleado que recibió <color:#555555>(número entero; obligatorio)</color>
+  {field} **numero_factura**
+  {field} Factura del proveedor <color:#555555>(texto, hasta 40 caracteres; obligatorio)</color>
+  {field} **total_factura**
+  {field} Valor de esa factura <color:#555555>(valor en pesos; obligatorio)</color>
+  {field} **fecha_recepcion**
+  {field} Cuándo se recibió <color:#555555>(fecha y hora; obligatorio)</color>
+}
+entity "**detalle_recepcion**\nProductos de cada entrada de mercancía" as detalle_recepcion #EDE4F5 {
+  {field} **id** <color:#3A4A6B>[clave primaria]</color>
+  {field} Identificador de la línea <color:#555555>(número entero; obligatorio)</color>
+  --
+  {field} **recepcion_id** <color:#3A4A6B>[clave foránea → recepcion_mercancia]</color>
+  {field} Entrada de mercancía a la que pertenece esta línea <color:#555555>(número entero; obligatorio)</color>
+  {field} **detalle_orden_id** <color:#3A4A6B>[clave foránea → detalle_orden_compra]</color>
+  {field} Línea de la orden de compra que se está recibiendo, si la hay <color:#555555>(número entero; opcional)</color>
+  {field} **lote_id** <color:#3A4A6B>[clave foránea → lote]</color>
+  {field} Lote en el que entra la mercancía <color:#555555>(número entero; obligatorio)</color>
+  {field} **cantidad_recibida**
+  {field} Unidades recibidas <color:#555555>(número entero; obligatorio)</color>
+  {field} **costo_unitario**
+  {field} Costo en la factura por unidad <color:#555555>(valor en pesos; obligatorio)</color>
+}
+entity "**devolucion_proveedor**\nDevoluciones a proveedores" as devolucion_proveedor #EDE4F5 {
+  {field} **id** <color:#3A4A6B>[clave primaria]</color>
+  {field} Identificador de la devolución <color:#555555>(número entero; obligatorio)</color>
+  --
+  {field} **proveedor_id** <color:#3A4A6B>[clave foránea → proveedor]</color>
+  {field} Proveedor al que se devuelve la mercancía <color:#555555>(número entero; obligatorio)</color>
+  {field} **usuario_id** <color:#3A4A6B>[clave foránea → usuario]</color>
+  {field} Empleado que la registró <color:#555555>(número entero; obligatorio)</color>
+  {field} **motivo_devolucion**
+  {field} Por qué se devuelve, por ejemplo próximo a vencer <color:#555555>(texto, hasta 255 caracteres; obligatorio)</color>
+  {field} **fecha_devolucion**
+  {field} Fecha y hora en que ocurrió <color:#555555>(fecha y hora; obligatorio)</color>
+}
+entity "**detalle_devolucion_proveedor**\nProductos de cada devolución a proveedor" as detalle_devolucion_proveedor #EDE4F5 {
+  {field} **id** <color:#3A4A6B>[clave primaria]</color>
+  {field} Identificador de la línea <color:#555555>(número entero; obligatorio)</color>
+  --
+  {field} **devolucion_proveedor_id** <color:#3A4A6B>[clave foránea → devolucion_proveedor]</color>
+  {field} Devolución a la que pertenece esta línea <color:#555555>(número entero; obligatorio)</color>
+  {field} **lote_id** <color:#3A4A6B>[clave foránea → lote]</color>
+  {field} Lote de donde sale lo devuelto <color:#555555>(número entero; obligatorio)</color>
+  {field} **cantidad_devuelta**
+  {field} Unidades devueltas <color:#555555>(número entero; obligatorio)</color>
+  {field} **costo_unitario**
+  {field} Costo por unidad que se reconoce <color:#555555>(valor en pesos; obligatorio)</color>
+}
+entity "**lote**\nLotes con su existencia y vencimiento" as lote #DDF1F6
+hide lote members
+entity "**presentacion**\nUnidad que se vende y se almacena; las\nvariedades tienen una sola" as presentacion #DFF3E4
+hide presentacion members
+proveedor ||--o{ orden_compra : "Proveedor al que se le\ncompra\n(uno a muchos)"
+orden_compra ||--o{ detalle_orden_compra : "Orden de compra a la que\npertenece esta línea\n(uno a muchos)"
+presentacion ||--o{ detalle_orden_compra : "Presentación que se pide\n(uno a muchos)"
+orden_compra |o--o{ recepcion_mercancia : "Orden relacionada\n(opcional: uno a muchos)"
+proveedor ||--o{ recepcion_mercancia : "Quién entregó\n(uno a muchos)"
+lote ||--o{ detalle_recepcion : "Lote en el que entra la\nmercancía\n(uno a muchos)"
+detalle_orden_compra |o--o{ detalle_recepcion : "Línea de la orden de\ncompra que se está\nrecibiendo, si la hay\n(opcional: uno a muchos)"
+recepcion_mercancia ||--o{ detalle_recepcion : "Entrada de mercancía a la\nque pertenece esta línea\n(uno a muchos)"
+proveedor ||--o{ devolucion_proveedor : "Proveedor al que se\ndevuelve la mercancía\n(uno a muchos)"
+devolucion_proveedor ||--o{ detalle_devolucion_proveedor : "Devolución a la que\npertenece esta línea\n(uno a muchos)"
+lote ||--o{ detalle_devolucion_proveedor : "Lote de donde sale lo\ndevuelto\n(uno a muchos)"
+note as N
+Los campos **usuario_id**, **vendedor_id** y los terminados
+en **_por_id** indican qué empleado hizo la operación
+(tabla **usuario**). Esas líneas se omiten para que
+el diagrama se pueda leer.
+end note
+legend left
+  **Cómo leer este diagrama**
+  **Clave primaria:** identifica cada registro de la tabla, sin repetirse.
+  **Clave foránea:** enlace con un registro de otra tabla.
+  **Línea entre tablas:** ||  exactamente uno;  o|  cero o uno;  o{  cero o muchos.
+  **POR REVISAR:** su significado debe confirmarlo el negocio o el equipo.
+endlegend
+@enduml

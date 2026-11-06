@@ -56,7 +56,7 @@
         </button>
 
         <div class="divisor"><span>o</span></div>
-        <button class="btn btn--secundario btn--bloque btn-invitado" type="button" onclick="entrarComoInvitado()">Continuar como invitado</button>
+        <button class="btn btn--secundario btn--bloque btn-invitado" type="button" onclick="entrarComoInvitado()">Seguir sin cuenta</button>
         <p class="auth-pie">¿Ya tienes cuenta? <a th:href="@{/login}">Iniciar sesión</a></p>
       </div>
     </section>
@@ -123,7 +123,7 @@
           <h3>5. Tus Derechos</h3>
           <p>Tienes derecho a acceder, rectificar y eliminar tus datos personales en cualquier momento desde la sección "Mi Perfil" de tu cuenta, o contactándonos directamente.</p>
           <h3>6. Cookies</h3>
-          <p>Nuestra plataforma utiliza almacenamiento local del navegador para mantener tu sesión activa y recordar tus preferencias. No utilizamos cookies de rastreo de terceros.</p>
+          <p>Usamos una cookie de sesión para mantenerte con la sesión iniciada mientras navegas. Tu carrito y el tema de color se guardan en tu propio navegador. No usamos cookies de rastreo de terceros.</p>
           <h3>7. Contacto</h3>
           <p>Para ejercer tus derechos de privacidad o resolver dudas, contáctanos al +57 322 506 5554 o escríbenos a diazpajaro1208@gmail.com.</p>
         `
@@ -189,7 +189,9 @@
       document.getElementById('error-reg').classList.add('visible');
     }
 
-    // ⚠️ PREPARADO PARA BD: reemplazar guardado con fetch('/api/clientes', { method:'POST', ... })
+    const params  = new URLSearchParams(window.location.search);
+    const destino = Seguridad.rutaRetornoSegura(params.get('retorno'), '/perfil');
+
     async function registrar() {
       limpiarErrores();
       const nombre    = document.getElementById('input-nombre').value.trim();
@@ -200,74 +202,44 @@
       const pass2     = document.getElementById('input-pass2').value;
       const terminos  = document.getElementById('acepto-terminos').checked;
 
+      if (!Cuenta.disponible()) { mostrarError([], 'Las cuentas en línea no están disponibles en este momento. Escríbenos por WhatsApp.'); return; }
       if (!nombre)    { mostrarError(['f-nombre'],    'El nombre es obligatorio.'); return; }
       if (!correo || !correo.includes('@')) { mostrarError(['f-correo'], 'Ingresa un correo válido.'); return; }
       if (!telefono)  { mostrarError(['f-telefono'],  'El teléfono es obligatorio.'); return; }
       if (!direccion) { mostrarError(['f-direccion'], 'La dirección es obligatoria.'); return; }
       if (pass.length < 8) { mostrarError(['f-pass'], 'La contraseña debe tener mínimo 8 caracteres.'); return; }
       if (pass !== pass2)  { mostrarError(['f-pass','f-pass2'], 'Las contraseñas no coinciden.'); return; }
-      if (!terminos) { document.getElementById('terminos-wrap').classList.add('error'); mostrarError([], 'Debes aceptar los términos y condiciones.'); return; }
-
-      if (!Seguridad.criptoDisponible()) {
-        mostrarError([], 'El registro requiere una conexión segura (HTTPS).'); return;
-      }
-      await Seguridad.listo;
-
-      const clientes = JSON.parse(localStorage.getItem('lth_clientes') || '[]');
-      if (clientes.find(c => String(c.correo).toLowerCase() === correo)) {
-        mostrarError(['f-correo'], 'Ya existe una cuenta con ese correo.'); return;
-      }
+      if (!terminos) { document.getElementById('terminos-wrap').classList.add('error'); mostrarError([], 'Debes aceptar los términos y la política de privacidad.'); return; }
 
       const btn   = document.getElementById('btn-registrar');
       const spin  = document.getElementById('spin-reg');
       const texto = btn.querySelector('.btn-texto');
-      // Mostrar spinner (el botón permanece enabled para no bloquear si hay error)
-      texto.style.display = 'none'; spin.classList.add('visible');
-      await new Promise(r => setTimeout(r, 700));
-
-      const nuevoCliente = {
-        id:        'CLI-' + Date.now().toString(36).toUpperCase(),
-        nombre, correo, telefono, direccion,
-        credencial: await Seguridad.crearCredencial(pass),
-        rol:       'cliente',
-        fechaReg:  new Date().toLocaleString('es-CO'),
-        pedidos:   [],
-        favoritos: []
-      };
-      clientes.push(nuevoCliente);
-      localStorage.setItem('lth_clientes', JSON.stringify(clientes));
-
-      // Marcar que recién se registró para que perfil.html no dispare re-check
-      sessionStorage.setItem('lth_cliente', JSON.stringify({
-        id: nuevoCliente.id, nombre, correo, telefono, direccion, rol: 'cliente'
-      }));
-      sessionStorage.setItem('lth_recien_registro', '1');
-
-      toast('¡Cuenta creada exitosamente!');
-      // Deshabilitar el botón SOLO después de guardar correctamente
-      btn.disabled = true;
-
-      // Redirigir a la página de retorno si viene de suscripciones, si no al perfil
-      const params  = new URLSearchParams(window.location.search);
-      const destino = Seguridad.rutaRetornoSegura(params.get('retorno'), '/perfil');
-      setTimeout(() => { window.location.href = destino; }, 1200);
+      btn.disabled = true; texto.style.display = 'none'; spin.classList.add('visible');
+      try {
+        await Api.pedir('/api/cuenta/registro', { metodo: 'POST',
+          datos: { nombre, correo, telefono, direccion, clave: pass, aceptaDatos: true } });
+        toast('¡Cuenta creada!');
+        setTimeout(() => { window.location.href = destino; }, 800);
+      } catch (err) {
+        btn.disabled = false; texto.style.display = ''; spin.classList.remove('visible');
+        const campo = /correo/i.test(err.message) ? ['f-correo'] : /tel[eé]fono/i.test(err.message) ? ['f-telefono']
+          : /contraseña/i.test(err.message) ? ['f-pass'] : [];
+        mostrarError(campo, err.message);
+      }
     }
 
     function entrarComoInvitado() {
-      sessionStorage.setItem('lth_cliente', JSON.stringify({ rol: 'invitado', nombre: 'Invitado' }));
       window.location.href = '/';
     }
 
-    // Si ya hay sesión activa de cliente (pero NO recién registrado — ese flujo lo maneja registrar())
-    const sc = sessionStorage.getItem('lth_cliente');
-    if (sc && !sessionStorage.getItem('lth_recien_registro')) {
-      try {
-        const c = JSON.parse(sc);
-        if (c.rol === 'cliente') window.location.href = '/perfil';
-      } catch {}
+    // Con la sesión abierta no se crea otra cuenta
+    if (Cuenta.cliente()) window.location.replace(destino);
+    if (!Cuenta.disponible()) {
+      mostrarError([], 'Las cuentas en línea no están disponibles en este momento. Puedes ver el catálogo y pedir por WhatsApp.');
     }
-    // Limpiar flag de recién registrado al cargar la página de registro
-    sessionStorage.removeItem('lth_recien_registro');
+    if (params.get('retorno')) {
+      document.querySelector('.auth-pie a').href = '/login?retorno=' + encodeURIComponent(params.get('retorno'));
+    }
   </script>
 </body>
 </html>

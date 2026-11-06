@@ -1,0 +1,160 @@
+@startuml modulo-inventario
+title Inventario: Lotes, vencimientos, historial de entradas y salidas, conteos y alertas.
+hide methods
+hide stereotype
+hide circle
+skinparam shadowing false
+skinparam roundCorner 6
+skinparam defaultFontName Arial
+skinparam dpi 110
+skinparam ArrowColor #3A4A6B
+skinparam ArrowThickness 1.1
+skinparam nodesep 45
+skinparam ranksep 55
+skinparam class {
+  BackgroundColor White
+  BorderColor #10224D
+  FontSize 13
+  AttributeFontSize 12
+}
+skinparam package {
+  BorderColor #8A94A8
+  FontSize 16
+  FontStyle bold
+  BackgroundColor transparent
+}
+entity "**lote**\nLotes con su existencia y vencimiento" as lote #DDF1F6 {
+  {field} **id** <color:#3A4A6B>[clave primaria]</color>
+  {field} Identificador del lote <color:#555555>(número entero; obligatorio)</color>
+  --
+  {field} **presentacion_id** <color:#3A4A6B>[clave foránea → presentacion]</color>
+  {field} Presentación que contiene el lote <color:#555555>(número entero; obligatorio)</color>
+  {field} **numero_lote**
+  {field} Número impreso por el fabricante <color:#555555>(texto, hasta 50 caracteres; obligatorio)</color>
+  {field} **fecha_vencimiento**
+  {field} Vencimiento; vacío si el producto no vence <color:#555555>(fecha; opcional)</color>
+  {field} **cantidad_actual**
+  {field} Existencia; solo cambia mediante movimientos <color:#555555>(número entero; obligatorio)</color>
+  {field} **costo_unitario**
+  {field} Costo de compra por unidad <color:#555555>(valor en pesos; obligatorio)</color>
+  {field} **fecha_ingreso**
+  {field} Fecha y hora en que se registró <color:#555555>(fecha y hora; obligatorio)</color>
+}
+entity "**movimiento_inventario**\nHistorial de entradas y salidas de cada\nlote; no se puede modificar ni borrar" as movimiento_inventario #DDF1F6 {
+  {field} **id** <color:#3A4A6B>[clave primaria]</color>
+  {field} Identificador del movimiento <color:#555555>(número entero; obligatorio)</color>
+  --
+  {field} **lote_id** <color:#3A4A6B>[clave foránea → lote]</color>
+  {field} Lote cuya existencia cambia <color:#555555>(número entero; obligatorio)</color>
+  {field} **usuario_id** <color:#3A4A6B>[clave foránea → usuario]</color>
+  {field} Empleado; vacío solo en ventas automáticas de la tienda en línea <color:#555555>(número entero; opcional)</color>
+  {field} **tipo_movimiento**
+  {field} Motivo por el que entró o salió el dinero (obligatorio)
+  {field} <color:#555555>una de estas opciones: entrada, venta, anulacion, ajuste, devolucion_cliente, devolucion_proveedor, conteo</color>
+  {field} **cantidad_movida**
+  {field} Positiva si entra y negativa si sale <color:#555555>(número entero; obligatorio)</color>
+  {field} **saldo_resultante**
+  {field} Existencia del lote después del movimiento; la calcula un disparador <color:#555555>(número entero; obligatorio)</color>
+  {field} **motivo_movimiento**
+  {field} Explicación del movimiento; obligatoria en ajustes <color:#555555>(texto, hasta 255 caracteres; opcional)</color>
+  {field} **detalle_pedido_id** <color:#3A4A6B>[clave foránea → detalle_pedido]</color>
+  {field} Producto del pedido que se vendió o se anuló <color:#555555>(número entero; opcional)</color>
+  {field} **detalle_recepcion_id** <color:#3A4A6B>[clave foránea → detalle_recepcion]</color>
+  {field} Línea de la entrada de mercancía que originó el movimiento <color:#555555>(número entero; opcional)</color>
+  {field} **detalle_conteo_id** <color:#3A4A6B>[clave foránea → detalle_conteo]</color>
+  {field} Línea del conteo que originó el movimiento <color:#555555>(número entero; opcional)</color>
+  {field} **detalle_devolucion_id** <color:#3A4A6B>[clave foránea → detalle_devolucion]</color>
+  {field} Línea de la devolución del cliente que originó el movimiento <color:#555555>(número entero; opcional)</color>
+  {field} **detalle_devolucion_proveedor_id** <color:#3A4A6B>[clave foránea → detalle_devolucion_proveedor]</color>
+  {field} Línea de la devolución al proveedor que originó el movimiento <color:#555555>(número entero; opcional)</color>
+  {field} **fecha_movimiento**
+  {field} Fecha y hora en que ocurrió <color:#555555>(fecha y hora; obligatorio)</color>
+}
+entity "**conteo_fisico**\nConteos físicos del inventario" as conteo_fisico #DDF1F6 {
+  {field} **id** <color:#3A4A6B>[clave primaria]</color>
+  {field} Identificador del conteo <color:#555555>(número entero; obligatorio)</color>
+  --
+  {field} **usuario_id** <color:#3A4A6B>[clave foránea → usuario]</color>
+  {field} Empleado responsable <color:#555555>(número entero; obligatorio)</color>
+  {field} **estado_conteo**
+  {field} Si el conteo sigue abierto, ya se cerró o se anuló (obligatorio)
+  {field} <color:#555555>una de estas opciones: abierto, cerrado, anulado</color>
+  {field} **observacion_conteo**
+  {field} Comentarios sobre el conteo <color:#555555>(texto, hasta 255 caracteres; opcional)</color>
+  {field} **fecha_inicio**
+  {field} Fecha y hora en que empezó el conteo <color:#555555>(fecha y hora; obligatorio)</color>
+  {field} **fecha_cierre**
+  {field} Fecha y hora en que terminó el conteo <color:#555555>(fecha y hora; opcional)</color>
+}
+entity "**detalle_conteo**\nResultado del conteo por lote" as detalle_conteo #DDF1F6 {
+  {field} **id** <color:#3A4A6B>[clave primaria]</color>
+  {field} Identificador de la línea <color:#555555>(número entero; obligatorio)</color>
+  --
+  {field} **conteo_id** <color:#3A4A6B>[clave foránea → conteo_fisico]</color>
+  {field} Conteo al que pertenece esta línea <color:#555555>(número entero; obligatorio)</color>
+  {field} **lote_id** <color:#3A4A6B>[clave foránea → lote]</color>
+  {field} Lote que se contó <color:#555555>(número entero; obligatorio)</color>
+  {field} **cantidad_sistema**
+  {field} Cantidad que indicaba el sistema <color:#555555>(número entero; obligatorio)</color>
+  {field} **cantidad_contada**
+  {field} Cantidad encontrada al contar <color:#555555>(número entero; obligatorio)</color>
+}
+entity "**notificacion**\nAlertas de stock, vencimiento y\nadministración" as notificacion #DDF1F6 {
+  {field} **id** <color:#3A4A6B>[clave primaria]</color>
+  {field} Identificador de la alerta <color:#555555>(número entero; obligatorio)</color>
+  --
+  {field} **tipo_alerta**
+  {field} Clase de alerta (obligatorio)
+  {field} <color:#555555>una de estas opciones: agotado, proximo_vencer, inventario_bajo, administrativa</color>
+  {field} **mensaje_alerta**
+  {field} Mensaje que ve el empleado <color:#555555>(texto, hasta 255 caracteres; obligatorio)</color>
+  {field} **presentacion_id** <color:#3A4A6B>[clave foránea → presentacion]</color>
+  {field} Presentación a la que se refiere la alerta <color:#555555>(número entero; opcional)</color>
+  {field} **lote_id** <color:#3A4A6B>[clave foránea → lote]</color>
+  {field} Lote al que se refiere la alerta <color:#555555>(número entero; opcional)</color>
+  {field} **alerta_atendida**
+  {field} Si la alerta ya se resolvió <color:#555555>(sí o no; obligatorio)</color>
+  {field} **atendida_por_id** <color:#3A4A6B>[clave foránea → usuario]</color>
+  {field} Empleado que la atendió; vacío si se resolvió sola <color:#555555>(número entero; opcional)</color>
+  {field} **fecha_atencion**
+  {field} Fecha y hora en que se atendió la alerta <color:#555555>(fecha y hora; opcional)</color>
+  {field} **fecha_creacion**
+  {field} Fecha y hora en que se generó la alerta <color:#555555>(fecha y hora; obligatorio)</color>
+  {field} **clave_abierta** <color:#3A4A6B>[no se repite; la calcula MySQL]</color>
+  {field} Se calcula solo: evita repetir una alerta que sigue abierta <color:#555555>(texto, hasta 60 caracteres; opcional)</color>
+}
+entity "**detalle_devolucion**\nProductos de cada devolución de cliente" as detalle_devolucion #FBE3E4
+hide detalle_devolucion members
+entity "**detalle_devolucion_proveedor**\nProductos de cada devolución a proveedor" as detalle_devolucion_proveedor #EDE4F5
+hide detalle_devolucion_proveedor members
+entity "**detalle_pedido**\nProductos de cada pedido" as detalle_pedido #FBE3E4
+hide detalle_pedido members
+entity "**detalle_recepcion**\nProductos de cada entrada de mercancía" as detalle_recepcion #EDE4F5
+hide detalle_recepcion members
+entity "**presentacion**\nUnidad que se vende y se almacena; las\nvariedades tienen una sola" as presentacion #DFF3E4
+hide presentacion members
+presentacion ||--o{ lote : "Presentación que contiene\nel lote\n(uno a muchos)"
+detalle_conteo |o--o{ movimiento_inventario : "Línea del conteo que\noriginó el movimiento\n(opcional: uno a muchos)"
+detalle_devolucion |o--o{ movimiento_inventario : "Línea de la devolución del\ncliente que originó el\nmovimiento\n(opcional: uno a muchos)"
+detalle_devolucion_proveedor |o--o{ movimiento_inventario : "Línea de la devolución al\nproveedor que originó el\nmovimiento\n(opcional: uno a muchos)"
+lote ||--o{ movimiento_inventario : "Lote cuya existencia\ncambia\n(uno a muchos)"
+detalle_pedido |o--o{ movimiento_inventario : "Producto del pedido que se\nvendió o se anuló\n(opcional: uno a muchos)"
+detalle_recepcion |o--o{ movimiento_inventario : "Línea de la entrada de\nmercancía que originó el\nmovimiento\n(opcional: uno a muchos)"
+conteo_fisico ||--o{ detalle_conteo : "Conteo al que pertenece\nesta línea\n(uno a muchos)"
+lote ||--o{ detalle_conteo : "Lote que se contó\n(uno a muchos)"
+lote |o--o{ notificacion : "Lote al que se refiere la\nalerta\n(opcional: uno a muchos)"
+presentacion |o--o{ notificacion : "Presentación a la que se\nrefiere la alerta\n(opcional: uno a muchos)"
+note as N
+Los campos **usuario_id**, **vendedor_id** y los terminados
+en **_por_id** indican qué empleado hizo la operación
+(tabla **usuario**). Esas líneas se omiten para que
+el diagrama se pueda leer.
+end note
+legend left
+  **Cómo leer este diagrama**
+  **Clave primaria:** identifica cada registro de la tabla, sin repetirse.
+  **Clave foránea:** enlace con un registro de otra tabla.
+  **Línea entre tablas:** ||  exactamente uno;  o|  cero o uno;  o{  cero o muchos.
+  **POR REVISAR:** su significado debe confirmarlo el negocio o el equipo.
+endlegend
+@enduml

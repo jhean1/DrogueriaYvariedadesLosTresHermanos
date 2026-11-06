@@ -35,10 +35,9 @@
           <article class="kpi" th:if="${perfil.operaClientes()}"><strong class="kpi-valor" id="stat-activos">0</strong><span class="kpi-etiqueta">Planes activos</span></article>
           <article class="kpi" th:if="${perfil.operaPagos()}"><strong class="kpi-valor" id="stat-pendientes">0</strong><span class="kpi-etiqueta">Pagos pendientes</span></article>
           <article class="kpi" th:if="${perfil.operaPagos()}"><strong class="kpi-valor" id="stat-aprobados">0</strong><span class="kpi-etiqueta">Pagos aprobados</span></article>
-          <article class="kpi" th:if="${perfil.puede('sales.view')}"><strong class="kpi-valor" id="stat-pedidos">0</strong><span class="kpi-etiqueta">Pedidos web</span></article>
+          <article class="kpi" th:if="${perfil.puede('sales.view')}"><strong class="kpi-valor" id="stat-pedidos">0</strong><span class="kpi-etiqueta">Pedidos por atender</span></article>
+          <article class="kpi" th:if="${perfil.puede('sales.view')}"><strong class="kpi-valor num" id="stat-ventas-hoy">$0</strong><span class="kpi-etiqueta">Ventas entregadas hoy</span></article>
         </div>
-
-        <p class="campo-ayuda" th:if="${perfil.operaPagos() or perfil.operaClientes() or perfil.vePedidos()}">Clientes, pagos y pedidos se leen de este navegador hasta que el sistema tenga base de datos. Solo incluyen lo registrado en este equipo.</p>
 
         <div class="rejilla-graficas" th:if="${perfil.operaPagos()}">
           <article class="tarjeta revelar">
@@ -76,7 +75,7 @@
 
       <!-- Pedidos -->
       <section class="seccion" id="sec-pedidos" th:if="${perfil.vePedidos()}" aria-labelledby="titulo-pedidos">
-        <div class="pagina-cabeza"><div><h1 id="titulo-pedidos">Pedidos</h1><p>Pedidos web registrados en este navegador. El cliente los confirma por WhatsApp.</p></div></div>
+        <div class="pagina-cabeza"><div><h1 id="titulo-pedidos">Pedidos</h1><p>Pedidos que hacen los clientes en la tienda en línea. Confírmalos con el cliente, prepáralos y márcalos como entregados al recibir el pago.</p></div></div>
         <article class="tarjeta">
           <div class="tarjeta-cabeza">
             <h2>Todos los pedidos <span class="insignia" id="total-pedidos">0</span></h2>
@@ -84,6 +83,8 @@
               <div class="filtro-tabla"><svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#buscar"/></svg><label class="solo-lector" for="busca-ped">Filtrar pedidos</label><input type="search" id="busca-ped" placeholder="Cliente o número de pedido" oninput="renderPedidos()"></div>
               <label class="solo-lector" for="filtro-entrega">Entrega</label>
               <select id="filtro-entrega" onchange="renderPedidos()"><option value="">Toda entrega</option><option value="domicilio">Domicilio</option><option value="tienda">Recoger en tienda</option></select>
+              <label class="solo-lector" for="filtro-estado">Estado</label>
+              <select id="filtro-estado" onchange="renderPedidos()"><option value="">Todo estado</option><option value="pendiente">Pendientes</option><option value="en_proceso">En preparación</option><option value="entregado">Entregados</option><option value="cancelado">Anulados</option></select>
             </div>
           </div>
           <div id="tabla-pedidos-wrap"></div>
@@ -123,12 +124,13 @@
             <div class="rejilla-form">
               <div class="campo"><label for="nc-nombre">Nombre completo *</label><input type="text" id="nc-nombre" placeholder="Juan García"></div>
               <div class="campo"><label for="nc-correo">Correo electrónico *</label><input type="email" id="nc-correo" placeholder="cliente@ejemplo.com"></div>
-              <div class="campo"><label for="nc-telefono">Teléfono</label><input type="tel" id="nc-telefono" placeholder="300 123 4567"></div>
-              <div class="campo"><label for="nc-direccion">Dirección</label><input type="text" id="nc-direccion" placeholder="Cra. 5 #10-22, Arjona"></div>
-              <div class="campo todo"><label for="nc-clave">Contraseña temporal *</label><input type="text" id="nc-clave" placeholder="Mín. 8 caracteres" autocomplete="off"></div>
+              <div class="campo"><label for="nc-telefono">Teléfono *</label><input type="tel" id="nc-telefono" placeholder="300 123 4567" autocomplete="off"></div>
+              <div class="campo"><label for="nc-direccion">Dirección *</label><input type="text" id="nc-direccion" placeholder="Barrio, calle y número, Arjona" autocomplete="off"></div>
+              <div class="campo todo"><label for="nc-clave">Contraseña temporal *</label><input type="text" id="nc-clave" placeholder="Mín. 8 caracteres" autocomplete="off"><p class="campo-ayuda">Entrégasela al cliente y pídele cambiarla en «Mi cuenta».</p></div>
+              <label class="campo todo casilla"><input type="checkbox" id="nc-datos"> El cliente autorizó el tratamiento de sus datos personales (Ley 1581 de 2012).</label>
             </div>
             <div class="form-acciones">
-              <button class="btn btn--primario" type="button" onclick="crearCliente()">Crear cliente</button>
+              <button class="btn btn--primario" type="button" onclick="crearCliente(this)">Crear cliente</button>
               <button class="btn btn--fantasma" type="button" onclick="limpiarFormCliente()">Limpiar</button>
             </div>
           </div>
@@ -141,7 +143,7 @@
         <article class="tarjeta">
           <div class="tarjeta-cabeza">
             <h2>Buscar cliente</h2>
-            <div class="filtro-tabla"><svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#buscar"/></svg><label class="solo-lector" for="busca-act">Buscar cliente</label><input class="input-buscar" type="search" placeholder="Nombre, correo o teléfono" oninput="buscarClienteActivar(this.value)" id="busca-act"></div>
+            <div class="filtro-tabla"><svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#buscar"/></svg><label class="solo-lector" for="busca-act">Buscar cliente</label><input class="input-buscar" type="search" placeholder="Nombre, correo o teléfono" oninput="buscarClienteActivar()" id="busca-act"></div>
           </div>
           <div id="tabla-busca-activar"></div>
         </article>
@@ -152,14 +154,14 @@
             <div class="msg-form" id="msg-activar" role="status"></div>
             <p class="campo-etiqueta">Selecciona el plan</p>
             <div class="plan-select-wrap" id="planes-activar">
-              <button class="plan-opt" type="button" onclick="selPlan('Básico',4900,3)"><strong>Básico</strong><small>$4.900 · 3%</small></button>
-              <button class="plan-opt" type="button" onclick="selPlan('Estándar',9900,5)"><strong>Estándar</strong><small>$9.900 · 5%</small></button>
-              <button class="plan-opt" type="button" onclick="selPlan('Regular',14900,10)"><strong>Regular</strong><small>$14.900 · 10%</small></button>
-              <button class="plan-opt" type="button" onclick="selPlan('Premium',19900,15)"><strong>Premium</strong><small>$19.900 · 15%</small></button>
+              <button class="plan-opt" type="button" data-accion="elegir-plan" data-plan="basico" aria-pressed="false"><strong>Básico</strong><small>$4.900 · 3%</small></button>
+              <button class="plan-opt" type="button" data-accion="elegir-plan" data-plan="estandar" aria-pressed="false"><strong>Estándar</strong><small>$9.900 · 5%</small></button>
+              <button class="plan-opt" type="button" data-accion="elegir-plan" data-plan="regular" aria-pressed="false"><strong>Regular</strong><small>$14.900 · 10%</small></button>
+              <button class="plan-opt" type="button" data-accion="elegir-plan" data-plan="premium" aria-pressed="false"><strong>Premium</strong><small>$19.900 · 15%</small></button>
             </div>
             <div class="campo"><label for="activar-nota">Nota de pago (efectivo)</label><input type="text" id="activar-nota" placeholder="Ej: Pagó en efectivo $14.900"></div>
             <div class="form-acciones">
-              <button class="btn btn--primario" type="button" onclick="activarPlanAdmin()"><svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#check"/></svg> Activar plan</button>
+              <button class="btn btn--primario" type="button" onclick="activarPlanAdmin(this)"><svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#check"/></svg> Activar plan</button>
               <button class="btn btn--fantasma" type="button" onclick="cancelarActivacion()">Cancelar</button>
             </div>
           </div>

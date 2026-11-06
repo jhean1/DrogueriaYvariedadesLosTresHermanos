@@ -13,11 +13,12 @@
 
     <article class="recibo entra" id="recibo-content" style="--i:1">
       <header class="recibo-header">
-        <img th:src="@{/img/marca/logo-horizontal.svg}" alt="Droguería y Variedades Los Tres Hermanos" width="290" height="44">
+        <img class="logo-claro" th:src="@{/img/marca/logo-horizontal.svg}" alt="Droguería y Variedades Los Tres Hermanos" width="290" height="44">
+        <img class="logo-oscuro" th:src="@{/img/marca/logo-horizontal-oscuro.svg}" alt="Droguería y Variedades Los Tres Hermanos" width="290" height="44">
         <p>Diagonal 52 50A-755, Arjona, Bolívar · +57 322 506 5554</p>
         <span class="recibo-check"><svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#check"/></svg></span>
-        <h1>¡Compra realizada con éxito!</h1>
-        <div class="recibo-num" id="recibo-numero">Cargando...</div>
+        <h1 id="recibo-titulo">Cargando tu pedido…</h1>
+        <div class="recibo-num" id="recibo-numero"></div>
       </header>
 
       <div class="recibo-body">
@@ -25,7 +26,9 @@
           <div><dt>Fecha y hora</dt><dd id="recibo-fecha">—</dd></div>
           <div><dt>N.° de pedido</dt><dd id="recibo-id">—</dd></div>
           <div><dt>Total de productos</dt><dd id="recibo-items">—</dd></div>
-          <div><dt>Método de pago</dt><dd>Efectivo en tienda</dd></div>
+          <div><dt>Entrega</dt><dd id="recibo-entrega">—</dd></div>
+          <div><dt>Estado</dt><dd id="recibo-estado">—</dd></div>
+          <div><dt>Pago</dt><dd>Efectivo al recibir el pedido</dd></div>
         </dl>
 
         <h2>Detalle del pedido</h2>
@@ -38,14 +41,14 @@
 
         <div class="totales-wrap">
           <div class="total-linea"><span>Subtotal</span><span id="total-subtotal">$0</span></div>
-          <div class="total-linea"><span>IVA (0%, medicamentos exentos)</span><span>$0</span></div>
+          <div class="total-linea" id="linea-descuento" hidden><span id="etiqueta-descuento">Descuento del plan</span><span id="total-descuento">$0</span></div>
+          <div class="total-linea" id="linea-domicilio" hidden><span>Domicilio</span><span id="total-domicilio">$0</span></div>
           <div class="total-linea grande"><span>Total a pagar</span><strong id="total-final">$0</strong></div>
         </div>
       </div>
 
       <footer class="recibo-footer">
-        <span class="insignia insignia--exito"><svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#escudo"/></svg> Pedido confirmado</span>
-        <p>Gracias por comprar en <strong>Droguería y Variedades Los Tres Hermanos</strong>. Conserva este recibo como comprobante de tu pedido.</p>
+        <p>Gracias por comprar en <strong>Droguería y Variedades Los Tres Hermanos</strong>. La droguería revisa tu pedido y te contacta para confirmarlo. Conserva el número de pedido.</p>
         <p>Preguntas: <a href="https://wa.me/573225065554" target="_blank" rel="noopener">+57 322 506 5554</a> · <a href="mailto:diazpajaro1208@gmail.com">diazpajaro1208@gmail.com</a></p>
       </footer>
     </article>
@@ -54,87 +57,65 @@
   <th:block th:replace="~{fragments/tienda :: carrito}"></th:block>
   <th:block th:replace="~{fragments/tienda :: scripts}"></th:block>
   <script>
-    // ── Número único de pedido ────────────────────────────────
-    function generarNumPedido() {
-      const ts   = Date.now().toString(36).toUpperCase();
-      const aleatorio = crypto.getRandomValues(new Uint32Array(1))[0];
-      const rand = aleatorio.toString(36).toUpperCase().padStart(7, '0');
-      return `LTH-${ts}-${rand}`;
+    const ESTADOS = {
+      pendiente:  { texto: 'Recibido, pendiente de confirmar', clase: 'insignia--aviso' },
+      en_proceso: { texto: 'En preparación', clase: 'insignia--azul' },
+      entregado:  { texto: 'Entregado', clase: 'insignia--exito' },
+      cancelado:  { texto: 'Anulado', clase: 'insignia--peligro' }
+    };
+    const esc = Seguridad.esc;
+    const $ = (id) => document.getElementById(id);
+
+    function sinPedido(titulo, texto) {
+      $('recibo-titulo').textContent = titulo;
+      document.querySelector('.recibo-check').hidden = true;
+      $('tabla-body').innerHTML = `<tr><td colspan="4" class="tabla-vacia">${esc(texto)} <a href="/perfil#pedidos">Ver mis pedidos</a></td></tr>`;
+      document.querySelectorAll('#btn-whatsapp, .acciones-imprimir .btn--primario').forEach(b => { b.disabled = true; });
     }
 
-    // ── Formatear fecha ───────────────────────────────────────
-    function formatFecha(d) {
-      return d.toLocaleString('es-CO', {
-        day:'2-digit', month:'long', year:'numeric',
-        hour:'2-digit', minute:'2-digit'
-      });
+    function pintar(p) {
+      const estado = ESTADOS[p.estado] || { texto: p.estado, clase: '' };
+      $('recibo-titulo').textContent = p.estado === 'cancelado' ? 'Este pedido fue anulado' : p.estado === 'entregado' ? '¡Pedido entregado!' : '¡Recibimos tu pedido!';
+      document.querySelector('.recibo-check').hidden = p.estado === 'cancelado';
+      $('recibo-numero').textContent = p.numero;
+      $('recibo-id').textContent = p.numero + (p.comprobante ? ' · ' + p.comprobante : '');
+      $('recibo-fecha').textContent = formatFecha(p.fecha, true);
+      const unidades = p.productos.reduce((s, i) => s + Number(i.cantidad), 0);
+      $('recibo-items').textContent = unidades + (unidades === 1 ? ' unidad' : ' unidades');
+      $('recibo-entrega').textContent = p.modalidad === 'domicilio' ? 'Domicilio: ' + (p.direccion || '') : 'Recoger en la droguería';
+      $('recibo-estado').innerHTML = `<span class="insignia ${estado.clase}">${esc(estado.texto)}</span>`;
+      $('tabla-body').innerHTML = p.productos.map(item => `<tr>
+          <td><span class="prod-nombre">${esc(item.nombre)}</span>
+            ${Number(item.precioOriginal) > Number(item.precio) ? `<span class="prod-unit">Antes ${formatPrecio(item.precioOriginal)} c/u</span>` : ''}</td>
+          <td style="text-align:center">${esc(item.cantidad)}</td>
+          <td style="text-align:right">${formatPrecio(item.precio)}</td>
+          <td>${formatPrecio(item.subtotal)}</td>
+        </tr>`).join('');
+      $('total-subtotal').textContent = formatPrecio(p.subtotal);
+      $('linea-descuento').hidden = !(Number(p.descuento) > 0);
+      $('etiqueta-descuento').textContent = `Descuento del plan (${Number(p.descuentoPorcentaje)}%)`;
+      $('total-descuento').textContent = '-' + formatPrecio(p.descuento);
+      $('linea-domicilio').hidden = p.modalidad !== 'domicilio';
+      $('total-domicilio').textContent = Number(p.domicilio) > 0 ? formatPrecio(p.domicilio) : 'Por confirmar';
+      $('total-final').textContent = formatPrecio(p.total);
+
+      $('btn-whatsapp').onclick = () => {
+        const msg = `Hola, hice el pedido ${p.numero} desde la página web por ${formatPrecio(p.total)}. ¿Me confirman, por favor?`;
+        window.open(`https://wa.me/573225065554?text=${encodeURIComponent(msg)}`, '_blank', 'noopener');
+      };
     }
 
-    // ── Cargar recibo ─────────────────────────────────────────
     document.addEventListener('DOMContentLoaded', () => {
-      // Leer carrito guardado ANTES de vaciarlo
-      const items = Carrito.obtener();
-      const numPedido = generarNumPedido();
-      const fecha     = new Date();
-
-      // Llenar encabezado
-      document.getElementById('recibo-numero').textContent = numPedido;
-      document.getElementById('recibo-id').textContent     = numPedido;
-      document.getElementById('recibo-fecha').textContent  = formatFecha(fecha);
-      document.getElementById('recibo-items').textContent  =
-        items.reduce((s,i) => s + i.cantidad, 0) + ' unidades';
-
-      // Si no hay items (entró directo a la página)
-      if (!items.length) {
-        document.getElementById('tabla-body').innerHTML = `
-          <tr><td colspan="4" style="text-align:center;padding:2rem">
-            No hay productos en este pedido.
-          </td></tr>`;
+      initAvatar({ perfilUrl: '/perfil', logoutUrl: '/' });
+      if (!protegerRuta()) return;
+      const numero = new URLSearchParams(location.search).get('pedido') || '';
+      if (!/^LTH-[A-Z0-9]{6}$/.test(numero)) {
+        sinPedido('No hay un pedido para mostrar', 'Abre el recibo desde tus pedidos.');
         return;
       }
-
-      // Tabla de productos
-      let subtotal = 0;
-      const filas = items.map(item => {
-        const sub = item.precio * item.cantidad;
-        subtotal += sub;
-        return `<tr>
-          <td>
-            <span class="prod-nombre">${Seguridad.esc(item.nombre)}</span>
-            <span class="prod-unit">${formatPrecio(item.precio)} c/u</span>
-          </td>
-          <td style="text-align:center">${Seguridad.esc(item.cantidad)}</td>
-          <td style="text-align:right">${formatPrecio(item.precio)}</td>
-          <td>${formatPrecio(sub)}</td>
-        </tr>`;
-      }).join('');
-
-      document.getElementById('tabla-body').innerHTML = filas;
-      document.getElementById('total-subtotal').textContent = formatPrecio(subtotal);
-      document.getElementById('total-final').textContent    = formatPrecio(subtotal);
-
-      // ── WhatsApp ──────────────────────────────────────────
-      document.getElementById('btn-whatsapp').addEventListener('click', () => {
-        const lineas = items.map(i =>
-          `• ${i.nombre} x${i.cantidad} = ${formatPrecio(i.precio * i.cantidad)}`
-        ).join('\n');
-
-        const msg =
-          `🧾 *NUEVO PEDIDO — Los Tres Hermanos*\n` +
-          `📋 N° Pedido: *${numPedido}*\n` +
-          `📅 Fecha: ${formatFecha(fecha)}\n\n` +
-          `*Productos:*\n${lineas}\n\n` +
-          `💰 *TOTAL: ${formatPrecio(subtotal)}*\n\n` +
-          `_Pedido realizado desde la página web._`;
-
-        const url = `https://wa.me/573225065554?text=${encodeURIComponent(msg)}`;
-        window.open(url, '_blank', 'noopener');
-      });
-
-      // Vaciar carrito después de generar el recibo
-      localStorage.removeItem('drogueria_carrito');
-      protegerRuta();
-      initAvatar({ perfilUrl: '/perfil', logoutUrl: '/' });
+      Api.pedir('/api/cuenta/pedidos/' + encodeURIComponent(numero))
+        .then(pintar)
+        .catch(err => sinPedido('No pudimos cargar el pedido', err.estado === 404 ? 'Este pedido no está en tu cuenta.' : err.message));
     });
   </script>
 </body>

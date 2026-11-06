@@ -32,7 +32,7 @@ public enum Permiso {
 
     VENTAS_VER("sales.view", "Ventas", "Consultar pedidos y ventas", true),
     VENTAS_CREAR("sales.create", "Ventas", "Registrar ventas", false),
-    VENTAS_ANULAR("sales.cancel", "Ventas", "Anular ventas", false),
+    VENTAS_ANULAR("sales.cancel", "Ventas", "Anular pedidos", true),
 
     COMPRAS_VER("purchases.view", "Compras", "Consultar compras y proveedores", false),
     COMPRAS_GESTIONAR("purchases.manage", "Compras", "Gestionar compras y proveedores", false),

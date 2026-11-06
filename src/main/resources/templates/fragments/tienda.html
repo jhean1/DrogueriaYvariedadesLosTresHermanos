@@ -4,6 +4,8 @@
 <!-- Cabecera común: fuentes, identidad y hojas de estilo -->
 <head th:fragment="cabeza(titulo, descripcion)">
   <meta charset="UTF-8">
+  <meta name="_csrf" th:content="${_csrf != null ? _csrf.token : ''}">
+  <meta name="_csrf_header" th:content="${_csrf != null ? _csrf.headerName : 'X-CSRF-TOKEN'}">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title th:text="${titulo} + ' · Los Tres Hermanos'">Los Tres Hermanos</title>
   <meta name="description" th:content="${descripcion}">
@@ -17,12 +19,11 @@
   <script th:src="@{/js/tema.js}"></script>
   <link rel="stylesheet" th:href="@{/css/design-system.css}">
   <link rel="stylesheet" th:href="@{/css/tienda.css}">
-  <script>
+  <script th:inline="javascript">
+    // Estado de la cuenta que envía el servidor con la página (la sesión vive en el servidor)
+    window.CUENTA_INICIAL = /*[[${cuentaInicial}]]*/ null;
     document.documentElement.classList.add('js');
-    try {
-      var s = JSON.parse(sessionStorage.getItem('lth_cliente') || 'null');
-      if (s && s.rol === 'cliente') document.documentElement.classList.add('con-sesion');
-    } catch (e) {}
+    if (window.CUENTA_INICIAL && window.CUENTA_INICIAL.cliente) document.documentElement.classList.add('con-sesion');
     // Pantalla de entrada: solo la primera vez en la sesión y si no se pidió menos movimiento
     try {
       if (!sessionStorage.getItem('lth_entrada') && !matchMedia('(prefers-reduced-motion: reduce)').matches) {

@@ -1,0 +1,28 @@
+@startuml resumen
+title Cómo se conectan las partes de la base de datos
+skinparam shadowing false
+skinparam roundCorner 10
+skinparam defaultFontName Arial
+skinparam dpi 110
+skinparam ArrowColor #3A4A6B
+skinparam nodesep 70
+skinparam ranksep 80
+skinparam rectangle {
+  BorderColor #10224D
+  FontSize 14
+}
+rectangle "**Catálogo**\nqué se vende" as catalogo #DFF3E4
+rectangle "**Compras y proveedores**\nqué se compra y a quién" as compras #EDE4F5
+rectangle "**Inventario**\nlotes, vencimientos y alertas" as inventario #DDF1F6
+rectangle "**Pedidos y ventas**\nen línea y en mostrador" as ventas #FBE3E4
+rectangle "**Clientes y suscripciones**\ncuentas y planes" as clientes #FBEFD5
+rectangle "**Caja**\ndinero de cada turno" as caja #F4F1DE
+rectangle "**Accesos y auditoría**\nempleados, permisos e historial" as accesos #E4E9F7
+catalogo --> inventario : cada presentación\ntiene sus lotes
+compras --> inventario : cada entrada\ncrea existencias
+catalogo --> ventas : se vende\nuna presentación
+ventas --> inventario : cada venta descuenta\nel lote que vence antes
+clientes --> ventas : el plan activo\nda el descuento
+ventas --> caja : las ventas de mostrador\nentran a la caja
+accesos ..> caja : registra qué empleado\nhizo cada operación
+@enduml

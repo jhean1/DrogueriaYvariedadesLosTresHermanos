@@ -19,24 +19,25 @@
     <div class="tarjeta pago-card entra" id="formulario-pago" style="--i:1">
       <h2>Método de pago</h2>
       <div class="metodos-grid" role="group" aria-label="Método de pago">
-        <button class="metodo-btn" data-metodo="nequi" type="button" onclick="seleccionarMetodo('nequi')"><span class="metodo-logo">N</span>Nequi</button>
-        <button class="metodo-btn" data-metodo="daviplata" type="button" onclick="seleccionarMetodo('daviplata')"><span class="metodo-logo">D</span>Daviplata</button>
-        <button class="metodo-btn" data-metodo="pse" type="button" onclick="seleccionarMetodo('pse')"><span class="metodo-logo">PSE</span>PSE</button>
-        <button class="metodo-btn" data-metodo="bancolombia" type="button" onclick="seleccionarMetodo('bancolombia')"><span class="metodo-logo">B</span>Bancolombia</button>
-        <button class="metodo-btn" data-metodo="tienda" type="button" onclick="seleccionarMetodo('tienda')"><span class="metodo-logo"><svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#tienda"/></svg></span>En tienda</button>
+        <button class="metodo-btn" data-metodo="nequi" type="button" aria-pressed="false" onclick="seleccionarMetodo('nequi')"><span class="metodo-logo">N</span>Nequi</button>
+        <button class="metodo-btn" data-metodo="daviplata" type="button" aria-pressed="false" onclick="seleccionarMetodo('daviplata')"><span class="metodo-logo">D</span>Daviplata</button>
+        <button class="metodo-btn" data-metodo="pse" type="button" aria-pressed="false" onclick="seleccionarMetodo('pse')"><span class="metodo-logo">PSE</span>PSE</button>
+        <button class="metodo-btn" data-metodo="bancolombia" type="button" aria-pressed="false" onclick="seleccionarMetodo('bancolombia')"><span class="metodo-logo">B</span>Bancolombia</button>
+        <button class="metodo-btn" data-metodo="tienda" type="button" aria-pressed="false" onclick="seleccionarMetodo('tienda')"><span class="metodo-logo"><svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#tienda"/></svg></span>En tienda</button>
       </div>
 
+      <div class="alerta alerta--info" id="aviso-medios" hidden><svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#tienda"/></svg><span>Por ahora los planes se pagan en efectivo en la droguería. Pronto podrás pagar en línea.</span></div>
       <div class="instrucciones-pago" id="instrucciones-pago"></div>
 
       <div class="tienda-info" id="tienda-info">
         <h3>Pago en tienda (efectivo)</h3>
-        <p>Acércate a la droguería con tu número de cédula o el correo con el que te registraste.</p>
-        <p>El administrador activará tu plan directamente desde el sistema.</p>
-        <p class="tienda-dato"><svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#ubicacion"/></svg> Cra. 7 #9-28, Arjona, Bolívar</p>
-        <p class="tienda-dato"><svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#reloj"/></svg> Lun–Sáb 7:00 am – 9:00 pm · Dom 8:00 am – 6:00 pm</p>
+        <p>Acércate a la droguería y di el correo con el que te registraste.</p>
+        <p>Al recibir el pago, el equipo activa tu plan en el sistema y el descuento queda listo en tu cuenta.</p>
+        <p class="tienda-dato"><svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#ubicacion"/></svg> Diagonal 52 50A-755, Arjona, Bolívar</p>
+        <p class="tienda-dato"><svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#reloj"/></svg> Lun–Vie 7:00 am – 9:00 pm · Sáb 7:00 am – 8:00 pm · Dom 8:00 am – 6:00 pm</p>
       </div>
 
-      <div id="campos-comprobante">
+      <div id="campos-comprobante" style="display:none">
         <h2 class="pago-subtitulo">Datos del comprobante</h2>
         <div class="rejilla-form">
           <div class="campo todo">
@@ -71,7 +72,7 @@
             <div class="upload-zona-texto">
               <svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#subir"/></svg>
               <span>Toca para subir una captura o foto</span>
-              <small>JPG, PNG o WEBP, máximo 5 MB</small>
+              <small>JPG, PNG o WEBP, máximo 3 MB</small>
             </div>
             <img id="foto-preview" class="upload-preview" alt="Vista previa del comprobante">
           </div>
@@ -103,12 +104,12 @@
     <div class="tarjeta pago-card pantalla-confirmacion" id="pantalla-confirmacion">
       <span class="recibo-check"><svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#check"/></svg></span>
       <h1>¡Solicitud enviada!</h1>
-      <p>Recibimos tu comprobante. El administrador lo verificará y activará tu plan en un plazo de <strong>24 horas hábiles</strong>.</p>
+      <p>Recibimos los datos de tu pago. La droguería los verifica y, si todo está bien, activa tu plan. Verás el estado en tu perfil.</p>
       <span class="insignia insignia--aviso"><svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#reloj"/></svg> Pendiente de verificación</span>
       <div class="confirm-detalle" id="confirm-detalle"></div>
       <div class="confirm-acciones">
         <a th:href="@{/}" class="btn btn--secundario">Ir al inicio</a>
-        <a th:href="@{/perfil}" class="btn btn--primario">Ver mi perfil</a>
+        <a href="/perfil#suscripcion" class="btn btn--primario">Ver mi plan</a>
       </div>
     </div>
   </main>
@@ -116,202 +117,147 @@
   <th:block th:replace="~{fragments/tienda :: carrito}"></th:block>
   <th:block th:replace="~{fragments/tienda :: scripts}"></th:block>
   <script>
-  // ══════════════════════════════════════════════════════
-  //  pago-suscripcion.js  (inline)
-  // ══════════════════════════════════════════════════════
-
-  // ── Datos por método ──────────────────────────────────
-  const INSTRUCCIONES = {
-    nequi: {
-      titulo: 'Cómo pagar con Nequi',
-      pasos: [
-        'Abre la app Nequi y ve a <strong>Enviar dinero</strong>.',
-        'Envía al número <span class="num-cuenta">322 456 7890</span> (Droguería LTH).',
-        'Guarda la notificación y copia el número de referencia.',
-        'Completa el formulario con los datos del comprobante.'
-      ]
-    },
-    daviplata: {
-      titulo: 'Cómo pagar con Daviplata',
-      pasos: [
-        'Abre la app Daviplata y elige <strong>Transferir</strong>.',
-        'Envía al número <span class="num-cuenta">322 456 7890</span>.',
-        'Toma captura de pantalla del recibo.',
-        'Completa el formulario con referencia y foto.'
-      ]
-    },
-    pse: {
-      titulo: 'Cómo pagar con PSE',
-      pasos: [
-        'Ingresa a tu banco en línea y selecciona PSE.',
-        'Busca <strong>Droguería LTH</strong> o usa el NIT <span class="num-cuenta">123456789-0</span>.',
-        'Confirma el monto y guarda el recibo con el número de aprobación.',
-        'Completa el formulario con referencia y número de aprobación.'
-      ]
-    },
-    bancolombia: {
-      titulo: 'Cómo pagar con Bancolombia',
-      pasos: [
-        'Ingresa a la App Bancolombia o sucursal virtual.',
-        'Transfiere a la cuenta <span class="num-cuenta">69712345678</span> (Ahorros).',
-        'Guarda el comprobante con número de aprobación.',
-        'Completa el formulario con referencia y número de aprobación.'
-      ]
-    }
+  // Pasos de cada medio. El número o la cuenta salen de la configuración de la
+  // droguería (servidor): aquí nunca se escribe un número de cuenta.
+  const PASOS = {
+    nequi:       ['Abre la app Nequi y elige <strong>Enviar plata</strong>.', 'Envía el valor del plan a {destino}.', 'Copia la referencia que aparece en la notificación.'],
+    daviplata:   ['Abre la app Daviplata y elige <strong>Pasar plata</strong>.', 'Envía el valor del plan a {destino}.', 'Toma una captura del recibo.'],
+    pse:         ['Paga con PSE en: {destino}.', 'Confirma el valor del plan y guarda el número de aprobación.'],
+    bancolombia: ['Desde la app Bancolombia, transfiere el valor del plan a {destino}.', 'Guarda el comprobante con el número de aprobación.']
   };
-
   const ICONOS_PLAN = { basico: 'brote', estandar: 'capsula', regular: 'hospital', premium: 'corona' };
+  const esc = Seguridad.esc;
+  const $ = (id) => document.getElementById(id);
 
-  let metodoActivo   = null;
-  let fotoBase64     = null;
-  let planSeleccionado = null;
+  let metodoActivo = null;
+  let fotoArchivo  = null;
+  let plan         = null;   // { nombre, precio, descuento } oficial del servidor
+  let medios       = [];
 
-  // ── Inicializar ───────────────────────────────────────
-  document.addEventListener('DOMContentLoaded', function() {
-    protegerRuta();
+  document.addEventListener('DOMContentLoaded', async function() {
     initAvatar({ perfilUrl: '/perfil', logoutUrl: '/' });
+    if (!protegerRuta()) return;
 
-    // Leer plan desde sessionStorage
+    const elegido = Seguridad.planCanonico(new URLSearchParams(location.search).get('plan'));
+    if (!elegido) { window.location.replace('/suscripciones'); return; }
+
     try {
-      const raw = sessionStorage.getItem('lth_plan_pago');
-      planSeleccionado = raw ? JSON.parse(raw) : null;
-    } catch(e) {}
-
-    // El precio y el descuento salen de la tabla oficial: sessionStorage es editable.
-    const planOficial = planSeleccionado
-      && Seguridad.planCanonico(planSeleccionado.nombre || planSeleccionado.plan);
-    if (!planOficial) {
-      // No hay plan válido → volver a suscripciones
-      window.location.href = '/suscripciones';
+      const [planes, mediosServidor] = await Promise.all([Api.pedir('/api/planes'), Api.pedir('/api/pagos/medios')]);
+      plan = planes.find(p => Seguridad.planCanonico(p.nombre)?.clave === elegido.clave);
+      medios = mediosServidor;
+    } catch (err) {
+      $('plan-desc').textContent = err.message;
+      $('formulario-pago').hidden = true;
       return;
     }
-    planSeleccionado = {
-      nombre: planOficial.clave, descuento: planOficial.descuento, precio: planOficial.precio
-    };
+    if (!plan) { window.location.replace('/suscripciones'); return; }
 
-    // Mostrar resumen
-    const nombre = planSeleccionado.nombre || planSeleccionado.plan || 'Plan';
-    const clave  = nombre.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'');
-    document.getElementById('plan-nombre').textContent = 'Plan ' + nombre;
-    document.getElementById('plan-desc').textContent   = planSeleccionado.descuento
-      ? `${planSeleccionado.descuento}% de descuento en todos los productos`
-      : 'Acceso a beneficios exclusivos';
-    document.getElementById('plan-precio').textContent =
-      planSeleccionado.precio ? '$' + Number(planSeleccionado.precio).toLocaleString('es-CO') : '–';
-    document.getElementById('plan-icono').innerHTML = Experiencia.icono(ICONOS_PLAN[clave] || 'estrella');
+    $('plan-nombre').textContent = 'Plan ' + plan.nombre;
+    $('plan-desc').textContent   = `${plan.descuento}% de descuento en todos los productos durante ${plan.dias} días`;
+    $('plan-precio').textContent = formatPrecio(plan.precio);
+    $('plan-icono').innerHTML    = Experiencia.icono(ICONOS_PLAN[elegido.clave] || 'estrella');
 
-    // Poner fecha de hoy por defecto
-    const hoy = new Date().toISOString().split('T')[0];
-    document.getElementById('campo-fecha').value = hoy;
-    document.getElementById('campo-fecha').max   = hoy;
+    // Solo se ofrecen los medios con cuenta publicada; en tienda siempre se puede pagar
+    document.querySelectorAll('.metodo-btn').forEach(b => {
+      b.hidden = b.dataset.metodo !== 'tienda' && !medios.some(m => m.codigo === b.dataset.metodo);
+    });
+    if (!medios.length) {
+      $('aviso-medios').hidden = false;
+      seleccionarMetodo('tienda');
+    }
 
-    // Listeners de completitud en tiempo real
-    ['campo-referencia','campo-fecha','campo-titular','campo-aprobacion','campo-nota']
-      .forEach(id => {
-        const el = document.getElementById(id);
-        if (el) el.addEventListener('input', actualizarCompletitud);
-      });
+    const hoy = new Date();
+    const local = (d) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+    const hace30 = new Date(hoy); hace30.setDate(hoy.getDate() - 30);
+    $('campo-fecha').value = local(hoy);
+    $('campo-fecha').max   = local(hoy);
+    $('campo-fecha').min   = local(hace30);
 
+    ['campo-referencia', 'campo-fecha', 'campo-titular', 'campo-aprobacion', 'campo-nota']
+      .forEach(id => $(id)?.addEventListener('input', actualizarCompletitud));
     actualizarCompletitud();
   });
 
   // ── Selector de método ────────────────────────────────
   function seleccionarMetodo(metodo) {
     metodoActivo = metodo;
-
-    // UI botones
     document.querySelectorAll('.metodo-btn').forEach(b => {
       b.classList.toggle('activo', b.dataset.metodo === metodo);
+      b.setAttribute('aria-pressed', String(b.dataset.metodo === metodo));
     });
-
-    const instrEl     = document.getElementById('instrucciones-pago');
-    const tiendaEl    = document.getElementById('tienda-info');
-    const camposEl    = document.getElementById('campos-comprobante');
-    const aprobGrupo  = document.getElementById('grupo-aprobacion');
-
+    const instrEl = $('instrucciones-pago');
     if (metodo === 'tienda') {
       instrEl.classList.remove('visible');
-      tiendaEl.classList.add('visible');
-      camposEl.style.display = 'none';
-    } else {
-      tiendaEl.classList.remove('visible');
-      camposEl.style.display = 'block';
-
-      // Instrucciones
-      const inst = INSTRUCCIONES[metodo];
-      if (inst) {
-        instrEl.innerHTML = `<strong>${inst.titulo}</strong>` +
-          inst.pasos.map((p,i) => `<p>${i+1}. ${p}</p>`).join('');
-        instrEl.classList.add('visible');
-      } else {
-        instrEl.classList.remove('visible');
-      }
-
-      // Número de aprobación solo para PSE y Bancolombia
-      aprobGrupo.style.display = (metodo === 'pse' || metodo === 'bancolombia') ? 'block' : 'none';
-
-      actualizarCompletitud();
+      $('tienda-info').classList.add('visible');
+      $('campos-comprobante').style.display = 'none';
+      return;
     }
+    const medio = medios.find(m => m.codigo === metodo);
+    if (!medio) return;
+    $('tienda-info').classList.remove('visible');
+    $('campos-comprobante').style.display = 'block';
+    const destino = `<span class="num-cuenta">${esc(medio.destino)}</span>${medio.titular ? ` (a nombre de ${esc(medio.titular)})` : ''}`;
+    instrEl.innerHTML = `<strong>Cómo pagar con ${esc(medio.nombre)}</strong>` +
+      PASOS[metodo].map((p, i) => `<p>${i + 1}. ${p.replace('{destino}', destino)}</p>`).join('') +
+      `<p>${PASOS[metodo].length + 1}. Escribe abajo los datos del comprobante.</p>`;
+    instrEl.classList.add('visible');
+    $('grupo-aprobacion').style.display = (metodo === 'pse' || metodo === 'bancolombia') ? 'block' : 'none';
+    actualizarCompletitud();
   }
 
-  // ── Cargar foto comprobante ───────────────────────────
+  // ── Foto del comprobante ──────────────────────────────
   function cargarFoto(input) {
     const file = input.files[0];
     if (!file) return;
     if (!['image/png', 'image/jpeg', 'image/webp'].includes(file.type)) {
-      alert('Formato no permitido. Usa una imagen JPG, PNG o WEBP.');
+      Toast.mostrar('Formato no permitido. Usa una imagen JPG, PNG o WEBP.');
       input.value = '';
       return;
     }
-    if (file.size > 5 * 1024 * 1024) {
-      alert('La imagen es muy grande. Máximo 5 MB.');
+    if (file.size > 3 * 1024 * 1024) {
+      Toast.mostrar('La imagen es muy grande. Máximo 3 MB.');
       input.value = '';
       return;
     }
+    fotoArchivo = file;
     const reader = new FileReader();
     reader.onload = function(e) {
-      fotoBase64 = e.target.result;
-      const preview  = document.getElementById('foto-preview');
-      const zona     = document.getElementById('upload-zona');
-      const textoZona = zona.querySelector('.upload-zona-texto');
-      preview.src   = fotoBase64;
+      const preview = $('foto-preview');
+      const zona = $('upload-zona');
+      preview.src = e.target.result;
       preview.style.display = 'block';
       zona.classList.add('tiene-foto');
-      if (textoZona) textoZona.style.display = 'none';
+      const texto = zona.querySelector('.upload-zona-texto');
+      if (texto) texto.style.display = 'none';
       actualizarCompletitud();
     };
     reader.readAsDataURL(file);
   }
 
-  // ── Lógica de completitud ─────────────────────────────
+  // ── Completitud ───────────────────────────────────────
+  function valores() {
+    return {
+      referencia: $('campo-referencia').value.trim(),
+      fecha:      $('campo-fecha').value,
+      titular:    $('campo-titular').value.trim(),
+      aprobacion: $('campo-aprobacion')?.value.trim() || '',
+      nota:       $('campo-nota')?.value.trim() || ''
+    };
+  }
+
   function actualizarCompletitud() {
-    const referencia = document.getElementById('campo-referencia').value.trim();
-    const fecha      = document.getElementById('campo-fecha').value;
-    const titular    = document.getElementById('campo-titular').value.trim();
-    const aprobacion = document.getElementById('campo-aprobacion')?.value.trim() || '';
-    const nota       = document.getElementById('campo-nota')?.value.trim() || '';
-
-    // Verificación adicional: foto, aprobación o nota
-    const tieneVerif = fotoBase64 || aprobacion || nota;
-
-    // Mostrar / ocultar nota alternativa
-    const notaDiv = document.getElementById('nota-alternativa');
-    const necesitaNota = !fotoBase64 && !aprobacion;
-    if (notaDiv) notaDiv.classList.toggle('visible', necesitaNota);
-
-    // Items de completitud
-    setComp('ci-referencia', !!referencia);
-    setComp('ci-fecha',      !!fecha);
-    setComp('ci-titular',    !!titular);
+    const v = valores();
+    const tieneVerif = fotoArchivo || v.aprobacion || v.nota;
+    $('nota-alternativa')?.classList.toggle('visible', !fotoArchivo && !v.aprobacion);
+    setComp('ci-referencia', !!v.referencia);
+    setComp('ci-fecha',      !!v.fecha);
+    setComp('ci-titular',    !!v.titular);
     setComp('ci-verificacion', !!tieneVerif);
-
-    // Habilitar botón solo si todo ok
-    const todo = referencia && fecha && titular && tieneVerif;
-    document.getElementById('btn-enviar').disabled = !todo;
+    $('btn-enviar').disabled = !(metodoActivo && metodoActivo !== 'tienda' && v.referencia && v.fecha && v.titular && tieneVerif);
   }
 
   function setComp(id, ok) {
-    const el = document.getElementById(id);
+    const el = $(id);
     if (!el) return;
     el.classList.toggle('ok', ok);
     el.classList.toggle('error', !ok);
@@ -319,99 +265,52 @@
   }
 
   // ── Enviar solicitud ──────────────────────────────────
-  function enviarSolicitud() {
-    const referencia = document.getElementById('campo-referencia').value.trim();
-    const fecha      = document.getElementById('campo-fecha').value;
-    const titular    = document.getElementById('campo-titular').value.trim();
-    const aprobacion = document.getElementById('campo-aprobacion')?.value.trim() || '';
-    const nota       = document.getElementById('campo-nota')?.value.trim() || '';
+  async function enviarSolicitud() {
+    const v = valores();
+    if (!metodoActivo || metodoActivo === 'tienda') { Toast.mostrar('Elige cómo hiciste el pago.'); return; }
+    if (!v.referencia || !v.fecha || !v.titular) { Toast.mostrar('Completa los campos obligatorios.'); return; }
+    if (!fotoArchivo && !v.aprobacion && !v.nota) { Toast.mostrar('Adjunta la foto, el número de aprobación o una nota.'); return; }
 
-    if (!metodoActivo) { alert('Selecciona un método de pago.'); return; }
-    if (!referencia || !fecha || !titular) { alert('Completa los campos obligatorios.'); return; }
-    if (!fotoBase64 && !aprobacion && !nota) {
-      alert('Debes adjuntar foto, número de aprobación o una nota descriptiva.'); return;
-    }
+    const datos = new FormData();
+    datos.append('plan', plan.nombre);
+    datos.append('metodo', metodoActivo);
+    datos.append('referencia', v.referencia);
+    datos.append('fechaPago', v.fecha);
+    datos.append('titular', v.titular);
+    if (v.aprobacion) datos.append('aprobacion', v.aprobacion);
+    if (v.nota) datos.append('nota', v.nota);
+    if (fotoArchivo) datos.append('comprobante', fotoArchivo);
 
-    // Armar solicitud
-    const sesion = JSON.parse(sessionStorage.getItem('lth_cliente') || 'null');
-    const solicitud = {
-      id: 'SOL-' + Date.now(),
-      clienteId    : sesion?.id    || 'sin-id',
-      clienteNombre: sesion?.nombre || 'Cliente',
-      clienteCorreo: sesion?.correo || '',
-      plan         : planSeleccionado.nombre || planSeleccionado.plan,
-      descuento    : planSeleccionado.descuento,
-      precio       : planSeleccionado.precio,
-      metodo       : metodoActivo,
-      referencia,
-      fecha,
-      titular,
-      aprobacion   : aprobacion || null,
-      nota         : nota || null,
-      foto         : fotoBase64 || null,
-      estado       : 'pendiente',
-      fechaSolicitud: new Date().toISOString()
-    };
-
-    // Guardar en localStorage (admin lo leerá)
+    const btn = $('btn-enviar');
+    btn.disabled = true;
+    btn.setAttribute('aria-busy', 'true');
     try {
-      const lista = JSON.parse(localStorage.getItem('lth_solicitudes') || '[]');
-      lista.push(solicitud);
-      localStorage.setItem('lth_solicitudes', JSON.stringify(lista));
-    } catch(e) {
-      // Sin esto, el cliente veía "solicitud enviada" aunque no se hubiera guardado.
-      alert('No se pudo guardar tu solicitud. Si adjuntaste una foto, prueba con una imagen más liviana.');
-      return;
+      const r = await Api.pedir('/api/suscripciones/solicitud', { metodo: 'POST', formulario: datos });
+      mostrarConfirmacion(r.solicitud, v);
+    } catch (err) {
+      btn.disabled = false;
+      btn.removeAttribute('aria-busy');
+      Toast.mostrar(err.message);
     }
-
-    // Marcar plan como pendiente en suscripción
-    try {
-      const sus = JSON.parse(localStorage.getItem('lth_suscripcion') || 'null');
-      if (!sus) {
-        localStorage.setItem('lth_suscripcion', JSON.stringify({
-          plan     : planSeleccionado.nombre || planSeleccionado.plan,
-          descuento: planSeleccionado.descuento,
-          precio   : planSeleccionado.precio,
-          estado   : 'pendiente',
-          solicitudId: solicitud.id
-        }));
-      }
-    } catch(e) {}
-
-    // Limpiar plan de sesión
-    try { sessionStorage.removeItem('lth_plan_pago'); } catch(e) {}
-
-    // Mostrar confirmación
-    mostrarConfirmacion(solicitud);
   }
 
-  // ── Pantalla de confirmación ──────────────────────────
-  function mostrarConfirmacion(sol) {
-    document.getElementById('formulario-pago').style.display  = 'none';
-    document.getElementById('plan-resumen').style.display     = 'none';
-
-    const nombres = {
-      nequi: 'Nequi', daviplata: 'Daviplata',
-      pse: 'PSE', bancolombia: 'Bancolombia', tienda: 'En tienda'
-    };
-
-    const esc = Seguridad.esc;
-    document.getElementById('confirm-detalle').innerHTML = `
-      <div class="confirm-detalle-fila"><span>Plan</span><strong>Plan ${esc(sol.plan)}</strong></div>
-      <div class="confirm-detalle-fila"><span>Precio</span><strong>$${esc(Number(sol.precio).toLocaleString('es-CO'))} / mes</strong></div>
-      <div class="confirm-detalle-fila"><span>Método</span><strong>${esc(nombres[sol.metodo] || sol.metodo)}</strong></div>
-      <div class="confirm-detalle-fila"><span>Referencia</span><strong>${esc(sol.referencia)}</strong></div>
-      <div class="confirm-detalle-fila"><span>Fecha del pago</span><strong>${esc(sol.fecha)}</strong></div>
-      <div class="confirm-detalle-fila"><span>Titular</span><strong>${esc(sol.titular)}</strong></div>
-      <div class="confirm-detalle-fila"><span>N.° de solicitud</span><strong>${esc(sol.id)}</strong></div>
-    `;
-
-    const confEl = document.getElementById('pantalla-confirmacion');
+  function mostrarConfirmacion(numero, v) {
+    $('formulario-pago').style.display = 'none';
+    $('plan-resumen').style.display = 'none';
+    const medio = medios.find(m => m.codigo === metodoActivo);
+    const fila = (k, val) => `<div class="confirm-detalle-fila"><span>${k}</span><strong>${esc(val)}</strong></div>`;
+    $('confirm-detalle').innerHTML =
+      fila('Plan', 'Plan ' + plan.nombre) +
+      fila('Valor', formatPrecio(plan.precio)) +
+      fila('Medio de pago', medio ? medio.nombre : metodoActivo) +
+      fila('Referencia', v.referencia) +
+      fila('Fecha del pago', formatFecha(v.fecha)) +
+      fila('Titular', v.titular) +
+      fila('N.° de solicitud', String(numero));
+    const confEl = $('pantalla-confirmacion');
     confEl.style.display = 'block';
     confEl.classList.add('visible');
-
-    // Scroll al inicio
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    window.scrollTo({ top: 0, behavior: Experiencia.sinMovimiento ? 'auto' : 'smooth' });
   }
   </script>
 </body>

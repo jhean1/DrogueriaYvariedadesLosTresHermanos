@@ -24,6 +24,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest(properties = {
+    "app.db.url=",
     "app.admin.correo=dueno@prueba.test",
     "app.admin.clave=clave-del-propietario",
     "app.equipo[0].correo=caja@prueba.test",
@@ -49,10 +50,15 @@ class ProductosTests {
     void elCatalogoInicialConservaLosDatosExistentes() {
         // Un catálogo nuevo: las demás pruebas de la clase modifican el compartido
         CatalogoProductos inicial = new CatalogoProductos("target/test-datos/sin-crear-" + java.util.UUID.randomUUID() + ".properties");
-        assertEquals(15, inicial.visibles(CatalogoProductos.MEDICAMENTO).size());
-        assertEquals(11, inicial.visibles(CatalogoProductos.VARIEDAD).size());
-        assertEquals(115, inicial.visibles(CatalogoProductos.MEDICAMENTO).stream().mapToInt(p -> p.presentaciones().size()).sum());
-        assertTrue(inicial.visibles(CatalogoProductos.MEDICAMENTO).stream().filter(p -> p.nombre().equals("Clonazepam")).findFirst().orElseThrow().formula());
+        // Catálogo verificado contra el INVIMA (docs/base-de-datos/datos/catalogo-verificado.csv)
+        assertEquals(489, inicial.todos().size());
+        assertEquals(252, inicial.visibles(CatalogoProductos.MEDICAMENTO).size());
+        assertEquals(223, inicial.visibles(CatalogoProductos.VARIEDAD).size());
+        assertEquals(258, inicial.visibles(CatalogoProductos.MEDICAMENTO).stream().mapToInt(p -> p.presentaciones().size()).sum());
+        // Los medicamentos de control especial exigen fórmula y no se ofrecen en la tienda en línea
+        var clonazepam = inicial.todos().stream().filter(p -> p.nombre().startsWith("Clonazepam")).findFirst().orElseThrow();
+        assertTrue(clonazepam.formula());
+        assertFalse(clonazepam.activo());
     }
 
     @Test
@@ -63,7 +69,7 @@ class ProductosTests {
             .andExpect(content().string(containsString("Acetaminofén")));
 
         mvc.perform(multipart("/admin/productos/nuevo").with(csrf()).with(user("dueno@prueba.test"))
-                .param("tipo", "variedad").param("nombre", "Prueba</script><img src=x>").param("categoria", "cuidado")
+                .param("tipo", "variedad").param("nombre", "Prueba</script><img src=x>").param("categoria", "aseo-personal")
                 .param("disponibilidad", "sin-dato").param("precio", "1000"))
             .andExpect(redirectedUrl("/admin/productos"));
 
@@ -103,7 +109,7 @@ class ProductosTests {
     void creaEditaYRetiraUnMedicamento() throws Exception {
         int antes = catalogo.visibles(CatalogoProductos.MEDICAMENTO).size();
         mvc.perform(multipart("/admin/productos/nuevo").with(csrf()).with(user("dueno@prueba.test"))
-                .param("tipo", "medicamento").param("nombre", "Producto de prueba").param("categoria", "otros")
+                .param("tipo", "medicamento").param("nombre", "Producto de prueba").param("categoria", "analgesicos")
                 .param("disponibilidad", "disponible").param("formula", "true")
                 .param("presId", "").param("presTipo", "Caja x10").param("presConc", "5mg").param("presMarca", "Genérico").param("presPrecio", "$ 4.500"))
             .andExpect(redirectedUrl("/admin/productos"));

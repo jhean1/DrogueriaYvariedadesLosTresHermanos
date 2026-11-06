@@ -1,0 +1,818 @@
+@startuml completo
+title Modelo completo: todas las tablas, campos y relaciones
+hide methods
+hide stereotype
+hide circle
+skinparam shadowing false
+skinparam roundCorner 6
+skinparam defaultFontName Arial
+skinparam dpi 110
+skinparam ArrowColor #3A4A6B
+skinparam ArrowThickness 1.1
+skinparam nodesep 45
+skinparam ranksep 55
+skinparam class {
+  BackgroundColor White
+  BorderColor #10224D
+  FontSize 13
+  AttributeFontSize 12
+}
+skinparam package {
+  BorderColor #8A94A8
+  FontSize 16
+  FontStyle bold
+  BackgroundColor transparent
+}
+package "Accesos y auditoría" {
+  entity "**rol**\nRoles del equipo de trabajo" as rol #E4E9F7 {
+    {field} **id** <color:#3A4A6B>[clave primaria]</color>
+    {field} Identificador del rol <color:#555555>(número entero; obligatorio)</color>
+    --
+    {field} **codigo_rol** <color:#3A4A6B>[no se repite]</color>
+    {field} Código interno del rol, por ejemplo cajero <color:#555555>(texto, hasta 40 caracteres; obligatorio)</color>
+    {field} **nombre_rol**
+    {field} Nombre visible del rol <color:#555555>(texto, hasta 80 caracteres; obligatorio)</color>
+    {field} **descripcion_rol**
+    {field} Responsabilidades del rol <color:#555555>(texto, hasta 255 caracteres; opcional)</color>
+    {field} **rol_protegido**
+    {field} Si el rol está protegido contra cambios <color:#555555>(sí o no; obligatorio)</color>
+  }
+  entity "**permiso**\nAcciones que se pueden autorizar en el\npanel" as permiso #E4E9F7 {
+    {field} **id** <color:#3A4A6B>[clave primaria]</color>
+    {field} Identificador del permiso <color:#555555>(número entero; obligatorio)</color>
+    --
+    {field} **codigo_permiso** <color:#3A4A6B>[no se repite]</color>
+    {field} Código que usa la aplicación, por ejemplo products.view <color:#555555>(texto, hasta 50 caracteres; obligatorio)</color>
+    {field} **modulo_permiso**
+    {field} Módulo al que pertenece el permiso <color:#555555>(texto, hasta 40 caracteres; obligatorio)</color>
+    {field} **descripcion_permiso**
+    {field} Qué permite hacer <color:#555555>(texto, hasta 255 caracteres; obligatorio)</color>
+    {field} **permiso_operativo**
+    {field} Si ya existe en la aplicación una función real detrás del permiso <color:#555555>(sí o no; obligatorio)</color>
+  }
+  entity "**rol_permiso**\nPermisos que tiene cada rol" as rol_permiso #E4E9F7 {
+    {field} **rol_id** <color:#3A4A6B>[clave primaria; clave foránea → rol]</color>
+    {field} Rol que recibe el permiso <color:#555555>(número entero; obligatorio)</color>
+    {field} **permiso_id** <color:#3A4A6B>[clave primaria; clave foránea → permiso]</color>
+    {field} Permiso que se le otorga al rol <color:#555555>(número entero; obligatorio)</color>
+  }
+  entity "**usuario**\nCuentas de los empleados de la droguería" as usuario #E4E9F7 {
+    {field} **id** <color:#3A4A6B>[clave primaria]</color>
+    {field} Identificador del empleado <color:#555555>(número entero; obligatorio)</color>
+    --
+    {field} **rol_id** <color:#3A4A6B>[clave foránea → rol]</color>
+    {field} Rol que tiene asignado el empleado <color:#555555>(número entero; obligatorio)</color>
+    {field} **nombre_usuario**
+    {field} Nombre completo del empleado <color:#555555>(texto, hasta 120 caracteres; obligatorio)</color>
+    {field} **correo_usuario** <color:#3A4A6B>[no se repite]</color>
+    {field} Correo con el que inicia sesión <color:#555555>(texto, hasta 120 caracteres; obligatorio)</color>
+    {field} **clave_hash**
+    {field} Contraseña cifrada; nunca se guarda en texto plano <color:#555555>(texto, hasta 255 caracteres; obligatorio)</color>
+    {field} **usuario_activo**
+    {field} Si puede iniciar sesión <color:#555555>(sí o no; obligatorio)</color>
+    {field} **usuario_protegido**
+    {field} Si es una cuenta protegida contra cambios, como la principal <color:#555555>(sí o no; obligatorio)</color>
+    {field} **fecha_creacion**
+    {field} Cuándo se creó la cuenta <color:#555555>(fecha y hora; obligatorio)</color>
+  }
+  entity "**usuario_permiso**\nExcepciones de permisos por empleado" as usuario_permiso #E4E9F7 {
+    {field} **usuario_id** <color:#3A4A6B>[clave primaria; clave foránea → usuario]</color>
+    {field} Empleado al que aplica la excepción <color:#555555>(número entero; obligatorio)</color>
+    {field} **permiso_id** <color:#3A4A6B>[clave primaria; clave foránea → permiso]</color>
+    {field} Permiso que se agrega o se quita <color:#555555>(número entero; obligatorio)</color>
+    --
+    {field} **tipo_excepcion**
+    {field} Si se agrega o se quita respecto a lo que da el rol (obligatorio)
+    {field} <color:#555555>una de estas opciones: concedido, revocado</color>
+  }
+  entity "**auditoria**\nHistorial de acciones sensibles; no se\npuede modificar ni borrar" as auditoria #E4E9F7 {
+    {field} **id** <color:#3A4A6B>[clave primaria]</color>
+    {field} Identificador del evento <color:#555555>(número entero; obligatorio)</color>
+    --
+    {field} **usuario_id** <color:#3A4A6B>[clave foránea → usuario]</color>
+    {field} Empleado que actuó, si se identificó <color:#555555>(número entero; opcional)</color>
+    {field} **actor_auditoria**
+    {field} Correo o nombre con el que se registró la acción <color:#555555>(texto, hasta 120 caracteres; obligatorio)</color>
+    {field} **accion_auditoria**
+    {field} Acción realizada, por ejemplo Producto modificado <color:#555555>(texto, hasta 120 caracteres; obligatorio)</color>
+    {field} **detalle_auditoria**
+    {field} Información adicional sobre la acción <color:#555555>(texto largo; opcional)</color>
+    {field} **fecha_auditoria**
+    {field} Fecha y hora en que ocurrió <color:#555555>(fecha y hora; obligatorio)</color>
+  }
+  entity "**configuracion**\nAjustes generales del sistema" as configuracion #E4E9F7 {
+    {field} **clave_configuracion** <color:#3A4A6B>[clave primaria]</color>
+    {field} Nombre del ajuste, por ejemplo costo_domicilio <color:#555555>(texto, hasta 60 caracteres; obligatorio)</color>
+    --
+    {field} **valor_configuracion**
+    {field} Valor que tiene el ajuste <color:#555555>(texto, hasta 255 caracteres; obligatorio)</color>
+    {field} **descripcion_configuracion**
+    {field} Para qué sirve el ajuste <color:#555555>(texto, hasta 255 caracteres; opcional)</color>
+    {field} **actualizado_por_id** <color:#3A4A6B>[clave foránea → usuario]</color>
+    {field} Último empleado que lo cambió <color:#555555>(número entero; opcional)</color>
+    {field} **fecha_actualizacion**
+    {field} Fecha y hora del último cambio <color:#555555>(fecha y hora; obligatorio)</color>
+  }
+}
+package "Clientes y suscripciones" {
+  entity "**cliente**\nClientes con cuenta en la tienda" as cliente #FBEFD5 {
+    {field} **id** <color:#3A4A6B>[clave primaria]</color>
+    {field} Identificador del cliente <color:#555555>(número entero; obligatorio)</color>
+    --
+    {field} **nombre_cliente**
+    {field} Nombre completo del cliente <color:#555555>(texto, hasta 120 caracteres; obligatorio)</color>
+    {field} **correo_cliente** <color:#3A4A6B>[no se repite]</color>
+    {field} Correo de acceso; se borra al eliminar la cuenta <color:#555555>(texto, hasta 120 caracteres; opcional)</color>
+    {field} **telefono_cliente**
+    {field} Teléfono de contacto; se borra al eliminar la cuenta <color:#555555>(texto, hasta 20 caracteres; opcional)</color>
+    {field} **direccion_cliente**
+    {field} Dirección de entrega; se borra al eliminar la cuenta <color:#555555>(texto, hasta 255 caracteres; opcional)</color>
+    {field} **clave_hash**
+    {field} Contraseña cifrada; se borra al eliminar la cuenta <color:#555555>(texto, hasta 255 caracteres; opcional)</color>
+    {field} **foto_cliente**
+    {field} Ubicación de la foto de perfil <color:#555555>(texto, hasta 255 caracteres; opcional)</color>
+    {field} **cuenta_activa**
+    {field} Falso cuando la cuenta fue eliminada <color:#555555>(sí o no; obligatorio)</color>
+    {field} **creado_por_id** <color:#3A4A6B>[clave foránea → usuario]</color>
+    {field} Empleado que creó la cuenta, si no se registró el cliente <color:#555555>(número entero; opcional)</color>
+    {field} **fecha_autorizacion_datos**
+    {field} Cuándo autorizó el tratamiento de sus datos (Ley 1581 de 2012) <color:#555555>(fecha y hora; obligatorio)</color>
+    {field} **version_politica**
+    {field} Versión de la política que aceptó. <color:#B00020>**POR REVISAR**</color>: la página todavía no numera su política <color:#555555>(texto, hasta 20 caracteres; obligatorio)</color>
+    {field} **fecha_registro**
+    {field} Cuándo se creó la cuenta <color:#555555>(fecha y hora; obligatorio)</color>
+    {field} **fecha_eliminacion**
+    {field} Cuándo se eliminó la cuenta <color:#555555>(fecha y hora; opcional)</color>
+  }
+  entity "**favorito**\nProductos favoritos de cada cliente" as favorito #FBEFD5 {
+    {field} **cliente_id** <color:#3A4A6B>[clave primaria; clave foránea → cliente]</color>
+    {field} Cliente que lo guardó <color:#555555>(número entero; obligatorio)</color>
+    {field} **producto_id** <color:#3A4A6B>[clave primaria; clave foránea → producto]</color>
+    {field} Producto guardado <color:#555555>(número entero; obligatorio)</color>
+    --
+    {field} **fecha_favorito**
+    {field} Cuándo se guardó <color:#555555>(fecha y hora; obligatorio)</color>
+  }
+  entity "**recuperacion_clave**\nCódigos temporales para recuperar la\ncontraseña" as recuperacion_clave #FBEFD5 {
+    {field} **id** <color:#3A4A6B>[clave primaria]</color>
+    {field} Identificador de la solicitud <color:#555555>(número entero; obligatorio)</color>
+    --
+    {field} **cliente_id** <color:#3A4A6B>[clave foránea → cliente]</color>
+    {field} Cliente que pidió recuperar la contraseña <color:#555555>(número entero; obligatorio)</color>
+    {field} **token_hash** <color:#3A4A6B>[no se repite]</color>
+    {field} Código de recuperación cifrado <color:#555555>(texto, hasta 255 caracteres; obligatorio)</color>
+    {field} **fecha_expiracion**
+    {field} Hasta cuándo sirve el código <color:#555555>(fecha y hora; obligatorio)</color>
+    {field} **fecha_uso**
+    {field} Cuándo se usó; un código solo sirve una vez <color:#555555>(fecha y hora; opcional)</color>
+    {field} **fecha_creacion**
+    {field} Cuándo se solicitó <color:#555555>(fecha y hora; obligatorio)</color>
+  }
+  entity "**plan_suscripcion**\nPlanes de suscripción disponibles" as plan_suscripcion #FBEFD5 {
+    {field} **id** <color:#3A4A6B>[clave primaria]</color>
+    {field} Identificador del plan <color:#555555>(número entero; obligatorio)</color>
+    --
+    {field} **nombre_plan** <color:#3A4A6B>[no se repite]</color>
+    {field} Nombre del plan <color:#555555>(texto, hasta 40 caracteres; obligatorio)</color>
+    {field} **descripcion_plan**
+    {field} Qué ofrece el plan <color:#555555>(texto, hasta 255 caracteres; opcional)</color>
+    {field} **precio_mensual**
+    {field} Precio vigente en pesos <color:#555555>(valor en pesos; obligatorio)</color>
+    {field} **descuento_porcentaje**
+    {field} Descuento en la tienda durante la vigencia <color:#555555>(número entero; obligatorio)</color>
+    {field} **duracion_dias**
+    {field} Días de vigencia <color:#555555>(número entero; obligatorio)</color>
+    {field} **domicilio_prioritario**
+    {field} Si incluye domicilio prioritario. <color:#B00020>**POR REVISAR**</color>: la página no define en qué consiste la prioridad <color:#555555>(sí o no; obligatorio)</color>
+    {field} **ofertas_anticipadas**
+    {field} Incluye ofertas anticipadas <color:#555555>(sí o no; obligatorio)</color>
+    {field} **soporte_whatsapp**
+    {field} Incluye soporte por WhatsApp <color:#555555>(sí o no; obligatorio)</color>
+    {field} **acceso_exclusivo**
+    {field} Si incluye acceso exclusivo. <color:#B00020>**POR REVISAR**</color>: la página dice unas veces ofertas y otras lanzamientos <color:#555555>(sí o no; obligatorio)</color>
+    {field} **plan_activo**
+    {field} Si se puede comprar <color:#555555>(sí o no; obligatorio)</color>
+  }
+  entity "**solicitud_suscripcion**\nCompras de un plan, en línea o en el\nlocal, con su revisión" as solicitud_suscripcion #FBEFD5 {
+    {field} **id** <color:#3A4A6B>[clave primaria]</color>
+    {field} Identificador de la solicitud <color:#555555>(número entero; obligatorio)</color>
+    --
+    {field} **cliente_id** <color:#3A4A6B>[clave foránea → cliente]</color>
+    {field} Cliente que compra el plan <color:#555555>(número entero; obligatorio)</color>
+    {field} **plan_id** <color:#3A4A6B>[clave foránea → plan_suscripcion]</color>
+    {field} Plan que el cliente quiere comprar <color:#555555>(número entero; obligatorio)</color>
+    {field} **metodo_pago_id** <color:#3A4A6B>[clave foránea → metodo_pago]</color>
+    {field} Forma de pago usada <color:#555555>(número entero; obligatorio)</color>
+    {field} **origen_solicitud**
+    {field} Si se compró en línea o en el local (obligatorio)
+    {field} <color:#555555>una de estas opciones: web, tienda</color>
+    {field} **monto_pagado**
+    {field} Valor que se pagó <color:#555555>(valor en pesos; obligatorio)</color>
+    {field} **referencia_pago**
+    {field} Número de referencia de la transacción <color:#555555>(texto, hasta 60 caracteres; opcional)</color>
+    {field} **numero_aprobacion**
+    {field} Número de aprobación del banco <color:#555555>(texto, hasta 60 caracteres; opcional)</color>
+    {field} **titular_pago**
+    {field} Titular de la cuenta que pagó <color:#555555>(texto, hasta 120 caracteres; opcional)</color>
+    {field} **fecha_pago**
+    {field} Día en que se hizo el pago <color:#555555>(fecha; opcional)</color>
+    {field} **comprobante_pago**
+    {field} Ubicación de la imagen del comprobante de pago <color:#555555>(texto, hasta 255 caracteres; opcional)</color>
+    {field} **nota_solicitud**
+    {field} Observación del cliente o del empleado <color:#555555>(texto, hasta 255 caracteres; opcional)</color>
+    {field} **estado_solicitud**
+    {field} Resultado de la revisión (obligatorio)
+    {field} <color:#555555>una de estas opciones: pendiente, aprobado, rechazado</color>
+    {field} **motivo_rechazo**
+    {field} Por qué se rechazó <color:#555555>(texto, hasta 255 caracteres; opcional)</color>
+    {field} **revisado_por_id** <color:#3A4A6B>[clave foránea → usuario]</color>
+    {field} Empleado que revisó <color:#555555>(número entero; opcional)</color>
+    {field} **fecha_revision**
+    {field} Cuándo se revisó <color:#555555>(fecha y hora; opcional)</color>
+    {field} **fecha_solicitud**
+    {field} Cuándo se envió <color:#555555>(fecha y hora; obligatorio)</color>
+  }
+  entity "**suscripcion**\nPlanes contratados por los clientes y su\nvigencia" as suscripcion #FBEFD5 {
+    {field} **id** <color:#3A4A6B>[clave primaria]</color>
+    {field} Identificador de la suscripción <color:#555555>(número entero; obligatorio)</color>
+    --
+    {field} **cliente_id** <color:#3A4A6B>[clave foránea → cliente]</color>
+    {field} Cliente titular de la suscripción <color:#555555>(número entero; obligatorio)</color>
+    {field} **plan_id** <color:#3A4A6B>[clave foránea → plan_suscripcion]</color>
+    {field} Plan que compró el cliente <color:#555555>(número entero; obligatorio)</color>
+    {field} **solicitud_id** <color:#3A4A6B>[clave foránea → solicitud_suscripcion; no se repite]</color>
+    {field} Solicitud aprobada que la originó <color:#555555>(número entero; obligatorio)</color>
+    {field} **descuento_porcentaje**
+    {field} Descuento acordado al comprar, aunque el plan cambie después <color:#555555>(número entero; obligatorio)</color>
+    {field} **fecha_inicio**
+    {field} Inicio de la vigencia <color:#555555>(fecha y hora; obligatorio)</color>
+    {field} **fecha_vencimiento**
+    {field} Fin de la vigencia <color:#555555>(fecha y hora; obligatorio)</color>
+    {field} **estado_suscripcion**
+    {field} Situación del plan; reemplazada significa que se renovó (obligatorio)
+    {field} <color:#555555>una de estas opciones: activa, vencida, cancelada, reemplazada</color>
+    {field} **fecha_cancelacion**
+    {field} Cuándo se canceló <color:#555555>(fecha y hora; opcional)</color>
+    {field} **cliente_con_plan_activo** <color:#3A4A6B>[no se repite; la calcula MySQL]</color>
+    {field} Se calcula solo: impide dos planes activos para un cliente <color:#555555>(número entero; opcional)</color>
+  }
+  entity "**metodo_pago**\nFormas de pago aceptadas" as metodo_pago #FBEFD5 {
+    {field} **id** <color:#3A4A6B>[clave primaria]</color>
+    {field} Identificador del método <color:#555555>(número entero; obligatorio)</color>
+    --
+    {field} **codigo_metodo_pago** <color:#3A4A6B>[no se repite]</color>
+    {field} Código interno del método, por ejemplo nequi <color:#555555>(texto, hasta 30 caracteres; obligatorio)</color>
+    {field} **nombre_metodo_pago**
+    {field} Nombre que se muestra en la página <color:#555555>(texto, hasta 60 caracteres; obligatorio)</color>
+    {field} **numero_cuenta**
+    {field} Número de cuenta donde se recibe el pago <color:#555555>(texto, hasta 60 caracteres; opcional)</color>
+    {field} **titular_cuenta**
+    {field} Titular de la cuenta donde se recibe el pago <color:#555555>(texto, hasta 120 caracteres; opcional)</color>
+    {field} **metodo_pago_activo**
+    {field} Si está disponible para pagar <color:#555555>(sí o no; obligatorio)</color>
+  }
+}
+package "Catálogo" {
+  entity "**categoria**\nCategorías y subcategorías de productos" as categoria #DFF3E4 {
+    {field} **id** <color:#3A4A6B>[clave primaria]</color>
+    {field} Identificador de la categoría <color:#555555>(número entero; obligatorio)</color>
+    --
+    {field} **codigo_categoria** <color:#3A4A6B>[no se repite]</color>
+    {field} Código interno, por ejemplo analgesicos <color:#555555>(texto, hasta 60 caracteres; obligatorio)</color>
+    {field} **nombre_categoria**
+    {field} Nombre que se muestra en la página <color:#555555>(texto, hasta 80 caracteres; obligatorio)</color>
+    {field} **tipo_categoria**
+    {field} Tipo de productos que agrupa (obligatorio)
+    {field} <color:#555555>una de estas opciones: medicamento, variedad</color>
+    {field} **categoria_padre_id** <color:#3A4A6B>[clave foránea → categoria]</color>
+    {field} Categoría superior; vacía si es principal <color:#555555>(número entero; opcional)</color>
+  }
+  entity "**producto**\nMedicamentos y variedades" as producto #DFF3E4 {
+    {field} **id** <color:#3A4A6B>[clave primaria]</color>
+    {field} Identificador del producto <color:#555555>(número entero; obligatorio)</color>
+    --
+    {field} **categoria_id** <color:#3A4A6B>[clave foránea → categoria]</color>
+    {field} Categoría del producto; de ella se obtiene su tipo <color:#555555>(número entero; obligatorio)</color>
+    {field} **nombre_producto**
+    {field} Nombre comercial del producto <color:#555555>(texto, hasta 150 caracteres; obligatorio)</color>
+    {field} **descripcion_producto**
+    {field} Descripción para la tienda <color:#555555>(texto largo; opcional)</color>
+    {field} **principio_activo**
+    {field} Principio activo, en medicamentos <color:#555555>(texto, hasta 150 caracteres; opcional)</color>
+    {field} **contenido_producto**
+    {field} Contenido o tamaño, por ejemplo 100 ml <color:#555555>(texto, hasta 100 caracteres; opcional)</color>
+    {field} **requiere_formula**
+    {field} Si se vende solo con fórmula médica <color:#555555>(sí o no; obligatorio)</color>
+    {field} **producto_activo**
+    {field} Si aparece en la tienda <color:#555555>(sí o no; obligatorio)</color>
+    {field} **foto_producto**
+    {field} Ubicación de la foto subida desde el panel <color:#555555>(texto, hasta 255 caracteres; opcional)</color>
+    {field} **imagen_catalogo**
+    {field} Imagen asignada en el catálogo inicial. <color:#B00020>**POR REVISAR**</color>: confirmar cómo la usa la tienda frente a la foto <color:#555555>(texto, hasta 255 caracteres; opcional)</color>
+  }
+  entity "**presentacion**\nUnidad que se vende y se almacena; las\nvariedades tienen una sola" as presentacion #DFF3E4 {
+    {field} **id** <color:#3A4A6B>[clave primaria]</color>
+    {field} Identificador de lo que se vende <color:#555555>(número entero; obligatorio)</color>
+    --
+    {field} **producto_id** <color:#3A4A6B>[clave foránea → producto]</color>
+    {field} Producto al que pertenece <color:#555555>(número entero; obligatorio)</color>
+    {field} **tipo_presentacion**
+    {field} Forma de venta, por ejemplo Tableta o Unidad <color:#555555>(texto, hasta 60 caracteres; obligatorio)</color>
+    {field} **concentracion**
+    {field} Concentración, por ejemplo 500 mg <color:#555555>(texto, hasta 60 caracteres; opcional)</color>
+    {field} **marca**
+    {field} Marca o laboratorio <color:#555555>(texto, hasta 80 caracteres; opcional)</color>
+    {field} **codigo_barras** <color:#3A4A6B>[no se repite]</color>
+    {field} Código de barras para el lector <color:#555555>(texto, hasta 40 caracteres; opcional)</color>
+    {field} **registro_sanitario**
+    {field} Registro sanitario, cuando aplica <color:#555555>(texto, hasta 40 caracteres; opcional)</color>
+    {field} **precio_venta**
+    {field} Precio de venta vigente en pesos <color:#555555>(valor en pesos; obligatorio)</color>
+    {field} **stock_minimo**
+    {field} Por debajo de este valor se genera una alerta <color:#555555>(número entero; obligatorio)</color>
+    {field} **stock_maximo**
+    {field} Existencia máxima recomendada <color:#555555>(número entero; opcional)</color>
+    {field} **presentacion_activa**
+    {field} Si se puede vender <color:#555555>(sí o no; obligatorio)</color>
+  }
+}
+package "Pedidos y ventas" {
+  entity "**pedido**\nPedidos en línea y ventas de mostrador" as pedido #FBE3E4 {
+    {field} **id** <color:#3A4A6B>[clave primaria]</color>
+    {field} Identificador del pedido o venta <color:#555555>(número entero; obligatorio)</color>
+    --
+    {field} **numero_pedido** <color:#3A4A6B>[no se repite]</color>
+    {field} Número visible, por ejemplo LTH-K8F3A2 <color:#555555>(texto, hasta 20 caracteres; obligatorio)</color>
+    {field} **numero_comprobante** <color:#3A4A6B>[no se repite]</color>
+    {field} Número del comprobante interno; no es factura electrónica <color:#555555>(texto, hasta 30 caracteres; opcional)</color>
+    {field} **canal_venta**
+    {field} Por dónde se vendió: web es la tienda en línea y pos es el mostrador (obligatorio)
+    {field} <color:#555555>una de estas opciones: web, pos</color>
+    {field} **cliente_id** <color:#3A4A6B>[clave foránea → cliente]</color>
+    {field} Cliente que compró; vacío en ventas de mostrador sin cuenta <color:#555555>(número entero; opcional)</color>
+    {field} **suscripcion_id** <color:#3A4A6B>[clave foránea → suscripcion]</color>
+    {field} Suscripción que dio el descuento <color:#555555>(número entero; opcional)</color>
+    {field} **vendedor_id** <color:#3A4A6B>[clave foránea → usuario]</color>
+    {field} Empleado que registró la venta <color:#555555>(número entero; opcional)</color>
+    {field} **sesion_caja_id** <color:#3A4A6B>[clave foránea → sesion_caja]</color>
+    {field} Turno de caja de la venta <color:#555555>(número entero; opcional)</color>
+    {field} **modalidad_entrega**
+    {field} Si se recoge en la tienda o se lleva a domicilio (obligatorio)
+    {field} <color:#555555>una de estas opciones: tienda, domicilio</color>
+    {field} **direccion_entrega**
+    {field} Dirección a la que se entrega este pedido <color:#555555>(texto, hasta 255 caracteres; opcional)</color>
+    {field} **subtotal_pedido**
+    {field} Suma de cantidad por precio original <color:#555555>(valor en pesos; obligatorio)</color>
+    {field} **descuento_porcentaje**
+    {field} Porcentaje aplicado <color:#555555>(número entero; obligatorio)</color>
+    {field} **descuento_aplicado**
+    {field} Valor del descuento en pesos <color:#555555>(valor en pesos; obligatorio)</color>
+    {field} **descuento_autorizado_por_id** <color:#3A4A6B>[clave foránea → usuario]</color>
+    {field} Empleado que autorizó un descuento manual <color:#555555>(número entero; opcional)</color>
+    {field} **costo_domicilio**
+    {field} Valor cobrado por el domicilio <color:#555555>(valor en pesos; obligatorio)</color>
+    {field} **total_pedido** <color:#3A4A6B>[la calcula MySQL]</color>
+    {field} Se calcula solo: subtotal - descuento + domicilio <color:#555555>(valor en pesos; obligatorio)</color>
+    {field} **estado_pedido**
+    {field} En qué punto va el pedido (obligatorio)
+    {field} <color:#555555>una de estas opciones: pendiente, en_proceso, entregado, cancelado</color>
+    {field} **anulado_por_id** <color:#3A4A6B>[clave foránea → usuario]</color>
+    {field} Empleado que anuló <color:#555555>(número entero; opcional)</color>
+    {field} **motivo_anulacion**
+    {field} Por qué se anuló <color:#555555>(texto, hasta 255 caracteres; opcional)</color>
+    {field} **fecha_anulacion**
+    {field} Cuándo se anuló <color:#555555>(fecha y hora; opcional)</color>
+    {field} **fecha_creacion**
+    {field} Fecha y hora en que se registró <color:#555555>(fecha y hora; obligatorio)</color>
+  }
+  entity "**detalle_pedido**\nProductos de cada pedido" as detalle_pedido #FBE3E4 {
+    {field} **id** <color:#3A4A6B>[clave primaria]</color>
+    {field} Identificador de la línea <color:#555555>(número entero; obligatorio)</color>
+    --
+    {field} **pedido_id** <color:#3A4A6B>[clave foránea → pedido]</color>
+    {field} Pedido al que pertenece <color:#555555>(número entero; obligatorio)</color>
+    {field} **presentacion_id** <color:#3A4A6B>[clave foránea → presentacion]</color>
+    {field} Presentación que se vendió <color:#555555>(número entero; obligatorio)</color>
+    {field} **nombre_producto**
+    {field} Nombre al momento de la venta, para el comprobante <color:#555555>(texto, hasta 255 caracteres; obligatorio)</color>
+    {field} **cantidad_vendida**
+    {field} Unidades vendidas <color:#555555>(número entero; obligatorio)</color>
+    {field} **precio_original**
+    {field} Precio de lista al momento de la venta <color:#555555>(valor en pesos; obligatorio)</color>
+    {field} **precio_unitario**
+    {field} Precio cobrado, ya con descuento <color:#555555>(valor en pesos; obligatorio)</color>
+    {field} **subtotal_linea** <color:#3A4A6B>[la calcula MySQL]</color>
+    {field} Se calcula solo: cantidad por precio cobrado <color:#555555>(valor en pesos; obligatorio)</color>
+    {field} **formula_soporte**
+    {field} Ubicación del archivo de la fórmula médica, si se exige <color:#555555>(texto, hasta 255 caracteres; opcional)</color>
+  }
+  entity "**pago_pedido**\nPagos de cada pedido; un pedido puede\ntener varios" as pago_pedido #FBE3E4 {
+    {field} **id** <color:#3A4A6B>[clave primaria]</color>
+    {field} Identificador del pago <color:#555555>(número entero; obligatorio)</color>
+    --
+    {field} **pedido_id** <color:#3A4A6B>[clave foránea → pedido]</color>
+    {field} Pedido al que corresponde el pago <color:#555555>(número entero; obligatorio)</color>
+    {field} **metodo_pago_id** <color:#3A4A6B>[clave foránea → metodo_pago]</color>
+    {field} Forma de pago usada <color:#555555>(número entero; obligatorio)</color>
+    {field} **monto_pago**
+    {field} Valor que se pagó <color:#555555>(valor en pesos; obligatorio)</color>
+    {field} **referencia_pago**
+    {field} Referencia de la transacción <color:#555555>(texto, hasta 60 caracteres; opcional)</color>
+    {field} **estado_pago**
+    {field} Si el pago está pendiente, confirmado, rechazado o reembolsado (obligatorio)
+    {field} <color:#555555>una de estas opciones: pendiente, confirmado, rechazado, reembolsado</color>
+    {field} **fecha_pago**
+    {field} Fecha y hora en que se registró <color:#555555>(fecha y hora; obligatorio)</color>
+  }
+  entity "**devolucion**\nDevoluciones de clientes" as devolucion #FBE3E4 {
+    {field} **id** <color:#3A4A6B>[clave primaria]</color>
+    {field} Identificador de la devolución <color:#555555>(número entero; obligatorio)</color>
+    --
+    {field} **pedido_id** <color:#3A4A6B>[clave foránea → pedido]</color>
+    {field} Pedido al que corresponde la devolución <color:#555555>(número entero; obligatorio)</color>
+    {field} **usuario_id** <color:#3A4A6B>[clave foránea → usuario]</color>
+    {field} Empleado que la registró <color:#555555>(número entero; obligatorio)</color>
+    {field} **motivo_devolucion**
+    {field} Por qué el cliente devolvió el producto <color:#555555>(texto, hasta 255 caracteres; obligatorio)</color>
+    {field} **fecha_devolucion**
+    {field} Fecha y hora en que ocurrió <color:#555555>(fecha y hora; obligatorio)</color>
+  }
+  entity "**detalle_devolucion**\nProductos de cada devolución de cliente" as detalle_devolucion #FBE3E4 {
+    {field} **id** <color:#3A4A6B>[clave primaria]</color>
+    {field} Identificador de la línea <color:#555555>(número entero; obligatorio)</color>
+    --
+    {field} **devolucion_id** <color:#3A4A6B>[clave foránea → devolucion]</color>
+    {field} Devolución a la que pertenece esta línea <color:#555555>(número entero; obligatorio)</color>
+    {field} **detalle_pedido_id** <color:#3A4A6B>[clave foránea → detalle_pedido]</color>
+    {field} Producto del pedido que se devuelve <color:#555555>(número entero; obligatorio)</color>
+    {field} **lote_id** <color:#3A4A6B>[clave foránea → lote]</color>
+    {field} Lote al que regresa, si reingresa <color:#555555>(número entero; opcional)</color>
+    {field} **cantidad_devuelta**
+    {field} Unidades devueltas <color:#555555>(número entero; obligatorio)</color>
+    {field} **monto_devuelto**
+    {field} Dinero devuelto al cliente <color:#555555>(valor en pesos; obligatorio)</color>
+    {field} **reingresa_inventario**
+    {field} Si el producto se puede volver a vender <color:#555555>(sí o no; obligatorio)</color>
+  }
+}
+package "Inventario" {
+  entity "**lote**\nLotes con su existencia y vencimiento" as lote #DDF1F6 {
+    {field} **id** <color:#3A4A6B>[clave primaria]</color>
+    {field} Identificador del lote <color:#555555>(número entero; obligatorio)</color>
+    --
+    {field} **presentacion_id** <color:#3A4A6B>[clave foránea → presentacion]</color>
+    {field} Presentación que contiene el lote <color:#555555>(número entero; obligatorio)</color>
+    {field} **numero_lote**
+    {field} Número impreso por el fabricante <color:#555555>(texto, hasta 50 caracteres; obligatorio)</color>
+    {field} **fecha_vencimiento**
+    {field} Vencimiento; vacío si el producto no vence <color:#555555>(fecha; opcional)</color>
+    {field} **cantidad_actual**
+    {field} Existencia; solo cambia mediante movimientos <color:#555555>(número entero; obligatorio)</color>
+    {field} **costo_unitario**
+    {field} Costo de compra por unidad <color:#555555>(valor en pesos; obligatorio)</color>
+    {field} **fecha_ingreso**
+    {field} Fecha y hora en que se registró <color:#555555>(fecha y hora; obligatorio)</color>
+  }
+  entity "**movimiento_inventario**\nHistorial de entradas y salidas de cada\nlote; no se puede modificar ni borrar" as movimiento_inventario #DDF1F6 {
+    {field} **id** <color:#3A4A6B>[clave primaria]</color>
+    {field} Identificador del movimiento <color:#555555>(número entero; obligatorio)</color>
+    --
+    {field} **lote_id** <color:#3A4A6B>[clave foránea → lote]</color>
+    {field} Lote cuya existencia cambia <color:#555555>(número entero; obligatorio)</color>
+    {field} **usuario_id** <color:#3A4A6B>[clave foránea → usuario]</color>
+    {field} Empleado; vacío solo en ventas automáticas de la tienda en línea <color:#555555>(número entero; opcional)</color>
+    {field} **tipo_movimiento**
+    {field} Motivo por el que entró o salió el dinero (obligatorio)
+    {field} <color:#555555>una de estas opciones: entrada, venta, anulacion, ajuste, devolucion_cliente, devolucion_proveedor, conteo</color>
+    {field} **cantidad_movida**
+    {field} Positiva si entra y negativa si sale <color:#555555>(número entero; obligatorio)</color>
+    {field} **saldo_resultante**
+    {field} Existencia del lote después del movimiento; la calcula un disparador <color:#555555>(número entero; obligatorio)</color>
+    {field} **motivo_movimiento**
+    {field} Explicación del movimiento; obligatoria en ajustes <color:#555555>(texto, hasta 255 caracteres; opcional)</color>
+    {field} **detalle_pedido_id** <color:#3A4A6B>[clave foránea → detalle_pedido]</color>
+    {field} Producto del pedido que se vendió o se anuló <color:#555555>(número entero; opcional)</color>
+    {field} **detalle_recepcion_id** <color:#3A4A6B>[clave foránea → detalle_recepcion]</color>
+    {field} Línea de la entrada de mercancía que originó el movimiento <color:#555555>(número entero; opcional)</color>
+    {field} **detalle_conteo_id** <color:#3A4A6B>[clave foránea → detalle_conteo]</color>
+    {field} Línea del conteo que originó el movimiento <color:#555555>(número entero; opcional)</color>
+    {field} **detalle_devolucion_id** <color:#3A4A6B>[clave foránea → detalle_devolucion]</color>
+    {field} Línea de la devolución del cliente que originó el movimiento <color:#555555>(número entero; opcional)</color>
+    {field} **detalle_devolucion_proveedor_id** <color:#3A4A6B>[clave foránea → detalle_devolucion_proveedor]</color>
+    {field} Línea de la devolución al proveedor que originó el movimiento <color:#555555>(número entero; opcional)</color>
+    {field} **fecha_movimiento**
+    {field} Fecha y hora en que ocurrió <color:#555555>(fecha y hora; obligatorio)</color>
+  }
+  entity "**conteo_fisico**\nConteos físicos del inventario" as conteo_fisico #DDF1F6 {
+    {field} **id** <color:#3A4A6B>[clave primaria]</color>
+    {field} Identificador del conteo <color:#555555>(número entero; obligatorio)</color>
+    --
+    {field} **usuario_id** <color:#3A4A6B>[clave foránea → usuario]</color>
+    {field} Empleado responsable <color:#555555>(número entero; obligatorio)</color>
+    {field} **estado_conteo**
+    {field} Si el conteo sigue abierto, ya se cerró o se anuló (obligatorio)
+    {field} <color:#555555>una de estas opciones: abierto, cerrado, anulado</color>
+    {field} **observacion_conteo**
+    {field} Comentarios sobre el conteo <color:#555555>(texto, hasta 255 caracteres; opcional)</color>
+    {field} **fecha_inicio**
+    {field} Fecha y hora en que empezó el conteo <color:#555555>(fecha y hora; obligatorio)</color>
+    {field} **fecha_cierre**
+    {field} Fecha y hora en que terminó el conteo <color:#555555>(fecha y hora; opcional)</color>
+  }
+  entity "**detalle_conteo**\nResultado del conteo por lote" as detalle_conteo #DDF1F6 {
+    {field} **id** <color:#3A4A6B>[clave primaria]</color>
+    {field} Identificador de la línea <color:#555555>(número entero; obligatorio)</color>
+    --
+    {field} **conteo_id** <color:#3A4A6B>[clave foránea → conteo_fisico]</color>
+    {field} Conteo al que pertenece esta línea <color:#555555>(número entero; obligatorio)</color>
+    {field} **lote_id** <color:#3A4A6B>[clave foránea → lote]</color>
+    {field} Lote que se contó <color:#555555>(número entero; obligatorio)</color>
+    {field} **cantidad_sistema**
+    {field} Cantidad que indicaba el sistema <color:#555555>(número entero; obligatorio)</color>
+    {field} **cantidad_contada**
+    {field} Cantidad encontrada al contar <color:#555555>(número entero; obligatorio)</color>
+  }
+  entity "**notificacion**\nAlertas de stock, vencimiento y\nadministración" as notificacion #DDF1F6 {
+    {field} **id** <color:#3A4A6B>[clave primaria]</color>
+    {field} Identificador de la alerta <color:#555555>(número entero; obligatorio)</color>
+    --
+    {field} **tipo_alerta**
+    {field} Clase de alerta (obligatorio)
+    {field} <color:#555555>una de estas opciones: agotado, proximo_vencer, inventario_bajo, administrativa</color>
+    {field} **mensaje_alerta**
+    {field} Mensaje que ve el empleado <color:#555555>(texto, hasta 255 caracteres; obligatorio)</color>
+    {field} **presentacion_id** <color:#3A4A6B>[clave foránea → presentacion]</color>
+    {field} Presentación a la que se refiere la alerta <color:#555555>(número entero; opcional)</color>
+    {field} **lote_id** <color:#3A4A6B>[clave foránea → lote]</color>
+    {field} Lote al que se refiere la alerta <color:#555555>(número entero; opcional)</color>
+    {field} **alerta_atendida**
+    {field} Si la alerta ya se resolvió <color:#555555>(sí o no; obligatorio)</color>
+    {field} **atendida_por_id** <color:#3A4A6B>[clave foránea → usuario]</color>
+    {field} Empleado que la atendió; vacío si se resolvió sola <color:#555555>(número entero; opcional)</color>
+    {field} **fecha_atencion**
+    {field} Fecha y hora en que se atendió la alerta <color:#555555>(fecha y hora; opcional)</color>
+    {field} **fecha_creacion**
+    {field} Fecha y hora en que se generó la alerta <color:#555555>(fecha y hora; obligatorio)</color>
+    {field} **clave_abierta** <color:#3A4A6B>[no se repite; la calcula MySQL]</color>
+    {field} Se calcula solo: evita repetir una alerta que sigue abierta <color:#555555>(texto, hasta 60 caracteres; opcional)</color>
+  }
+}
+package "Compras y proveedores" {
+  entity "**proveedor**\nProveedores de la droguería" as proveedor #EDE4F5 {
+    {field} **id** <color:#3A4A6B>[clave primaria]</color>
+    {field} Identificador del proveedor <color:#555555>(número entero; obligatorio)</color>
+    --
+    {field} **nit_proveedor** <color:#3A4A6B>[no se repite]</color>
+    {field} NIT o documento del proveedor <color:#555555>(texto, hasta 20 caracteres; obligatorio)</color>
+    {field} **nombre_proveedor**
+    {field} Nombre o razón social del proveedor <color:#555555>(texto, hasta 150 caracteres; obligatorio)</color>
+    {field} **contacto_proveedor**
+    {field} Persona de contacto en el proveedor <color:#555555>(texto, hasta 120 caracteres; opcional)</color>
+    {field} **telefono_proveedor**
+    {field} Teléfono del proveedor <color:#555555>(texto, hasta 20 caracteres; opcional)</color>
+    {field} **correo_proveedor**
+    {field} Correo del proveedor <color:#555555>(texto, hasta 120 caracteres; opcional)</color>
+    {field} **direccion_proveedor**
+    {field} Dirección del proveedor <color:#555555>(texto, hasta 255 caracteres; opcional)</color>
+    {field} **proveedor_activo**
+    {field} Si se le sigue comprando <color:#555555>(sí o no; obligatorio)</color>
+  }
+  entity "**orden_compra**\nÓrdenes de compra a proveedores" as orden_compra #EDE4F5 {
+    {field} **id** <color:#3A4A6B>[clave primaria]</color>
+    {field} Identificador de la orden <color:#555555>(número entero; obligatorio)</color>
+    --
+    {field} **numero_orden** <color:#3A4A6B>[no se repite]</color>
+    {field} Número de la orden de compra <color:#555555>(texto, hasta 20 caracteres; obligatorio)</color>
+    {field} **proveedor_id** <color:#3A4A6B>[clave foránea → proveedor]</color>
+    {field} Proveedor al que se le compra <color:#555555>(número entero; obligatorio)</color>
+    {field} **usuario_id** <color:#3A4A6B>[clave foránea → usuario]</color>
+    {field} Empleado que la creó <color:#555555>(número entero; obligatorio)</color>
+    {field} **estado_orden**
+    {field} En qué punto va la orden de compra (obligatorio)
+    {field} <color:#555555>una de estas opciones: borrador, enviada, parcial, recibida, cancelada</color>
+    {field} **fecha_creacion**
+    {field} Cuándo se creó <color:#555555>(fecha y hora; obligatorio)</color>
+    {field} **fecha_esperada**
+    {field} Cuándo se espera recibir <color:#555555>(fecha; opcional)</color>
+  }
+  entity "**detalle_orden_compra**\nProductos de cada orden de compra" as detalle_orden_compra #EDE4F5 {
+    {field} **id** <color:#3A4A6B>[clave primaria]</color>
+    {field} Identificador de la línea <color:#555555>(número entero; obligatorio)</color>
+    --
+    {field} **orden_compra_id** <color:#3A4A6B>[clave foránea → orden_compra]</color>
+    {field} Orden de compra a la que pertenece esta línea <color:#555555>(número entero; obligatorio)</color>
+    {field} **presentacion_id** <color:#3A4A6B>[clave foránea → presentacion]</color>
+    {field} Presentación que se pide <color:#555555>(número entero; obligatorio)</color>
+    {field} **cantidad_pedida**
+    {field} Unidades pedidas <color:#555555>(número entero; obligatorio)</color>
+    {field} **costo_unitario**
+    {field} Costo acordado por unidad <color:#555555>(valor en pesos; obligatorio)</color>
+  }
+  entity "**recepcion_mercancia**\nEntradas de mercancía" as recepcion_mercancia #EDE4F5 {
+    {field} **id** <color:#3A4A6B>[clave primaria]</color>
+    {field} Identificador de la entrada <color:#555555>(número entero; obligatorio)</color>
+    --
+    {field} **proveedor_id** <color:#3A4A6B>[clave foránea → proveedor]</color>
+    {field} Quién entregó <color:#555555>(número entero; obligatorio)</color>
+    {field} **orden_compra_id** <color:#3A4A6B>[clave foránea → orden_compra]</color>
+    {field} Orden relacionada; una entrada puede no tenerla <color:#555555>(número entero; opcional)</color>
+    {field} **usuario_id** <color:#3A4A6B>[clave foránea → usuario]</color>
+    {field} Empleado que recibió <color:#555555>(número entero; obligatorio)</color>
+    {field} **numero_factura**
+    {field} Factura del proveedor <color:#555555>(texto, hasta 40 caracteres; obligatorio)</color>
+    {field} **total_factura**
+    {field} Valor de esa factura <color:#555555>(valor en pesos; obligatorio)</color>
+    {field} **fecha_recepcion**
+    {field} Cuándo se recibió <color:#555555>(fecha y hora; obligatorio)</color>
+  }
+  entity "**detalle_recepcion**\nProductos de cada entrada de mercancía" as detalle_recepcion #EDE4F5 {
+    {field} **id** <color:#3A4A6B>[clave primaria]</color>
+    {field} Identificador de la línea <color:#555555>(número entero; obligatorio)</color>
+    --
+    {field} **recepcion_id** <color:#3A4A6B>[clave foránea → recepcion_mercancia]</color>
+    {field} Entrada de mercancía a la que pertenece esta línea <color:#555555>(número entero; obligatorio)</color>
+    {field} **detalle_orden_id** <color:#3A4A6B>[clave foránea → detalle_orden_compra]</color>
+    {field} Línea de la orden de compra que se está recibiendo, si la hay <color:#555555>(número entero; opcional)</color>
+    {field} **lote_id** <color:#3A4A6B>[clave foránea → lote]</color>
+    {field} Lote en el que entra la mercancía <color:#555555>(número entero; obligatorio)</color>
+    {field} **cantidad_recibida**
+    {field} Unidades recibidas <color:#555555>(número entero; obligatorio)</color>
+    {field} **costo_unitario**
+    {field} Costo en la factura por unidad <color:#555555>(valor en pesos; obligatorio)</color>
+  }
+  entity "**devolucion_proveedor**\nDevoluciones a proveedores" as devolucion_proveedor #EDE4F5 {
+    {field} **id** <color:#3A4A6B>[clave primaria]</color>
+    {field} Identificador de la devolución <color:#555555>(número entero; obligatorio)</color>
+    --
+    {field} **proveedor_id** <color:#3A4A6B>[clave foránea → proveedor]</color>
+    {field} Proveedor al que se devuelve la mercancía <color:#555555>(número entero; obligatorio)</color>
+    {field} **usuario_id** <color:#3A4A6B>[clave foránea → usuario]</color>
+    {field} Empleado que la registró <color:#555555>(número entero; obligatorio)</color>
+    {field} **motivo_devolucion**
+    {field} Por qué se devuelve, por ejemplo próximo a vencer <color:#555555>(texto, hasta 255 caracteres; obligatorio)</color>
+    {field} **fecha_devolucion**
+    {field} Fecha y hora en que ocurrió <color:#555555>(fecha y hora; obligatorio)</color>
+  }
+  entity "**detalle_devolucion_proveedor**\nProductos de cada devolución a proveedor" as detalle_devolucion_proveedor #EDE4F5 {
+    {field} **id** <color:#3A4A6B>[clave primaria]</color>
+    {field} Identificador de la línea <color:#555555>(número entero; obligatorio)</color>
+    --
+    {field} **devolucion_proveedor_id** <color:#3A4A6B>[clave foránea → devolucion_proveedor]</color>
+    {field} Devolución a la que pertenece esta línea <color:#555555>(número entero; obligatorio)</color>
+    {field} **lote_id** <color:#3A4A6B>[clave foránea → lote]</color>
+    {field} Lote de donde sale lo devuelto <color:#555555>(número entero; obligatorio)</color>
+    {field} **cantidad_devuelta**
+    {field} Unidades devueltas <color:#555555>(número entero; obligatorio)</color>
+    {field} **costo_unitario**
+    {field} Costo por unidad que se reconoce <color:#555555>(valor en pesos; obligatorio)</color>
+  }
+}
+package "Caja" {
+  entity "**sesion_caja**\nTurnos de caja: apertura y cierre" as sesion_caja #F4F1DE {
+    {field} **id** <color:#3A4A6B>[clave primaria]</color>
+    {field} Identificador del turno de caja <color:#555555>(número entero; obligatorio)</color>
+    --
+    {field} **abierta_por_id** <color:#3A4A6B>[clave foránea → usuario]</color>
+    {field} Empleado que abrió <color:#555555>(número entero; obligatorio)</color>
+    {field} **cerrada_por_id** <color:#3A4A6B>[clave foránea → usuario]</color>
+    {field} Empleado que cerró <color:#555555>(número entero; opcional)</color>
+    {field} **monto_inicial**
+    {field} Efectivo con el que se abrió <color:#555555>(valor en pesos; obligatorio)</color>
+    {field} **monto_esperado**
+    {field} Efectivo que debía haber al cerrar <color:#555555>(valor en pesos; opcional)</color>
+    {field} **monto_contado**
+    {field} Efectivo contado al cerrar <color:#555555>(valor en pesos; opcional)</color>
+    {field} **estado_sesion_caja**
+    {field} Si el turno de caja sigue abierto o ya se cerró (obligatorio)
+    {field} <color:#555555>una de estas opciones: abierta, cerrada</color>
+    {field} **fecha_apertura**
+    {field} Fecha y hora en que se abrió la caja <color:#555555>(fecha y hora; obligatorio)</color>
+    {field} **fecha_cierre**
+    {field} Fecha y hora en que se cerró la caja <color:#555555>(fecha y hora; opcional)</color>
+  }
+  entity "**arqueo_caja**\nConteos de efectivo durante un turno" as arqueo_caja #F4F1DE {
+    {field} **id** <color:#3A4A6B>[clave primaria]</color>
+    {field} Identificador del arqueo <color:#555555>(número entero; obligatorio)</color>
+    --
+    {field} **sesion_caja_id** <color:#3A4A6B>[clave foránea → sesion_caja]</color>
+    {field} Turno de caja que se contó <color:#555555>(número entero; obligatorio)</color>
+    {field} **usuario_id** <color:#3A4A6B>[clave foránea → usuario]</color>
+    {field} Empleado que contó el efectivo <color:#555555>(número entero; obligatorio)</color>
+    {field} **monto_esperado**
+    {field} Efectivo que debía haber en caja <color:#555555>(valor en pesos; obligatorio)</color>
+    {field} **monto_contado**
+    {field} Efectivo que se encontró al contar <color:#555555>(valor en pesos; obligatorio)</color>
+    {field} **observacion_arqueo**
+    {field} Explicación de una diferencia <color:#555555>(texto, hasta 255 caracteres; opcional)</color>
+    {field} **fecha_arqueo**
+    {field} Fecha y hora del conteo <color:#555555>(fecha y hora; obligatorio)</color>
+  }
+  entity "**movimiento_caja**\nIngresos y egresos de dinero de cada turno" as movimiento_caja #F4F1DE {
+    {field} **id** <color:#3A4A6B>[clave primaria]</color>
+    {field} Identificador del movimiento <color:#555555>(número entero; obligatorio)</color>
+    --
+    {field} **sesion_caja_id** <color:#3A4A6B>[clave foránea → sesion_caja]</color>
+    {field} Turno de caja en que ocurrió <color:#555555>(número entero; obligatorio)</color>
+    {field} **usuario_id** <color:#3A4A6B>[clave foránea → usuario]</color>
+    {field} Empleado que lo registró <color:#555555>(número entero; obligatorio)</color>
+    {field} **metodo_pago_id** <color:#3A4A6B>[clave foránea → metodo_pago]</color>
+    {field} Medio por el que entró o salió el dinero <color:#555555>(número entero; obligatorio)</color>
+    {field} **tipo_movimiento_caja**
+    {field} Si entra o sale dinero (obligatorio)
+    {field} <color:#555555>una de estas opciones: ingreso, egreso</color>
+    {field} **categoria_movimiento_caja**
+    {field} Motivo por el que entró o salió el dinero (obligatorio)
+    {field} <color:#555555>una de estas opciones: venta, suscripcion, devolucion, gasto, otro</color>
+    {field} **monto_movimiento**
+    {field} Valor del movimiento de dinero <color:#555555>(valor en pesos; obligatorio)</color>
+    {field} **descripcion_movimiento**
+    {field} Explicación del movimiento de dinero <color:#555555>(texto, hasta 255 caracteres; opcional)</color>
+    {field} **pedido_id** <color:#3A4A6B>[clave foránea → pedido]</color>
+    {field} Pedido que originó el movimiento, si aplica <color:#555555>(número entero; opcional)</color>
+    {field} **suscripcion_id** <color:#3A4A6B>[clave foránea → suscripcion]</color>
+    {field} Suscripción que originó el movimiento, si aplica <color:#555555>(número entero; opcional)</color>
+    {field} **fecha_movimiento**
+    {field} Fecha y hora en que ocurrió <color:#555555>(fecha y hora; obligatorio)</color>
+  }
+}
+sesion_caja ||--o{ arqueo_caja
+usuario ||--o{ arqueo_caja
+usuario |o--o{ auditoria
+categoria |o--o{ categoria
+usuario |o--o{ cliente
+usuario |o--o{ configuracion
+usuario ||--o{ conteo_fisico
+conteo_fisico ||--o{ detalle_conteo
+lote ||--o{ detalle_conteo
+detalle_pedido ||--o{ detalle_devolucion
+devolucion ||--o{ detalle_devolucion
+lote |o--o{ detalle_devolucion
+devolucion_proveedor ||--o{ detalle_devolucion_proveedor
+lote ||--o{ detalle_devolucion_proveedor
+orden_compra ||--o{ detalle_orden_compra
+presentacion ||--o{ detalle_orden_compra
+pedido ||--o{ detalle_pedido
+presentacion ||--o{ detalle_pedido
+lote ||--o{ detalle_recepcion
+detalle_orden_compra |o--o{ detalle_recepcion
+recepcion_mercancia ||--o{ detalle_recepcion
+pedido ||--o{ devolucion
+usuario ||--o{ devolucion
+proveedor ||--o{ devolucion_proveedor
+usuario ||--o{ devolucion_proveedor
+cliente ||--o{ favorito
+producto ||--o{ favorito
+presentacion ||--o{ lote
+metodo_pago ||--o{ movimiento_caja
+pedido |o--o{ movimiento_caja
+sesion_caja ||--o{ movimiento_caja
+suscripcion |o--o{ movimiento_caja
+usuario ||--o{ movimiento_caja
+detalle_conteo |o--o{ movimiento_inventario
+detalle_devolucion |o--o{ movimiento_inventario
+detalle_devolucion_proveedor |o--o{ movimiento_inventario
+lote ||--o{ movimiento_inventario
+detalle_pedido |o--o{ movimiento_inventario
+detalle_recepcion |o--o{ movimiento_inventario
+usuario |o--o{ movimiento_inventario
+lote |o--o{ notificacion
+presentacion |o--o{ notificacion
+usuario |o--o{ notificacion
+proveedor ||--o{ orden_compra
+usuario ||--o{ orden_compra
+metodo_pago ||--o{ pago_pedido
+pedido ||--o{ pago_pedido
+usuario |o--o{ pedido
+usuario |o--o{ pedido
+cliente |o--o{ pedido
+sesion_caja |o--o{ pedido
+suscripcion |o--o{ pedido
+usuario |o--o{ pedido
+producto ||--o{ presentacion
+categoria ||--o{ producto
+orden_compra |o--o{ recepcion_mercancia
+proveedor ||--o{ recepcion_mercancia
+usuario ||--o{ recepcion_mercancia
+cliente ||--o{ recuperacion_clave
+permiso ||--o{ rol_permiso
+rol ||--o{ rol_permiso
+usuario ||--o{ sesion_caja
+usuario |o--o{ sesion_caja
+cliente ||--o{ solicitud_suscripcion
+metodo_pago ||--o{ solicitud_suscripcion
+plan_suscripcion ||--o{ solicitud_suscripcion
+usuario |o--o{ solicitud_suscripcion
+cliente ||--o{ suscripcion
+plan_suscripcion ||--o{ suscripcion
+solicitud_suscripcion ||--o| suscripcion
+rol ||--o{ usuario
+permiso ||--o{ usuario_permiso
+usuario ||--o{ usuario_permiso
+legend left
+  **Cómo leer este diagrama**
+  **Clave primaria:** identifica cada registro de la tabla, sin repetirse.
+  **Clave foránea:** enlace con un registro de otra tabla.
+  **Línea entre tablas:** ||  exactamente uno;  o|  cero o uno;  o{  cero o muchos.
+  **POR REVISAR:** su significado debe confirmarlo el negocio o el equipo.
+endlegend
+@enduml

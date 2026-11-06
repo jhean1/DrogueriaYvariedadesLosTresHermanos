@@ -38,17 +38,23 @@ window.Arte = (function () {
     return `<path d="M58 44 100 26l44 18v76l-44 22-42-22z" fill="${a}"/>
       <path d="M100 62v80l44-22V44z" fill="${b}"/>
       <path d="M58 44l42 18 44-18-44-18z" fill="#fff" opacity=".28"/>
-      <rect x="66" y="82" width="26" height="4" rx="2" fill="#fff" opacity=".85" transform="skewY(23 79 84)"/>
-      <rect x="66" y="92" width="18" height="4" rx="2" fill="#fff" opacity=".55" transform="skewY(23 75 94)"/>`;
+      <rect x="66" y="82" width="26" height="4" rx="2" fill="#fff" opacity=".85" transform="translate(79 84) skewY(23) translate(-79 -84)"/>
+      <rect x="66" y="92" width="18" height="4" rx="2" fill="#fff" opacity=".55" transform="translate(75 94) skewY(23) translate(-75 -94)"/>`;
   }
 
   function envolver(contenido) {
     return `<svg viewBox="0 0 200 160" role="presentation" aria-hidden="true">${contenido}</svg>`;
   }
 
+  // Imagen parecida, mostrada mientras no exista la foto del producto exacto
+  function referencia(url) {
+    return `<img src="${Seguridad.esc(url)}" alt="" loading="lazy"><span class="arte-ref">Imagen de referencia</span>`;
+  }
+
   function medicamento(med, presentacion) {
     const [a, b] = TONOS[med.cat] || TONOS.otros;
     if (med.foto) return `<img src="${Seguridad.esc(med.foto)}" alt="" loading="lazy">`;
+    if (med.imagen) return referencia(med.imagen);
     const tipo = (presentacion && presentacion.tipo) || 'Unidad';
     if (tipo.startsWith('Caja')) return envolver(caja(a, b));
     if (tipo.startsWith('Tableta')) return envolver(blister(a, parseInt((tipo.match(/x(\d+)/) || [])[1], 10)));
@@ -81,6 +87,7 @@ window.Arte = (function () {
 
   function variedad(v) {
     if (v.foto) return `<img src="${Seguridad.esc(v.foto)}" alt="" loading="lazy">`;
+    if (v.imagen) return referencia(v.imagen);
     return envolver((FORMAS[v.id] || generica)());
   }
 

@@ -1,0 +1,129 @@
+@startuml modulo-accesos
+title Accesos y auditoría: Quién entra al panel, qué puede hacer y qué hizo.
+hide methods
+hide stereotype
+hide circle
+skinparam shadowing false
+skinparam roundCorner 6
+skinparam defaultFontName Arial
+skinparam dpi 110
+skinparam ArrowColor #3A4A6B
+skinparam ArrowThickness 1.1
+skinparam nodesep 45
+skinparam ranksep 55
+skinparam class {
+  BackgroundColor White
+  BorderColor #10224D
+  FontSize 13
+  AttributeFontSize 12
+}
+skinparam package {
+  BorderColor #8A94A8
+  FontSize 16
+  FontStyle bold
+  BackgroundColor transparent
+}
+entity "**rol**\nRoles del equipo de trabajo" as rol #E4E9F7 {
+  {field} **id** <color:#3A4A6B>[clave primaria]</color>
+  {field} Identificador del rol <color:#555555>(número entero; obligatorio)</color>
+  --
+  {field} **codigo_rol** <color:#3A4A6B>[no se repite]</color>
+  {field} Código interno del rol, por ejemplo cajero <color:#555555>(texto, hasta 40 caracteres; obligatorio)</color>
+  {field} **nombre_rol**
+  {field} Nombre visible del rol <color:#555555>(texto, hasta 80 caracteres; obligatorio)</color>
+  {field} **descripcion_rol**
+  {field} Responsabilidades del rol <color:#555555>(texto, hasta 255 caracteres; opcional)</color>
+  {field} **rol_protegido**
+  {field} Si el rol está protegido contra cambios <color:#555555>(sí o no; obligatorio)</color>
+}
+entity "**permiso**\nAcciones que se pueden autorizar en el\npanel" as permiso #E4E9F7 {
+  {field} **id** <color:#3A4A6B>[clave primaria]</color>
+  {field} Identificador del permiso <color:#555555>(número entero; obligatorio)</color>
+  --
+  {field} **codigo_permiso** <color:#3A4A6B>[no se repite]</color>
+  {field} Código que usa la aplicación, por ejemplo products.view <color:#555555>(texto, hasta 50 caracteres; obligatorio)</color>
+  {field} **modulo_permiso**
+  {field} Módulo al que pertenece el permiso <color:#555555>(texto, hasta 40 caracteres; obligatorio)</color>
+  {field} **descripcion_permiso**
+  {field} Qué permite hacer <color:#555555>(texto, hasta 255 caracteres; obligatorio)</color>
+  {field} **permiso_operativo**
+  {field} Si ya existe en la aplicación una función real detrás del permiso <color:#555555>(sí o no; obligatorio)</color>
+}
+entity "**rol_permiso**\nPermisos que tiene cada rol" as rol_permiso #E4E9F7 {
+  {field} **rol_id** <color:#3A4A6B>[clave primaria; clave foránea → rol]</color>
+  {field} Rol que recibe el permiso <color:#555555>(número entero; obligatorio)</color>
+  {field} **permiso_id** <color:#3A4A6B>[clave primaria; clave foránea → permiso]</color>
+  {field} Permiso que se le otorga al rol <color:#555555>(número entero; obligatorio)</color>
+}
+entity "**usuario**\nCuentas de los empleados de la droguería" as usuario #E4E9F7 {
+  {field} **id** <color:#3A4A6B>[clave primaria]</color>
+  {field} Identificador del empleado <color:#555555>(número entero; obligatorio)</color>
+  --
+  {field} **rol_id** <color:#3A4A6B>[clave foránea → rol]</color>
+  {field} Rol que tiene asignado el empleado <color:#555555>(número entero; obligatorio)</color>
+  {field} **nombre_usuario**
+  {field} Nombre completo del empleado <color:#555555>(texto, hasta 120 caracteres; obligatorio)</color>
+  {field} **correo_usuario** <color:#3A4A6B>[no se repite]</color>
+  {field} Correo con el que inicia sesión <color:#555555>(texto, hasta 120 caracteres; obligatorio)</color>
+  {field} **clave_hash**
+  {field} Contraseña cifrada; nunca se guarda en texto plano <color:#555555>(texto, hasta 255 caracteres; obligatorio)</color>
+  {field} **usuario_activo**
+  {field} Si puede iniciar sesión <color:#555555>(sí o no; obligatorio)</color>
+  {field} **usuario_protegido**
+  {field} Si es una cuenta protegida contra cambios, como la principal <color:#555555>(sí o no; obligatorio)</color>
+  {field} **fecha_creacion**
+  {field} Cuándo se creó la cuenta <color:#555555>(fecha y hora; obligatorio)</color>
+}
+entity "**usuario_permiso**\nExcepciones de permisos por empleado" as usuario_permiso #E4E9F7 {
+  {field} **usuario_id** <color:#3A4A6B>[clave primaria; clave foránea → usuario]</color>
+  {field} Empleado al que aplica la excepción <color:#555555>(número entero; obligatorio)</color>
+  {field} **permiso_id** <color:#3A4A6B>[clave primaria; clave foránea → permiso]</color>
+  {field} Permiso que se agrega o se quita <color:#555555>(número entero; obligatorio)</color>
+  --
+  {field} **tipo_excepcion**
+  {field} Si se agrega o se quita respecto a lo que da el rol (obligatorio)
+  {field} <color:#555555>una de estas opciones: concedido, revocado</color>
+}
+entity "**auditoria**\nHistorial de acciones sensibles; no se\npuede modificar ni borrar" as auditoria #E4E9F7 {
+  {field} **id** <color:#3A4A6B>[clave primaria]</color>
+  {field} Identificador del evento <color:#555555>(número entero; obligatorio)</color>
+  --
+  {field} **usuario_id** <color:#3A4A6B>[clave foránea → usuario]</color>
+  {field} Empleado que actuó, si se identificó <color:#555555>(número entero; opcional)</color>
+  {field} **actor_auditoria**
+  {field} Correo o nombre con el que se registró la acción <color:#555555>(texto, hasta 120 caracteres; obligatorio)</color>
+  {field} **accion_auditoria**
+  {field} Acción realizada, por ejemplo Producto modificado <color:#555555>(texto, hasta 120 caracteres; obligatorio)</color>
+  {field} **detalle_auditoria**
+  {field} Información adicional sobre la acción <color:#555555>(texto largo; opcional)</color>
+  {field} **fecha_auditoria**
+  {field} Fecha y hora en que ocurrió <color:#555555>(fecha y hora; obligatorio)</color>
+}
+entity "**configuracion**\nAjustes generales del sistema" as configuracion #E4E9F7 {
+  {field} **clave_configuracion** <color:#3A4A6B>[clave primaria]</color>
+  {field} Nombre del ajuste, por ejemplo costo_domicilio <color:#555555>(texto, hasta 60 caracteres; obligatorio)</color>
+  --
+  {field} **valor_configuracion**
+  {field} Valor que tiene el ajuste <color:#555555>(texto, hasta 255 caracteres; obligatorio)</color>
+  {field} **descripcion_configuracion**
+  {field} Para qué sirve el ajuste <color:#555555>(texto, hasta 255 caracteres; opcional)</color>
+  {field} **actualizado_por_id** <color:#3A4A6B>[clave foránea → usuario]</color>
+  {field} Último empleado que lo cambió <color:#555555>(número entero; opcional)</color>
+  {field} **fecha_actualizacion**
+  {field} Fecha y hora del último cambio <color:#555555>(fecha y hora; obligatorio)</color>
+}
+permiso ||--o{ rol_permiso : "Permiso que se le otorga\nal rol\n(uno a muchos)"
+rol ||--o{ rol_permiso : "Rol que recibe el permiso\n(uno a muchos)"
+rol ||--o{ usuario : "Rol que tiene asignado el\nempleado\n(uno a muchos)"
+permiso ||--o{ usuario_permiso : "Permiso que se agrega o se\nquita\n(uno a muchos)"
+usuario ||--o{ usuario_permiso : "Empleado al que aplica la\nexcepción\n(uno a muchos)"
+usuario |o--o{ auditoria : "Empleado que actuó, si se\nidentificó\n(opcional: uno a muchos)"
+usuario |o--o{ configuracion : "Último empleado que lo\ncambió\n(opcional: uno a muchos)"
+legend left
+  **Cómo leer este diagrama**
+  **Clave primaria:** identifica cada registro de la tabla, sin repetirse.
+  **Clave foránea:** enlace con un registro de otra tabla.
+  **Línea entre tablas:** ||  exactamente uno;  o|  cero o uno;  o{  cero o muchos.
+  **POR REVISAR:** su significado debe confirmarlo el negocio o el equipo.
+endlegend
+@enduml

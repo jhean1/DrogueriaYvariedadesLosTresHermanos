@@ -55,7 +55,7 @@
         </div>
 
         <div class="divisor"><span>o</span></div>
-        <button class="btn btn--secundario btn--bloque btn-invitado" type="button" onclick="entrarComoInvitado()">Continuar como invitado</button>
+        <button class="btn btn--secundario btn--bloque btn-invitado" type="button" onclick="entrarComoInvitado()">Seguir sin iniciar sesión</button>
         <p class="auth-pie">¿No tienes cuenta? <a th:href="@{/registro}">Regístrate gratis</a></p>
       </div>
     </section>
@@ -83,20 +83,24 @@
       setTimeout(() => { el.classList.add('out'); el.addEventListener('animationend', () => el.remove()); }, 3500);
     }
 
-    // ⚠️ PREPARADO PARA BD: fetch('/api/login-cliente', { method:'POST', ... })
+    const params  = new URLSearchParams(window.location.search);
+    const destino = Seguridad.rutaRetornoSegura(params.get('retorno'), '/');
+
+    function mostrarError(texto, campos) {
+      document.getElementById('error-texto').textContent = texto;
+      document.getElementById('error-login').classList.add('visible');
+      (campos || []).forEach(id => document.getElementById(id).classList.add('error'));
+    }
+
     async function iniciarSesion() {
-      const correo  = document.getElementById('input-correo').value.trim();
-      const pass    = document.getElementById('input-pass').value;
-      const errEl   = document.getElementById('error-login');
-      const errTxt  = document.getElementById('error-texto');
-      errEl.classList.remove('visible');
+      const correo = document.getElementById('input-correo').value.trim();
+      const pass   = document.getElementById('input-pass').value;
+      document.getElementById('error-login').classList.remove('visible');
       ['f-correo','f-pass'].forEach(id => document.getElementById(id).classList.remove('error'));
 
+      if (!Cuenta.disponible()) { mostrarError('Las cuentas en línea no están disponibles en este momento. Escríbenos por WhatsApp.'); return; }
       if (!correo || !pass) {
-        if (!correo) document.getElementById('f-correo').classList.add('error');
-        if (!pass)   document.getElementById('f-pass').classList.add('error');
-        errTxt.textContent = 'Completa todos los campos.';
-        errEl.classList.add('visible');
+        mostrarError('Completa todos los campos.', [!correo && 'f-correo', !pass && 'f-pass'].filter(Boolean));
         return;
       }
 
@@ -104,58 +108,34 @@
       const spin  = document.getElementById('spin');
       const texto = btn.querySelector('.btn-texto');
       btn.disabled = true; texto.style.display = 'none'; spin.classList.add('visible');
-      await new Promise(r => setTimeout(r, 600));
-
-      if (!Seguridad.criptoDisponible()) {
+      try {
+        const r = await Api.pedir('/api/cuenta/ingreso', { metodo: 'POST', datos: { correo, clave: pass } });
+        toast(`¡Bienvenido, ${r.cliente.nombre.split(' ')[0]}!`);
+        setTimeout(() => { window.location.href = destino; }, 700);
+      } catch (err) {
         btn.disabled = false; texto.style.display = ''; spin.classList.remove('visible');
-        errTxt.textContent = 'El inicio de sesión requiere una conexión segura (HTTPS).';
-        errEl.classList.add('visible');
-        return;
-      }
-
-      await Seguridad.listo;
-      const correoNormalizado = correo.toLowerCase();
-      const clientes  = JSON.parse(localStorage.getItem('lth_clientes') || '[]');
-      const candidato = clientes.find(c => String(c.correo).toLowerCase() === correoNormalizado);
-      const cliente   = candidato && await Seguridad.verificarCredencial(pass, candidato.credencial)
-        ? candidato : null;
-
-      if (cliente) {
-        sessionStorage.setItem('lth_cliente', JSON.stringify({
-          id: cliente.id, nombre: cliente.nombre, correo: cliente.correo,
-          telefono: cliente.telefono, direccion: cliente.direccion, rol: 'cliente'
-        }));
-        toast(`Bienvenido, ${cliente.nombre.split(' ')[0]}!`);
-        // Redirigir a la página de retorno si viene de suscripciones
-        const params  = new URLSearchParams(window.location.search);
-        const destino = Seguridad.rutaRetornoSegura(params.get('retorno'), '/');
-        setTimeout(() => { window.location.href = destino; }, 1000);
-      } else {
-        btn.disabled = false; texto.style.display = ''; spin.classList.remove('visible');
-        document.getElementById('login-form').classList.add('shake');
-        document.getElementById('login-form').addEventListener('animationend', () =>
-          document.getElementById('login-form').classList.remove('shake'), { once: true }
-        );
-        ['f-correo','f-pass'].forEach(id => document.getElementById(id).classList.add('error'));
-        errTxt.textContent = 'Correo o contraseña incorrectos.';
-        errEl.classList.add('visible');
-        toast('Credenciales incorrectas', false);
+        const form = document.getElementById('login-form');
+        form.classList.add('shake');
+        form.addEventListener('animationend', () => form.classList.remove('shake'), { once: true });
+        mostrarError(err.message, err.estado === 400 ? ['f-correo', 'f-pass'] : []);
       }
     }
 
-    document.addEventListener('keydown', e => { if (e.key === 'Enter') iniciarSesion(); });
+    document.getElementById('login-form').addEventListener('keydown', e => { if (e.key === 'Enter') iniciarSesion(); });
 
     function entrarComoInvitado() {
-      sessionStorage.setItem('lth_cliente', JSON.stringify({ rol: 'invitado', nombre: 'Invitado' }));
-      window.location.href = '/';
+      window.location.href = destino;
     }
 
-    const sc = sessionStorage.getItem('lth_cliente');
-    if (sc) {
-      try {
-        const c = JSON.parse(sc);
-        if (c.rol === 'cliente') window.location.href = '/';
-      } catch {}
+    // Con la sesión ya abierta no tiene sentido volver a entrar
+    if (Cuenta.cliente()) window.location.replace(destino);
+    if (!Cuenta.disponible()) {
+      mostrarError('Las cuentas en línea no están disponibles en este momento. Puedes ver el catálogo y pedir por WhatsApp.');
+      document.getElementById('btn-entrar').disabled = true;
+    }
+    // Enlace a registro que conserva la página de regreso
+    if (params.get('retorno')) {
+      document.querySelector('.auth-pie a').href = '/registro?retorno=' + encodeURIComponent(params.get('retorno'));
     }
   </script>
 </body>
