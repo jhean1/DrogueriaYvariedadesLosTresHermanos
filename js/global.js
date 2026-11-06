@@ -44,16 +44,6 @@
   });
 })();
 
-// Mi cuenta: lleva al perfil si hay sesión de cliente
-(function initMiCuenta() {
-  const enlace = document.getElementById('btn-mi-cuenta');
-  if (!enlace) return;
-  try {
-    const sesion = JSON.parse(sessionStorage.getItem('lth_cliente') || 'null');
-    enlace.href = (sesion && sesion.rol === 'cliente') ? '/DrogueriaYvariedadesLosTresHermanos/perfil' : '/DrogueriaYvariedadesLosTresHermanos/login';
-  } catch (e) {}
-})();
-
 // ── Sistema de Toast (Nielsen #1 — feedback al usuario) ──────
 window.Toast = (function() {
   let container = document.querySelector('.toast-container');
@@ -79,71 +69,158 @@ window.Toast = (function() {
   return { mostrar };
 })();
 
-// ── Carrito global compartido (localStorage) ─────────────────
+// ── Cuenta del cliente (la sesión vive en el servidor) ───────
+// El servidor envía con cada página el estado inicial (CUENTA_INICIAL):
+// si las cuentas están disponibles, quién inició sesión y su plan.
+window.Cuenta = (function () {
+  let estado = normalizar(window.CUENTA_INICIAL);
+
+  function normalizar(e) {
+    const r = e && typeof e === 'object' ? e : {};
+    const cliente = r.cliente || null;
+    if (cliente) cliente.foto = cliente.foto ? '/api/cuenta/foto' : null;
+    return { disponible: !!r.disponible, cliente, suscripcion: r.suscripcion || null };
+  }
+
+  /** Vuelve a pedir el estado al servidor (después de cambiar datos o el plan). */
+  async function recargar() {
+    estado = normalizar(await Api.pedir('/api/cuenta'));
+    document.documentElement.classList.toggle('con-sesion', !!estado.cliente);
+    return estado;
+  }
+
+  async function salir(destino) {
+    try { await Api.pedir('/api/cuenta/salida', { metodo: 'POST' }); } catch (e) { /* se redirige igual */ }
+    window.location.href = destino || '/DrogueriaYvariedadesLosTresHermanos/';
+  }
+
+  /** Enlace a iniciar sesión que regresa a la página actual. */
+  function rutaLogin(pagina) {
+    const actual = pagina || (window.location.pathname.replace(/^.*\//, '') + window.location.search);
+    return '/DrogueriaYvariedadesLosTresHermanos/login' + (actual ? '?retorno=' + encodeURIComponent(actual) : '');
+  }
+
+  return {
+    disponible: () => estado.disponible,
+    cliente: () => estado.cliente,
+    suscripcion: () => estado.suscripcion,
+    recargar, salir, rutaLogin
+  };
+})();
+
+// Mi cuenta: lleva al perfil si hay sesión de cliente
+(function initMiCuenta() {
+  const enlace = document.getElementById('btn-mi-cuenta');
+  if (enlace && Cuenta.cliente()) enlace.href = '/DrogueriaYvariedadesLosTresHermanos/perfil';
+})();
+
+// ── Carrito (en este navegador; precios del catálogo actual) ─
+// Cada línea dice qué se compra: la presentación de un medicamento o el
+// producto si es una variedad. El precio guardado es el de lista y solo
+// sirve para mostrarlo: el servidor calcula el valor real al hacer el pedido.
 window.Carrito = (function() {
   const KEY = 'drogueria_carrito';
+  const MAX_CANTIDAD = 50;
 
-  function obtener() {
+  // Busca el producto en el catálogo publicado para usar su precio de hoy
+  function enCatalogo(item) {
+    if (typeof MEDICAMENTOS === 'undefined') return item;
+    if (item.tipo === 'medicamento') {
+      for (const m of MEDICAMENTOS) {
+        const p = m.presentaciones.find(x => String(x.id) === String(item.presentacion));
+        if (p) return { ...item, precio: p.precio, agotado: p.disponibilidad === 'agotado' || m.disponibilidad === 'agotado' };
+      }
+      return null;
+    }
+    const v = VARIEDADES.find(x => String(x.id) === String(item.producto));
+    return v ? { ...item, precio: v.precio, agotado: v.disponibilidad === 'agotado' } : null;
+  }
+
+  function leer() {
     try {
       const items = JSON.parse(localStorage.getItem(KEY));
       if (!Array.isArray(items)) return [];
-      // Descarta cantidades o precios manipulados (negativos, texto, etc.)
-      return items.filter(i => i
-        && Number.isInteger(i.cantidad) && i.cantidad > 0
-        && Number.isFinite(i.precio) && i.precio >= 0);
+      // Descarta líneas de versiones anteriores o manipuladas
+      return items.filter(i => i && (i.tipo === 'medicamento' || i.tipo === 'variedad')
+        && /^[0-9]+$/.test(String(i.tipo === 'medicamento' ? i.presentacion : i.producto))
+        && Number.isInteger(i.cantidad) && i.cantidad > 0 && i.cantidad <= MAX_CANTIDAD);
     } catch { return []; }
   }
 
+  function obtener() {
+    return leer().map(enCatalogo).filter(Boolean);
+  }
+
   function guardar(items) {
-    localStorage.setItem(KEY, JSON.stringify(items));
+    try {
+      localStorage.setItem(KEY, JSON.stringify(items.map(({ clave, tipo, presentacion, producto, nombre, detalle, precio, cantidad }) =>
+        ({ clave, tipo, presentacion, producto, nombre, detalle, precio, cantidad }))));
+    } catch (e) { /* almacenamiento bloqueado: el carrito dura mientras la página esté abierta */ }
     actualizarBadge();
   }
 
-  function agregar(producto) {
+  /** item: { tipo, presentacion | producto, nombre, detalle } */
+  function agregar(item) {
+    const clave = item.tipo === 'medicamento' ? 'p' + item.presentacion : 'v' + item.producto;
     const items = obtener();
-    const idx = items.findIndex(i => i.id === producto.id);
+    const idx = items.findIndex(i => i.clave === clave);
     if (idx !== -1) {
+      if (items[idx].cantidad >= MAX_CANTIDAD) {
+        Toast.mostrar(`Puedes pedir hasta ${MAX_CANTIDAD} unidades de cada producto`);
+        return;
+      }
       items[idx].cantidad += 1;
     } else {
-      items.push({ ...producto, cantidad: 1 });
+      const nuevo = enCatalogo({ ...item, clave, cantidad: 1 });
+      if (!nuevo) return;
+      items.push(nuevo);
     }
     guardar(items);
-    Toast.mostrar(`${producto.nombre} se agregó al carrito`);
+    Toast.mostrar(`${item.nombre} se agregó al carrito`);
   }
 
-  function remover(id) {
-    // Comparar como string para IDs compuestos
-    const items = obtener().filter(i => String(i.id) !== String(id));
-    guardar(items);
+  function remover(clave) {
+    guardar(obtener().filter(i => i.clave !== clave));
   }
 
-  function cambiarCantidad(id, delta) {
+  function cambiarCantidad(clave, delta) {
     const items = obtener();
-    // Comparar como string para IDs compuestos como "1-a1u"
-    const idx = items.findIndex(i => String(i.id) === String(id));
+    const idx = items.findIndex(i => i.clave === clave);
     if (idx === -1) return;
-    const nuevaCantidad = items[idx].cantidad + delta;
-    if (nuevaCantidad <= 0) {
-      // Eliminar si llega a 0
-      items.splice(idx, 1);
-    } else {
-      items[idx].cantidad = nuevaCantidad;
-    }
+    const nueva = Math.min(MAX_CANTIDAD, items[idx].cantidad + delta);
+    if (nueva <= 0) items.splice(idx, 1);
+    else items[idx].cantidad = nueva;
     guardar(items);
+  }
+
+  function vaciar() {
+    guardar([]);
+  }
+
+  /** Precio que verá el cliente, con el descuento de su plan si lo tiene. */
+  function precioCliente(item) {
+    return Suscripcion.aplicar(item.precio);
   }
 
   function total() {
-    return obtener().reduce((s, i) => s + i.precio * i.cantidad, 0);
+    return obtener().reduce((s, i) => s + precioCliente(i) * i.cantidad, 0);
   }
 
   function conteo() {
     return obtener().reduce((s, i) => s + i.cantidad, 0);
   }
 
+  /** Lo que el servidor necesita para crear el pedido. */
+  function lineasPedido() {
+    return obtener().map(i => i.tipo === 'medicamento'
+      ? { presentacion: Number(i.presentacion), cantidad: i.cantidad }
+      : { producto: Number(i.producto), cantidad: i.cantidad });
+  }
+
   function actualizarBadge() {
+    const n = conteo();
     const badge = document.querySelector('.badge-carrito');
     if (badge) {
-      const n = conteo();
       const cambio = badge.textContent !== String(n);
       badge.textContent = n;
       badge.style.display = n > 0 ? 'grid' : 'none';
@@ -154,8 +231,8 @@ window.Carrito = (function() {
       }
     }
     document.querySelectorAll('.fab-badge').forEach(fab => {
-      fab.textContent = conteo();
-      fab.toggleAttribute('data-cero', conteo() === 0);
+      fab.textContent = n;
+      fab.toggleAttribute('data-cero', n === 0);
       fab.classList.remove('rebote');
       void fab.offsetWidth;
       fab.classList.add('rebote');
@@ -165,7 +242,7 @@ window.Carrito = (function() {
   // Inicializar badge al cargar
   document.addEventListener('DOMContentLoaded', actualizarBadge);
 
-  return { obtener, agregar, remover, cambiarCantidad, total, conteo };
+  return { obtener, agregar, remover, cambiarCantidad, vaciar, total, conteo, precioCliente, lineasPedido };
 })();
 
 // ── Estrellas de calificación ─────────────────────────────────
@@ -186,12 +263,9 @@ window.formatPrecio = function(valor) {
   return '$' + (Number(valor) || 0).toLocaleString('es-CO');
 };
 
-// ── Avatar navbar (cliente logueado) ────────────────────────────────────────
-// Detecta si hay sesión activa y transforma el navbar:
-//   - Oculta el botón "Regístrate"
-//   - Reemplaza "Mi cuenta" por un dropdown con nombre, avatar y opciones
-// Si no hay sesión, el navbar queda intacto (links a /registro y /login).
-// ────────────────────────────────────────────────────────────────────────────
+// ── Avatar navbar (cliente con sesión) ───────────────────────
+// Si hay sesión: oculta "Regístrate" y cambia "Mi cuenta" por un menú
+// con nombre, foto y opciones. Sin sesión, la barra queda igual.
 window.initAvatar = function(opciones) {
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', () => _construirAvatar(opciones));
@@ -204,45 +278,34 @@ function _construirAvatar(opciones) {
   var opts      = opciones || {};
   var perfilUrl = opts.perfilUrl || '/DrogueriaYvariedadesLosTresHermanos/perfil';
   var logoutUrl = opts.logoutUrl || '/DrogueriaYvariedadesLosTresHermanos/';
+  var cliente   = Cuenta.cliente();
+  if (!cliente || document.getElementById('avatar-wrap')) return;
 
-  // 1. Leer sesión
-  var sesion;
-  try { sesion = JSON.parse(sessionStorage.getItem('lth_cliente') || 'null'); } catch(e) { sesion = null; }
-
-  if (!sesion || sesion.rol !== 'cliente') return; // sin sesión → navbar queda intacto
-
-  // 2. Ocultar "Regístrate" (tiene id="btn-registrate" en index.html)
   var btnReg = document.getElementById('btn-registrate');
   if (btnReg) btnReg.style.display = 'none';
+  var btnRegMenu = document.getElementById('btn-registrate-menu');
+  if (btnRegMenu) btnRegMenu.style.display = 'none';
 
-  // 3. Localizar "Mi cuenta"
   var btnMiCuenta = document.getElementById('btn-mi-cuenta');
   if (!btnMiCuenta) return;
-
-  // 4. Apuntar a /perfil AHORA (garantía mínima aunque falle el dropdown)
   btnMiCuenta.href = perfilUrl;
 
-  // 5. Datos del usuario para el dropdown
-  var nombre  = sesion.nombre  || 'Usuario';
-  var correo  = sesion.correo  || '';
+  var nombre  = cliente.nombre || 'Cliente';
+  var correo  = cliente.correo || '';
   var esc     = Seguridad.esc;
   var inicial = String(nombre)[0].toUpperCase();
-  var fotoData = '';
-  try { fotoData = Seguridad.imagenDataSegura(localStorage.getItem('lth_foto_' + sesion.id)); } catch(e) {}
-
-  var avatarHtml = fotoData
-    ? '<img src="' + esc(fotoData) + '" alt="' + esc(nombre) + '" style="width:100%;height:100%;border-radius:50%;object-fit:cover">'
+  var avatarHtml = cliente.foto
+    ? '<img src="' + esc(cliente.foto) + '" alt="" style="width:100%;height:100%;border-radius:50%;object-fit:cover">'
     : esc(inicial);
 
-  // 6. Crear el contenedor del dropdown e insertarlo en lugar del botón
   var wrap = document.createElement('div');
   wrap.className = 'avatar-navbar-wrap';
   wrap.id = 'avatar-wrap';
   wrap.innerHTML =
-    '<button class="avatar-navbar-btn" id="avatar-btn" aria-label="Mi cuenta" aria-expanded="false">' +
+    '<button class="avatar-navbar-btn" id="avatar-btn" type="button" aria-label="Mi cuenta" aria-expanded="false" aria-controls="avatar-dropdown">' +
       '<div class="avatar-circulo">' + avatarHtml + '<span class="avatar-online-dot"></span></div>' +
       '<span class="avatar-nombre-corto">' + esc(String(nombre).split(' ')[0]) + '</span>' +
-      '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>' +
+      '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>' +
     '</button>' +
     '<div class="avatar-dropdown" id="avatar-dropdown" role="menu">' +
       '<div class="avatar-dropdown-header">' +
@@ -253,41 +316,39 @@ function _construirAvatar(opciones) {
         '</div>' +
       '</div>' +
       '<div class="avatar-dropdown-items">' +
-        '<a class="avatar-drop-item" href="' + perfilUrl + '" role="menuitem">' +
-          '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>' +
-          'Mi Perfil</a>' +
+        '<a class="avatar-drop-item" href="' + perfilUrl + '#perfil" role="menuitem">' +
+          '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>' +
+          'Mi perfil</a>' +
         '<a class="avatar-drop-item" href="' + perfilUrl + '#pedidos" role="menuitem">' +
-          '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>' +
-          'Mis Pedidos</a>' +
+          '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>' +
+          'Mis pedidos</a>' +
         '<a class="avatar-drop-item" href="' + perfilUrl + '#favoritos" role="menuitem">' +
-          '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>' +
+          '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>' +
           'Favoritos</a>' +
         '<div class="avatar-drop-divider"></div>' +
-        '<button class="avatar-drop-item peligro" onclick="cerrarSesionCliente(\'' + logoutUrl + '\')" role="menuitem">' +
-          '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9"/></svg>' +
+        '<button class="avatar-drop-item peligro" type="button" id="avatar-salir" role="menuitem">' +
+          '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9"/></svg>' +
           'Cerrar sesión</button>' +
       '</div>' +
     '</div>';
 
-  // Reemplazar el botón original con el wrapper del dropdown
   btnMiCuenta.parentNode.replaceChild(wrap, btnMiCuenta);
+  document.getElementById('avatar-salir').addEventListener('click', function() { Cuenta.salir(logoutUrl); });
 
-  // 7. Toggle dropdown al hacer clic
   document.addEventListener('click', function(e) {
     var w = document.getElementById('avatar-wrap');
     var d = document.getElementById('avatar-dropdown');
     var b = document.getElementById('avatar-btn');
     if (!w || !d) return;
-    if (w.contains(e.target)) {
+    if (b && b.contains(e.target)) {
       var visible = d.classList.toggle('visible');
-      if (b) b.setAttribute('aria-expanded', String(visible));
-    } else {
+      b.setAttribute('aria-expanded', String(visible));
+    } else if (!d.contains(e.target)) {
       d.classList.remove('visible');
       if (b) b.setAttribute('aria-expanded', 'false');
     }
   });
 
-  // 8. Cerrar con Escape
   document.addEventListener('keydown', function(e) {
     if (e.key === 'Escape') {
       var d = document.getElementById('avatar-dropdown');
@@ -296,144 +357,72 @@ function _construirAvatar(opciones) {
       if (b) b.setAttribute('aria-expanded', 'false');
     }
   });
-} // fin _construirAvatar
+}
 
 // ── Cerrar sesión cliente ─────────────────────────────────────
-
 window.cerrarSesionCliente = function(url) {
-  sessionStorage.removeItem('lth_cliente');
-  window.location.href = url || '/DrogueriaYvariedadesLosTresHermanos/';
+  Cuenta.salir(url);
 };
 
-// ── Protección de rutas (redirige a login si no hay sesión) ──────────────────
+// ── Protección de rutas: sin sesión, lleva a iniciar sesión y regresa ─
 window.protegerRuta = function() {
-  let sesion = null;
-  try { sesion = JSON.parse(sessionStorage.getItem('lth_cliente') || 'null'); } catch(e) {}
-  if (!sesion || !sesion.correo) {
-    const retorno = window.location.pathname.replace(/^.*\//, '').replace(/\.html$/, '');
-    window.location.href = '/DrogueriaYvariedadesLosTresHermanos/login' + (retorno ? '?retorno=' + encodeURIComponent(retorno) : '');
-  }
-};
-
-// ── Verificar y cancelar suscripciones vencidas ──────────────────────────────
-window.verificarVencimientoSuscripcion = function() {
-  try {
-    const KEY = 'lth_suscripcion';
-    const sus = JSON.parse(localStorage.getItem(KEY));
-    if (!sus || !sus.fechaVencimiento) return;
-
-    const ahora      = new Date();
-    const vencimiento = new Date(sus.fechaVencimiento);
-    const diasRestantes = Math.ceil((vencimiento - ahora) / (1000 * 60 * 60 * 24));
-
-    // Cancelar si ya venció
-    if (diasRestantes <= 0) {
-      localStorage.removeItem(KEY);
-      // Mostrar aviso si hay banner
-      const banner = document.getElementById('banner-suscripcion-global');
-      if (banner) {
-        banner.style.background = 'var(--burgundy)';
-        (banner.querySelector('.banner-texto') || banner).textContent =
-          'Tu suscripción venció y fue cancelada automáticamente.';
-        setTimeout(() => banner.remove(), 5000);
-      }
-      return;
-    }
-
-    // Alerta si quedan 5 días o menos
-    if (diasRestantes <= 5) {
-      const alerta = document.getElementById('alerta-vencimiento-prox');
-      if (alerta) {
-        alerta.style.display = 'flex';
-        const txt = alerta.querySelector('.alerta-venc-txt');
-        if (txt) txt.textContent =
-          `Tu plan vence en ${diasRestantes} día${diasRestantes === 1 ? '' : 's'}. Renuévalo para mantener tu descuento.`;
-      }
-    }
-  } catch(e) {}
+  if (Cuenta.cliente()) return true;
+  window.location.replace(Cuenta.rutaLogin());
+  return false;
 };
 
 // ══════════════════════════════════════════════════════════════
-//  SISTEMA DE SUSCRIPCIONES Y DESCUENTOS AUTOMÁTICOS
-//  Solo cuenta el plan que el administrador aprobó para el cliente
-//  con sesión (lth_sus_<id>). Una solicitud pendiente o rechazada
-//  no da descuento. El porcentaje sale siempre de la tabla oficial.
+//  DESCUENTO DEL PLAN
+//  El plan vigente lo decide el servidor (aprobado por la droguería y
+//  sin vencer). Uno cancelado conserva el descuento hasta su vencimiento.
+//  Aquí solo se usa para mostrar precios: el cobro lo calcula el servidor.
 // ══════════════════════════════════════════════════════════════
-
 window.Suscripcion = (function() {
-  function claveCliente() {
-    try {
-      const sesion = JSON.parse(sessionStorage.getItem('lth_cliente') || 'null');
-      return (sesion && sesion.rol === 'cliente' && sesion.id) ? 'lth_sus_' + sesion.id : null;
-    } catch(e) { return null; }
-  }
-
-  /**
-   * Devuelve la suscripción vigente del cliente o null. Una suscripción cancelada
-   * conserva el descuento hasta su vencimiento, como se le informa al cliente.
-   */
+  /** Plan vigente del cliente con sesión, o null. */
   function obtener() {
-    try {
-      const clave = claveCliente();
-      const sus   = clave ? JSON.parse(localStorage.getItem(clave) || 'null') : null;
-      if (!sus || (sus.estado !== 'activo' && sus.estado !== 'cancelado')) return null;
-
-      const plan        = Seguridad.planCanonico(sus.plan);
-      const vencimiento = new Date(sus.fechaVencimiento);
-      if (!plan || !(vencimiento > new Date())) return null;
-
-      return {
-        plan: plan.clave, descuento: plan.descuento, precio: plan.precio,
-        estado: sus.estado, fecha: sus.fecha, fechaVencimiento: sus.fechaVencimiento
-      };
-    } catch(e) { return null; }
+    const s = Cuenta.suscripcion();
+    if (!s) return null;
+    const plan = Seguridad.planCanonico(s.plan);
+    return {
+      plan: plan ? plan.clave : String(s.plan || '').toLowerCase(),
+      nombre: plan ? plan.nombre : s.plan,
+      descuento: Number(s.descuento) || 0,
+      inicio: s.inicio, vence: s.vence,
+      estado: s.estado === 'cancelada' ? 'cancelada' : 'activa'
+    };
   }
 
-  /** Marca como cancelada la suscripción del cliente con sesión */
-  function cancelar() {
-    const clave = claveCliente();
-    if (!clave) return;
-    try {
-      const sus = JSON.parse(localStorage.getItem(clave) || 'null');
-      if (sus) {
-        sus.estado = 'cancelado';
-        localStorage.setItem(clave, JSON.stringify(sus));
-      }
-    } catch(e) {}
-  }
-
-  /** Devuelve el porcentaje de descuento (0 si no hay suscripción) */
   function descuento() {
     const sus = obtener();
     return sus ? sus.descuento : 0;
   }
 
-  /** Calcula el precio con descuento */
+  /** Precio con el descuento del plan, redondeado igual que en el servidor. */
   function aplicar(precio) {
     const pct = descuento();
-    if (!pct) return precio;
-    return Math.round(precio * (1 - pct / 100));
+    return pct ? Math.round(precio * (100 - pct) / 100) : precio;
   }
 
-  /**
-   * Inyecta un banner de descuento activo debajo del navbar en cualquier página.
-   * Sólo aparece si hay suscripción con descuento.
-   */
+  /** Días que faltan para que venza (la fecha llega como AAAA-MM-DD). */
+  function diasRestantes() {
+    const sus = obtener();
+    if (!sus || !sus.vence) return null;
+    const [a, m, d] = sus.vence.split('-').map(Number);
+    const hoy = new Date(); hoy.setHours(0, 0, 0, 0);
+    return Math.round((new Date(a, m - 1, d) - hoy) / 86400000);
+  }
+
+  /** Aviso breve del descuento activo en cualquier página. */
   function mostrarBanner() {
     const sus = obtener();
-    if (!sus) return;
-
-    // Evitar duplicados
-    if (document.getElementById('sus-descuento-banner')) return;
-
-    const nombrePlan = Seguridad.planCanonico(sus.plan).nombre;
+    if (!sus || !sus.descuento || document.getElementById('sus-descuento-banner')) return;
     const banner  = document.createElement('aside');
     banner.setAttribute('aria-label', 'Tu plan de suscripción');
     banner.id     = 'sus-descuento-banner';
     banner.className = 'pildora-plan no-imprimir';
     banner.innerHTML =
       `<span class="punto punto--vivo"></span>
-       <span>Plan ${Seguridad.esc(nombrePlan)}: <strong>${Seguridad.esc(sus.descuento)}% de descuento</strong></span>
+       <span>Plan ${Seguridad.esc(sus.nombre)}: <strong>${Seguridad.esc(sus.descuento)}% de descuento</strong></span>
        <a href="/DrogueriaYvariedadesLosTresHermanos/perfil#suscripcion">Ver plan</a>`;
     document.body.appendChild(banner);
     // Es un aviso breve: no debe quedarse tapando contenido
@@ -441,8 +430,19 @@ window.Suscripcion = (function() {
     setTimeout(() => banner.remove(), 7600);
   }
 
-  // Inicializar banner en DOMContentLoaded
   document.addEventListener('DOMContentLoaded', mostrarBanner);
 
-  return { obtener, cancelar, descuento, aplicar, mostrarBanner };
+  return { obtener, descuento, aplicar, diasRestantes, mostrarBanner };
 })();
+
+/** Fecha AAAA-MM-DD o AAAA-MM-DD HH:MM del servidor, escrita para leer. */
+window.formatFecha = function(texto, conHora) {
+  if (!texto) return '—';
+  const [fecha, hora] = String(texto).split(' ');
+  const [a, m, d] = fecha.split('-').map(Number);
+  if (!a || !m || !d) return String(texto);
+  const [h, min] = (hora || '0:0').split(':').map(Number);
+  const f = new Date(a, m - 1, d, h || 0, min || 0);
+  return f.toLocaleDateString('es-CO', { day: 'numeric', month: 'long', year: 'numeric' })
+    + (conHora && hora ? ', ' + f.toLocaleTimeString('es-CO', { hour: 'numeric', minute: '2-digit' }) : '');
+};

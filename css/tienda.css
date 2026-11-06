@@ -403,6 +403,12 @@ dialog.dialogo--ficha { width: min(calc(100vw - 2rem), 820px); max-height: min(9
 .ficha-compra { display: flex; align-items: center; justify-content: space-between; gap: var(--e-3); flex-wrap: wrap; width: 100%; margin-top: var(--e-4); padding-top: var(--e-4); border-top: 1px solid var(--borde); }
 .ficha-precio .med-precio { font-size: var(--t-2xl); }
 .ficha-pregunta { display: inline-flex; align-items: center; gap: var(--e-2); min-height: 40px; margin-top: var(--e-2); font-size: var(--t-sm); font-weight: 600; }
+.ficha-enlaces { display: flex; flex-wrap: wrap; column-gap: var(--e-5); }
+.ficha-favorito { padding: 0; border: 0; background: none; color: var(--tinta-2); cursor: pointer; }
+.ficha-favorito:hover { color: var(--royal); }
+.ficha-favorito[aria-pressed="true"] { color: var(--burgundy); }
+.ficha-favorito[aria-pressed="true"] .ic { fill: currentColor; }
+.ficha-favorito:disabled { opacity: .6; cursor: progress; }
 .ficha-nota { margin-top: var(--e-1); font-size: var(--t-xs); color: var(--tinta-3); }
 @media (max-width: 640px) {
   .ficha { grid-template-columns: minmax(0,1fr); }
@@ -614,6 +620,13 @@ dialog.dialogo--ficha { width: min(calc(100vw - 2rem), 820px); max-height: min(9
 .perfil-hero-interior { display: flex; align-items: center; gap: var(--e-4); flex-wrap: wrap; }
 .avatar-grande { display: grid; place-items: center; width: 64px; height: 64px; border-radius: 50%; background: var(--royal-suave); color: var(--royal-700); font: 600 var(--t-xl) var(--fuente-titulo); overflow: hidden; }
 .perfil-info { flex: 1; min-width: 200px; }
+.perfil-foto { position: relative; flex-shrink: 0; }
+.avatar-grande img { width: 100%; height: 100%; object-fit: cover; }
+.perfil-foto-btn { position: absolute; right: -6px; bottom: -6px; width: 32px; height: 32px; min-width: 32px; min-height: 32px; border: 1px solid var(--borde-fuerte); border-radius: 50%; background: var(--superficie); color: var(--tinta-2); box-shadow: var(--s-1); }
+.perfil-foto-btn:hover { color: var(--royal); border-color: var(--royal); }
+.perfil-foto-btn .ic { width: 16px; height: 16px; }
+.cargando { padding: var(--e-5); text-align: center; color: var(--tinta-3); font-size: var(--t-sm); }
+.fav-nombre:hover { color: var(--royal); }
 .perfil-info h1 { font-size: var(--t-xl); overflow-wrap: anywhere; }
 .perfil-info p { font-size: var(--t-sm); color: var(--tinta-3); overflow-wrap: anywhere; }
 .tabs-wrap { position: sticky; top: var(--alto-barra); z-index: 20; background: var(--superficie); border-bottom: 1px solid var(--borde); }
@@ -697,7 +710,7 @@ dialog.dialogo--ficha { width: min(calc(100vw - 2rem), 820px); max-height: min(9
 .visor-nav-btn:hover:not(:disabled) { background: rgba(255,255,255,.28); }
 .visor-nav-btn:disabled { opacity: .3; cursor: default; }
 .visor-indicador { grid-column: 1 / -1; display: flex; justify-content: center; flex-wrap: wrap; gap: .4rem; }
-.visor-punto { width: 10px; height: 10px; border-radius: 50%; background: rgba(255,255,255,.35); cursor: pointer; }
+.visor-punto { width: 10px; height: 10px; min-width: 0; min-height: 0; padding: 0; border: 0; border-radius: 50%; background: rgba(255,255,255,.35); cursor: pointer; }
 .visor-punto.activo { background: #fff; }
 .visor-header { position: relative; padding: var(--e-5); background: var(--superficie-2); border-bottom: 1px dashed var(--borde-fuerte); color: var(--tinta-3); border-radius: var(--r-lg) var(--r-xl) 0 0; }
 .visor-num-pedido { font-size: var(--t-xs); overflow-wrap: anywhere; padding-right: 2.5rem; }
@@ -754,6 +767,7 @@ dialog.dialogo--ficha { width: min(calc(100vw - 2rem), 820px); max-height: min(9
 .resumen-items { padding-bottom: var(--e-3); margin-bottom: var(--e-3); border-bottom: 1px dashed var(--borde-fuerte); }
 .resumen-item { display: grid; grid-template-columns: minmax(0,1fr) auto auto; gap: var(--e-2); align-items: center; padding-block: .4rem; font-size: var(--t-sm); }
 .resumen-item-nombre { color: var(--tinta); font-weight: 600; overflow-wrap: anywhere; }
+.resumen-item-nombre small { display: block; font-weight: 400; color: var(--tinta-3); font-size: var(--t-xs); }
 .resumen-item-qty { color: var(--tinta-3); font-size: var(--t-xs); }
 .resumen-item-precio { font-weight: 700; color: var(--tinta); }
 .resumen-total-row { display: flex; justify-content: space-between; gap: var(--e-3); padding-block: .2rem; font-size: var(--t-sm); }
@@ -858,6 +872,9 @@ dialog.dialogo--ficha { width: min(calc(100vw - 2rem), 820px); max-height: min(9
   .recibo-wrap { padding: 0; max-width: none; }
   .recibo { border: 0; box-shadow: none; }
   .entra { animation: none; }
+  /* En papel siempre va el logotipo para fondo claro */
+  .recibo-header .logo-claro { display: block !important; }
+  .recibo-header .logo-oscuro { display: none !important; }
 }
 
 /* Motivo de mostrador: el resumen del pedido y el recibo se leen como una tira */
@@ -1068,4 +1085,24 @@ dialog.dialogo--ficha { width: min(calc(100vw - 2rem), 820px); max-height: min(9
   .hechos-pista { animation: none !important; width: auto; flex-wrap: wrap; justify-content: center; }
   .hecho-copia { display: none !important; }
   .hechos-pista li { white-space: normal; }
+}
+
+/* Fila de tabla sin datos (recibo sin pedido) */
+.tabla-vacia { padding: var(--e-6) var(--e-4); text-align: center; color: var(--tinta-3); }
+
+/* Fotos reales de producto: completas, centradas y sobre fondo blanco (las de los
+   proveedores vienen con fondo blanco y se verían recortadas o flotando sobre la placa) */
+.med-arte, .var-arte { grid-template-rows: minmax(0, 100%); }
+.med-arte img, .var-arte img { width: auto; max-width: 100%; height: 100%; min-height: 0; aspect-ratio: 1; padding: var(--e-1); border-radius: var(--r-sm); background: #fff; }
+.ficha-arte img { width: auto; max-width: 100%; padding: var(--e-3); border-radius: var(--r-md); background: #fff; }
+.med-arte:has(img), .var-arte:has(img), .ficha-arte:has(img) { filter: none; }
+
+/* Aviso sobre las imágenes de referencia (parecidas, no del producto exacto) */
+.med-arte, .var-arte, .ficha-arte { position: relative; }
+.arte-ref { position: absolute; left: var(--e-2); bottom: var(--e-2); padding: .1rem .45rem; border-radius: var(--r-full); background: rgba(15, 23, 42, .78); color: #fff; font-size: .62rem; font-weight: 600; letter-spacing: .01em; pointer-events: none; }
+.ficha-arte .arte-ref { left: var(--e-3); bottom: auto; top: var(--e-3); font-size: var(--t-xs); }
+.sug-arte .arte-ref { display: none; }
+.ficha-arte { overflow: hidden; }
+@media (max-width: 640px) {
+  .ficha-arte img { max-height: 130px; padding: var(--e-2); }
 }

@@ -3,6 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; frame-src https://www.google.com; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'">
+  <meta name="_csrf" content="0cNtD7zmDE5gqAAYlUH7WZwi-DWarYtf87Rkqnuy3WwvlLFgsqdZadqHPXhNnWUopmzPP6kV1Q2unepyxNZTmh7Q6l5O8dVU">
+  <meta name="_csrf_header" content="X-CSRF-TOKEN">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Medicamentos · Los Tres Hermanos</title>
   <meta name="description" content="Catálogo de medicamentos: busca por nombre, marca o categoría y elige presentación, concentración y marca.">
@@ -17,11 +19,10 @@
   <link rel="stylesheet" href="/DrogueriaYvariedadesLosTresHermanos/css/design-system.css">
   <link rel="stylesheet" href="/DrogueriaYvariedadesLosTresHermanos/css/tienda.css">
   <script>
+    // Estado de la cuenta que envía el servidor con la página (la sesión vive en el servidor)
+    window.CUENTA_INICIAL = {"disponible":false};
     document.documentElement.classList.add('js');
-    try {
-      var s = JSON.parse(sessionStorage.getItem('lth_cliente') || 'null');
-      if (s && s.rol === 'cliente') document.documentElement.classList.add('con-sesion');
-    } catch (e) {}
+    if (window.CUENTA_INICIAL && window.CUENTA_INICIAL.cliente) document.documentElement.classList.add('con-sesion');
     // Pantalla de entrada: solo la primera vez en la sesión y si no se pidió menos movimiento
     try {
       if (!sessionStorage.getItem('lth_entrada') && !matchMedia('(prefers-reduced-motion: reduce)').matches) {

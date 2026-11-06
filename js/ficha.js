@@ -15,10 +15,35 @@ window.Ficha = (function () {
   const desde = (m) => Math.min(...m.presentaciones.map(p => p.precio));
 
   function precioHTML(precio, clase) {
-    const pct = window.Suscripcion ? Suscripcion.descuento() : 0;
-    if (!pct) return `<span class="${clase} num">${formatPrecio(precio)}</span>`;
+    const conPlan = Suscripcion.aplicar(precio);
+    if (conPlan === precio) return `<span class="${clase} num">${formatPrecio(precio)}</span>`;
     return `<span class="${clase}-original num">${formatPrecio(precio)}</span>
-      <span class="${clase} con-descuento num">${formatPrecio(Math.round(precio * (1 - pct / 100)))}</span>`;
+      <span class="${clase} con-descuento num">${formatPrecio(conPlan)}</span>`;
+  }
+
+  // ── Favoritos del cliente (se guardan en su cuenta) ──────
+  let favoritos = null;
+  function cargarFavoritos() {
+    if (favoritos || !Cuenta.cliente()) return Promise.resolve(favoritos);
+    return Api.pedir('/api/cuenta/favoritos').then(lista => (favoritos = new Set(lista.map(Number)))).catch(() => null);
+  }
+  function botonFavorito(id) {
+    if (!Cuenta.cliente()) return '';
+    const guardado = favoritos && favoritos.has(id);
+    return `<button type="button" class="ficha-pregunta ficha-favorito" data-favorito="${id}" aria-pressed="${guardado}">${ic('corazon')} ${guardado ? 'Guardado en favoritos' : 'Guardar en favoritos'}</button>`;
+  }
+  function alternarFavorito(boton) {
+    const id = +boton.dataset.favorito;
+    const guardado = favoritos && favoritos.has(id);
+    boton.disabled = true;
+    Api.pedir('/api/cuenta/favoritos/' + id, { metodo: guardado ? 'DELETE' : 'POST' })
+      .then(() => {
+        if (!favoritos) favoritos = new Set();
+        guardado ? favoritos.delete(id) : favoritos.add(id);
+        boton.outerHTML = botonFavorito(id);
+        Toast.mostrar(guardado ? 'Quitado de tus favoritos' : 'Guardado en tus favoritos');
+      })
+      .catch(err => { boton.disabled = false; Toast.mostrar(err.message); });
   }
 
   function etiquetas(p) {
@@ -73,7 +98,7 @@ window.Ficha = (function () {
         <span class="med-categoria">${esc(LABELS_CAT[m.cat] || m.cat)}</span>
         <h2 class="med-nombre"><button type="button" data-ficha="medicamento" data-id="${m.id}">${esc(m.nombre)}</button></h2>
         <p class="med-desc">${esc(m.desc)}</p>
-        <p class="med-formas">${n} presentacion${n === 1 ? '' : 'es'} · ${esc(conc.slice(0, 2).join(', '))}${conc.length > 2 ? '…' : ''}</p>
+        <p class="med-formas">${n} ${n === 1 ? 'presentación' : 'presentaciones'} · ${esc(conc.slice(0, 2).join(', '))}${conc.length > 2 ? '…' : ''}</p>
         ${m.formula || m.disponibilidad !== 'sin-dato' ? `<div class="med-etiquetas">${etiquetas(m)}</div>` : ''}
       </div>
       <div class="med-footer">
@@ -145,7 +170,8 @@ window.Ficha = (function () {
           <div class="ficha-precio med-precio-wrap">${precioHTML(pres.precio, 'med-precio')}<span class="med-precio-unit">${esc(pres.tipo)} · ${esc(pres.conc)} · ${esc(pres.marca)}</span></div>
           <button type="button" class="btn btn--primario btn-agregar" data-id="${med.id}" ${agotado ? 'disabled' : ''}>${ic('carrito')} ${agotado ? 'Agotado' : 'Agregar al carrito'}</button>
         </div>
-        <a class="ficha-pregunta" href="${WHATSAPP}?text=${pregunta}" target="_blank" rel="noopener">${ic('whatsapp')} Preguntar por WhatsApp</a>
+        <div class="ficha-enlaces"><a class="ficha-pregunta" href="${WHATSAPP}?text=${pregunta}" target="_blank" rel="noopener">${ic('whatsapp')} Preguntar por WhatsApp</a>${botonFavorito(med.id)}</div>
+        ${!med.foto && med.imagen ? '<p class="ficha-nota">La imagen es de referencia: el empaque que recibes puede ser de otra marca o laboratorio, con el mismo medicamento y concentración.</p>' : ''}
         <p class="ficha-nota">Consulta a un profesional de la salud antes de usar cualquier medicamento.</p>
       </div>`;
   }
@@ -164,8 +190,9 @@ window.Ficha = (function () {
           <div class="ficha-precio med-precio-wrap">${precioHTML(v.precio, 'med-precio')}</div>
           <button type="button" class="btn btn--primario btn-agregar-var" data-id="${v.id}" ${agotado ? 'disabled' : ''}>${ic('carrito')} ${agotado ? 'Agotado' : 'Agregar al carrito'}</button>
         </div>
-        <a class="ficha-pregunta" href="${WHATSAPP}?text=${pregunta}" target="_blank" rel="noopener">${ic('whatsapp')} Preguntar por WhatsApp</a>
-      </div>`;
+        <div class="ficha-enlaces"><a class="ficha-pregunta" href="${WHATSAPP}?text=${pregunta}" target="_blank" rel="noopener">${ic('whatsapp')} Preguntar por WhatsApp</a>${botonFavorito(v.id)}</div>
+      </div>
+        ${!v.foto && v.imagen ? '<p class="ficha-nota">La imagen es de referencia: el producto puede variar en presentación o diseño.</p>' : ''}`;
   }
 
   function crearDialogo() {
@@ -201,8 +228,14 @@ window.Ficha = (function () {
     if (!p) return false;
     d.dataset.tipo = tipo;
     d.dataset.id = id;
-    d.querySelector('#ficha-contenido').innerHTML = tipo === 'medicamento' ? pintarMedicamento(p) : pintarVariedad(p);
+    const pintar = () => { d.querySelector('#ficha-contenido').innerHTML = tipo === 'medicamento' ? pintarMedicamento(p) : pintarVariedad(p); };
+    pintar();
     if (!d.open) d.showModal();
+    // Los favoritos llegan del servidor: al recibirlos se marca el botón
+    if (Cuenta.cliente() && !favoritos) cargarFavoritos().then(() => { if (d.open && d.dataset.id === String(id)) {
+      const b = d.querySelector('[data-favorito]');
+      if (b) b.outerHTML = botonFavorito(id);
+    } });
     return true;
   }
 
@@ -246,6 +279,8 @@ window.Ficha = (function () {
       entrada.click();
       return;
     }
+    const fav = e.target.closest('[data-favorito]');
+    if (fav) { alternarFavorito(fav); return; }
     const abre = e.target.closest('[data-ficha]');
     if (abre) { abrir(abre.dataset.ficha, +abre.dataset.id); return; }
 
@@ -256,8 +291,7 @@ window.Ficha = (function () {
       const pres = actual(m);
       volar(med);
       Carrito.agregar({
-        id: pres.id, nombre: m.nombre, detalle: `${pres.conc} · ${pres.tipo} · ${pres.marca}`,
-        precio: window.Suscripcion ? Suscripcion.aplicar(pres.precio) : pres.precio, imagen: m.imagen
+        tipo: 'medicamento', presentacion: pres.id, nombre: m.nombre, detalle: `${pres.conc} · ${pres.tipo} · ${pres.marca}`
       });
       renderDrawer();
       confirmar(med);
@@ -270,9 +304,7 @@ window.Ficha = (function () {
       const v = buscarVar(+vr.dataset.id);
       if (!v) return;
       volar(vr);
-      Carrito.agregar({
-        id: v.id, nombre: v.nombre, precio: window.Suscripcion ? Suscripcion.aplicar(v.precio) : v.precio, imagen: v.imagen
-      });
+      Carrito.agregar({ tipo: 'variedad', producto: v.id, nombre: v.nombre, detalle: v.contenido || '' });
       renderDrawer();
       confirmar(vr);
       cerrarTrasAgregar();

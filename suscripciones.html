@@ -3,6 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; frame-src https://www.google.com; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'">
+  <meta name="_csrf" content="NRa3Nb2iMkACbQhHmR7D4-2jkNslXRmrVHoyIbzT7pLEBmilBSHUA4zEAiQvD2sl_zP3hdnBvbkcaSqGZENRFtrh26XzMliX">
+  <meta name="_csrf_header" content="X-CSRF-TOKEN">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Suscripciones · Los Tres Hermanos</title>
   <meta name="description" content="Planes de suscripción con descuento en medicamentos y variedades.">
@@ -17,11 +19,10 @@
   <link rel="stylesheet" href="/DrogueriaYvariedadesLosTresHermanos/css/design-system.css">
   <link rel="stylesheet" href="/DrogueriaYvariedadesLosTresHermanos/css/tienda.css">
   <script>
+    // Estado de la cuenta que envía el servidor con la página (la sesión vive en el servidor)
+    window.CUENTA_INICIAL = {"disponible":false};
     document.documentElement.classList.add('js');
-    try {
-      var s = JSON.parse(sessionStorage.getItem('lth_cliente') || 'null');
-      if (s && s.rol === 'cliente') document.documentElement.classList.add('con-sesion');
-    } catch (e) {}
+    if (window.CUENTA_INICIAL && window.CUENTA_INICIAL.cliente) document.documentElement.classList.add('con-sesion');
     // Pantalla de entrada: solo la primera vez en la sesión y si no se pidió menos movimiento
     try {
       if (!sessionStorage.getItem('lth_entrada') && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
@@ -147,7 +148,7 @@
             <li class="plan-beneficio">Acceso completo al catálogo</li>
             <li class="plan-beneficio">Pedidos por WhatsApp</li>
           </ul>
-          <button class="btn btn--secundario btn--bloque btn-plan" type="button" onclick="seleccionarPlan('basico',3,4900)">Suscribirme</button>
+          <button class="btn btn--secundario btn--bloque btn-plan" type="button" onclick=\"seleccionarPlan('basico')\">Suscribirme</button>
         </article>
         <article class="plan-card" data-plan="estandar" data-descuento="5" data-precio="9900">
           <span class="plan-icono"><svg class="ic" aria-hidden="true"><use href="/DrogueriaYvariedadesLosTresHermanos/img/iconos.svg#capsula"/></svg></span>
@@ -159,7 +160,7 @@
             <li class="plan-beneficio">Acceso completo al catálogo</li>
             <li class="plan-beneficio">Pedidos por WhatsApp</li>
           </ul>
-          <button class="btn btn--secundario btn--bloque btn-plan" type="button" onclick="seleccionarPlan('estandar',5,9900)">Suscribirme</button>
+          <button class="btn btn--secundario btn--bloque btn-plan" type="button" onclick=\"seleccionarPlan('estandar')\">Suscribirme</button>
         </article>
         <article class="plan-card popular" data-plan="regular" data-descuento="10" data-precio="14900">
           <span class="badge-popular">Recomendado</span>
@@ -173,7 +174,7 @@
             <li class="plan-beneficio">Pedidos por WhatsApp</li>
             <li class="plan-beneficio">Domicilio prioritario</li>
           </ul>
-          <button class="btn btn--primario btn--bloque btn-plan" type="button" onclick="seleccionarPlan('regular',10,14900)">Suscribirme</button>
+          <button class="btn btn--primario btn--bloque btn-plan" type="button" onclick=\"seleccionarPlan('regular')\">Suscribirme</button>
         </article>
         <article class="plan-card" data-plan="premium" data-descuento="15" data-precio="19900">
           <span class="plan-icono plan-icono--vino"><svg class="ic" aria-hidden="true"><use href="/DrogueriaYvariedadesLosTresHermanos/img/iconos.svg#corona"/></svg></span>
@@ -188,7 +189,7 @@
             <li class="plan-beneficio">Acceso anticipado a ofertas</li>
             <li class="plan-beneficio">Acceso exclusivo a lanzamientos</li>
           </ul>
-          <button class="btn btn--oscuro btn--bloque btn-plan" type="button" onclick="seleccionarPlan('premium',15,19900)">Suscribirme</button>
+          <button class="btn btn--oscuro btn--bloque btn-plan" type="button" onclick=\"seleccionarPlan('premium')\">Suscribirme</button>
         </article>
       </div>
     </section>
@@ -229,11 +230,11 @@
           </div>
           <div class="faq-item">
             <button class="faq-pregunta" type="button" onclick="toggleFaq(this)">¿El descuento aplica a todos los productos?<svg class="ic chevron" aria-hidden="true"><use href="/DrogueriaYvariedadesLosTresHermanos/img/iconos.svg#chevron-abajo"/></svg></button>
-            <div class="faq-respuesta"><div>Sí, aplica a todos los medicamentos y variedades de la tienda. Se calcula sobre el precio de cada presentación o producto al agregarlo al carrito.</div></div>
+            <div class="faq-respuesta"><div>Sí, aplica a todos los medicamentos y variedades de la tienda. Se calcula sobre el precio de cada presentación o producto, y el valor final lo confirma la tienda al recibir tu pedido.</div></div>
           </div>
           <div class="faq-item">
             <button class="faq-pregunta" type="button" onclick="toggleFaq(this)">¿Cómo pago la suscripción?<svg class="ic chevron" aria-hidden="true"><use href="/DrogueriaYvariedadesLosTresHermanos/img/iconos.svg#chevron-abajo"/></svg></button>
-            <div class="faq-respuesta"><div>Puedes pagar por Nequi, Daviplata, PSE o Bancolombia y enviar tu comprobante, o pagar en efectivo en la tienda. Cuando el pago se verifica, el equipo activa tu plan por 30 días.</div></div>
+            <div class="faq-respuesta"><div>Puedes pagar en efectivo en la droguería, o por los medios de pago en línea que aparezcan en la página de pago y enviar tu comprobante. Cuando el pago se verifica, el equipo activa tu plan por 30 días.</div></div>
           </div>
         </div>
       </div>
@@ -365,206 +366,160 @@
 
   <script>
     // ── Estado del plan seleccionado pendiente de confirmar ──
+    const WHATSAPP = 'https://wa.me/573225065554';
     let planPendiente = null;
+    let pagoEnRevision = null;
 
     const PLANES_INFO = {
-      basico:   { icono:'brote',  nombre:'Plan Básico',    descuento:3,  precio:4900  },
-      estandar: { icono:'capsula',  nombre:'Plan Estándar',  descuento:5,  precio:9900  },
-      regular:  { icono:'hospital',  nombre:'Plan Regular',   descuento:10, precio:14900 },
-      premium:  { icono:'corona',  nombre:'Plan Premium',   descuento:15, precio:19900 }
+      basico:   { icono: 'brote' },
+      estandar: { icono: 'capsula' },
+      regular:  { icono: 'hospital' },
+      premium:  { icono: 'corona' }
     };
 
-    // ── Abrir modal de confirmación ──
-    // ── Verificar si hay sesión activa ──
-    function haySession() {
-      try {
-        const sc = sessionStorage.getItem('lth_cliente');
-        if (!sc) return false;
-        const cliente = JSON.parse(sc);
-        // Aceptar cualquier sesión real (no invitado)
-        return cliente && cliente.correo;
-      } catch(e) { return false; }
-    }
+    function seleccionarPlan(clave) {
+      const plan = Seguridad.planCanonico(clave);
+      if (!plan) return;
 
-    function seleccionarPlan(nombre, descuento, precio) {
-      const info = PLANES_INFO[nombre];
-      if (!info) return;
-
-      // ── Verificar sesión antes de continuar ──
-      if (!haySession()) {
-        // Guardar plan pendiente para retomar después del login
-        try {
-          sessionStorage.setItem('lth_plan_pendiente', JSON.stringify({ nombre, descuento, precio }));
-        } catch(e) {}
-        mostrarAlertaSesion(info.nombre);
+      // Sin cuentas en línea, el plan se coordina por WhatsApp
+      if (!Cuenta.disponible()) {
+        const mensaje = `Hola, quiero suscribirme al plan ${plan.nombre} (${plan.descuento}% de descuento, ${formatPrecio(plan.precio)} al mes). ¿Cómo puedo pagarlo?`;
+        window.open(`${WHATSAPP}?text=${encodeURIComponent(mensaje)}`, '_blank', 'noopener');
+        return;
+      }
+      if (!Cuenta.cliente()) {
+        planPendiente = plan;
+        mostrarAlertaSesion('Plan ' + plan.nombre);
+        return;
+      }
+      if (pagoEnRevision) {
+        Toast.mostrar(`Ya enviaste un pago del plan ${pagoEnRevision.plan}. Espera a que la droguería lo revise.`);
         return;
       }
 
-      planPendiente = { nombre, descuento, precio };
-
-      document.getElementById('modal-icono').innerHTML = Experiencia.icono(info.icono);
-      document.getElementById('modal-titulo').textContent          = info.nombre;
-      document.getElementById('modal-descuento-badge').textContent = descuento + '% de descuento';
-      document.getElementById('modal-texto').textContent =
-        `Para activar el ${info.nombre} envía tu comprobante de pago. Cuando se apruebe, tu descuento del ${descuento}% se aplicará en toda la tienda.`;
-
+      planPendiente = plan;
+      const sus = Suscripcion.obtener();
+      document.getElementById('modal-icono').innerHTML = Experiencia.icono(PLANES_INFO[plan.clave].icono);
+      document.getElementById('modal-titulo').textContent          = 'Plan ' + plan.nombre;
+      document.getElementById('modal-descuento-badge').textContent = plan.descuento + '% de descuento';
+      document.getElementById('modal-texto').textContent = sus && sus.estado === 'activa'
+        ? `Paga ${formatPrecio(plan.precio)} y envía el comprobante. Cuando la droguería lo apruebe, tu plan se renueva por 30 días más.`
+        : `Paga ${formatPrecio(plan.precio)} y envía el comprobante. Cuando la droguería lo apruebe, tu descuento del ${plan.descuento}% se aplica en toda la tienda.`;
       document.getElementById('modal-sus').classList.add('visible');
     }
 
-    // ── Mostrar alerta de sesión requerida ──
     function mostrarAlertaSesion(nombrePlan) {
-      const alerta = document.getElementById('alerta-sesion');
-      const msg    = document.getElementById('alerta-sesion-msg');
-      if (msg) msg.textContent =
-        `Para suscribirte al ${nombrePlan} necesitas iniciar sesión o registrarte.`;
-      if (alerta) alerta.classList.add('visible');
+      const msg = document.getElementById('alerta-sesion-msg');
+      if (msg) msg.textContent = `Para suscribirte al ${nombrePlan} necesitas iniciar sesión o crear tu cuenta.`;
+      document.getElementById('alerta-sesion').classList.add('visible');
     }
 
     function cerrarAlertaSesion() {
-      const alerta = document.getElementById('alerta-sesion');
-      if (alerta) alerta.classList.remove('visible');
-      try { sessionStorage.removeItem('lth_plan_pendiente'); } catch(e) {}
+      document.getElementById('alerta-sesion').classList.remove('visible');
+      planPendiente = null;
     }
 
-    function irAlLogin() {
-      window.location.href = '/DrogueriaYvariedadesLosTresHermanos/login?retorno=suscripciones';
+    // Al volver de iniciar sesión se abre el plan que había elegido
+    function retorno() {
+      return 'suscripciones' + (planPendiente ? '?plan=' + planPendiente.clave : '');
     }
-
-    function irAlRegistro() {
-      window.location.href = '/DrogueriaYvariedadesLosTresHermanos/registro?retorno=suscripciones';
-    }
-
-    // ── Al cargar: si volvió del login con plan pendiente, retomar ──
-    (function retomarPlanPendiente() {
-      if (!haySession()) return;
-      try {
-        const pendiente = sessionStorage.getItem('lth_plan_pendiente');
-        if (!pendiente) return;
-        const p = JSON.parse(pendiente);
-        sessionStorage.removeItem('lth_plan_pendiente');
-        // Pequeño delay para que la UI esté lista
-        setTimeout(() => seleccionarPlan(p.nombre, p.descuento, p.precio), 300);
-      } catch(e) {}
-    })();
+    function irAlLogin()    { window.location.href = '/DrogueriaYvariedadesLosTresHermanos/login?retorno=' + encodeURIComponent(retorno()); }
+    function irAlRegistro() { window.location.href = '/DrogueriaYvariedadesLosTresHermanos/registro?retorno=' + encodeURIComponent(retorno()); }
 
     function cerrarModal() {
       document.getElementById('modal-sus').classList.remove('visible');
       planPendiente = null;
     }
 
-    // ── Confirmar y guardar suscripción ──
     function confirmarPlan() {
       if (!planPendiente) return;
-      // En lugar de activar directo, ir al formulario de pago
+      const clave = planPendiente.clave;
       cerrarModal();
-      abrirPagoPlan(planPendiente);
+      window.location.href = '/pago-suscripcion?plan=' + clave;
     }
 
-    // ── Abrir formulario de pago ──
-    function abrirPagoPlan(plan) {
-      // Guardar plan seleccionado para el formulario
-      try { sessionStorage.setItem('lth_plan_pago', JSON.stringify(plan)); } catch(e) {}
-      window.location.href = '/pago-suscripcion';
-    }
-
-    // ── Renovar plan (vuelve a seleccionarlo) ──
     function renovarPlan() {
-      const sus = getSuscripcionActiva();
-      if (!sus) return;
-      seleccionarPlan(sus.plan, sus.descuento, sus.precio);
-    }
-
-    // ── Cancelar suscripción ──
-    function cancelarSuscripcion() {
-      if (!confirm('¿Seguro que quieres cancelar tu suscripción? Perderás tu descuento.')) return;
-      try { localStorage.removeItem('lth_suscripcion'); } catch(e) {}
-      Suscripcion.cancelar();
-      actualizarUI();
-    }
-
-    // ── Leer suscripción activa (solo planes aprobados, no solicitudes pendientes) ──
-    function getSuscripcionActiva() {
       const sus = Suscripcion.obtener();
-      return sus && sus.estado === 'activo' ? sus : null;
+      if (sus) seleccionarPlan(sus.plan);
     }
 
-    // ── Actualizar UI según el estado ──
+    async function cancelarSuscripcion() {
+      const sus = Suscripcion.obtener();
+      if (!sus) return;
+      const si = await Experiencia.confirmar({
+        titulo: 'Cancelar tu plan',
+        texto: `Conservas el ${sus.descuento}% de descuento hasta el ${formatFecha(sus.vence)}. Después el plan no se renueva.`,
+        accion: 'Cancelar el plan', peligro: true
+      });
+      if (!si) return;
+      try {
+        await Api.pedir('/api/cuenta/suscripcion/cancelar', { metodo: 'POST' });
+        await Cuenta.recargar();
+        Toast.mostrar('Plan cancelado. Tu descuento sigue hasta que venza.');
+        actualizarUI();
+      } catch (err) { Toast.mostrar(err.message); }
+    }
+
     function actualizarUI() {
-      const sus       = getSuscripcionActiva();
-      const banner    = document.getElementById('banner-plan-activo');
-      const badgeHero = document.getElementById('badge-hero-activo');
+      const sus        = Suscripcion.obtener();
+      const banner     = document.getElementById('banner-plan-activo');
+      const badgeHero  = document.getElementById('badge-hero-activo');
       const alertaVenc = document.getElementById('alerta-vencimiento');
+      const esc        = Seguridad.esc;
 
-      if (sus) {
-        const info = PLANES_INFO[sus.plan] || { nombre: sus.plan, icono: 'estrella' };
-
-        // Calcular días restantes
-        let diasRestantes = null;
-        let fechaTexto = '';
-        if (sus.fechaVencimiento) {
-          const venc = new Date(sus.fechaVencimiento);
-          diasRestantes = Math.ceil((venc - new Date()) / (1000 * 60 * 60 * 24));
-          if (diasRestantes <= 0) {
-            // Venció — cancelar y recargar
-            localStorage.removeItem('lth_suscripcion');
-            actualizarUI();
-            return;
-          }
-          fechaTexto = ` · Vence en ${diasRestantes} día${diasRestantes === 1 ? '' : 's'}`;
-        }
-
-        banner.classList.add('visible');
-        document.getElementById('banner-plan-nombre').textContent = info.nombre + ' activo';
-        document.getElementById('banner-plan-desc').textContent =
-          `${sus.descuento}% de descuento activo en toda la tienda${fechaTexto}`;
-        badgeHero.innerHTML =
-          `<div class="sus-badge-activo"><span class="dot"></span>${info.nombre} activo · ${sus.descuento}% descuento${fechaTexto}</div>`;
-
-        // Alerta de vencimiento próximo (≤5 días)
-        if (alertaVenc && diasRestantes !== null && diasRestantes <= 5) {
-          alertaVenc.style.display = 'flex';
-          const txt = alertaVenc.querySelector('.alerta-venc-txt');
-          if (txt) txt.textContent =
-            `Tu plan vence en ${diasRestantes} día${diasRestantes === 1 ? '' : 's'}. Renuévalo para no perder tu descuento.`;
-        } else if (alertaVenc) {
-          alertaVenc.style.display = 'none';
-        }
-
-      } else {
+      document.querySelectorAll('.plan-card').forEach(card => card.classList.remove('plan-actual'));
+      alertaVenc.style.display = 'none';
+      if (!sus) {
         banner.classList.remove('visible');
         badgeHero.innerHTML = '';
-        if (alertaVenc) alertaVenc.style.display = 'none';
+        return;
       }
-
-      // Resaltar la tarjeta del plan activo con borde verde
-      document.querySelectorAll('.plan-card').forEach(card => card.classList.remove('plan-actual'));
-      if (sus) {
-        const cardActiva = document.querySelector(`.plan-card[data-plan="${sus.plan}"]`);
-        if (cardActiva) cardActiva.classList.add('plan-actual');
+      const dias = Suscripcion.diasRestantes();
+      const cancelada = sus.estado === 'cancelada';
+      const vence = dias !== null ? ` · Vence en ${dias} día${dias === 1 ? '' : 's'}` : '';
+      banner.classList.add('visible');
+      document.getElementById('banner-plan-nombre').textContent = `Plan ${sus.nombre} ${cancelada ? 'cancelado' : 'activo'}`;
+      document.getElementById('banner-plan-desc').textContent = cancelada
+        ? `Tu ${sus.descuento}% de descuento sigue hasta el ${formatFecha(sus.vence)}`
+        : `${sus.descuento}% de descuento en toda la tienda${vence}`;
+      banner.querySelector('.btn--peligro').hidden = cancelada;
+      badgeHero.innerHTML = `<div class="sus-badge-activo"><span class="dot"></span>Plan ${esc(sus.nombre)} · ${esc(sus.descuento)}% de descuento${esc(vence)}</div>`;
+      if (!cancelada && dias !== null && dias <= 5) {
+        alertaVenc.style.display = 'flex';
+        const txt = alertaVenc.querySelector('.alerta-venc-txt');
+        if (txt) txt.textContent = `Tu plan vence en ${dias} día${dias === 1 ? '' : 's'}. Renuévalo para no perder tu descuento.`;
       }
+      document.querySelector(`.plan-card[data-plan="${CSS.escape(sus.plan)}"]`)?.classList.add('plan-actual');
     }
 
-    // ── FAQ acordeón ──
+    // ── Preguntas frecuentes ──
     function toggleFaq(btn) {
       const item = btn.closest('.faq-item');
       const estaAbierto = item.classList.contains('abierto');
-      document.querySelectorAll('.faq-item').forEach(i => i.classList.remove('abierto'));
-      if (!estaAbierto) item.classList.add('abierto');
+      document.querySelectorAll('.faq-item').forEach(i => { i.classList.remove('abierto'); i.querySelector('.faq-pregunta').setAttribute('aria-expanded', 'false'); });
+      if (!estaAbierto) { item.classList.add('abierto'); btn.setAttribute('aria-expanded', 'true'); }
     }
 
-    // Cerrar modal con Escape
     document.addEventListener('keydown', e => {
-      if (e.key === 'Escape') cerrarModal();
+      if (e.key === 'Escape') { cerrarModal(); cerrarAlertaSesion(); }
     });
     document.getElementById('modal-sus').addEventListener('click', e => {
       if (e.target === e.currentTarget) cerrarModal();
     });
 
-    // Inicializar
     document.addEventListener('DOMContentLoaded', () => {
-      actualizarUI();
       initAvatar({ perfilUrl: '/DrogueriaYvariedadesLosTresHermanos/perfil', logoutUrl: '/DrogueriaYvariedadesLosTresHermanos/' });
-      verificarVencimientoSuscripcion();
+      document.querySelectorAll('.faq-pregunta').forEach(b => b.setAttribute('aria-expanded', 'false'));
+      actualizarUI();
+      if (!Cuenta.disponible()) {
+        document.querySelectorAll('.btn-plan').forEach(b => { b.textContent = 'Pedir por WhatsApp'; });
+        return;
+      }
+      const elegido = new URLSearchParams(location.search).get('plan');
+      const listo = Cuenta.cliente()
+        ? Api.pedir('/api/cuenta/solicitudes').then(s => { pagoEnRevision = s.find(x => x.estado === 'pendiente') || null; }).catch(() => {})
+        : Promise.resolve();
+      listo.then(() => { if (elegido && Cuenta.cliente()) seleccionarPlan(elegido); });
     });
   </script>
   <script src="/DrogueriaYvariedadesLosTresHermanos/js/modo-estatico.js"></script>

@@ -40,23 +40,27 @@
       return;
     }
 
-    body.innerHTML = items.map(item => `
+    body.innerHTML = items.map(item => {
+      const precio = Carrito.precioCliente(item);
+      return `
       <div class="carrito-item">
-        <div class="carrito-item-miniatura">${ic(String(item.id).includes('-') ? 'capsula' : 'bolsa')}</div>
+        <div class="carrito-item-miniatura">${ic(item.tipo === 'medicamento' ? 'capsula' : 'bolsa')}</div>
         <div class="carrito-item-info">
           <div class="carrito-item-nombre">${esc(item.nombre)}</div>
           ${item.detalle ? `<div class="carrito-item-detalle">${esc(item.detalle)}</div>` : ''}
-          <div class="carrito-item-precio">${formatPrecio(item.precio)}</div>
+          <div class="carrito-item-precio">${precio < item.precio ? `<s class="num">${formatPrecio(item.precio)}</s> ` : ''}<span class="num">${formatPrecio(precio)}</span></div>
+          ${item.agotado ? '<div class="carrito-item-detalle">Agotado por ahora: la droguería te confirmará si lo consigue.</div>' : ''}
         </div>
         <div class="carrito-item-controles">
           <div class="selector-cantidad">
-            <button class="btn-qty" data-id="${esc(item.id)}" data-delta="-1" aria-label="Quitar una unidad">${ic('menos')}</button>
+            <button class="btn-qty" data-id="${esc(item.clave)}" data-delta="-1" aria-label="Quitar una unidad">${ic('menos')}</button>
             <span class="qty-num">${esc(item.cantidad)}</span>
-            <button class="btn-qty" data-id="${esc(item.id)}" data-delta="1" aria-label="Agregar una unidad">${ic('mas')}</button>
+            <button class="btn-qty" data-id="${esc(item.clave)}" data-delta="1" aria-label="Agregar una unidad">${ic('mas')}</button>
           </div>
-          <button class="btn-eliminar-item" data-eliminar="${esc(item.id)}" aria-label="Eliminar producto">${ic('papelera')}</button>
+          <button class="btn-eliminar-item" data-eliminar="${esc(item.clave)}" aria-label="Eliminar producto">${ic('papelera')}</button>
         </div>
-      </div>`).join('');
+      </div>`;
+    }).join('');
 
     obtener('total-valor').textContent = formatPrecio(Carrito.total());
     footer.style.display = '';
