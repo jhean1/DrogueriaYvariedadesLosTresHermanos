@@ -191,8 +191,8 @@ window.Ficha = (function () {
           <button type="button" class="btn btn--primario btn-agregar-var" data-id="${v.id}" ${agotado ? 'disabled' : ''}>${ic('carrito')} ${agotado ? 'Agotado' : 'Agregar al carrito'}</button>
         </div>
         <div class="ficha-enlaces"><a class="ficha-pregunta" href="${WHATSAPP}?text=${pregunta}" target="_blank" rel="noopener">${ic('whatsapp')} Preguntar por WhatsApp</a>${botonFavorito(v.id)}</div>
-      </div>
-        ${!v.foto && v.imagen ? '<p class="ficha-nota">La imagen es de referencia: el producto puede variar en presentación o diseño.</p>' : ''}`;
+        ${!v.foto && v.imagen ? '<p class="ficha-nota">La imagen es de referencia: el producto puede variar en presentación o diseño.</p>' : ''}
+      </div>`;
   }
 
   function crearDialogo() {
