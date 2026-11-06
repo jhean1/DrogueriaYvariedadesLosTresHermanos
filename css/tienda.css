@@ -1106,3 +1106,12 @@ dialog.dialogo--ficha { width: min(calc(100vw - 2rem), 820px); max-height: min(9
 @media (max-width: 640px) {
   .ficha-arte img { max-height: 130px; padding: var(--e-2); }
 }
+.arte-ref-corto { display: none; }
+@media (max-width: 640px) {
+  /* En el celular las tarjetas son angostas: etiqueta corta, arriba, sin tapar la foto */
+  .med-arte .arte-ref, .var-arte .arte-ref { top: var(--e-1); bottom: auto; left: var(--e-1); padding: .05rem .4rem; font-size: .58rem; }
+  .med-arte .arte-ref-largo, .var-arte .arte-ref-largo { display: none; }
+  .med-arte .arte-ref-corto, .var-arte .arte-ref-corto { display: inline; }
+  /* Con foto, la presentación ya se lee debajo: la etiqueta no se monta sobre la imagen */
+  .ficha-arte:has(img) .ficha-arte-etiqueta { display: none; }
+}

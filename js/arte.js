@@ -48,7 +48,7 @@ window.Arte = (function () {
 
   // Imagen parecida, mostrada mientras no exista la foto del producto exacto
   function referencia(url) {
-    return `<img src="${Seguridad.esc(url)}" alt="" loading="lazy"><span class="arte-ref">Imagen de referencia</span>`;
+    return `<img src="${Seguridad.esc(url)}" alt="" loading="lazy"><span class="arte-ref"><span class="arte-ref-largo">Imagen de r</span><span class="arte-ref-corto">R</span>eferencia</span>`;
   }
 
   function medicamento(med, presentacion) {
