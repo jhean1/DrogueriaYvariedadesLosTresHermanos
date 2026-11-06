@@ -90,7 +90,7 @@ window.Ficha = (function () {
   // ── Tarjetas ──────────────────────────────────────────────
   function tarjetaMedicamento(m, i) {
     const n = m.presentaciones.length;
-    const conc = [...new Set(m.presentaciones.map(p => p.conc))];
+    const conc = [...new Set(m.presentaciones.map(p => p.conc))].filter(c => c && c !== 'No aplica');
     return `<article class="med-card" data-med="${m.id}" style="--i:${Math.min(i, 8)}">
       <button type="button" class="med-arte" data-ficha="medicamento" data-id="${m.id}" aria-label="Ver detalles de ${esc(m.nombre)}" tabindex="-1">${Arte.medicamento(m, m.presentaciones[0])}</button>
       ${botonImagen(m)}
@@ -98,7 +98,7 @@ window.Ficha = (function () {
         <span class="med-categoria">${esc(LABELS_CAT[m.cat] || m.cat)}</span>
         <h2 class="med-nombre"><button type="button" data-ficha="medicamento" data-id="${m.id}">${esc(m.nombre)}</button></h2>
         <p class="med-desc">${esc(m.desc)}</p>
-        <p class="med-formas">${n} ${n === 1 ? 'presentación' : 'presentaciones'} · ${esc(conc.slice(0, 2).join(', '))}${conc.length > 2 ? '…' : ''}</p>
+        <p class="med-formas">${n} ${n === 1 ? 'presentación' : 'presentaciones'}${conc.length ? ' · ' + esc(conc.slice(0, 2).join(', ')) + (conc.length > 2 ? '…' : '') : ''}</p>
         ${m.formula || m.disponibilidad !== 'sin-dato' ? `<div class="med-etiquetas">${etiquetas(m)}</div>` : ''}
       </div>
       <div class="med-footer">
