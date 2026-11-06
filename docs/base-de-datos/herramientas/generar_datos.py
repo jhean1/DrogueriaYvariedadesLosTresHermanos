@@ -74,6 +74,11 @@ def leer_catalogo():
         if f['categoria_codigo'] not in por_codigo:
             por_codigo[f['categoria_codigo']] = len(cats) + 1
             cats.append((len(cats) + 1, f['categoria_codigo'], f['categoria'], f['tipo']))
+    # Imágenes de cada producto (fotos-productos/): la foto exacta y, si no hay, una de referencia
+    imagenes = {}
+    ruta_imagenes = RAIZ / 'docs/base-de-datos/datos/imagenes-productos.csv'
+    if ruta_imagenes.exists():
+        imagenes = {int(r['producto_id']): r for r in csv.DictReader(open(ruta_imagenes, encoding='utf-8'))}
     prods, vistos, pres = [], set(), []
     for f in filas:
         pid = int(f['producto_id'])
@@ -81,7 +86,9 @@ def leer_catalogo():
             vistos.add(pid)
             prods.append(dict(id=pid, categoria_id=por_codigo[f['categoria_codigo']], nombre_producto=f['nombre'],
                               principio_activo=f['principio_activo'] or None, requiere_formula=f['requiere_formula'] == '1',
-                              producto_activo=f['activo'] == '1'))
+                              producto_activo=f['activo'] == '1',
+                              foto_producto=(imagenes.get(pid) or {}).get('foto_exacta') or None,
+                              imagen_catalogo=(imagenes.get(pid) or {}).get('imagen_referencia') or None))
         conc = f['concentracion'] if f['concentracion'] not in ('', 'No aplica') else None
         pres.append(dict(id=int(f['presentacion_id']), producto_id=pid, tipo=f['tipo_presentacion'], concentracion=conc,
                          marca=f['marca'] or None, registro=f['registro_sanitario'] or None, precio=float(f['precio']),
@@ -506,7 +513,7 @@ def catalogo_inicial():
               f'{b}categoria={codigo[p["categoria_id"]]}', f'{b}principio={v(p["principio_activo"])}',
               f'{b}contenido={"" if tipo == "medicamento" else v(propias[0]["tipo"])}',
               f'{b}formula={str(p["requiere_formula"]).lower()}', f'{b}disponibilidad=sin-dato',
-              f'{b}activo={str(p["producto_activo"]).lower()}', f'{b}foto=', f'{b}imagen=',
+              f'{b}activo={str(p["producto_activo"]).lower()}', f'{b}foto={p["foto_producto"] or ""}', f'{b}imagen={p["imagen_catalogo"] or ""}',
               f'{b}precio={0 if tipo == "medicamento" else int(propias[0]["precio"])}']
         if tipo == 'medicamento':
             for j, x in enumerate(propias):

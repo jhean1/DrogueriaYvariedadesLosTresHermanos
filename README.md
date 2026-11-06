@@ -278,7 +278,8 @@ Si no la defines, la aplicación genera una clave temporal en cada arranque y la
 | `COOKIE_SEGURA` | Usa `true` si el sitio funciona con HTTPS | `false` |
 | `APP_DATOS` | Archivo donde se guardan roles, cuentas del equipo y auditoría | `datos/accesos.properties` |
 | `APP_CATALOGO` | Archivo del catálogo administrado desde el panel | `datos/catalogo.properties` |
-| `APP_FOTOS` | Carpeta de las fotos de productos | `datos/fotos` |
+| `APP_FOTOS` | Carpeta de las fotos que se suben desde el panel | `datos/fotos` |
+| `APP_FOTOS_REPOSITORIO` | Imágenes del catálogo incluidas en el repositorio; se usan si la foto no está en `APP_FOTOS` | `fotos-productos` |
 | `APP_DB_URL`, `APP_DB_USUARIO`, `APP_DB_CLAVE` | Conexión con MySQL | Lo de `datos/conexion.properties` |
 | `APP_FOTOS_CLIENTES` | Carpeta de las fotos de perfil de los clientes | `datos/fotos-clientes` |
 | `APP_COMPROBANTES` | Carpeta de los comprobantes de pago de planes | `datos/comprobantes` |
@@ -317,7 +318,7 @@ Roles disponibles para `APP_EQUIPO_N_ROL`: `ADMINISTRADOR`, `REGENTE`, `CAJERO` 
 - **Accesos en un archivo local:** roles, cuentas del equipo y auditoría se guardan en `datos/accesos.properties`. Funciona con un solo servidor y un disco persistente; para crecer conviene pasarlo a una base de datos.
 - **Los módulos de gestión están en desarrollo:** muestran su alcance, pero aún no tienen datos ni acciones.
 - **Catálogo en un archivo local:** los cambios del panel se guardan en `datos/catalogo.properties` y las fotos en `datos/fotos`. Funciona con un solo servidor. La copia de GitHub Pages se genera con el catálogo inicial del repositorio, no con esos archivos.
-- **Fotos pendientes:** se pueden subir desde el panel. Mientras tanto, los productos usan ilustraciones.
+- **Imágenes del catálogo:** 99 productos tienen su foto exacta y 272 una imagen de referencia, marcada así en la tienda; están en `fotos-productos/` y la relación con cada producto en `docs/base-de-datos/datos/imagenes-productos.csv`. Las imágenes provienen de catálogos públicos de tiendas colombianas; lo ideal es reemplazarlas por fotos propias desde el panel. Los productos restantes usan ilustraciones.
 
 ## 🗺️ Próximos pasos
 

@@ -131,8 +131,9 @@ def main():
     p = argparse.ArgumentParser()
     p.add_argument('--salida', default='_sitio', type=pathlib.Path)
     p.add_argument('--base', default='/DrogueriaYvariedadesLosTresHermanos')
-    p.add_argument('--catalogo', default='datos/catalogo.properties')
-    p.add_argument('--fotos', default='datos/fotos')
+    # Por defecto, el catálogo del repositorio (catalogo-inicial.properties) con sus imágenes de fotos-productos/
+    p.add_argument('--catalogo', default=f'{tempfile.gettempdir()}/sitio-catalogo-{secrets.token_hex(6)}.properties')
+    p.add_argument('--fotos', default='fotos-productos')
     a = p.parse_args()
 
     jar = next((j for j in sorted((RAIZ / 'target').glob('*.jar')) if 'original' not in j.name), None)

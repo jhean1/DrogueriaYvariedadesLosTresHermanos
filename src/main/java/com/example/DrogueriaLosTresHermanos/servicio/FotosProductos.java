@@ -1,5 +1,6 @@
 package com.example.DrogueriaLosTresHermanos.servicio;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -23,9 +24,18 @@ public class FotosProductos {
     private static final Map<String, String> TIPOS = Map.of("jpg", "image/jpeg", "png", "image/png", "webp", "image/webp");
 
     private final Path carpeta;
+    /** Carpeta de solo lectura con las imágenes que vienen en el repositorio (fotos-productos/). */
+    private final Path respaldo;
 
-    public FotosProductos(@Value("${app.fotos}") String carpeta) {
+    @Autowired
+    public FotosProductos(@Value("${app.fotos}") String carpeta, @Value("${app.fotos-repositorio:fotos-productos}") String respaldo) {
         this.carpeta = Path.of(carpeta);
+        this.respaldo = respaldo == null || respaldo.isBlank() ? null : Path.of(respaldo);
+    }
+
+    /** Carpeta sin respaldo (fotos de clientes y comprobantes). */
+    public FotosProductos(String carpeta) {
+        this(carpeta, "");
     }
 
     /** Guarda la foto y devuelve su nombre. Lanza IllegalArgumentException con un mensaje para el usuario. */
@@ -52,12 +62,18 @@ public class FotosProductos {
             return Optional.empty();
         }
         Path p = carpeta.resolve(nombre);
-        return Files.isRegularFile(p) ? Optional.of(p) : Optional.empty();
+        if (Files.isRegularFile(p)) {
+            return Optional.of(p);
+        }
+        // Las imágenes del catálogo que vienen en el repositorio
+        Path r = respaldo == null ? null : respaldo.resolve(nombre);
+        return r != null && Files.isRegularFile(r) ? Optional.of(r) : Optional.empty();
     }
 
     /** Borra un archivo guardado (por ejemplo, la foto anterior de un cliente). Si no existe, no hace nada. */
     public void borrar(String nombre) {
-        ruta(nombre).ifPresent(p -> {
+        // Solo en la carpeta propia: las imágenes del repositorio no se borran desde la aplicación
+        Optional.ofNullable(nombre).filter(n -> NOMBRE.matcher(n).matches()).map(carpeta::resolve).filter(Files::isRegularFile).ifPresent(p -> {
             try {
                 Files.deleteIfExists(p);
             } catch (IOException e) {
