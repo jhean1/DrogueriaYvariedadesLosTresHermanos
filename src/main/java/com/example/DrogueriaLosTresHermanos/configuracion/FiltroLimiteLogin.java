@@ -24,7 +24,7 @@ class FiltroLimiteLogin extends OncePerRequestFilter {
             && (peticion.getContextPath() + "/admin/login").equals(peticion.getRequestURI());
 
         if (esLogin && limite.estaBloqueada(peticion.getRemoteAddr())) {
-            respuesta.sendRedirect(peticion.getContextPath() + "/admin/login?bloqueado");
+            respuesta.sendRedirect(peticion.getContextPath() + "/login?bloqueado");
             return;
         }
         cadena.doFilter(peticion, respuesta);

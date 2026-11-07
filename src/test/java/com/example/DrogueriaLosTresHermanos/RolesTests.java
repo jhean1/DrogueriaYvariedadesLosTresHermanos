@@ -189,7 +189,7 @@ class RolesTests {
         directorio.crearCuenta(DUENO, "temporal2@prueba.test", CLAVE, RolSistema.CAJERO.name());
         directorio.cambiarEstadoCuenta(DUENO, idDe("temporal2@prueba.test"), false);
 
-        mvc.perform(get("/admin").with(user("temporal2@prueba.test"))).andExpect(redirectedUrl("/admin/login?inactiva"));
+        mvc.perform(get("/admin").with(user("temporal2@prueba.test"))).andExpect(redirectedUrl("/login?inactiva"));
         assertFalse(directorio.loadUserByUsername("temporal2@prueba.test").isEnabled());
     }
 

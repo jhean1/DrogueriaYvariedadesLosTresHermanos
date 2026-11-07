@@ -186,6 +186,11 @@ public class DirectorioAccesos implements UserDetailsService {
         registrar(conocida ? nombre : "Cuenta desconocida", "Inicio de sesión fallido", "Acceso rechazado");
     }
 
+    /** Si el correo pertenece a una cuenta del equipo (activa o no). Solo para el servidor: nunca se le dice al visitante. */
+    public synchronized boolean esCuentaDelEquipo(String correo) {
+        return correo != null && cuentas.containsKey(normalizar(correo));
+    }
+
     /** Registra una acción de otro módulo del panel en la auditoría. */
     public void auditar(String actor, String accion, String detalle) {
         registrar(actor, accion, detalle);

@@ -52,7 +52,7 @@ public class SeguridadConfig {
     SecurityFilterChain cadenaDeSeguridad(HttpSecurity http, LimiteIntentosLogin limite, DirectorioAccesos directorio) throws Exception {
         http
             .authorizeHttpRequests(rutas -> {
-                rutas.requestMatchers("/admin/login").permitAll();
+                rutas.requestMatchers("/admin/login", "/login").permitAll();
                 // API del panel: clientes, pagos de suscripciones y pedidos
                 rutas.requestMatchers(HttpMethod.GET, "/api/admin/resumen").hasAuthority(Permiso.DASHBOARD_VER.getCodigo());
                 rutas.requestMatchers(HttpMethod.GET, "/api/admin/clientes").hasAuthority(Permiso.CLIENTES_VER.getCodigo());
@@ -87,17 +87,19 @@ public class SeguridadConfig {
                 rutas.anyRequest().permitAll();
             })
             .formLogin(login -> login
-                .loginPage("/admin/login")
+                // Una sola página de acceso para clientes y equipo: /login. El POST clásico de
+                // /admin/login sigue disponible con las mismas protecciones.
+                .loginPage("/login")
                 .loginProcessingUrl("/admin/login")
                 .usernameParameter("correo")
                 .passwordParameter("clave")
                 .defaultSuccessUrl("/admin", true)
-                .failureUrl("/admin/login?error"))
+                .failureUrl("/login?error"))
             // La API responde 401; las páginas del panel llevan al formulario de acceso
             .exceptionHandling(e -> e.authenticationEntryPoint(entradaSinSesion()))
             .logout(salida -> salida
                 .logoutUrl("/admin/logout")
-                .logoutSuccessUrl("/admin/login?salir")
+                .logoutSuccessUrl("/login?salir")
                 .deleteCookies("JSESSIONID"))
             .headers(cabeceras -> cabeceras
                 .contentSecurityPolicy(csp -> csp.policyDirectives(POLITICA_CONTENIDO))
@@ -112,7 +114,7 @@ public class SeguridadConfig {
     private static AuthenticationEntryPoint entradaSinSesion() {
         RequestMatcher api = PathPatternRequestMatcher.withDefaults().matcher("/api/**");
         AuthenticationEntryPoint estado = new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED);
-        AuthenticationEntryPoint formulario = new LoginUrlAuthenticationEntryPoint("/admin/login");
+        AuthenticationEntryPoint formulario = new LoginUrlAuthenticationEntryPoint("/login?retorno=admin");
         return (peticion, respuesta, error) -> (api.matches(peticion) ? estado : formulario).commence(peticion, respuesta, error);
     }
 

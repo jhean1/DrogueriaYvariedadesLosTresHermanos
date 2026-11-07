@@ -1,11 +1,13 @@
 package com.example.DrogueriaLosTresHermanos.controlador;
 
+import com.example.DrogueriaLosTresHermanos.configuracion.AccesoEquipo;
 import com.example.DrogueriaLosTresHermanos.servicio.ArchivosClientes;
 import com.example.DrogueriaLosTresHermanos.servicio.BaseDatos.ErrorUsuario;
 import com.example.DrogueriaLosTresHermanos.servicio.ServicioClientes;
 import com.example.DrogueriaLosTresHermanos.servicio.ServicioPedidos;
 import com.example.DrogueriaLosTresHermanos.servicio.ServicioSuscripciones;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
@@ -44,12 +46,15 @@ public class ApiCuentaControlador {
     private final ServicioPedidos pedidos;
     private final ServicioSuscripciones suscripciones;
     private final ArchivosClientes archivos;
+    private final AccesoEquipo equipo;
 
-    public ApiCuentaControlador(ServicioClientes clientes, ServicioPedidos pedidos, ServicioSuscripciones suscripciones, ArchivosClientes archivos) {
+    public ApiCuentaControlador(ServicioClientes clientes, ServicioPedidos pedidos, ServicioSuscripciones suscripciones, ArchivosClientes archivos,
+                                AccesoEquipo equipo) {
         this.clientes = clientes;
         this.pedidos = pedidos;
         this.suscripciones = suscripciones;
         this.archivos = archivos;
+        this.equipo = equipo;
     }
 
     // ── Sesión ────────────────────────────────────────────────
@@ -79,9 +84,31 @@ public class ApiCuentaControlador {
         return Map.of("cliente", vista(clientes.obtener(id).orElseThrow()));
     }
 
+    /**
+     * Entrada única: el mismo formulario sirve para clientes y para el equipo.
+     * Si el correo es del equipo y la clave es correcta, se abre la sesión del panel.
+     * El mensaje de error es igual en todos los casos, para no revelar quién es del equipo.
+     */
     @PostMapping("/cuenta/ingreso")
-    public Map<String, Object> ingresar(@RequestBody Map<String, Object> d, HttpServletRequest peticion) {
-        long id = clientes.ingresar(texto(d, "correo"), texto(d, "clave"), peticion.getRemoteAddr());
+    public Map<String, Object> ingresar(@RequestBody Map<String, Object> d, HttpServletRequest peticion, HttpServletResponse respuesta) {
+        String correo = texto(d, "correo");
+        String clave = texto(d, "clave");
+        switch (equipo.ingresar(correo, clave, peticion, respuesta)) {
+            case DENTRO -> {
+                return Map.of("destino", "/admin", "equipo", true);
+            }
+            case BLOQUEADO -> throw new ErrorUsuario("Demasiados intentos. Espera unos minutos y vuelve a intentarlo.");
+            case CLAVE_INCORRECTA -> {
+                if (!clientes.disponible()) {
+                    throw new ErrorUsuario("El correo o la contraseña no son correctos.");
+                }
+                // Sigue como cliente (un correo puede tener cuenta de cliente aparte)
+            }
+            case NO_ES_DEL_EQUIPO -> {
+                // Es un cliente
+            }
+        }
+        long id = clientes.ingresar(correo, clave, peticion.getRemoteAddr());
         iniciar(peticion, id);
         return Map.of("cliente", vista(clientes.obtener(id).orElseThrow()));
     }

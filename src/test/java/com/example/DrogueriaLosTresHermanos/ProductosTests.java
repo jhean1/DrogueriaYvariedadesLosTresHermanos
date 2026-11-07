@@ -51,10 +51,10 @@ class ProductosTests {
         // Un catálogo nuevo: las demás pruebas de la clase modifican el compartido
         CatalogoProductos inicial = new CatalogoProductos("target/test-datos/sin-crear-" + java.util.UUID.randomUUID() + ".properties");
         // Catálogo verificado contra el INVIMA (docs/base-de-datos/datos/catalogo-verificado.csv)
-        assertEquals(489, inicial.todos().size());
-        assertEquals(252, inicial.visibles(CatalogoProductos.MEDICAMENTO).size());
-        assertEquals(223, inicial.visibles(CatalogoProductos.VARIEDAD).size());
-        assertEquals(258, inicial.visibles(CatalogoProductos.MEDICAMENTO).stream().mapToInt(p -> p.presentaciones().size()).sum());
+        assertEquals(498, inicial.todos().size());
+        assertEquals(253, inicial.visibles(CatalogoProductos.MEDICAMENTO).size());
+        assertEquals(231, inicial.visibles(CatalogoProductos.VARIEDAD).size());
+        assertEquals(259, inicial.visibles(CatalogoProductos.MEDICAMENTO).stream().mapToInt(p -> p.presentaciones().size()).sum());
         // Los medicamentos de control especial exigen fórmula y no se ofrecen en la tienda en línea
         var clonazepam = inicial.todos().stream().filter(p -> p.nombre().startsWith("Clonazepam")).findFirst().orElseThrow();
         assertTrue(clonazepam.formula());

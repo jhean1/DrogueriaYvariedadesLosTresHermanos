@@ -186,10 +186,9 @@ public class PaginaControlador {
         return "admin";
     }
 
+    /** La entrada del equipo es la misma de los clientes. */
     @GetMapping("/admin/login")
-    public String adminLogin(Model modelo) {
-        modelo.addAttribute("pagina", "admin-login");
-        modelo.addAttribute("titulo", "Acceso Administrador");
-        return "admin-login";
+    public String adminLogin() {
+        return "redirect:/login";
     }
 }

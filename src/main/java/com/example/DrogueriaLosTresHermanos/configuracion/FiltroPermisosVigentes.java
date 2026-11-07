@@ -42,7 +42,7 @@ class FiltroPermisosVigentes extends OncePerRequestFilter {
                 if (sesion != null) {
                     sesion.invalidate();
                 }
-                respuesta.sendRedirect(peticion.getContextPath() + "/admin/login?inactiva");
+                respuesta.sendRedirect(peticion.getContextPath() + "/login?inactiva");
                 return;
             }
             UsernamePasswordAuthenticationToken renovada = UsernamePasswordAuthenticationToken.authenticated(

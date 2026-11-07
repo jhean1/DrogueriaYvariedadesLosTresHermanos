@@ -3,6 +3,8 @@ package com.example.DrogueriaLosTresHermanos.controlador;
 import com.example.DrogueriaLosTresHermanos.servicio.ServicioClientes;
 import com.example.DrogueriaLosTresHermanos.servicio.ServicioSuscripciones;
 import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import jakarta.servlet.http.HttpSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,9 +33,13 @@ public class CuentaEnPaginas {
     }
 
     @ModelAttribute("cuentaInicial")
-    public Map<String, Object> cuentaInicial(HttpServletRequest peticion) {
+    public Map<String, Object> cuentaInicial(HttpServletRequest peticion, Authentication autenticacion) {
         Map<String, Object> r = new LinkedHashMap<>();
         r.put("disponible", false);
+        // Alguien del equipo con sesión abierta: la tienda le muestra el acceso al panel
+        if (autenticacion != null && autenticacion.isAuthenticated() && !(autenticacion instanceof AnonymousAuthenticationToken)) {
+            r.put("equipo", true);
+        }
         if (!clientes.disponible()) {
             return r;
         }

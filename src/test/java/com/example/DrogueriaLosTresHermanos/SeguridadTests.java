@@ -34,7 +34,25 @@ class SeguridadTests {
     void panelAdminExigeAutenticacion() throws Exception {
         mvc.perform(get("/admin"))
             .andExpect(status().is3xxRedirection())
-            .andExpect(redirectedUrl("/admin/login"));
+            .andExpect(redirectedUrl("/login?retorno=admin"));
+    }
+
+    @Test
+    void laEntradaDelEquipoEsLaMismaDeLosClientes() throws Exception {
+        mvc.perform(get("/admin/login")).andExpect(redirectedUrl("/login"));
+        var sesion = new org.springframework.mock.web.MockHttpSession();
+        mvc.perform(post("/api/cuenta/ingreso").session(sesion).with(csrf()).contentType("application/json")
+                .content("{\"correo\":\"admin@prueba.test\",\"clave\":\"clave-de-prueba-segura\"}"))
+            .andExpect(status().isOk())
+            .andExpect(content().string(containsString("\"equipo\":true")));
+    }
+
+    @Test
+    void claveDelEquipoIncorrectaDaElMismoMensajeQueUnCliente() throws Exception {
+        mvc.perform(post("/api/cuenta/ingreso").with(csrf()).contentType("application/json")
+                .content("{\"correo\":\"admin@prueba.test\",\"clave\":\"clave-incorrecta\"}"))
+            .andExpect(status().isBadRequest())
+            .andExpect(content().string(containsString("El correo o la contraseña no son correctos.")));
     }
 
     @Test
@@ -54,7 +72,7 @@ class SeguridadTests {
 
     @Test
     void paginasPublicasSiguenAccesibles() throws Exception {
-        for (String ruta : new String[] {"/", "/login", "/registro", "/medicamentos", "/admin/login"}) {
+        for (String ruta : new String[] {"/", "/login", "/registro", "/medicamentos"}) {
             mvc.perform(get(ruta)).andExpect(status().isOk());
         }
     }
@@ -81,12 +99,12 @@ class SeguridadTests {
             mvc.perform(post("/admin/login").with(csrf())
                     .param("correo", "admin@prueba.test")
                     .param("clave", "clave-incorrecta"))
-                .andExpect(redirectedUrl("/admin/login?error"));
+                .andExpect(redirectedUrl("/login?error"));
         }
         mvc.perform(post("/admin/login").with(csrf())
                 .param("correo", "admin@prueba.test")
                 .param("clave", "clave-de-prueba-segura"))
-            .andExpect(redirectedUrl("/admin/login?bloqueado"));
+            .andExpect(redirectedUrl("/login?bloqueado"));
     }
 
     @Test
@@ -99,8 +117,9 @@ class SeguridadTests {
 
     @Test
     void loginAdminNoExponeCredencialesEnElHtml() throws Exception {
-        mvc.perform(get("/admin/login"))
+        mvc.perform(get("/login"))
             .andExpect(content().string(not(containsString("lth_admins"))))
-            .andExpect(content().string(not(containsString("gmail.com"))));
+            .andExpect(content().string(not(containsString("admin@prueba.test"))))
+            .andExpect(content().string(not(containsString("clave-de-prueba-segura"))));
     }
 }

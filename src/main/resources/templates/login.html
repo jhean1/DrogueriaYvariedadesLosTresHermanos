@@ -98,7 +98,6 @@
       document.getElementById('error-login').classList.remove('visible');
       ['f-correo','f-pass'].forEach(id => document.getElementById(id).classList.remove('error'));
 
-      if (!Cuenta.disponible()) { mostrarError('Las cuentas en línea no están disponibles en este momento. Escríbenos por WhatsApp.'); return; }
       if (!correo || !pass) {
         mostrarError('Completa todos los campos.', [!correo && 'f-correo', !pass && 'f-pass'].filter(Boolean));
         return;
@@ -110,6 +109,12 @@
       btn.disabled = true; texto.style.display = 'none'; spin.classList.add('visible');
       try {
         const r = await Api.pedir('/api/cuenta/ingreso', { metodo: 'POST', datos: { correo, clave: pass } });
+        if (r.equipo) {
+          // Cuenta del equipo: entra directo al panel
+          toast('Bienvenido al panel');
+          setTimeout(() => { window.location.href = '/admin'; }, 500);
+          return;
+        }
         toast(`¡Bienvenido, ${r.cliente.nombre.split(' ')[0]}!`);
         setTimeout(() => { window.location.href = destino; }, 700);
       } catch (err) {
@@ -117,7 +122,10 @@
         const form = document.getElementById('login-form');
         form.classList.add('shake');
         form.addEventListener('animationend', () => form.classList.remove('shake'), { once: true });
-        mostrarError(err.message, err.estado === 400 ? ['f-correo', 'f-pass'] : []);
+        // Sin servidor (por ejemplo, la copia de GitHub Pages) la petición no llega a ninguna parte
+        const sinServidor = !Cuenta.disponible() && err.estado !== 400 && err.estado !== 503;
+        mostrarError(sinServidor ? 'Las cuentas en línea no están disponibles en esta versión de la página. Puedes ver el catálogo y pedir por WhatsApp.' : err.message,
+          err.estado === 400 ? ['f-correo', 'f-pass'] : []);
       }
     }
 
@@ -129,9 +137,13 @@
 
     // Con la sesión ya abierta no tiene sentido volver a entrar
     if (Cuenta.cliente()) window.location.replace(destino);
-    if (!Cuenta.disponible()) {
-      mostrarError('Las cuentas en línea no están disponibles en este momento. Puedes ver el catálogo y pedir por WhatsApp.');
-      document.getElementById('btn-entrar').disabled = true;
+    // Mensajes que llegan en la dirección (cierre de sesión del panel, intentos bloqueados)
+    if (params.has('salir')) toast('Cerraste sesión.');
+    if (params.has('bloqueado')) mostrarError('Demasiados intentos. Espera unos minutos y vuelve a intentarlo.');
+    if (params.has('error')) mostrarError('El correo o la contraseña no son correctos.', ['f-correo', 'f-pass']);
+    if (params.has('inactiva')) mostrarError('Tu cuenta del equipo fue desactivada. Habla con el propietario de la droguería.');
+    if (params.get('retorno') === 'admin') {
+      document.querySelector('.auth-sub').textContent = 'Inicia sesión para entrar al panel de la droguería.';
     }
     // Enlace a registro que conserva la página de regreso
     if (params.get('retorno')) {

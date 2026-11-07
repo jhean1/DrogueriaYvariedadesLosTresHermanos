@@ -115,7 +115,7 @@ Los precios, los descuentos y la tarifa del domicilio están en la base de datos
 
 ### Cómo entra el equipo al panel
 
-1. Abre `/admin/login` en el servidor (por ejemplo, <http://localhost:8081/admin/login>). El panel **no existe en GitHub Pages**.
+1. Abre **`/login`**, la misma página de los clientes (por ejemplo, <http://localhost:8081/login>). Si el correo y la clave son del equipo, entras directo al panel; si son de un cliente, a la tienda. El panel **no existe en GitHub Pages**.
 2. **Propietario:** entra con `ADMIN_CORREO` (por defecto `admin@lostreshermanos.com`) y la clave de `ADMIN_CLAVE`. Si no se define, la aplicación inventa una clave temporal en cada arranque y la escribe en la consola.
 3. **Resto del equipo:** el propietario crea cada cuenta en **Usuarios y permisos** (`/admin/accesos`), con su correo, una clave temporal y su rol. También se pueden crear al arrancar con `APP_EQUIPO_0_CORREO`, `APP_EQUIPO_0_ROL` y `APP_EQUIPO_0_CLAVE` (1, 2… para más personas).
 4. Cada persona ve solo las secciones de su rol. El servidor vuelve a comprobar el permiso en cada acción.
@@ -237,7 +237,7 @@ sequenceDiagram
 | `/api/cuenta/**`, `/api/pedidos`, `/api/suscripciones/**` | API de la tienda | Con sesión de cliente (salvo registro e ingreso) |
 | `/api/planes`, `/api/pagos/medios`, `/api/domicilio` | Planes, medios de pago y valor del domicilio | Público |
 | `/api/admin/**` | API del panel | **Según el permiso de cada acción** |
-| `/admin/login` | Acceso de administrador | Público |
+| `/login` | Entrada única de clientes y equipo | Público (`/admin/login` lleva aquí) |
 | `/admin` | Panel de administración | **Todo el equipo; cada sección según permisos** |
 | `/admin/productos` | Lista de productos | **Con `products.view`** |
 | `/admin/productos/nuevo` | Crear producto | **Con `products.create`** |
@@ -303,7 +303,7 @@ Si no la defines, la aplicación genera una clave temporal en cada arranque y la
 **5. Abre el sitio**
 
 - Tienda: <http://localhost:8081>
-- Panel de administración: <http://localhost:8081/admin/login>
+- Panel de administración: <http://localhost:8081/login> (entrada única; el equipo pasa directo al panel)
 
 > [!NOTE]
 > En un hosting, en lugar de `datos/conexion.properties` usa las variables `APP_DB_URL`, `APP_DB_USUARIO` y `APP_DB_CLAVE`. Compartir la ubicación para calcular el domicilio solo funciona con HTTPS (o en `localhost`).
@@ -341,6 +341,7 @@ Roles disponibles para `APP_EQUIPO_N_ROL`: `ADMINISTRADOR`, `REGENTE`, `CAJERO` 
 | Roles y permisos en Spring Security | Bloquea con 403 cada ruta sin permiso, omite del HTML las secciones no autorizadas y aplica los cambios de inmediato, incluso en sesiones abiertas |
 | Reglas contra la escalada de privilegios | Nadie concede permisos que no tiene ni modifica su propia cuenta o rol; el propietario es intocable |
 | Protección CSRF | Rechaza formularios y peticiones a la API enviados desde otros sitios |
+| Entrada única con el mismo mensaje de error para todos | Nadie puede averiguar qué correos son del equipo; la sesión cambia de número al entrar |
 | Bloqueo tras 5 intentos fallidos durante 15 minutos | Frena los ataques de fuerza bruta contra el panel |
 | BCrypt para las contraseñas de clientes y bloqueo tras 5 intentos | Las contraseñas no se guardan en texto plano ni en el navegador |
 | Precios, descuentos y totales calculados en el servidor | Un carrito alterado en el navegador no cambia lo que se cobra |
