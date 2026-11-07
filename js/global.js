@@ -79,7 +79,7 @@ window.Cuenta = (function () {
     const r = e && typeof e === 'object' ? e : {};
     const cliente = r.cliente || null;
     if (cliente) cliente.foto = cliente.foto ? '/api/cuenta/foto' : null;
-    return { disponible: !!r.disponible, cliente, suscripcion: r.suscripcion || null };
+    return { disponible: !!r.disponible, cliente, suscripcion: r.suscripcion || null, equipo: !!r.equipo };
   }
 
   /** Vuelve a pedir el estado al servidor (después de cambiar datos o el plan). */
@@ -103,15 +103,24 @@ window.Cuenta = (function () {
   return {
     disponible: () => estado.disponible,
     cliente: () => estado.cliente,
+    equipo: () => estado.equipo,
     suscripcion: () => estado.suscripcion,
     recargar, salir, rutaLogin
   };
 })();
 
-// Mi cuenta: lleva al perfil si hay sesión de cliente
+// Mi cuenta: lleva al perfil si hay sesión de cliente, o al panel si es alguien del equipo
 (function initMiCuenta() {
   const enlace = document.getElementById('btn-mi-cuenta');
-  if (enlace && Cuenta.cliente()) enlace.href = '/DrogueriaYvariedadesLosTresHermanos/perfil';
+  if (!enlace) return;
+  if (Cuenta.cliente()) {
+    enlace.href = '/DrogueriaYvariedadesLosTresHermanos/perfil';
+  } else if (Cuenta.equipo()) {
+    enlace.href = '/admin';
+    enlace.setAttribute('aria-label', 'Ir al panel');
+    const etiqueta = enlace.querySelector('.etiqueta-cuenta');
+    if (etiqueta) etiqueta.textContent = 'Panel';
+  }
 })();
 
 // ── Carrito (en este navegador; precios del catálogo actual) ─
