@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; frame-src https://www.google.com; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'">
-  <meta name="_csrf" content="sAR3LW2e7IUpo1RMZXvOG4Dv4owsYOWAdriQzS7jO7WaGPJGhmVFFQ74irEEwGd-Blb6I-LZz7UYBYGtRdn2-xvSWND-IZRx">
+  <meta name="_csrf" content="M4-LV4cxFgiPhIkw4-uyvX66MCUei7C30mBNqjHMyYsHK-mpA-vvYLcFdGmitetW1caG3BjbHUQouImasFl_zFL1q7IyGdyR">
   <meta name="_csrf_header" content="X-CSRF-TOKEN">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Mi cuenta · Los Tres Hermanos</title>
@@ -633,6 +633,7 @@
               </div>
             </div>`).join('')}
           ${Number(p.descuento) > 0 ? `<div class="visor-producto-row"><span class="visor-prod-nombre">Descuento del plan (${esc(Number(p.descuentoPorcentaje))}%)</span><span class="visor-prod-precio num">-${fmt(p.descuento)}</span></div>` : ''}
+          ${p.modalidad === 'domicilio' ? `<div class="visor-producto-row"><span class="visor-prod-nombre">Domicilio${p.distanciaKm != null ? ' (' + esc(String(p.distanciaKm).replace('.', ',')) + ' km)' : ''}</span><span class="visor-prod-precio num">${Number(p.domicilio) > 0 ? fmt(p.domicilio) : p.domicilioGratis ? 'Gratis' : 'Por confirmar'}</span></div>` : ''}
           <div class="visor-total-row">
             <span class="visor-total-label">${p.estado === 'entregado' ? 'Total pagado' : 'Total a pagar'}</span>
             <span class="visor-total-valor num">${fmt(p.total)}</span>

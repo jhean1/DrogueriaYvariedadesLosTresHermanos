@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; frame-src https://www.google.com; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'">
-  <meta name="_csrf" content="IT52J9NScGugVMG9oB60JKxOo_7Mx1CFuomz_a9U58tbymDXEgsXRbAzFQqNYvSJmTOAF5grjpz78TKo3L6Hy5w30fhrrlOx">
+  <meta name="_csrf" content="pnMa-Jk_WnPMfbHiXNdMXBzd9FWRdn8KHo3DsrjlfJpM_6EhkkEsma0JahLhH9LUZfp4Pyjv2TT3RBkneu_01tvQGvsozcBF">
   <meta name="_csrf_header" content="X-CSRF-TOKEN">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Finalizar pedido · Los Tres Hermanos</title>
@@ -157,7 +157,11 @@
             <div class="campo">
               <label for="input-direccion">Dirección de entrega</label>
               <div class="campo-icono"><svg class="ic" aria-hidden="true"><use href="/DrogueriaYvariedadesLosTresHermanos/img/iconos.svg#ubicacion"/></svg><input type="text" id="input-direccion" placeholder="Ej: Calle 5 #10-20, Barrio Centro" autocomplete="street-address"></div>
-              <p class="campo-ayuda">Solo domicilios dentro de Arjona, Bolívar.</p>
+              <p class="campo-ayuda">Escribe la dirección con el barrio y una referencia.</p>
+            </div>
+            <div class="ubicacion-domicilio">
+              <button class="btn btn--secundario btn--sm" type="button" id="btn-ubicacion"><svg class="ic" aria-hidden="true"><use href="/DrogueriaYvariedadesLosTresHermanos/img/iconos.svg#ubicacion"/></svg> Usar mi ubicación para calcular el domicilio</button>
+              <p class="campo-ayuda" id="estado-ubicacion" role="status">El valor depende de la distancia desde la droguería: $3.000 hasta 1 km y $1.000 por cada km adicional, hasta 8 km. Con el plan Premium el domicilio es gratis.</p>
             </div>
           </div>
         </div>
@@ -168,9 +172,10 @@
         <div class="resumen-items" id="resumen-items"></div>
         <div class="resumen-total-row"><span>Subtotal</span><span id="res-subtotal">$0</span></div>
         <div class="resumen-total-row" id="res-desc-row" hidden><span id="res-desc-etiqueta">Descuento</span><span id="res-descuento">-$0</span></div>
+        <div class="resumen-total-row" id="res-dom-row" hidden><span id="res-dom-etiqueta">Domicilio</span><span id="res-domicilio">Por confirmar</span></div>
         <div class="resumen-total-final"><span>Total</span><strong id="res-total">$0</strong></div>
         <p class="resumen-nota" id="nota-formula" hidden><svg class="ic" aria-hidden="true"><use href="/DrogueriaYvariedadesLosTresHermanos/img/iconos.svg#documento"/></svg> Tu pedido tiene medicamentos que requieren fórmula médica. Tenla a mano al recibirlo.</p>
-        <p class="resumen-nota" id="nota-domicilio" hidden><svg class="ic" aria-hidden="true"><use href="/DrogueriaYvariedadesLosTresHermanos/img/iconos.svg#camion"/></svg> Si el domicilio tiene costo, la droguería te lo informa al confirmar tu pedido.</p>
+        <p class="resumen-nota" id="nota-domicilio" hidden><svg class="ic" aria-hidden="true"><use href="/DrogueriaYvariedadesLosTresHermanos/img/iconos.svg#camion"/></svg> <span id="nota-domicilio-texto">Comparte tu ubicación para ver el valor del domicilio, o la droguería te lo confirma al llamarte.</span></p>
         <button class="btn btn--primario btn--lg btn--bloque" id="btn-confirmar" type="button" onclick="confirmarPedido()" disabled>
           Confirmar pedido <svg class="ic ic-mueve" aria-hidden="true"><use href="/DrogueriaYvariedadesLosTresHermanos/img/iconos.svg#flecha"/></svg>
         </button>
@@ -198,6 +203,8 @@
     let carrito    = Carrito.obtener();
     let modalidadSel = null;
     let enviando     = false;
+    let ubicacion    = null;   // { latitud, longitud }
+    let domicilio    = null;   // respuesta del servidor: { distanciaKm, costo, gratis, conUbicacion }
 
     function toast(msg, ok=true) {
       const wrap = document.getElementById('toast-wrap');
@@ -262,7 +269,7 @@
         document.getElementById('res-desc-etiqueta').textContent = `Plan ${sus.nombre} (${sus.descuento}%)`;
         document.getElementById('res-descuento').textContent = '-' + fmt(subtotal - total);
       }
-      document.getElementById('res-total').textContent = fmt(total);
+      pintarDomicilio(total);
       const conFormula = carrito.some(i => i.tipo === 'medicamento'
         && MEDICAMENTOS.some(m => m.formula && m.presentaciones.some(p => String(p.id) === String(i.presentacion))));
       document.getElementById('nota-formula').hidden = !conFormula;
@@ -281,7 +288,72 @@
       document.getElementById('dir-domicilio').classList.toggle('visible', tipo === 'domicilio');
       document.getElementById('nota-domicilio').hidden = tipo !== 'domicilio';
       document.getElementById('btn-confirmar').disabled = !carrito.length;
+      if (tipo === 'domicilio' && !domicilio) cotizar();
+      pintarDomicilio(Carrito.total());
     }
+
+    // ── Domicilio según la distancia ──────────────────────────
+    const sus = Suscripcion.obtener();
+    async function cotizar() {
+      const q = ubicacion ? `?latitud=${ubicacion.latitud}&longitud=${ubicacion.longitud}` : '';
+      try {
+        domicilio = await Api.pedir('/api/domicilio' + q);
+        document.getElementById('estado-ubicacion').classList.remove('campo-error');
+      } catch (err) {
+        domicilio = null;
+        ubicacion = null;
+        const estado = document.getElementById('estado-ubicacion');
+        estado.textContent = err.message;
+        estado.classList.add('campo-error');
+      }
+      pintarDomicilio(Carrito.total());
+    }
+
+    function pintarDomicilio(total) {
+      const fila = document.getElementById('res-dom-row');
+      const nota = document.getElementById('nota-domicilio-texto');
+      const esDomicilio = modalidadSel === 'domicilio';
+      fila.hidden = !esDomicilio;
+      let costo = 0;
+      if (esDomicilio) {
+        const valor = document.getElementById('res-domicilio');
+        if (domicilio && domicilio.gratis) {
+          valor.textContent = 'Gratis';
+          nota.textContent = `Tu plan ${sus ? sus.nombre : 'Premium'} incluye el domicilio sin costo.`;
+        } else if (domicilio && domicilio.conUbicacion) {
+          costo = domicilio.costo;
+          valor.textContent = fmt(costo);
+          nota.textContent = `Distancia aproximada desde la droguería: ${String(domicilio.distanciaKm).replace('.', ',')} km.`;
+        } else {
+          valor.textContent = 'Por confirmar';
+          nota.textContent = 'Comparte tu ubicación para ver el valor del domicilio, o la droguería te lo confirma al llamarte.';
+        }
+      }
+      document.getElementById('res-total').textContent = fmt(total + costo);
+    }
+
+    document.getElementById('btn-ubicacion').addEventListener('click', () => {
+      const estado = document.getElementById('estado-ubicacion');
+      const boton = document.getElementById('btn-ubicacion');
+      if (!navigator.geolocation) { estado.textContent = 'Tu navegador no permite compartir la ubicación. La droguería te confirma el valor.'; return; }
+      boton.disabled = true;
+      estado.classList.remove('campo-error');
+      estado.textContent = 'Buscando tu ubicación…';
+      navigator.geolocation.getCurrentPosition(async (pos) => {
+        ubicacion = { latitud: pos.coords.latitude.toFixed(6), longitud: pos.coords.longitude.toFixed(6) };
+        await cotizar();
+        boton.disabled = false;
+        if (domicilio && domicilio.conUbicacion) {
+          estado.textContent = `Ubicación recibida (${String(domicilio.distanciaKm).replace('.', ',')} km de la droguería).`;
+        }
+      }, (error) => {
+        boton.disabled = false;
+        estado.classList.add('campo-error');
+        estado.textContent = error.code === 1
+          ? 'No diste permiso para usar tu ubicación. Puedes hacer el pedido igual: la droguería te confirma el valor del domicilio.'
+          : 'No pudimos obtener tu ubicación. Inténtalo de nuevo o haz el pedido: la droguería te confirma el valor.';
+      }, { enableHighAccuracy: true, timeout: 15000, maximumAge: 60000 });
+    });
     ['tienda', 'domicilio'].forEach(m => {
       document.getElementById('card-' + m).addEventListener('keydown', (e) => {
         if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); seleccionarModalidad(m); }
@@ -315,7 +387,9 @@
       btn.setAttribute('aria-busy', 'true');
       try {
         const r = await Api.pedir('/api/pedidos', { metodo: 'POST',
-          datos: { lineas: Carrito.lineasPedido(), modalidad: modalidadSel, direccion: modalidadSel === 'domicilio' ? direccion : '' } });
+          datos: { lineas: Carrito.lineasPedido(), modalidad: modalidadSel, direccion: modalidadSel === 'domicilio' ? direccion : '',
+                   latitud: modalidadSel === 'domicilio' && ubicacion ? ubicacion.latitud : null,
+                   longitud: modalidadSel === 'domicilio' && ubicacion ? ubicacion.longitud : null } });
         Carrito.vaciar();
         window.location.href = '/DrogueriaYvariedadesLosTresHermanos/recibo?pedido=' + encodeURIComponent(r.pedido.numero);
       } catch (err) {

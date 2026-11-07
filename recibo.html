@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; frame-src https://www.google.com; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'">
-  <meta name="_csrf" content="hH10zn0HaFmuuBkXfTxVMqUPODYZ4GI4_EbPwqnVuYyEkWI-50kQ-kQ0CjqDiC0nTBFhAJFqFQ991VsVmnL78cjlje_mqQcG">
+  <meta name="_csrf" content="HwjVKj9eBlJNmYg76plXynF-Ty-236Z0PM-8XPypxruUYJuBfT7gSFxpZTFgr7oD27Rj_RNJYhfQupNZDfffa5-c847xUa3i">
   <meta name="_csrf_header" content="X-CSRF-TOKEN">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Confirmación de pedido · Los Tres Hermanos</title>
@@ -230,7 +230,10 @@
       $('etiqueta-descuento').textContent = `Descuento del plan (${Number(p.descuentoPorcentaje)}%)`;
       $('total-descuento').textContent = '-' + formatPrecio(p.descuento);
       $('linea-domicilio').hidden = p.modalidad !== 'domicilio';
-      $('total-domicilio').textContent = Number(p.domicilio) > 0 ? formatPrecio(p.domicilio) : 'Por confirmar';
+      $('total-domicilio').textContent = Number(p.domicilio) > 0 ? formatPrecio(p.domicilio) : p.domicilioGratis ? 'Gratis con tu plan' : 'Por confirmar';
+      if (p.modalidad === 'domicilio' && p.distanciaKm != null) {
+        $('recibo-entrega').textContent += ` (${String(p.distanciaKm).replace('.', ',')} km)`;
+      }
       $('total-final').textContent = formatPrecio(p.total);
 
       $('btn-whatsapp').onclick = () => {
