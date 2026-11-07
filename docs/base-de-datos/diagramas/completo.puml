@@ -184,6 +184,8 @@ package "Clientes y suscripciones" {
     {field} Días de vigencia <color:#555555>(número entero; obligatorio)</color>
     {field} **domicilio_prioritario**
     {field} Si incluye domicilio prioritario. <color:#B00020>**POR REVISAR**</color>: la página no define en qué consiste la prioridad <color:#555555>(sí o no; obligatorio)</color>
+    {field} **domicilio_gratis**
+    {field} Si el cliente con este plan no paga domicilio <color:#555555>(sí o no; obligatorio)</color>
     {field} **ofertas_anticipadas**
     {field} Incluye ofertas anticipadas <color:#555555>(sí o no; obligatorio)</color>
     {field} **soporte_whatsapp**
@@ -308,7 +310,7 @@ package "Catálogo" {
     {field} **foto_producto**
     {field} Ubicación de la foto subida desde el panel <color:#555555>(texto, hasta 255 caracteres; opcional)</color>
     {field} **imagen_catalogo**
-    {field} Imagen asignada en el catálogo inicial. <color:#B00020>**POR REVISAR**</color>: confirmar cómo la usa la tienda frente a la foto <color:#555555>(texto, hasta 255 caracteres; opcional)</color>
+    {field} Imagen de referencia (parecida) que la tienda muestra con un aviso mientras no haya foto exacta <color:#555555>(texto, hasta 255 caracteres; opcional)</color>
   }
   entity "**presentacion**\nUnidad que se vende y se almacena; las\nvariedades tienen una sola" as presentacion #DFF3E4 {
     {field} **id** <color:#3A4A6B>[clave primaria]</color>
@@ -371,6 +373,8 @@ package "Pedidos y ventas" {
     {field} Empleado que autorizó un descuento manual <color:#555555>(número entero; opcional)</color>
     {field} **costo_domicilio**
     {field} Valor cobrado por el domicilio <color:#555555>(valor en pesos; obligatorio)</color>
+    {field} **distancia_entrega_km**
+    {field} Distancia en línea recta de la droguería a la ubicación que compartió el cliente; vacía si no la compartió <color:#555555>(valor en pesos; opcional)</color>
     {field} **total_pedido** <color:#3A4A6B>[la calcula MySQL]</color>
     {field} Se calcula solo: subtotal - descuento + domicilio <color:#555555>(valor en pesos; obligatorio)</color>
     {field} **estado_pedido**

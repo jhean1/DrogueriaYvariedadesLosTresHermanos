@@ -50,19 +50,19 @@ public class PaginaControlador {
         return Arrays.asList(
             new PlanSuscripcion(1L, "Básico",
                 "Acceso esencial al catálogo y pedidos por WhatsApp.",
-                4900, 3, false, false, true, false),
+                9900, 3, false, false, true, false),
 
             new PlanSuscripcion(2L, "Estándar",
                 "Ahorra en tus compras del mes con un buen descuento.",
-                9900, 5, false, false, true, false),
+                19900, 5, false, false, true, false),
 
             new PlanSuscripcion(3L, "Regular",
                 "Domicilio prioritario y descuento ampliado para clientes frecuentes.",
-                14900, 10, true, false, true, false),
+                29900, 10, true, false, true, false),
 
             new PlanSuscripcion(4L, "Premium",
-                "Máximo ahorro, domicilio prioritario y acceso exclusivo a ofertas.",
-                19900, 15, true, true, true, true)
+                "Máximo ahorro, domicilio gratis y acceso exclusivo a ofertas.",
+                39900, 15, true, true, true, true)
         );
     }
 

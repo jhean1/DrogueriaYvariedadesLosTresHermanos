@@ -59,6 +59,7 @@ public class CuentaEnPaginas {
                     p.put("inicio", s.inicio());
                     p.put("vence", s.vence());
                     p.put("estado", s.estado());
+                    p.put("domicilioGratis", s.domicilioGratis());
                     r.put("suscripcion", p);
                 });
             }, () -> sesion.removeAttribute(ApiCuentaControlador.SESION));

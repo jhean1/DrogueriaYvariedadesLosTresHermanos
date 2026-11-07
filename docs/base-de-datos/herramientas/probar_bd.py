@@ -209,9 +209,9 @@ CALL anular_pedido(@ped,2,'Prueba');
 SELECT CONCAT((SELECT SUM(cantidad_actual) FROM lote WHERE presentacion_id=@p),'-',(SELECT estado_pago FROM pago_pedido WHERE pedido_id=@ped),'-',(SELECT estado_pedido FROM pedido WHERE id=@ped));""", '8-reembolsado-cancelado')
 resultado('renovar conserva los días que faltaban', """
 INSERT INTO cliente(nombre_cliente,correo_cliente,telefono_cliente,direccion_cliente,clave_hash,fecha_autorizacion_datos,version_politica) VALUES ('R','r@ejemplo.invalid','1','d','h',NOW(),'1'); SET @c=LAST_INSERT_ID();
-INSERT INTO solicitud_suscripcion(cliente_id,plan_id,metodo_pago_id,origen_solicitud,monto_pagado) VALUES (@c,1,1,'web',4900); CALL aprobar_solicitud(LAST_INSERT_ID(),2,@a);
+INSERT INTO solicitud_suscripcion(cliente_id,plan_id,metodo_pago_id,origen_solicitud,monto_pagado) VALUES (@c,1,1,'web',(SELECT precio_mensual FROM plan_suscripcion WHERE id=1)); CALL aprobar_solicitud(LAST_INSERT_ID(),2,@a);
 UPDATE suscripcion SET fecha_vencimiento=NOW()+INTERVAL 10 DAY WHERE id=@a;
-INSERT INTO solicitud_suscripcion(cliente_id,plan_id,metodo_pago_id,origen_solicitud,monto_pagado) VALUES (@c,2,1,'web',9900); CALL aprobar_solicitud(LAST_INSERT_ID(),2,@b);
+INSERT INTO solicitud_suscripcion(cliente_id,plan_id,metodo_pago_id,origen_solicitud,monto_pagado) VALUES (@c,2,1,'web',(SELECT precio_mensual FROM plan_suscripcion WHERE id=2)); CALL aprobar_solicitud(LAST_INSERT_ID(),2,@b);
 SELECT CONCAT((SELECT estado_suscripcion FROM suscripcion WHERE id=@a),'-',(SELECT estado_suscripcion FROM suscripcion WHERE id=@b),'-',(SELECT DATEDIFF(fecha_vencimiento,CURDATE()) FROM suscripcion WHERE id=@b),'-',(SELECT descuento_porcentaje FROM suscripcion WHERE id=@b));""", 'reemplazada-activa-40-5')
 resultado('eliminar una cuenta borra sus datos y conserva sus ventas', """
 SET @c=(SELECT p.cliente_id FROM pedido p WHERE p.cliente_id IS NOT NULL AND p.modalidad_entrega='domicilio' AND NOT EXISTS (SELECT 1 FROM pedido x WHERE x.cliente_id=p.cliente_id AND x.estado_pedido IN ('pendiente','en_proceso')) AND NOT EXISTS (SELECT 1 FROM solicitud_suscripcion s WHERE s.cliente_id=p.cliente_id AND s.estado_solicitud='pendiente') LIMIT 1);

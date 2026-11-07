@@ -152,11 +152,16 @@ RF017, RF018 y RF020 se refieren a la red, a las estructuras de datos del progra
 - La base rechaza lo inválido: vender sin existencia o un lote vencido, alterar el historial, aprobar un plan con el precio cambiado o dar dos planes activos a un cliente.
 - Las operaciones hacen lo correcto: orden de salida por vencimiento, anulaciones, renovaciones, eliminación de cuentas y alertas.
 
+## Planes y domicilio
+
+- Planes (`plan_suscripcion`): Básico $9.900 (3 %), Estándar $19.900 (5 %), Regular $29.900 (10 %) y Premium $39.900 (15 %). Solo Premium tiene `domicilio_gratis`.
+- Domicilio (`configuracion`): `domicilio_tarifa_base` $3.000 cubre `domicilio_km_incluidos` (1 km); cada km adicional o fracción suma `domicilio_valor_km` ($1.000), hasta `domicilio_max_km` (8 km). La distancia se mide en línea recta desde `tienda_latitud`/`tienda_longitud` hasta la ubicación que comparte el cliente y se guarda en `pedido.distancia_entrega_km`.
+
 ## Decisiones pendientes del negocio
 
 | Tema | Valor actual | Quién lo define |
 |---|---|---|
-| Costo del domicilio | $0 | La droguería |
+| Punto exacto de la droguería | Aproximado: calle Diagonal 52 de Arjona (`tienda_latitud`, `tienda_longitud` en `configuracion`) | La droguería |
 | Compra en línea de medicamentos con fórmula | Existe `formula_soporte`, pero ninguna regla la exige | La droguería |
 | Días de anticipación de la alerta de vencimiento | 90 (`configuracion`) | La droguería |
 | Stock mínimo de cada producto | 0 en la base real: no hay alerta hasta definirlo | La droguería |

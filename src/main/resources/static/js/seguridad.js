@@ -8,10 +8,10 @@ window.Seguridad = (function () {
   // Nombres y orden de los planes para mostrarlos. El precio y el descuento que
   // se cobran los decide siempre el servidor con la base de datos.
   const PLANES = {
-    basico:   { clave: 'basico',   nombre: 'Básico',   descuento: 3,  precio: 4900  },
-    estandar: { clave: 'estandar', nombre: 'Estándar', descuento: 5,  precio: 9900  },
-    regular:  { clave: 'regular',  nombre: 'Regular',  descuento: 10, precio: 14900 },
-    premium:  { clave: 'premium',  nombre: 'Premium',  descuento: 15, precio: 19900 }
+    basico:   { clave: 'basico',   nombre: 'Básico',   descuento: 3,  precio: 9900  },
+    estandar: { clave: 'estandar', nombre: 'Estándar', descuento: 5,  precio: 19900 },
+    regular:  { clave: 'regular',  nombre: 'Regular',  descuento: 10, precio: 29900 },
+    premium:  { clave: 'premium',  nombre: 'Premium',  descuento: 15, precio: 39900 }
   };
 
   /** Escapa un valor para insertarlo en HTML o en un atributo entre comillas. */

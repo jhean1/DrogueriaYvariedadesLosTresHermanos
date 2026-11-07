@@ -385,7 +385,8 @@ async function renderPedidos(recargar) {
     <td data-etiqueta="Cliente"><div><strong>${esc(p.cliente || '–')}</strong><small>${esc(p.telefono || '')}</small></div></td>
     <td data-etiqueta="Productos"><details class="pedido-detalle"><summary>${unidades} unidad${unidades === 1 ? '' : 'es'}</summary>
       <ul>${p.productos.map(i => `<li>${esc(i.cantidad)} × ${esc(i.nombre)} <span class="num">${pesos(i.subtotal)}</span></li>`).join('')}</ul></details></td>
-    <td data-etiqueta="Entrega">${p.modalidad === 'domicilio' ? `<span class="insignia insignia--azul">Domicilio</span><small class="pedido-direccion">${esc(p.direccion || '')}</small>` : '<span class="insignia">Recoger en tienda</span>'}</td>
+    <td data-etiqueta="Entrega">${p.modalidad === 'domicilio' ? `<span class="insignia insignia--azul">Domicilio</span><small class="pedido-direccion">${esc(p.direccion || '')}</small><small class="pedido-direccion">${
+      Number(p.domicilio) > 0 ? `${pesos(p.domicilio)} · ${esc(String(p.distanciaKm).replace('.', ','))} km` : p.domicilioGratis ? 'Gratis (plan)' : 'Sin ubicación: acuerda el valor con el cliente'}</small>` : '<span class="insignia">Recoger en tienda</span>'}</td>
     <td data-etiqueta="Total" class="num"><strong>${pesos(p.total)}</strong>${Number(p.descuento) > 0 ? `<small>Plan -${esc(Number(p.descuentoPorcentaje))}%</small>` : ''}</td>
     <td data-etiqueta="Estado">${insignia(ESTADO_PEDIDO, p.estado)}</td>
     <td data-etiqueta="Acción"><div class="tabla-acciones">

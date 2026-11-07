@@ -58,7 +58,7 @@ entity "**producto**\nMedicamentos y variedades" as producto #DFF3E4 {
   {field} **foto_producto**
   {field} Ubicación de la foto subida desde el panel <color:#555555>(texto, hasta 255 caracteres; opcional)</color>
   {field} **imagen_catalogo**
-  {field} Imagen asignada en el catálogo inicial. <color:#B00020>**POR REVISAR**</color>: confirmar cómo la usa la tienda frente a la foto <color:#555555>(texto, hasta 255 caracteres; opcional)</color>
+  {field} Imagen de referencia (parecida) que la tienda muestra con un aviso mientras no haya foto exacta <color:#555555>(texto, hasta 255 caracteres; opcional)</color>
 }
 entity "**presentacion**\nUnidad que se vende y se almacena; las\nvariedades tienen una sola" as presentacion #DFF3E4 {
   {field} **id** <color:#3A4A6B>[clave primaria]</color>

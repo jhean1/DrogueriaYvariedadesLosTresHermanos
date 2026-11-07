@@ -14,7 +14,7 @@
 
 **[Ver el sitio publicado](https://jhean1.github.io/DrogueriaYvariedadesLosTresHermanos/)**
 
-[Capturas](#-capturas) · [Funcionalidades](#-funcionalidades) · [Arquitectura](#-arquitectura) · [Instalación](#-instalación-y-ejecución) · [Seguridad](#-seguridad) · [Limitaciones](#%EF%B8%8F-limitaciones-actuales)
+[Capturas](#-capturas) · [Funcionalidades](#-funcionalidades) · [Equipo y roles](#-equipo-y-roles) · [Arquitectura](#-arquitectura) · [Instalación](#-instalación-y-ejecución) · [Seguridad](#-seguridad) · [Limitaciones](#%EF%B8%8F-limitaciones-actuales)
 
 <img src="docs/imagenes/inicio.png" alt="Página de inicio de la droguería" width="850">
 
@@ -27,12 +27,12 @@ Este proyecto de aula lleva a la web la atención de una droguería de barrio. U
 Los clientes también pueden suscribirse a un plan mensual para obtener descuentos. El administrador revisa los comprobantes de pago y activa los planes desde su panel.
 
 > [!IMPORTANT]
-> Las cuentas de clientes, los pedidos, los pagos de planes y el catálogo se guardan en MySQL (base `drogueria`). Antes de abrirla al público faltan decisiones del negocio, como las cuentas reales para recibir pagos en línea y el costo del domicilio. Consulta las [limitaciones actuales](#%EF%B8%8F-limitaciones-actuales).
+> Las cuentas de clientes, los pedidos, los pagos de planes y el catálogo se guardan en MySQL (base `drogueria`), así que **todo eso solo funciona con el servidor Spring Boot en marcha**. El [sitio de GitHub Pages](https://jhean1.github.io/DrogueriaYvariedadesLosTresHermanos/) es una vista previa estática del catálogo: allí no se pueden crear cuentas ni hacer pedidos en línea (se pide por WhatsApp). Consulta las [limitaciones actuales](#%EF%B8%8F-limitaciones-actuales).
 
 ## 📸 Capturas
 
 > [!NOTE]
-> Las capturas son de la aplicación real con **datos ficticios**. Las imágenes de productos son ilustraciones vectoriales propias, a la espera de las fotografías reales.
+> Las capturas son de una versión anterior con **datos ficticios**: todavía no muestran las fotos de los productos, los precios nuevos de los planes ni el cálculo del domicilio.
 
 ### Catálogo
 
@@ -78,9 +78,10 @@ Los clientes también pueden suscribirse a un plan mensual para obtener descuent
 - 🔎 **Búsqueda central:** visible en toda la tienda, con sugerencias al escribir por nombre, marca, principio activo o categoría.
 - 💊 **Catálogo:** tarjetas compactas y ficha de producto con presentación, concentración, marca y precio.
 - 🌗 **Modo claro y oscuro:** interruptor visible que recuerda la preferencia, con movimiento sutil que respeta la opción de menos animación.
-- 🖼️ **Imagen de cada medicamento:** el personal autorizado la agrega o cambia desde el catálogo.
+- 🖼️ **Imágenes de productos:** foto exacta del producto o, si no hay, una imagen parecida marcada como «Imagen de referencia». El personal autorizado sube las fotos propias desde el catálogo.
 - 🧭 **Guía de compra:** cuatro pasos en el inicio que se dibujan al bajar por la página.
-- 🛒 **Carrito y pedido:** carrito persistente, entrega a domicilio o recogida en tienda. El servidor calcula precios y descuento con la base de datos.
+- 🛒 **Carrito y pedido:** carrito persistente, entrega a domicilio o recogida en tienda. El servidor calcula precios, descuento y domicilio con la base de datos.
+- 🛵 **Domicilio según la distancia:** el cliente comparte su ubicación y el valor se calcula desde la droguería ($3.000 hasta 1 km y $1.000 por cada km adicional, hasta 8 km). Con el plan Premium es gratis. Si no comparte la ubicación, la droguería le confirma el valor.
 - 🧾 **Recibo e historial:** recibo de cada pedido con su estado y consulta de compras anteriores desde **Mi cuenta**.
 - ❤️ **Favoritos:** el cliente guarda productos desde su ficha y los ve en **Mi cuenta**.
 - ⭐ **Suscripciones:** descuento automático en toda la tienda cuando el plan está aprobado y vigente.
@@ -101,12 +102,37 @@ Los clientes también pueden suscribirse a un plan mensual para obtener descuent
 
 ### Planes de suscripción
 
-| Plan | Precio mensual | Descuento | Domicilio prioritario | Ofertas anticipadas y acceso exclusivo |
-|---|---:|:---:|:---:|:---:|
-| 🌱 Básico | $4.900 COP | 3 % | — | — |
-| 💊 Estándar | $9.900 COP | 5 % | — | — |
-| 🏥 Regular | $14.900 COP | 10 % | ✅ | — |
-| 👑 Premium | $19.900 COP | 15 % | ✅ | ✅ |
+| Plan | Precio mensual | Descuento | Domicilio prioritario | Domicilio gratis | Ofertas anticipadas y acceso exclusivo |
+|---|---:|:---:|:---:|:---:|:---:|
+| 🌱 Básico | $9.900 COP | 3 % | — | — | — |
+| 💊 Estándar | $19.900 COP | 5 % | — | — | — |
+| 🏥 Regular | $29.900 COP | 10 % | ✅ | — | — |
+| 👑 Premium | $39.900 COP | 15 % | ✅ | ✅ | ✅ |
+
+Los precios, los descuentos y la tarifa del domicilio están en la base de datos (tablas `plan_suscripcion` y `configuracion`), así que se pueden ajustar sin cambiar el código.
+
+## 👥 Equipo y roles
+
+### Cómo entra el equipo al panel
+
+1. Abre `/admin/login` en el servidor (por ejemplo, <http://localhost:8081/admin/login>). El panel **no existe en GitHub Pages**.
+2. **Propietario:** entra con `ADMIN_CORREO` (por defecto `admin@lostreshermanos.com`) y la clave de `ADMIN_CLAVE`. Si no se define, la aplicación inventa una clave temporal en cada arranque y la escribe en la consola.
+3. **Resto del equipo:** el propietario crea cada cuenta en **Usuarios y permisos** (`/admin/accesos`), con su correo, una clave temporal y su rol. También se pueden crear al arrancar con `APP_EQUIPO_0_CORREO`, `APP_EQUIPO_0_ROL` y `APP_EQUIPO_0_CLAVE` (1, 2… para más personas).
+4. Cada persona ve solo las secciones de su rol. El servidor vuelve a comprobar el permiso en cada acción.
+
+Las cuentas de **clientes** son otra cosa: se crean en `/registro` (o desde el panel, en *Crear cliente*) y entran por `/login`. Un cliente nunca entra al panel.
+
+### Roles
+
+| Rol | Para quién | Qué puede hacer |
+|---|---|---|
+| Propietario | Dueño de la droguería | Todo: usuarios, roles, permisos, auditoría y configuración. No se puede desactivar. |
+| Administrador | Quien maneja la operación | Clientes, pagos de planes, planes en tienda, productos, pedidos (incluido anularlos) e inventario. |
+| Regente | Responsable técnico | Productos farmacéuticos, lotes y vencimientos. |
+| Cajero / Vendedor | Mostrador | Consulta de productos y pedidos, ventas y caja. |
+| Auxiliar de inventario | Bodega | Existencias, recepción de mercancía y conteos. |
+
+Desde **Usuarios y permisos** se pueden crear roles nuevos y quitar o dar permisos a una persona en particular. Inventario, ventas de mostrador, compras, caja y reportes ya tienen sus permisos y su lugar en el panel, pero todavía están en desarrollo.
 
 ## 🛠️ Tecnologías
 
@@ -174,8 +200,11 @@ sequenceDiagram
 
 ```text
 .
-├── docs/base-de-datos/             # Diagramas, diccionario y scripts de MySQL
+├── datos/                          # Solo en tu equipo (no se sube): conexión, accesos y fotos subidas
+├── docs/base-de-datos/             # Diagramas, diccionario, scripts y herramientas de MySQL
 ├── docs/imagenes/                  # Capturas de este README
+├── fotos-productos/                # Imágenes de los productos (exactas y de referencia)
+├── scripts/                        # Generador del sitio de GitHub Pages
 ├── pom.xml                         # Dependencias y construcción
 └── src
     ├── main
@@ -183,10 +212,10 @@ sequenceDiagram
     │   │   ├── configuracion/      # Spring Security, filtros y propiedades del equipo
     │   │   ├── controlador/        # Controlador (MVC): rutas de la tienda y del panel
     │   │   ├── modelo/             # Modelo (MVC): datos, roles, permisos y módulos
-    │   │   └── servicio/           # Catálogo, fotos, cuentas y permisos del equipo
+    │   │   └── servicio/           # Catálogo, clientes, pedidos, planes, fotos y permisos
     │   └── resources
     │       ├── application.properties
-    │       ├── catalogo-inicial.properties  # Productos con los que arranca la tienda
+    │       ├── catalogo-inicial.properties  # Catálogo de respaldo cuando no hay base de datos
     │       ├── static
     │       │   ├── css/            # design-system.css, tienda.css y admin.css
     │       │   ├── img/marca/      # Sistema de identidad 3H (SVG y PNG)
@@ -206,6 +235,7 @@ sequenceDiagram
 | `/registro`, `/login` | Cuenta de cliente | Público |
 | `/perfil`, `/checkout`, `/recibo`, `/pago-suscripcion` | Área del cliente | Con sesión de cliente en el servidor |
 | `/api/cuenta/**`, `/api/pedidos`, `/api/suscripciones/**` | API de la tienda | Con sesión de cliente (salvo registro e ingreso) |
+| `/api/planes`, `/api/pagos/medios`, `/api/domicilio` | Planes, medios de pago y valor del domicilio | Público |
 | `/api/admin/**` | API del panel | **Según el permiso de cada acción** |
 | `/admin/login` | Acceso de administrador | Público |
 | `/admin` | Panel de administración | **Todo el equipo; cada sección según permisos** |
@@ -225,6 +255,7 @@ sequenceDiagram
 ### Requisitos
 
 - [JDK 21 o superior](https://adoptium.net/). No hace falta instalar Maven, porque el proyecto incluye Maven Wrapper.
+- [MySQL 9.7 LTS](https://dev.mysql.com/downloads/mysql/) para cuentas, pedidos y planes. Sin MySQL la tienda arranca igual, pero solo muestra el catálogo.
 
 ### Pasos
 
@@ -235,7 +266,15 @@ git clone https://github.com/jhean1/DrogueriaYvariedadesLosTresHermanos.git
 cd DrogueriaYvariedadesLosTresHermanos
 ```
 
-**2. Define la clave del administrador** (mínimo 12 caracteres)
+**2. Crea la base de datos** siguiendo [docs/base-de-datos](docs/base-de-datos/README.md) (scripts `00`, `01` y `02`) y escribe la conexión en `datos/conexion.properties`:
+
+```properties
+app.db.url=jdbc:mysql://127.0.0.1:3306/drogueria?useUnicode=true&characterEncoding=UTF-8&serverTimezone=America/Bogota
+app.db.usuario=drogueria_app
+app.db.clave=la-clave-del-usuario-de-mysql
+```
+
+**3. Define la clave del administrador** (mínimo 12 caracteres)
 
 ```powershell
 # Windows (PowerShell)
@@ -249,7 +288,7 @@ export ADMIN_CLAVE="escribe-aqui-una-clave-larga-y-unica"
 
 Si no la defines, la aplicación genera una clave temporal en cada arranque y la muestra en la consola.
 
-**3. Inicia la aplicación**
+**4. Inicia la aplicación**
 
 ```powershell
 # Windows
@@ -261,13 +300,13 @@ Si no la defines, la aplicación genera una clave temporal en cada arranque y la
 ./mvnw spring-boot:run
 ```
 
-**4. Abre el sitio**
+**5. Abre el sitio**
 
 - Tienda: <http://localhost:8081>
 - Panel de administración: <http://localhost:8081/admin/login>
 
 > [!NOTE]
-> Para conectar MySQL, crea `datos/conexion.properties` con `app.db.url`, `app.db.usuario` y `app.db.clave` (esa carpeta no se sube a GitHub), o usa las variables `APP_DB_URL`, `APP_DB_USUARIO` y `APP_DB_CLAVE`. Sin conexión, la tienda muestra el catálogo y ofrece pedir por WhatsApp. La instalación de la base está en [docs/base-de-datos](docs/base-de-datos/README.md).
+> En un hosting, en lugar de `datos/conexion.properties` usa las variables `APP_DB_URL`, `APP_DB_USUARIO` y `APP_DB_CLAVE`. Compartir la ubicación para calcular el domicilio solo funciona con HTTPS (o en `localhost`).
 
 ### Variables de entorno
 
@@ -313,16 +352,17 @@ Roles disponibles para `APP_EQUIPO_N_ROL`: `ADMINISTRADOR`, `REGENTE`, `CAJERO` 
 ## ⚠️ Limitaciones actuales
 
 - **Cuentas de pago sin configurar:** mientras la droguería no escriba sus cuentas reales en la configuración de la base, los planes solo se pagan en efectivo en la tienda.
-- **Costo del domicilio en $0:** la droguería debe definirlo; hoy el recibo lo muestra como *por confirmar*.
+- **Domicilio en línea recta:** la distancia se mide en línea recta desde la droguería, no por calles; el valor real del recorrido puede ser algo mayor. El punto de la droguería (`tienda_latitud` y `tienda_longitud` en `configuracion`) es aproximado: conviene reemplazarlo por el exacto.
+- **Sitio de GitHub Pages:** es una copia estática; no hay cuentas, pedidos en línea ni panel.
 - **La CSP permite scripts en línea:** las plantillas actuales los necesitan.
 - **Accesos en un archivo local:** roles, cuentas del equipo y auditoría se guardan en `datos/accesos.properties`. Funciona con un solo servidor y un disco persistente; para crecer conviene pasarlo a una base de datos.
 - **Los módulos de gestión están en desarrollo:** muestran su alcance, pero aún no tienen datos ni acciones.
-- **Catálogo en un archivo local:** los cambios del panel se guardan en `datos/catalogo.properties` y las fotos en `datos/fotos`. Funciona con un solo servidor. La copia de GitHub Pages se genera con el catálogo inicial del repositorio, no con esos archivos.
+- **Fotos subidas desde el panel:** se guardan en `datos/fotos` del servidor. Para que también aparezcan en GitHub Pages hay que copiarlas a `fotos-productos/` y anotarlas en `docs/base-de-datos/datos/imagenes-productos.csv`.
 - **Imágenes del catálogo:** 99 productos tienen su foto exacta y 272 una imagen de referencia, marcada así en la tienda; están en `fotos-productos/` y la relación con cada producto en `docs/base-de-datos/datos/imagenes-productos.csv`. Las imágenes provienen de catálogos públicos de tiendas colombianas; lo ideal es reemplazarlas por fotos propias desde el panel. Los productos restantes usan ilustraciones.
 
 ## 🗺️ Próximos pasos
 
-- [ ] Subir las fotos de los productos desde el panel.
+- [ ] Reemplazar las imágenes de referencia por fotos propias de la droguería.
 - [x] Incorporar una base de datos y una API en el servidor.
 - [x] Validar cuentas, precios, pedidos y suscripciones en el servidor.
 - [ ] Escribir las cuentas reales para recibir pagos de planes.
@@ -355,7 +395,7 @@ python scripts/generar_sitio.py --salida _sitio
 | Rama | Propósito |
 |---|---|
 | `master` | Versión principal del proyecto |
-| `frontend` | Rediseño visual, identidad 3H y panel con roles |
+| `frontend` | Rama de trabajo; se integra en `master` cuando está probada |
 | `gh-pages` | Sitio estático generado automáticamente; no se edita a mano |
 
 ## 👤 Autor

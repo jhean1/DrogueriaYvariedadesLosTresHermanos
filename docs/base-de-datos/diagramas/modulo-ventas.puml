@@ -57,6 +57,8 @@ entity "**pedido**\nPedidos en línea y ventas de mostrador" as pedido #FBE3E4 {
   {field} Empleado que autorizó un descuento manual <color:#555555>(número entero; opcional)</color>
   {field} **costo_domicilio**
   {field} Valor cobrado por el domicilio <color:#555555>(valor en pesos; obligatorio)</color>
+  {field} **distancia_entrega_km**
+  {field} Distancia en línea recta de la droguería a la ubicación que compartió el cliente; vacía si no la compartió <color:#555555>(valor en pesos; opcional)</color>
   {field} **total_pedido** <color:#3A4A6B>[la calcula MySQL]</color>
   {field} Se calcula solo: subtotal - descuento + domicilio <color:#555555>(valor en pesos; obligatorio)</color>
   {field} **estado_pedido**

@@ -129,10 +129,19 @@ def datos_iniciales():
     for pid, nom, des, pre, dto, a, b, c, d in PLANES:
         s.append(ins('plan_suscripcion', id=int(pid), nombre_plan=nom, descripcion_plan=des, precio_mensual=float(pre),
                      descuento_porcentaje=int(dto), duracion_dias=30, domicilio_prioritario=a == 'true',
+                     domicilio_gratis=nom == 'Premium',  # decisión de la droguería: Premium no paga domicilio
                      ofertas_anticipadas=b == 'true', soporte_whatsapp=c == 'true', acceso_exclusivo=d == 'true'))
     s.append('\n-- Configuración')
     s.append(ins('configuracion', clave_configuracion='dias_alerta_vencimiento', valor_configuracion='90', descripcion_configuracion='Días de anticipación de la alerta de vencimiento'))
-    s.append(ins('configuracion', clave_configuracion='costo_domicilio', valor_configuracion='0', descripcion_configuracion='Valor del domicilio en pesos; pendiente de definir por el negocio'))
+    # Domicilio según la distancia a la ubicación que comparte el cliente
+    for clave, valor, desc in [
+            ('tienda_latitud', '10.2572520', 'Latitud de la droguería (punto de partida de los domicilios). Aproximada: calle Diagonal 52 de Arjona'),
+            ('tienda_longitud', '-75.3366076', 'Longitud de la droguería (punto de partida de los domicilios). Aproximada: calle Diagonal 52 de Arjona'),
+            ('domicilio_tarifa_base', '3000', 'Valor del domicilio en pesos para los primeros kilómetros'),
+            ('domicilio_km_incluidos', '1', 'Kilómetros que cubre la tarifa base'),
+            ('domicilio_valor_km', '1000', 'Valor en pesos por cada kilómetro adicional (o fracción)'),
+            ('domicilio_max_km', '8', 'Distancia máxima de entrega en kilómetros; más lejos se coordina por WhatsApp')]:
+        s.append(ins('configuracion', clave_configuracion=clave, valor_configuracion=valor, descripcion_configuracion=desc))
     s.append(ins('configuracion', clave_configuracion='version_politica_datos', valor_configuracion='1.0', descripcion_configuracion='Versión vigente de la política de datos personales'))
     # Cuentas para recibir pagos de planes. Vacías hasta que la droguería escriba las reales:
     # la página solo ofrece los medios que tengan valor.

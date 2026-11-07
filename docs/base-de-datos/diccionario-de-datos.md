@@ -3,7 +3,7 @@
 Describe cada tabla y columna de la base de datos de la Droguería y Variedades Los Tres Hermanos.
 Este archivo se genera desde MySQL con `herramientas/generar_documentacion.py`; si cambia la base, se vuelve a generar.
 
-**37 tablas, 286 columnas y 73 claves foráneas.** Motor InnoDB y juego de caracteres utf8mb4.
+**37 tablas, 288 columnas y 73 claves foráneas.** Motor InnoDB y juego de caracteres utf8mb4.
 
 **Cómo leer las tablas:** PK es clave primaria, FK es clave foránea y Único significa que el valor no se puede repetir. Una columna calculada la obtiene MySQL sola.
 
@@ -204,6 +204,7 @@ Planes de suscripción disponibles.
 | `descuento_porcentaje` | TINYINT UNSIGNED | Sí |  |  | Descuento en la tienda durante la vigencia |
 | `duracion_dias` | SMALLINT UNSIGNED | Sí |  | 30 | Días de vigencia |
 | `domicilio_prioritario` | BOOLEAN | Sí |  | falso | Si incluye domicilio prioritario. POR REVISAR: la página no define en qué consiste la prioridad |
+| `domicilio_gratis` | BOOLEAN | Sí |  | falso | Si el cliente con este plan no paga domicilio |
 | `ofertas_anticipadas` | BOOLEAN | Sí |  | falso | Incluye ofertas anticipadas |
 | `soporte_whatsapp` | BOOLEAN | Sí |  | falso | Incluye soporte por WhatsApp |
 | `acceso_exclusivo` | BOOLEAN | Sí |  | falso | Si incluye acceso exclusivo. POR REVISAR: la página dice unas veces ofertas y otras lanzamientos |
@@ -332,7 +333,7 @@ Medicamentos y variedades (RF001, RF003).
 | `requiere_formula` | BOOLEAN | Sí |  | falso | Si se vende solo con fórmula médica |
 | `producto_activo` | BOOLEAN | Sí |  | verdadero | Si aparece en la tienda |
 | `foto_producto` | VARCHAR(255) | No |  |  | Ubicación de la foto subida desde el panel |
-| `imagen_catalogo` | VARCHAR(255) | No |  |  | Imagen asignada en el catálogo inicial. POR REVISAR: confirmar cómo la usa la tienda frente a la foto |
+| `imagen_catalogo` | VARCHAR(255) | No |  |  | Imagen de referencia (parecida) que la tienda muestra con un aviso mientras no haya foto exacta |
 
 **Se relaciona con:**
 
@@ -390,6 +391,7 @@ Pedidos en línea y ventas de mostrador (RF009).
 | `descuento_aplicado` | DECIMAL(12,2) | Sí |  | 0.00 | Valor del descuento en pesos |
 | `descuento_autorizado_por_id` | BIGINT UNSIGNED | No | FK |  | Empleado que autorizó un descuento manual |
 | `costo_domicilio` | DECIMAL(12,2) | Sí |  | 0.00 | Valor cobrado por el domicilio |
+| `distancia_entrega_km` | DECIMAL(5,2) | No |  |  | Distancia en línea recta de la droguería a la ubicación que compartió el cliente; vacía si no la compartió |
 | `total_pedido` | DECIMAL(12,2) | Sí | Calculada |  | Se calcula solo: subtotal - descuento + domicilio |
 | `estado_pedido` | ENUM: pendiente, en_proceso, entregado, cancelado | Sí |  | pendiente | En qué punto va el pedido |
 | `anulado_por_id` | BIGINT UNSIGNED | No | FK |  | Empleado que anuló |
@@ -869,7 +871,6 @@ Su significado no se pudo confirmar con el código del proyecto. Debe aclararlo 
 | `cliente` | `version_politica` | la página todavía no numera su política |
 | `plan_suscripcion` | `domicilio_prioritario` | la página no define en qué consiste la prioridad |
 | `plan_suscripcion` | `acceso_exclusivo` | la página dice unas veces ofertas y otras lanzamientos |
-| `producto` | `imagen_catalogo` | confirmar cómo la usa la tienda frente a la foto |
 
 ## Lógica dentro de la base de datos
 

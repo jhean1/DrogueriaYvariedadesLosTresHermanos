@@ -439,6 +439,7 @@
               </div>
             </div>`).join('')}
           ${Number(p.descuento) > 0 ? `<div class="visor-producto-row"><span class="visor-prod-nombre">Descuento del plan (${esc(Number(p.descuentoPorcentaje))}%)</span><span class="visor-prod-precio num">-${fmt(p.descuento)}</span></div>` : ''}
+          ${p.modalidad === 'domicilio' ? `<div class="visor-producto-row"><span class="visor-prod-nombre">Domicilio${p.distanciaKm != null ? ' (' + esc(String(p.distanciaKm).replace('.', ',')) + ' km)' : ''}</span><span class="visor-prod-precio num">${Number(p.domicilio) > 0 ? fmt(p.domicilio) : p.domicilioGratis ? 'Gratis' : 'Por confirmar'}</span></div>` : ''}
           <div class="visor-total-row">
             <span class="visor-total-label">${p.estado === 'entregado' ? 'Total pagado' : 'Total a pagar'}</span>
             <span class="visor-total-valor num">${fmt(p.total)}</span>

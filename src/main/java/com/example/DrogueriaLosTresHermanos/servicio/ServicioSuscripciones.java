@@ -16,10 +16,10 @@ import java.util.Optional;
 public class ServicioSuscripciones {
 
     public record Plan(int id, String nombre, String descripcion, int precio, int descuento, int dias,
-                       boolean domicilioPrioritario, boolean ofertasAnticipadas, boolean soporteWhatsapp, boolean accesoExclusivo) {}
+                       boolean domicilioPrioritario, boolean domicilioGratis, boolean ofertasAnticipadas, boolean soporteWhatsapp, boolean accesoExclusivo) {}
 
     /** Suscripción que da descuento hoy. Si el cliente la canceló, conserva el descuento hasta que vence. */
-    public record Vigente(long id, String plan, int descuento, String inicio, String vence, String estado) {}
+    public record Vigente(long id, String plan, int descuento, String inicio, String vence, String estado, boolean domicilioGratis) {}
 
     private static final List<String> METODOS_EN_LINEA = List.of("nequi", "daviplata", "pse", "bancolombia");
 
@@ -31,9 +31,9 @@ public class ServicioSuscripciones {
 
     public List<Plan> planes() {
         return bd.jdbc().query("SELECT id, nombre_plan, descripcion_plan, precio_mensual, descuento_porcentaje, duracion_dias, domicilio_prioritario, "
-                + "ofertas_anticipadas, soporte_whatsapp, acceso_exclusivo FROM plan_suscripcion WHERE plan_activo = TRUE ORDER BY precio_mensual",
+                + "domicilio_gratis, ofertas_anticipadas, soporte_whatsapp, acceso_exclusivo FROM plan_suscripcion WHERE plan_activo = TRUE ORDER BY precio_mensual",
             (r, n) -> new Plan(r.getInt(1), r.getString(2), r.getString(3), r.getBigDecimal(4).intValue(), r.getInt(5), r.getInt(6),
-                r.getBoolean(7), r.getBoolean(8), r.getBoolean(9), r.getBoolean(10)));
+                r.getBoolean(7), r.getBoolean(8), r.getBoolean(9), r.getBoolean(10), r.getBoolean(11)));
     }
 
     /** Medio de pago en línea que la droguería ya publicó: a dónde enviar el dinero y a nombre de quién. */
@@ -57,10 +57,10 @@ public class ServicioSuscripciones {
 
     public Optional<Vigente> vigente(long cliente) {
         return bd.jdbc().query("SELECT s.id, p.nombre_plan, s.descuento_porcentaje, DATE_FORMAT(s.fecha_inicio, '%Y-%m-%d'), "
-                + "DATE_FORMAT(s.fecha_vencimiento, '%Y-%m-%d'), s.estado_suscripcion FROM suscripcion s JOIN plan_suscripcion p ON p.id = s.plan_id "
+                + "DATE_FORMAT(s.fecha_vencimiento, '%Y-%m-%d'), s.estado_suscripcion, p.domicilio_gratis FROM suscripcion s JOIN plan_suscripcion p ON p.id = s.plan_id "
                 + "WHERE s.cliente_id = ? AND s.estado_suscripcion IN ('activa', 'cancelada') AND s.fecha_vencimiento > NOW() "
                 + "ORDER BY s.estado_suscripcion = 'activa' DESC, s.fecha_vencimiento DESC LIMIT 1",
-            (r, n) -> new Vigente(r.getLong(1), r.getString(2), r.getInt(3), r.getString(4), r.getString(5), r.getString(6)), cliente).stream().findFirst();
+            (r, n) -> new Vigente(r.getLong(1), r.getString(2), r.getInt(3), r.getString(4), r.getString(5), r.getString(6), r.getBoolean(7)), cliente).stream().findFirst();
     }
 
     /** Solicitud de compra en línea. El monto lo fija el servidor con el precio del plan. */

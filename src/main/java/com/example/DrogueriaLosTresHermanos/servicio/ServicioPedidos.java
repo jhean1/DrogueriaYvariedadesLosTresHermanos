@@ -23,6 +23,12 @@ public class ServicioPedidos {
     /** Una línea del carrito: la presentación de un medicamento, o el producto si es una variedad. */
     public record Linea(Long presentacion, Long producto, int cantidad) {}
 
+    /**
+     * Valor del domicilio. Sin ubicación del cliente, la distancia queda vacía y la droguería confirma el valor.
+     * Con un plan que incluye domicilio gratis, el costo es cero.
+     */
+    public record Domicilio(Double distanciaKm, int costo, boolean gratis, boolean conUbicacion, int maximoKm) {}
+
     private static final int MAX_LINEAS = 40;
     private static final int MAX_CANTIDAD = 50;
     private static final String LETRAS = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
@@ -36,8 +42,60 @@ public class ServicioPedidos {
         this.suscripciones = suscripciones;
     }
 
+    /** Calcula el domicilio desde la droguería hasta la ubicación del cliente (en línea recta). */
+    public Domicilio cotizarDomicilio(Long cliente, Double latitud, Double longitud) {
+        Map<String, String> c = new java.util.HashMap<>();
+        bd.jdbc().query("SELECT clave_configuracion, valor_configuracion FROM configuracion WHERE clave_configuracion LIKE 'domicilio\\_%' "
+            + "OR clave_configuracion IN ('tienda_latitud', 'tienda_longitud')", r -> {
+                c.put(r.getString(1), r.getString(2));
+            });
+        int base = entero(c.get("domicilio_tarifa_base"), 3000);
+        double incluidos = decimal(c.get("domicilio_km_incluidos"), 1);
+        int porKm = entero(c.get("domicilio_valor_km"), 1000);
+        int maximo = entero(c.get("domicilio_max_km"), 8);
+        boolean gratis = cliente != null && suscripciones.vigente(cliente).map(ServicioSuscripciones.Vigente::domicilioGratis).orElse(false);
+        if (latitud == null || longitud == null) {
+            return new Domicilio(null, 0, gratis, false, maximo);
+        }
+        if (latitud < -90 || latitud > 90 || longitud < -180 || longitud > 180) {
+            throw new ErrorUsuario("La ubicación no es válida.");
+        }
+        double km = distanciaKm(decimal(c.get("tienda_latitud"), 10.2572520), decimal(c.get("tienda_longitud"), -75.3366076), latitud, longitud);
+        km = Math.round(km * 100) / 100.0;
+        if (km > maximo) {
+            throw new ErrorUsuario("Tu ubicación está a " + String.format(java.util.Locale.ROOT, "%.1f", km).replace('.', ',')
+                + " km de la droguería. Hacemos domicilios hasta " + maximo + " km; escríbenos por WhatsApp para coordinar la entrega.");
+        }
+        int costo = gratis ? 0 : base + (int) Math.ceil(Math.max(0, km - incluidos)) * porKm;
+        return new Domicilio(km, costo, gratis, true, maximo);
+    }
+
+    /** Distancia en línea recta entre dos puntos (fórmula del haversine). */
+    static double distanciaKm(double lat1, double lon1, double lat2, double lon2) {
+        double dLat = Math.toRadians(lat2 - lat1), dLon = Math.toRadians(lon2 - lon1);
+        double a = Math.sin(dLat / 2) * Math.sin(dLat / 2)
+            + Math.cos(Math.toRadians(lat1)) * Math.cos(Math.toRadians(lat2)) * Math.sin(dLon / 2) * Math.sin(dLon / 2);
+        return 6371.0 * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    }
+
+    private static int entero(String v, int porDefecto) {
+        try {
+            return v == null ? porDefecto : Integer.parseInt(v.strip());
+        } catch (NumberFormatException e) {
+            return porDefecto;
+        }
+    }
+
+    private static double decimal(String v, double porDefecto) {
+        try {
+            return v == null ? porDefecto : Double.parseDouble(v.strip());
+        } catch (NumberFormatException e) {
+            return porDefecto;
+        }
+    }
+
     /** Crea el pedido y devuelve su número. */
-    public String crear(long cliente, List<Linea> lineas, String modalidad, String direccion) {
+    public String crear(long cliente, List<Linea> lineas, String modalidad, String direccion, Double latitud, Double longitud) {
         if (lineas == null || lineas.isEmpty()) {
             throw new ErrorUsuario("Tu carrito está vacío.");
         }
@@ -62,7 +120,8 @@ public class ServicioPedidos {
             }
             var vigente = suscripciones.vigente(cliente);
             int pct = vigente.map(ServicioSuscripciones.Vigente::descuento).orElse(0);
-            BigDecimal domicilio = "domicilio".equals(modalidad) ? costoDomicilio() : BigDecimal.ZERO;
+            Domicilio envio = "domicilio".equals(modalidad) ? cotizarDomicilio(cliente, latitud, longitud) : null;
+            BigDecimal domicilio = envio == null ? BigDecimal.ZERO : BigDecimal.valueOf(envio.costo());
             record Fila(long presentacion, String nombre, int cantidad, int original, int cobrado) {}
             List<Fila> filas = new ArrayList<>();
             for (var e : cantidades.entrySet()) {
@@ -84,9 +143,10 @@ public class ServicioPedidos {
                 String candidato = "LTH-" + codigo(6);
                 try {
                     bd.jdbc().update("INSERT INTO pedido (numero_pedido, canal_venta, cliente_id, suscripcion_id, modalidad_entrega, direccion_entrega, "
-                            + "subtotal_pedido, descuento_porcentaje, descuento_aplicado, costo_domicilio) VALUES (?, 'web', ?, ?, ?, ?, ?, ?, ?, ?)",
-                        candidato, cliente, pct > 0 ? vigente.get().id() : null, modalidad, "domicilio".equals(modalidad) ? dir : null,
-                        subtotal, pct, descuento, domicilio);
+                            + "subtotal_pedido, descuento_porcentaje, descuento_aplicado, costo_domicilio, distancia_entrega_km) VALUES (?, 'web', ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                        candidato, cliente, pct > 0 || (envio != null && envio.gratis()) ? vigente.map(ServicioSuscripciones.Vigente::id).orElse(null) : null,
+                        modalidad, "domicilio".equals(modalidad) ? dir : null,
+                        subtotal, pct, descuento, domicilio, envio == null ? null : envio.distanciaKm());
                     numero = candidato;
                 } catch (DuplicateKeyException repetido) {
                     // Número ya usado: se intenta con otro
@@ -189,24 +249,16 @@ public class ServicioPedidos {
     private static String resumenSql() {
         return "SELECT p.id, p.numero_pedido AS numero, p.numero_comprobante AS comprobante, DATE_FORMAT(p.fecha_creacion, '%Y-%m-%d %H:%i') AS fecha, "
             + "p.modalidad_entrega AS modalidad, p.direccion_entrega AS direccion, p.subtotal_pedido AS subtotal, p.descuento_porcentaje AS descuentoPorcentaje, "
-            + "p.descuento_aplicado AS descuento, p.costo_domicilio AS domicilio, p.total_pedido AS total, p.estado_pedido AS estado, p.canal_venta AS canal, "
+            + "p.descuento_aplicado AS descuento, p.costo_domicilio AS domicilio, p.distancia_entrega_km AS distanciaKm, "
+            + "(p.modalidad_entrega = 'domicilio' AND p.costo_domicilio = 0 AND EXISTS (SELECT 1 FROM suscripcion s JOIN plan_suscripcion pl ON pl.id = s.plan_id "
+            + "WHERE s.id = p.suscripcion_id AND pl.domicilio_gratis)) AS domicilioGratis, "
+            + "p.total_pedido AS total, p.estado_pedido AS estado, p.canal_venta AS canal, "
             + "c.nombre_cliente AS cliente, c.telefono_cliente AS telefono FROM pedido p LEFT JOIN cliente c ON c.id = p.cliente_id";
     }
 
     private List<Map<String, Object>> lineas(long pedido) {
         return bd.jdbc().queryForList("SELECT d.presentacion_id AS presentacion, d.nombre_producto AS nombre, d.cantidad_vendida AS cantidad, "
             + "d.precio_original AS precioOriginal, d.precio_unitario AS precio, d.subtotal_linea AS subtotal FROM detalle_pedido d WHERE d.pedido_id = ? ORDER BY d.id", pedido);
-    }
-
-    private BigDecimal costoDomicilio() {
-        return bd.jdbc().queryForList("SELECT valor_configuracion FROM configuracion WHERE clave_configuracion = 'costo_domicilio'", String.class)
-            .stream().findFirst().map(v -> {
-                try {
-                    return new BigDecimal(v.strip());
-                } catch (NumberFormatException e) {
-                    return BigDecimal.ZERO;
-                }
-            }).orElse(BigDecimal.ZERO);
     }
 
     /** Para una variedad, su única presentación activa. */

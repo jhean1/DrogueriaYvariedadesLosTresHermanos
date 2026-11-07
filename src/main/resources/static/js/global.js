@@ -388,7 +388,8 @@ window.Suscripcion = (function() {
       nombre: plan ? plan.nombre : s.plan,
       descuento: Number(s.descuento) || 0,
       inicio: s.inicio, vence: s.vence,
-      estado: s.estado === 'cancelada' ? 'cancelada' : 'activa'
+      estado: s.estado === 'cancelada' ? 'cancelada' : 'activa',
+      domicilioGratis: !!s.domicilioGratis
     };
   }
 

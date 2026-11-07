@@ -96,7 +96,10 @@
       $('etiqueta-descuento').textContent = `Descuento del plan (${Number(p.descuentoPorcentaje)}%)`;
       $('total-descuento').textContent = '-' + formatPrecio(p.descuento);
       $('linea-domicilio').hidden = p.modalidad !== 'domicilio';
-      $('total-domicilio').textContent = Number(p.domicilio) > 0 ? formatPrecio(p.domicilio) : 'Por confirmar';
+      $('total-domicilio').textContent = Number(p.domicilio) > 0 ? formatPrecio(p.domicilio) : p.domicilioGratis ? 'Gratis con tu plan' : 'Por confirmar';
+      if (p.modalidad === 'domicilio' && p.distanciaKm != null) {
+        $('recibo-entrega').textContent += ` (${String(p.distanciaKm).replace('.', ',')} km)`;
+      }
       $('total-final').textContent = formatPrecio(p.total);
 
       $('btn-whatsapp').onclick = () => {

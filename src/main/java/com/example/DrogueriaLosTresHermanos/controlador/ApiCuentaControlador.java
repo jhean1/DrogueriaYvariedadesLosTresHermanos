@@ -180,8 +180,16 @@ public class ApiCuentaControlador {
                 }
             }
         }
-        String numero = pedidos.crear(id, lineas, texto(d, "modalidad"), texto(d, "direccion"));
+        String numero = pedidos.crear(id, lineas, texto(d, "modalidad"), texto(d, "direccion"), coordenada(d.get("latitud")), coordenada(d.get("longitud")));
         return Map.of("pedido", pedidos.deClientePorNumero(id, numero).orElseThrow());
+    }
+
+    /** Valor del domicilio hasta la ubicación del cliente; con plan Premium sale gratis. */
+    @GetMapping("/domicilio")
+    public ServicioPedidos.Domicilio cotizarDomicilio(@RequestParam(required = false) Double latitud, @RequestParam(required = false) Double longitud,
+                                                      HttpSession sesion) {
+        Object id = sesion.getAttribute(SESION);
+        return pedidos.cotizarDomicilio(id instanceof Long l ? l : null, latitud, longitud);
     }
 
     @GetMapping("/cuenta/pedidos")
@@ -279,6 +287,17 @@ public class ApiCuentaControlador {
             return Long.parseLong(String.valueOf(v).strip());
         } catch (NumberFormatException e) {
             throw new ErrorUsuario("Uno de los productos del carrito no es válido.");
+        }
+    }
+
+    private static Double coordenada(Object v) {
+        if (v == null || String.valueOf(v).isBlank()) {
+            return null;
+        }
+        try {
+            return Double.parseDouble(String.valueOf(v).strip());
+        } catch (NumberFormatException e) {
+            throw new ErrorUsuario("La ubicación no es válida.");
         }
     }
 
