@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; frame-src https://www.google.com; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'">
-  <meta name="_csrf" content="RgxSfUAVcJS1Shiz7Ty-WpbEuS47cgZayBd4ps_HoSmCEL-nf2hqSSYkQvGYKCrRiRGKPvf2lE8JSjN38CFOlKnylx7mII-Q">
+  <meta name="_csrf" content="iQ-3FJDjhN23NxQmFUVZ8-WdefByBF6e_DneAxEEXvNOd8BgvDuAd_XTsO-aA3ETdGhtwNGrVJJDNTqzzwjnN3czbZZ9FaUE">
   <meta name="_csrf_header" content="X-CSRF-TOKEN">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Inicio · Los Tres Hermanos</title>
@@ -179,8 +179,10 @@
       </header>
       <div class="cat-grupo-titulo revelar"><h3>Medicamentos</h3><a href="/DrogueriaYvariedadesLosTresHermanos/medicamentos" class="enlace-flecha">Ver todos <svg class="ic" aria-hidden="true"><use href="/DrogueriaYvariedadesLosTresHermanos/img/iconos.svg#flecha"/></svg></a></div>
       <ul class="cat-grid" id="indice-medicamentos" data-escalonar></ul>
+      <div class="cat-mas-wrap"><button type="button" class="btn btn--secundario btn--sm cat-mas" data-lista="indice-medicamentos" aria-controls="indice-medicamentos" aria-expanded="false" hidden></button></div>
       <div class="cat-grupo-titulo revelar"><h3>Variedades</h3><a href="/DrogueriaYvariedadesLosTresHermanos/variedades" class="enlace-flecha">Ver todas <svg class="ic" aria-hidden="true"><use href="/DrogueriaYvariedadesLosTresHermanos/img/iconos.svg#flecha"/></svg></a></div>
       <ul class="cat-grid" id="indice-variedades" data-escalonar></ul>
+      <div class="cat-mas-wrap"><button type="button" class="btn btn--secundario btn--sm cat-mas" data-lista="indice-variedades" aria-controls="indice-variedades" aria-expanded="false" hidden></button></div>
     </section>
 
     <section class="bloque bloque--tono" aria-labelledby="titulo-explorar">
@@ -377,6 +379,28 @@
       }).join('');
       $('indice-medicamentos').innerHTML = tarjetas('medicamento', MEDICAMENTOS, '/DrogueriaYvariedadesLosTresHermanos/medicamentos');
       $('indice-variedades').innerHTML = tarjetas('variedad', VARIEDADES, '/DrogueriaYvariedadesLosTresHermanos/variedades');
+
+      // Solo las primeras categorías a la vista; el resto con «Ver más»
+      const VISIBLES = 6;
+      document.querySelectorAll('.cat-mas').forEach(boton => {
+        const lista = $(boton.dataset.lista);
+        const extras = [...lista.children].slice(VISIBLES);
+        if (!extras.length) return;
+        const pintar = (abierta) => {
+          extras.forEach(li => { li.hidden = !abierta; });
+          boton.setAttribute('aria-expanded', String(abierta));
+          boton.innerHTML = (abierta ? 'Ver menos' : `Ver más (${extras.length})`) +
+            ` ${Experiencia.icono('chevron-abajo')}`;
+        };
+        pintar(false);
+        boton.hidden = false;
+        boton.addEventListener('click', () => {
+          const abrir = boton.getAttribute('aria-expanded') !== 'true';
+          pintar(abrir);
+          if (!abrir) lista.scrollIntoView({ behavior: Experiencia.sinMovimiento ? 'auto' : 'smooth', block: 'nearest' });
+          else extras[0].querySelector('a')?.focus({ preventScroll: true });
+        });
+      });
 
       $('exp-med').innerHTML = MEDICAMENTOS.slice(0, 4).map(Ficha.tarjetaMedicamento).join('');
       $('exp-var').innerHTML = VARIEDADES.slice(0, 4).map(Ficha.tarjetaVariedad).join('');

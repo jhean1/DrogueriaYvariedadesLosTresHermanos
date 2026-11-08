@@ -1115,3 +1115,35 @@ dialog.dialogo--ficha { width: min(calc(100vw - 2rem), 820px); max-height: min(9
   /* Con foto, la presentación ya se lee debajo: la etiqueta no se monta sobre la imagen */
   .ficha-arte:has(img) .ficha-arte-etiqueta { display: none; }
 }
+
+/* Inicio: categorías con «Ver más / Ver menos» */
+.cat-mas-wrap { display: flex; justify-content: center; margin-top: var(--e-4); margin-bottom: var(--e-6); }
+.cat-mas .ic { transition: transform var(--t-media) var(--curva); }
+.cat-mas[aria-expanded="true"] .ic { transform: rotate(180deg); }
+.cat-grid > li[hidden] { display: none; }
+
+/* Fotos de producto en círculo que llena el marco */
+.med-arte img, .var-arte img, .sug-arte img {
+  width: auto; height: 100%; max-width: 100%; aspect-ratio: 1;
+  padding: 0; border-radius: 50%; object-fit: cover; background: #fff;
+  box-shadow: 0 0 0 1px var(--borde), 0 6px 16px rgba(15, 23, 42, .10);
+}
+.ficha-arte img {
+  width: auto; height: 240px; max-width: 100%; max-height: 240px; aspect-ratio: 1;
+  padding: 0; border-radius: 50%; object-fit: cover; background: #fff;
+  box-shadow: 0 0 0 1px var(--borde), 0 10px 28px rgba(15, 23, 42, .14);
+}
+@media (max-width: 640px) {
+  .ficha-arte img { height: 130px; max-height: 130px; padding: 0; }
+}
+
+/* Vitrina de variedades del inicio: la foto ocupa todo el círculo */
+.vitrina a { position: relative; }
+.vitrina a:has(img) { padding: 0; overflow: hidden; background: #fff; filter: none; box-shadow: 0 0 0 1px var(--borde), 0 10px 28px rgba(15, 23, 42, .12); }
+.vitrina img { display: block; width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
+.vitrina .arte-ref { left: 50%; bottom: 9%; transform: translateX(-50%); white-space: nowrap; }
+/* Con foto, el marco de la tarjeta crece y el círculo ocupa casi todo su alto */
+.med-arte:has(img), .var-arte:has(img) { height: 168px; padding: var(--e-2); }
+@media (max-width: 640px) {
+  .med-arte:has(img), .var-arte:has(img) { height: 128px; padding: var(--e-1); }
+}
