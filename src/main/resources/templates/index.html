@@ -75,8 +75,10 @@
       </header>
       <div class="cat-grupo-titulo revelar"><h3>Medicamentos</h3><a th:href="@{/medicamentos}" class="enlace-flecha">Ver todos <svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#flecha"/></svg></a></div>
       <ul class="cat-grid" id="indice-medicamentos" data-escalonar></ul>
+      <div class="cat-mas-wrap"><button type="button" class="btn btn--secundario btn--sm cat-mas" data-lista="indice-medicamentos" aria-controls="indice-medicamentos" aria-expanded="false" hidden></button></div>
       <div class="cat-grupo-titulo revelar"><h3>Variedades</h3><a th:href="@{/variedades}" class="enlace-flecha">Ver todas <svg class="ic" aria-hidden="true"><use href="/img/iconos.svg#flecha"/></svg></a></div>
       <ul class="cat-grid" id="indice-variedades" data-escalonar></ul>
+      <div class="cat-mas-wrap"><button type="button" class="btn btn--secundario btn--sm cat-mas" data-lista="indice-variedades" aria-controls="indice-variedades" aria-expanded="false" hidden></button></div>
     </section>
 
     <section class="bloque bloque--tono" aria-labelledby="titulo-explorar">
@@ -183,6 +185,28 @@
       }).join('');
       $('indice-medicamentos').innerHTML = tarjetas('medicamento', MEDICAMENTOS, '/medicamentos');
       $('indice-variedades').innerHTML = tarjetas('variedad', VARIEDADES, '/variedades');
+
+      // Solo las primeras categorías a la vista; el resto con «Ver más»
+      const VISIBLES = 6;
+      document.querySelectorAll('.cat-mas').forEach(boton => {
+        const lista = $(boton.dataset.lista);
+        const extras = [...lista.children].slice(VISIBLES);
+        if (!extras.length) return;
+        const pintar = (abierta) => {
+          extras.forEach(li => { li.hidden = !abierta; });
+          boton.setAttribute('aria-expanded', String(abierta));
+          boton.innerHTML = (abierta ? 'Ver menos' : `Ver más (${extras.length})`) +
+            ` ${Experiencia.icono('chevron-abajo')}`;
+        };
+        pintar(false);
+        boton.hidden = false;
+        boton.addEventListener('click', () => {
+          const abrir = boton.getAttribute('aria-expanded') !== 'true';
+          pintar(abrir);
+          if (!abrir) lista.scrollIntoView({ behavior: Experiencia.sinMovimiento ? 'auto' : 'smooth', block: 'nearest' });
+          else extras[0].querySelector('a')?.focus({ preventScroll: true });
+        });
+      });
 
       $('exp-med').innerHTML = MEDICAMENTOS.slice(0, 4).map(Ficha.tarjetaMedicamento).join('');
       $('exp-var').innerHTML = VARIEDADES.slice(0, 4).map(Ficha.tarjetaVariedad).join('');
