@@ -1147,3 +1147,30 @@ dialog.dialogo--ficha { width: min(calc(100vw - 2rem), 820px); max-height: min(9
 @media (max-width: 640px) {
   .med-arte:has(img), .var-arte:has(img) { height: 128px; padding: var(--e-1); }
 }
+
+/* Marcos rectangulares (tarjetas, ficha y buscador): la foto llena todo el marco.
+   Las fotos de las tiendas son cuadradas, con el producto al centro y fondo blanco:
+   el marco toma ese blanco de borde a borde y la foto se acerca un poco para que el
+   producto se vea grande sin recortarlo. La vitrina del inicio sigue en círculo. */
+.med-arte:has(img), .var-arte:has(img), .ficha-arte:has(img), .sug-arte:has(img) {
+  padding: 0; overflow: hidden; background: #fff; filter: none;
+}
+.med-arte img, .var-arte img, .ficha-arte img, .sug-arte img {
+  width: 100%; height: 100%; max-width: none; max-height: none; aspect-ratio: auto;
+  padding: 0; border-radius: 0; box-shadow: none; background: #fff;
+  object-fit: contain; transform: scale(1.08); transform-origin: center;
+}
+.med-card:hover .med-arte img, .var-card:hover .var-arte img { transform: scale(1.14); }
+.ficha-arte:has(img) { height: 280px; min-height: 0; }
+.ficha-arte img { height: 100%; max-height: none; transform: scale(1.04); }
+.sug-arte img { transform: none; object-fit: cover; }
+@media (max-width: 640px) {
+  .ficha-arte:has(img) { height: 190px; }
+  .ficha-arte img { height: 100%; max-height: none; }
+}
+/* Ficha: la foto se ajusta exactamente al marco (en computador, toda la columna izquierda) */
+.ficha-arte:has(img) { position: relative; height: auto; min-height: 300px; }
+.ficha-arte img { position: absolute; inset: 0; width: 100%; height: 100%; }
+@media (max-width: 640px) {
+  .ficha-arte:has(img) { height: 200px; min-height: 0; }
+}
